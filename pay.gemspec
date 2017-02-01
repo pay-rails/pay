@@ -9,9 +9,9 @@ Gem::Specification.new do |s|
   s.version     = Pay::VERSION
   s.authors     = ["Jason Charnes"]
   s.email       = ["jason@thecharnes.com"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of Pay."
-  s.description = "TODO: Description of Pay."
+  s.homepage    = "https://github.com/jasoncharnes/pay"
+  s.summary     = "A wrapper for handing subscriptions in Rails."
+  s.description = "A wrapper for handing subscriptions in Rails."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
