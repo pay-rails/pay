@@ -1,5 +1,11 @@
 module Pay
   module Billable
+    extend ActiveSupport::Concern
+
+    included do
+      has_many :subscriptions
+    end
+
     def subscribe
     end
 
