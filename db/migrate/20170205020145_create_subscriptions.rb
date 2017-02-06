@@ -2,6 +2,7 @@ class CreateSubscriptions < ActiveRecord::Migration
   def change
     create_table :subscriptions do |t|
       t.references :user
+      t.string :name, null: false
       t.string :processor, null: false
       t.string :processor_id, null: false
       t.string :processor_plan, null: false
