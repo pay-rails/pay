@@ -35,3 +35,12 @@ end
 
 
 task default: :test
+
+
+task :console do
+  require 'irb'
+  require 'irb/completion'
+  require 'pay'
+  ARGV.clear
+  IRB.start
+end
