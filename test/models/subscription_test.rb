@@ -5,6 +5,11 @@ class Pay::Subscription::Test < DbTest
     @subscription = Subscription.new
   end
 
+  test 'belongs to the owner' do
+    klass = Subscription.reflections["owner"].options[:class_name]
+    assert klass, "User"
+  end
+
   test 'active trial' do
     @subscription.trial_ends_at = 5.minutes.from_now
     assert @subscription.on_trial?

@@ -1,7 +1,5 @@
 class Subscription < ActiveRecord::Base
-  belongs_to :user
-
-  attribute :card_token, :string
+  belongs_to :owner, class_name: Pay.billable_class
 
   validates :name, :processor, :processor_id, :processor_plan, :quantity, presence: true
 
