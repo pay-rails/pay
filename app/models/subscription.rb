@@ -1,4 +1,4 @@
-class Subscription < ActiveRecord::Base
+class Subscription < ApplicationRecord
   belongs_to :owner, class_name: Pay.billable_class
 
   validates :name, :processor, :processor_id, :processor_plan, :quantity, presence: true
