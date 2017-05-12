@@ -3,21 +3,7 @@ class Subscription < ApplicationRecord
 
   validates :name, :processor, :processor_id, :processor_plan, :quantity, presence: true
 
-  def create_with_processor
-    customer = user.processor_customer
-    user.update_card(card_token) if card_token.present?
-    subscription = customer.subscriptions.create(plan: processor_plan)
-
-    update!(
-      name: name || "default",
-      processor: processor,
-      processor_id: subscription.id,
-      trial_ends_at: subscription.trial_end.present? ? Time.at(subscription.trial_end) : nil,
-      quantity: quantity || 1,
-      ends_at: nil
-    )
-    self
-  end
+  attribute :card_token, :string
 
   def on_trial?
     trial_ends_at? && Time.zone.now < trial_ends_at

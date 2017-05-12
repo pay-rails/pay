@@ -1,0 +1,26 @@
+ActiveRecord::Schema.define do
+  self.verbose = false
+
+  create_table :users, force: true do |t|
+    t.string :email
+    t.string :processor
+    t.string :processor_id
+    t.string :card_brand
+    t.string :card_last4
+    t.string :card_exp_month
+    t.string :card_exp_year
+    t.timestamps
+  end
+
+  create_table :subscriptions, force: true do |t|
+    t.integer :owner_id, null: false
+    t.string :name, null: false
+    t.string :processor, null: false
+    t.string :processor_id, null: false
+    t.string :processor_plan, null: false
+    t.integer :quantity, default: 1, null: false
+    t.datetime :trial_ends_at
+    t.datetime :ends_at
+    t.timestamps
+  end
+end
