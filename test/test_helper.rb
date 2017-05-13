@@ -22,8 +22,12 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActiveSupport::TestCase.fixtures :all
 end
 
-require 'stripe_mock'
+Braintree::Configuration.environment = :development
+Braintree::Configuration.merchant_id = "integration_merchant_id"
+Braintree::Configuration.public_key = "integration_public_key"
+Braintree::Configuration.private_key = "integration_private_key"
 
+require 'stripe_mock'
 class DbTest < ActiveSupport::TestCase
   setup do
     StripeMock.start
@@ -36,8 +40,4 @@ class DbTest < ActiveSupport::TestCase
   teardown do
     StripeMock.stop
   end
-end
-
-class User < ActiveRecord::Base
-  include Pay::Billable
 end

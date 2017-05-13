@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", ">= 4.2"
   s.add_dependency "stripe", "~> 1.0"
+  s.add_dependency "braintree", "~> 2.75"
 
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'stripe-ruby-mock', '~> 2.4'

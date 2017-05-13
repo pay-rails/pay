@@ -14,9 +14,6 @@ module Pay
       end
 
       def create_stripe_subscription(name="default")
-        return if subscribed?(name)
-
-        update_card(card_token) if card_token.present?
         stripe_sub   = stripe_customer.subscriptions.create(plan: plan)
 
         subscription = subscriptions.create(

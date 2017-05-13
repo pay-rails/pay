@@ -21,6 +21,9 @@ module Pay
     end
 
     def create_subscription(name="default", processor="stripe")
+      return if subscribed?(name)
+      update_card(card_token) if card_token.present?
+
       send("create_#{processor}_subscription", name)
     end
 
