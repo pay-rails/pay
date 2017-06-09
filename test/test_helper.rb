@@ -26,18 +26,3 @@ Braintree::Configuration.environment = :development
 Braintree::Configuration.merchant_id = "integration_merchant_id"
 Braintree::Configuration.public_key = "integration_public_key"
 Braintree::Configuration.private_key = "integration_private_key"
-
-require 'stripe_mock'
-class DbTest < ActiveSupport::TestCase
-  setup do
-    StripeMock.start
-
-    @billable = User.create email: "test@test.com"
-    @stripe_helper = StripeMock.create_test_helper
-    @stripe_helper.create_plan(id: 'test-monthly', amount: 1500)
-  end
-
-  teardown do
-    StripeMock.stop
-  end
-end

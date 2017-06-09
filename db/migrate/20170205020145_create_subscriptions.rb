@@ -1,7 +1,7 @@
-class CreateSubscriptions < ActiveRecord::Migration
+class CreateSubscriptions < ActiveRecord::Migration[4.2]
   def change
     create_table :subscriptions do |t|
-      t.references :user
+      t.references :owner
       t.string :name, null: false
       t.string :processor, null: false
       t.string :processor_id, null: false

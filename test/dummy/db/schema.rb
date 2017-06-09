@@ -10,19 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170205020145) do
+ActiveRecord::Schema.define(version: 20170503131610) do
 
   create_table "subscriptions", force: :cascade do |t|
-    t.integer  "user_id"
-    t.string   "name",                       null: false
-    t.string   "processor",                  null: false
-    t.string   "processor_id",               null: false
-    t.string   "processor_plan",             null: false
-    t.integer  "quantity",       default: 1, null: false
+    t.integer "owner_id"
+    t.string "name", null: false
+    t.string "processor", null: false
+    t.string "processor_id", null: false
+    t.string "processor_plan", null: false
+    t.integer "quantity", default: 1, null: false
     t.datetime "trial_ends_at"
     t.datetime "ends_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "processor"
+    t.string "processor_id"
+    t.string "card_token"
+    t.string "card_brand"
+    t.string "card_last4"
+    t.string "card_exp_month"
+    t.string "card_exp_year"
   end
 
 end
