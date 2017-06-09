@@ -3,23 +3,29 @@ module Pay
     extend ActiveSupport::Concern
 
     included do
-      has_many :subscriptions
+      has_many :subscriptions, foreign_key: :owner_id
 
-      attribute :plan, :string
       attribute :card_token, :string
     end
 
-    def processor_customer(token=nil)
-      if processor == "stripe"
-        if processor_id?
-          customer = Stripe::Customer.retrieve(processor_id)
-          update_card(token) if token.present?
-        else
-          customer = Stripe::Customer.create(email: email, source: token)
-          update(processor: "stripe", processor_id: customer.id)
-        end
-      else
-        customer = nil
+    def subscribe(name = 'default', plan = 'default')
+      return if subscribed?
+
+      create_processor_customer
+
+      subscription = subscriptions.new(
+        name: name,
+        processor: processor,
+        processor_plan: plan
+      )
+
+      subscription.create_with_processor
+    end
+
+    def processor_customer(token = nil)
+      if processor_id?
+        customer = Stripe::Customer.retrieve(processor_id)
+        update_card(token) if token.present?
       end
 
       customer
@@ -29,21 +35,16 @@ module Pay
       customer = processor_customer
       token = Stripe::Token.retrieve(token)
 
-      if token.card.id != customer.default_source
-        card = customer.sources.create(source: token.id)
-        customer.default_source = card.id
-        customer.save
+      return if token.card.id == processor_customer.default_source
 
-        update(
-          card_brand: card.brand,
-          card_last4: card.last4,
-          card_exp_month: card.exp_month,
-          card_exp_year: card.exp_year
-        )
-      end
+      card = customer.sources.create(source: token.id)
+      customer.default_source = card.id
+      customer.save
+
+      update_with_card(card)
     end
 
-    def subscribed?(name="default", plan=nil)
+    def subscribed?(name = 'default', plan = nil)
       subscription = subscription(name)
 
       return false if subscription.nil?
@@ -52,13 +53,34 @@ module Pay
       subscription.active? && subscription.plan == plan
     end
 
-    def subscription(name="default")
+    def subscription(name = 'default')
       subscriptions.where(name: name).last
     end
 
-    def create_subscription(name="default", processor="stripe")
-      return if subscribed?(name)
-      subscriptions.new(name: name, processor: processor, processor_plan: plan, card_token: card_token).create_with_processor
+    private
+
+    def update_with_card(card)
+      update(
+        card_brand: card.brand,
+        card_last4: card.last4,
+        card_exp_month: card.exp_month,
+        card_exp_year: card.exp_year
+      )
+    end
+
+    def create_processor_customer
+      customer = Stripe::Customer.create(email: email, source: card_token)
+      card = customer.sources.first
+      update!(
+        processor: 'stripe',
+        processor_id: customer.id,
+        card_token: card.id,
+        card_brand: card.brand,
+        card_last4: card.last4,
+        card_exp_month: card.exp_month,
+        card_exp_year: card.exp_year
+      )
+      customer
     end
   end
 end

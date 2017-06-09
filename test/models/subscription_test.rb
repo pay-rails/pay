@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class Pay::Subscription::Test < DbTest
+class Pay::Subscription::Test < ActiveSupport::TestCase
   setup do
     @subscription = Subscription.new
   end

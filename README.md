@@ -1,8 +1,7 @@
 # Pay
 Short description and motivation.
 
-## Usage
-How to use my plugin.
+Requires Rails 4.2+?
 
 ## Installation
 Add this line to your application's Gemfile:
@@ -20,6 +19,15 @@ Or install it yourself as:
 ```bash
 $ gem install pay
 ```
+
+## Usage
+`$ bin/rails pay:install:migrations`
+
+This will install migrations for:
+- Creating a Subscription Table
+- Adding fields to your users (or whatever class you want)
+
+Include the `Pay::Billable` module in the model you want to know about subscriptions.
 
 ## Contributing
 Contribution directions go here.
