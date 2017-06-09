@@ -1,5 +1,4 @@
-class Subscription < ActiveRecord::Base
-  include Pay
+class Subscription < ApplicationRecord
 
   # Associations
   belongs_to :owner, class_name: Pay.billable_class, foreign_key: :owner_id
@@ -10,20 +9,6 @@ class Subscription < ActiveRecord::Base
   validates :processor_id, presence: true
   validates :processor_plan, presence: true
   validates :quantity, presence: true
-
-  # Instance Methods
-  def create_with_processor
-    subscription = new_stripe_subscription
-
-    update!(
-      processor_id: subscription.id,
-      trial_ends_at: find_trial_ends_at(subscription),
-      quantity: quantity || 1,
-      ends_at: nil
-    )
-
-    self
-  end
 
   def on_trial?
     trial_ends_at? && Time.zone.now < trial_ends_at
