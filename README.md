@@ -33,9 +33,9 @@ This will install two migrations:
 - db/migrate/add_fields_to_users.rb
 
 #### Non-User Model
+If you need to use a model other than `User`, check out the [wiki page](https://github.com/jasoncharnes/pay/wiki/Model-Other-Than-User).
 
-If you need to use a model other than `User`, check out the [wiki page](https://github.com/jasoncharnes/pay/wiki/Model-Other-Than-User)
-
+#### Migrations
 Finally, run the migrations with `$ rake db:migrate`
 
 #### Stripe
@@ -47,7 +47,6 @@ development:
 ```
 
 ## Usage
-
 Include the `Pay::Billable` module in the model you want to know about subscriptions.
 
 ```ruby
