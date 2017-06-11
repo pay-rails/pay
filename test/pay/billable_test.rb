@@ -36,20 +36,31 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert @billable.subscription.processor_plan == 'test-monthly'
   end
 
+  test 'cannot update their card without a prcocessor' do
+    assert_raise StandardError do
+      card = @stripe_helper.generate_card_token(brand: 'Visa', last4: '4242')
+      @billable.update_card(card)
+    end
+  end
+
   test 'can update their card' do
     customer = Stripe::Customer.create(
       email: 'johnny@appleseed.com',
       card: @stripe_helper.generate_card_token
     )
 
-    @billable.stub :processor_customer, customer do
+    @billable.stub :customer, customer do
       card = @stripe_helper.generate_card_token(brand: 'Visa', last4: '4242')
+      @billable.processor = 'stripe'
       @billable.update_card(card)
 
       assert @billable.card_brand == 'Visa'
       assert @billable.card_last4 == '4242'
 
-      card = @stripe_helper.generate_card_token(brand: 'Discover', last4: '1117')
+      card = @stripe_helper.generate_card_token(
+        brand: 'Discover',
+        last4: '1117'
+      )
       @billable.update_card(card)
 
       assert @billable.card_brand == 'Discover'

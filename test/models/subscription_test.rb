@@ -6,8 +6,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test 'belongs to the owner' do
-    klass = Subscription.reflections["owner"].options[:class_name]
-    assert klass, "User"
+    klass = Subscription.reflections['owner'].options[:class_name]
+    assert klass, 'User'
   end
 
   test 'active trial' do

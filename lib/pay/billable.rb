@@ -16,27 +16,17 @@ module Pay
       attribute :card_token, :string
     end
 
-    def customer(token=nil)
+    def customer(token = nil)
       send("#{processor}_customer", token)
     end
 
     def subscribe(name = 'default', plan = 'default', processor = 'stripe')
-      return if subscribed?(name)
-      update_card(card_token) if card_token.present?
-      
-      send("create_#{processor}_subscription", name)
-    end
-
-    def processor_customer(token = nil)
-      if processor_id?
-        customer = Stripe::Customer.retrieve(processor_id)
-        update_card(token) if token.present?
-      end
-
-      customer
+      self.processor = processor
+      send("create_#{processor}_subscription", name, plan)
     end
 
     def update_card(token)
+      raise StandardError, 'No processor selected' unless processor
       send("update_#{processor}_card", token)
     end
 
@@ -51,6 +41,10 @@ module Pay
 
     def subscription(name = 'default')
       subscriptions.where(name: name).last
+    end
+
+    def processor_subscription(subscription_id)
+      send("#{processor}_subscription", subscription_id)
     end
   end
 end

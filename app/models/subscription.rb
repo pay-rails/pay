@@ -1,5 +1,4 @@
 class Subscription < ApplicationRecord
-
   # Associations
   belongs_to :owner, class_name: Pay.billable_class, foreign_key: :owner_id
 
@@ -52,16 +51,10 @@ class Subscription < ApplicationRecord
   end
 
   def processor_subscription
-    Stripe::Subscription.retrieve(processor_id)
+    owner.processor_subscription(processor_id)
   end
 
   def find_trial_ends_at(subscription)
     subscription.trial_end.present? ? Time.at(subscription.trial_end) : nil
-  end
-
-  private
-
-  def new_stripe_subscription
-    owner.processor_customer.subscriptions.create(plan: processor_plan)
   end
 end

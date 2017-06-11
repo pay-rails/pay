@@ -22,6 +22,8 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActiveSupport::TestCase.fixtures :all
 end
 
+require 'braintree'
+
 Braintree::Configuration.environment = :development
 Braintree::Configuration.merchant_id = "integration_merchant_id"
 Braintree::Configuration.public_key = "integration_public_key"
