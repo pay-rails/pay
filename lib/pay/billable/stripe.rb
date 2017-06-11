@@ -36,25 +36,7 @@ module Pay
         card = customer.sources.create(source: token.id)
         customer.default_source = card.id
         customer.save
-
-        update(
-          card_brand: card.brand,
-          card_last4: card.last4,
-          card_exp_month: card.exp_month,
-          card_exp_year: card.exp_year
-        )
-      end
-
-      def create_subscription(subscription, processor, name, plan)
-        subscriptions.create(
-          name: name || 'default',
-          processor: processor,
-          processor_id: subscription.id,
-          processor_plan: plan,
-          trial_ends_at: trial_end_date(subscription),
-          quantity: quantity || 1,
-          ends_at: nil
-        )
+        update_card_on_file(card)
       end
 
       def trial_end_date(stripe_sub)

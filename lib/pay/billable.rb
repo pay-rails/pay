@@ -54,5 +54,26 @@ module Pay
     def check_for_processor
       raise StandardError, 'No processor selected' unless processor
     end
+
+    def create_subscription(subscription, processor, name, plan, qty = 1)
+      subscriptions.create!(
+        name: name || 'default',
+        processor: processor,
+        processor_id: subscription.id,
+        processor_plan: plan,
+        trial_ends_at: trial_end_date(subscription),
+        quantity: qty,
+        ends_at: nil
+      )
+    end
+
+    def update_card_on_file(card)
+      update!(
+        card_brand: card.brand,
+        card_last4: card.last4,
+        card_exp_month: card.exp_month,
+        card_exp_year: card.exp_year
+      )
+    end
   end
 end
