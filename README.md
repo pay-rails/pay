@@ -34,14 +34,7 @@ This will install two migrations:
 
 #### Non-User Model
 
-If you're using a model other than `User`, you can tell the Pay to change the billable class by adding the following file to your initializers:
-
-```ruby
-# config/initializers/pay.rb
-Pay.setup do |config|
-  config.billable_class = 'Company'
-end
-```
+If you need to use a model other than `User`, check out the [wiki page](https://github.com/jasoncharnes/pay/wiki/Model-Other-Than-User)
 
 Finally, run the migrations with `$ rake db:migrate`
 

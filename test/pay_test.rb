@@ -12,8 +12,4 @@ class Pay::Test < ActiveSupport::TestCase
   test 'default billable table is users' do
     assert Pay.billable_table, 'users'
   end
-
-  test 'default billable key is user_id' do
-    assert Pay.billable_table, 'user_id'
-  end
 end
