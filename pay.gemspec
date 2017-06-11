@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.authors     = ['Jason Charnes']
   s.email       = ['jason@thecharnes.com']
   s.homepage    = 'https://github.com/jasoncharnes/pay'
-  s.summary     = 'A wrapper for handing subscriptions in Rails.'
-  s.description = 'A wrapper for handing subscriptions in Rails.'
+  s.summary     = 'A Ruby on Rails subscription engine.'
+  s.description = 'A Ruby on Rails subscription engine.'
   s.license     = 'MIT'
 
   s.files = Dir[
@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'braintree', '~> 2.75'
 
   s.add_development_dependency 'byebug'
+  s.add_development_dependency 'mocha'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'sqlite3'

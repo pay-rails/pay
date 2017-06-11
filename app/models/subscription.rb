@@ -9,6 +9,9 @@ class Subscription < ApplicationRecord
   validates :processor_plan, presence: true
   validates :quantity, presence: true
 
+  # Scopes
+  scope :for_name, ->(name) { where(name: name) }
+
   def on_trial?
     trial_ends_at? && Time.zone.now < trial_ends_at
   end
@@ -52,9 +55,5 @@ class Subscription < ApplicationRecord
 
   def processor_subscription
     owner.processor_subscription(processor_id)
-  end
-
-  def find_trial_ends_at(subscription)
-    subscription.trial_end.present? ? Time.at(subscription.trial_end) : nil
   end
 end

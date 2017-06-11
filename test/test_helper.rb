@@ -23,8 +23,10 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
 end
 
 require 'braintree'
-
 Braintree::Configuration.environment = :development
 Braintree::Configuration.merchant_id = "integration_merchant_id"
 Braintree::Configuration.public_key = "integration_public_key"
 Braintree::Configuration.private_key = "integration_private_key"
+
+require 'minitest/mock'
+require 'mocha/mini_test'

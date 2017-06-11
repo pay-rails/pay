@@ -27,7 +27,7 @@ module Pay
       end
 
       def stripe_subscription(subscription_id)
-        Stripe::Subscription.retrieve(subscription_id)
+        ::Stripe::Subscription.retrieve(subscription_id)
       end
 
       private

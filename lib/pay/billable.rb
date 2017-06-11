@@ -17,6 +17,7 @@ module Pay
     end
 
     def customer(token = nil)
+      check_for_processor
       send("#{processor}_customer", token)
     end
 
@@ -26,8 +27,13 @@ module Pay
     end
 
     def update_card(token)
-      raise StandardError, 'No processor selected' unless processor
+      check_for_processor
       send("update_#{processor}_card", token)
+    end
+
+    def processor_subscription(subscription_id)
+      check_for_processor
+      send("#{processor}_subscription", subscription_id)
     end
 
     def subscribed?(name = 'default', plan = nil)
@@ -40,11 +46,13 @@ module Pay
     end
 
     def subscription(name = 'default')
-      subscriptions.where(name: name).last
+      subscriptions.for_name(name).last
     end
 
-    def processor_subscription(subscription_id)
-      send("#{processor}_subscription", subscription_id)
+    private
+
+    def check_for_processor
+      raise StandardError, 'No processor selected' unless processor
     end
   end
 end

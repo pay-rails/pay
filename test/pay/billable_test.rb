@@ -1,18 +1,8 @@
 require 'test_helper'
-require 'stripe_mock'
-require 'minitest/mock'
 
 class Pay::Billable::Test < ActiveSupport::TestCase
   setup do
-    StripeMock.start
-
     @billable = User.new
-    @stripe_helper = StripeMock.create_test_helper
-    @stripe_helper.create_plan(id: 'test-monthly', amount: 1500)
-  end
-
-  teardown do
-    StripeMock.stop
   end
 
   test 'truth' do
@@ -23,48 +13,120 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert @billable.respond_to?(:subscriptions)
   end
 
-  test 'can create a subscription' do
-    @billable.card_token = @stripe_helper.generate_card_token(
-      brand: 'Visa',
-      last4: '9191',
-      exp_year: 1984
-    )
-    @billable.subscribe('default', 'test-monthly')
-
-    assert @billable.subscribed?
-    assert @billable.subscription.name == 'default'
-    assert @billable.subscription.processor_plan == 'test-monthly'
+  test 'customer with stripe processor' do
+    @billable.processor = 'stripe'
+    @billable.expects(:stripe_customer).returns(:user)
+    assert_equal :user, @billable.customer
   end
 
-  test 'cannot update their card without a prcocessor' do
-    assert_raise StandardError do
-      card = @stripe_helper.generate_card_token(brand: 'Visa', last4: '4242')
-      @billable.update_card(card)
+  test 'customer with undefined processor' do
+    @billable.processor = 'pants'
+
+    assert_raises NoMethodError do
+      @billable.customer
     end
   end
 
-  test 'can update their card' do
-    customer = Stripe::Customer.create(
-      email: 'johnny@appleseed.com',
-      card: @stripe_helper.generate_card_token
+  test 'customer without processor' do
+    assert_raises StandardError do
+      @billable.customer
+    end
+  end
+
+  test 'subscribing a stripe customer' do
+    @billable.expects(:create_stripe_subscription)
+             .with('default', 'default')
+             .returns(:user)
+
+    assert_equal :user, @billable.subscribe
+    assert @billable.processor = 'stripe'
+  end
+
+  test 'updating a stripe card' do
+    @billable.processor = 'stripe'
+    @billable.expects(:update_stripe_card).with('a1b2c3').returns(:card)
+
+    assert_equal :card, @billable.update_card('a1b2c3')
+  end
+
+  test 'updating a card without a processor' do
+    assert_raises StandardError do
+      @billable.update_card('whoops')
+    end
+  end
+
+  test 'checking for a subscription without one' do
+    @billable.stubs(:subscription).returns(nil)
+    refute @billable.subscribed?
+  end
+
+  test 'checking for a subscription with no plan and active subscription' do
+    subscription = mock('subscription')
+    subscription.stubs(:active?).returns(true)
+    @billable.stubs(:subscription).returns(subscription)
+
+    assert @billable.subscribed?
+  end
+
+  test 'checking for a subscription with no plan and inactive subscription' do
+    subscription = mock('subscription')
+    subscription.stubs(:active?).returns(false)
+    @billable.stubs(:subscription).returns(subscription)
+
+    refute @billable.subscribed?
+  end
+
+  test 'checking for a subscription that is inactive' do
+    subscription = mock('subscription')
+    subscription.stubs(:active?).returns(false)
+    @billable.stubs(:subscription).returns(subscription)
+
+    refute @billable.subscribed?('default', 'default')
+  end
+
+  test 'checking for a subscription that is active for another plan' do
+    subscription = mock('subscription')
+    subscription.stubs(:active?).returns(true)
+    subscription.stubs(:plan).returns('superior')
+    @billable.stubs(:subscription).returns(subscription)
+
+    refute @billable.subscribed?('default', 'default')
+  end
+
+  test 'checking for a subscription that is active for a provided plan' do
+    subscription = mock('subscription')
+    subscription.stubs(:active?).returns(true)
+    subscription.stubs(:plan).returns('default')
+    @billable.stubs(:subscription).returns(subscription)
+
+    assert @billable.subscribed?('default', 'default')
+  end
+
+  test 'getting a subscription by default name' do
+    subscription = Subscription.create!(
+      name: 'default',
+      owner: @billable,
+      processor: 'stripe',
+      processor_id: '1',
+      processor_plan: 'default',
+      quantity: '1'
     )
 
-    @billable.stub :customer, customer do
-      card = @stripe_helper.generate_card_token(brand: 'Visa', last4: '4242')
-      @billable.processor = 'stripe'
-      @billable.update_card(card)
+    assert_equal subscription, @billable.subscription
+  end
 
-      assert @billable.card_brand == 'Visa'
-      assert @billable.card_last4 == '4242'
+  test 'getting a stripe subscription' do
+    @billable.processor = 'stripe'
+    @billable.expects(:stripe_subscription)
+             .with('123')
+             .returns(:subscription)
 
-      card = @stripe_helper.generate_card_token(
-        brand: 'Discover',
-        last4: '1117'
-      )
-      @billable.update_card(card)
+    assert_equal :subscription, @billable.processor_subscription('123')
+  end
 
-      assert @billable.card_brand == 'Discover'
-      assert @billable.card_last4 == '1117'
+  test 'getting a processor subscription without a processor' do
+    assert_raises StandardError do
+      @billable.processor_subscription('123')
     end
   end
 end
