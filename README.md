@@ -35,7 +35,7 @@ This will install two migrations:
 #### Non-User Model
 If you need to use a model other than `User`, check out the [wiki page](https://github.com/jasoncharnes/pay/wiki/Model-Other-Than-User).
 
-#### Migrations
+#### Run the Migrations
 Finally, run the migrations with `$ rake db:migrate`
 
 #### Stripe
