@@ -21,14 +21,14 @@ Gem::Specification.new do |s|
     'README.md'
   ]
 
-  s.add_dependency 'rails', '>= 4.2'
+  s.add_dependency 'rails', '~> 4.2'
   s.add_dependency 'stripe', '~> 1.0'
   s.add_dependency 'braintree', '~> 2.75'
 
-  s.add_development_dependency 'byebug'
-  s.add_development_dependency 'mocha'
-  s.add_development_dependency 'pry'
-  s.add_development_dependency 'rubocop'
-  s.add_development_dependency 'sqlite3'
+  s.add_development_dependency 'byebug', '~> 0'
+  s.add_development_dependency 'mocha', '~> 0'
+  s.add_development_dependency 'pry', '~> 0'
+  s.add_development_dependency 'rubocop', '~> 0'
+  s.add_development_dependency 'sqlite3', '~> 0'
   s.add_development_dependency 'stripe-ruby-mock', '~> 2.4'
 end
