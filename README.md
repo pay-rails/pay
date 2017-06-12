@@ -1,7 +1,15 @@
 # Pay
-Pay is a Stripe subscription engine for Ruby on Rails.
+Pay is a subscription engine for Ruby on Rails.
 
 Supports Ruby on Rails 4.2 and higher.
+
+**Current Payment Providers**
+* Stripe
+
+**Payment Providers In-Progress**
+* Braintree
+
+Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
 
 ## Installation
 Add this line to your application's Gemfile:
@@ -56,10 +64,155 @@ class User < ActiveRecord::Base
 end
 ```
 
-## API
+**To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
+
+## User API
+#### Creating a Subscription
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.com')
+user.card_token = 'stripe-token'
+user.subscribe
+```
+
+A `card_token` must be provided as an attribute.
+
+The subscribe method has three optional arguments with default values.
+
+```ruby
+def subscribe(name = 'default', plan = 'default', processor = 'stripe')
+  ...
+end
+```
+
+##### Name
+Name is an internally used name for the subscription.
+
+##### Plan
+Plan is the plan ID from the payment processor.
+
+#### Retrieving a Subscription from the Database
+```ruby
+user = User.find_by(email: 'gob@bluthcompany.com')
+user.subscription
+```
+
+#### Checking a User's Subscription Status
+
+```ruby
+user = User.find_by(email: 'gob@bluthcompany.com')
+user.subscribed?
+```
+
+The `subscribed?` method has two optional arguments with default values.
+
+```ruby
+def subscribed?(name = 'default', plan = nil)
+  ...
+end
+```
+
+##### Name
+Name is an internally used name for the subscription.
+
+##### Plan
+Plan is the plan ID from the payment processor.
+
+##### Processor
+Processor is the string value of the payment processor subscription. Pay currently only supports Stripe, but other implementations are welcome.
+
+#### Retrieving a Payment Processor Account
+
+```ruby
+user = User.find_by(email: 'gob@bluthcompany.com')
+user.customer
+```
+
+#### Updating a Customer's Credit Card
+
+```ruby
+user = User.find_by(email: 'gob@bluthcompany.com')
+user.update_card('stripe-token')
+```
+
+#### Retrieving a Customer's Subscription from the Processor
+
+```ruby
+user = User.find_by(email: 'gob@bluthcompany.com')
+user.processor_subscription(subscription_id)
+```
+
+## Subscription API
+#### Checking a Subscription's Trial Status
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.com')
+user.subscription.on_trial?
+```
+
+#### Checking a Subscription's Cancellation Status
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.com')
+user.subscription.cancelled?
+```
+
+#### Checking a Subscription's Grace Period Status
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.com')
+user.subscription.on_grace_period?
+```
+
+#### Checking to See If a Subscription Is Active
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.com')
+user.subscription.active?
+```
+
+#### Cancel a Subscription (At End of Billing Cycle)
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.com')
+user.subscription.cancel
+```
+
+#### Cancel a Subscription Immediately
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.com')
+user.subscription.cancel_now!
+```
+
+#### Resume a Subscription on a Grace Period
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.com')
+user.subscription.resume
+```
+
+#### Retrieving the Subscription from the Processor
+
+```ruby
+user = User.find_by(email: 'gob@bluthcompany.com')
+user.subscription.processor_subscription
+```
+
+## Contributors
+* [Jason Charnes](https://twitter.com/jmcharnes)
+* [Chris Oliver](https://twitter.com/excid3)
 
 ## Contributing
-Contribution directions go here.
+👋 Thanks for your interest in contributing. Feel free to fork this repo.
+
+If you have an issue you'd like to submit, please do so using the issue tracker in GitHub. In order for us to help you in the best way possible, please be as detailed as you can.
+
+If you'd like to open a PR please make sure the following things pass:
+* `rake test`
+* `rubocop`
+
+These will need to be passing in order for a Pull Request to be accepted.
 
 ## License
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
