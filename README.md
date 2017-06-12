@@ -1,4 +1,6 @@
 # Pay
+[ ![Codeship Status for jasoncharnes/pay](https://img.shields.io/codeship/72941cf0-31a8-0135-af58-3a3212f0f89d/master.svg)](https://app.codeship.com/projects/225793)
+
 Pay is a subscription engine for Ruby on Rails.
 
 Supports Ruby on Rails 4.2 and higher.
