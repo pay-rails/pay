@@ -70,7 +70,7 @@ end
 #### Creating a Subscription
 
 ```ruby
-user = User.find_by(email: 'michael@bluthcompany.com')
+user = User.find_by(email: 'michael@bluthcompany.co')
 user.card_token = 'stripe-token'
 user.subscribe
 ```
@@ -93,14 +93,14 @@ Plan is the plan ID from the payment processor.
 
 #### Retrieving a Subscription from the Database
 ```ruby
-user = User.find_by(email: 'gob@bluthcompany.com')
+user = User.find_by(email: 'gob@bluthcompany.co')
 user.subscription
 ```
 
 #### Checking a User's Subscription Status
 
 ```ruby
-user = User.find_by(email: 'gob@bluthcompany.com')
+user = User.find_by(email: 'george.senior@bluthcompany.co')
 user.subscribed?
 ```
 
@@ -124,21 +124,21 @@ Processor is the string value of the payment processor subscription. Pay current
 #### Retrieving a Payment Processor Account
 
 ```ruby
-user = User.find_by(email: 'gob@bluthcompany.com')
+user = User.find_by(email: 'george.michael@bluthcompany.co')
 user.customer
 ```
 
 #### Updating a Customer's Credit Card
 
 ```ruby
-user = User.find_by(email: 'gob@bluthcompany.com')
+user = User.find_by(email: 'tobias@bluthcompany.co')
 user.update_card('stripe-token')
 ```
 
 #### Retrieving a Customer's Subscription from the Processor
 
 ```ruby
-user = User.find_by(email: 'gob@bluthcompany.com')
+user = User.find_by(email: 'lucille@bluthcompany.co')
 user.processor_subscription(subscription_id)
 ```
 
@@ -146,56 +146,56 @@ user.processor_subscription(subscription_id)
 #### Checking a Subscription's Trial Status
 
 ```ruby
-user = User.find_by(email: 'michael@bluthcompany.com')
+user = User.find_by(email: 'lindsay@bluthcompany.co')
 user.subscription.on_trial?
 ```
 
 #### Checking a Subscription's Cancellation Status
 
 ```ruby
-user = User.find_by(email: 'michael@bluthcompany.com')
+user = User.find_by(email: 'buster@bluthcompany.co')
 user.subscription.cancelled?
 ```
 
 #### Checking a Subscription's Grace Period Status
 
 ```ruby
-user = User.find_by(email: 'michael@bluthcompany.com')
+user = User.find_by(email: 'her?@bluthcompany.co')
 user.subscription.on_grace_period?
 ```
 
 #### Checking to See If a Subscription Is Active
 
 ```ruby
-user = User.find_by(email: 'michael@bluthcompany.com')
+user = User.find_by(email: 'carl.weathers@bluthcompany.co')
 user.subscription.active?
 ```
 
 #### Cancel a Subscription (At End of Billing Cycle)
 
 ```ruby
-user = User.find_by(email: 'michael@bluthcompany.com')
+user = User.find_by(email: 'oscar@bluthcompany.co')
 user.subscription.cancel
 ```
 
 #### Cancel a Subscription Immediately
 
 ```ruby
-user = User.find_by(email: 'michael@bluthcompany.com')
+user = User.find_by(email: 'annyong@bluthcompany.co')
 user.subscription.cancel_now!
 ```
 
 #### Resume a Subscription on a Grace Period
 
 ```ruby
-user = User.find_by(email: 'michael@bluthcompany.com')
+user = User.find_by(email: 'steve.holt@bluthcompany.co')
 user.subscription.resume
 ```
 
 #### Retrieving the Subscription from the Processor
 
 ```ruby
-user = User.find_by(email: 'gob@bluthcompany.com')
+user = User.find_by(email: 'lucille2@bluthcompany.co')
 user.subscription.processor_subscription
 ```
 
