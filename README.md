@@ -6,7 +6,7 @@ Supports Ruby on Rails 4.2 and higher.
 **Current Payment Providers**
 * Stripe
 
-**Payment Providers In-Progress**
+**Payment Providers In Development**
 * Braintree
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
