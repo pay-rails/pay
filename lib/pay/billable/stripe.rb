@@ -30,6 +30,15 @@ module Pay
         ::Stripe::Subscription.retrieve(subscription_id)
       end
 
+      def stripe_invoice!
+        return unless processor_id?
+        ::Stripe::Invoice.create(customer: processor_id).pay
+      end
+
+      def stripe_upcoming_invoice
+        ::Stripe::Invoice.upcoming(customer: processor_id)
+      end
+
       private
 
       def save_stripe_card(token, customer)

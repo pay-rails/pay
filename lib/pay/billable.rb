@@ -16,9 +16,9 @@ module Pay
       attribute :card_token, :string
     end
 
-    def customer(token = nil)
+    def customer
       check_for_processor
-      send("#{processor}_customer", token)
+      send("#{processor}_customer")
     end
 
     def subscribe(name = 'default', plan = 'default', processor = 'stripe')
@@ -47,6 +47,14 @@ module Pay
 
     def subscription(name = 'default')
       subscriptions.for_name(name).last
+    end
+
+    def invoice!
+      send("#{processor}_invoice!")
+    end
+
+    def upcoming_invoice
+      send("#{processor}_upcoming_invoice")
     end
 
     private

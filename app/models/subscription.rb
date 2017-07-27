@@ -12,6 +12,8 @@ class Subscription < ApplicationRecord
   # Scopes
   scope :for_name, ->(name) { where(name: name) }
 
+  attribute :prorate, :boolean, default: true
+
   def on_trial?
     trial_ends_at? && Time.zone.now < trial_ends_at
   end
@@ -51,6 +53,24 @@ class Subscription < ApplicationRecord
 
     update(ends_at: nil)
     self
+  end
+
+  def no_prorate
+    self.prorate = false
+  end
+
+  def skip_trial
+    self.trial_ends_at = nil
+  end
+
+  def swap(plan)
+    subscription = processor_subscription
+    subscription.plan = plan
+    subscription.prorate = prorate
+    subscription.trial_end = on_trial? ? trial_ends_at : 'now'
+    subscription.quantity = quantity if quantity?
+    subscription.save
+    update(processor_plan: plan, ends_at: nil)
   end
 
   def processor_subscription

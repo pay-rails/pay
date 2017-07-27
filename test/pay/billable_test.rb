@@ -129,4 +129,16 @@ class Pay::Billable::Test < ActiveSupport::TestCase
       @billable.processor_subscription('123')
     end
   end
+
+  test 'pay invoice' do
+    @billable.processor = 'stripe'
+    @billable.expects(:stripe_invoice!).returns(:invoice)
+    assert_equal :invoice, @billable.invoice!
+  end
+
+  test 'get upcoming invoice' do
+    @billable.processor = 'stripe'
+    @billable.expects(:stripe_upcoming_invoice).returns(:invoice)
+    assert_equal :invoice, @billable.upcoming_invoice
+  end
 end
