@@ -187,6 +187,13 @@ user = User.find_by(email: 'annyong@bluthcompany.co')
 user.subscription.cancel_now!
 ```
 
+#### Swap a Subscription to another Plan
+
+```ruby
+user = User.find_by(email: 'steve.holt@bluthcompany.co')
+user.subscription.swap("yearly")
+```
+
 #### Resume a Subscription on a Grace Period
 
 ```ruby

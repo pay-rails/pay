@@ -150,6 +150,21 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
 
     @subscription.stubs(:owner).returns(user)
 
-    assert :result, @subscription.processor_subscription
+    assert_equal :result, @subscription.processor_subscription
+  end
+
+  test 'can swap plans' do
+    stripe_sub = mock('stripe_subscription')
+    stripe_sub.expects(:plan=).returns("yearly")
+    stripe_sub.expects(:prorate=)
+    stripe_sub.expects(:trial_end=)
+    stripe_sub.expects(:quantity=)
+    stripe_sub.expects(:save)
+    stripe_sub.expects(:plan).returns("yearly")
+
+    @subscription.stubs(:processor_subscription).returns(stripe_sub)
+    @subscription.swap("yearly")
+
+    assert_equal "yearly", @subscription.processor_subscription.plan
   end
 end

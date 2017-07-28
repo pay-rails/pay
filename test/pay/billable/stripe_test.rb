@@ -96,4 +96,23 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
 
     assert_equal @billable.stripe_subscription(subscription.id), subscription
   end
+
+  test 'can create an invoice' do
+    customer = Stripe::Customer.create(
+      email: 'johnny@appleseed.com',
+      card: @stripe_helper.generate_card_token
+    )
+    @billable.stubs(:customer).returns(customer)
+    @billable.processor = 'stripe'
+    @billable.processor_id = customer.id
+
+    Stripe::InvoiceItem.create(
+      customer: customer.id,
+      amount: 1000,
+      currency: 'usd',
+      description: 'One-time setup fee'
+    )
+
+    assert_equal 1000, @billable.invoice!.total
+  end
 end
