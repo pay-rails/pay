@@ -6,6 +6,11 @@ module Pay
           customer = ::Stripe::Customer.retrieve(processor_id)
         else
           customer = ::Stripe::Customer.create(email: email, source: card_token)
+
+          # Update the user's card on file
+          card = customer.sources.retrieve(customer.sources.data.first.id)
+          update_card_on_file(card)
+
           update(processor: 'stripe', processor_id: customer.id)
         end
 
