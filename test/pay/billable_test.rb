@@ -141,4 +141,8 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     @billable.expects(:stripe_upcoming_invoice).returns(:invoice)
     assert_equal :invoice, @billable.upcoming_invoice
   end
+
+  test 'has charges' do
+    assert @billable.respond_to?(:charges)
+  end
 end

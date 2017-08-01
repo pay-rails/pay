@@ -1,6 +1,8 @@
 require 'stripe'
 require 'pay/engine'
 require 'pay/billable'
+require 'pay/stripe/charge_succeeded'
+require 'pay/stripe/charge_refunded'
 
 module Pay
   # Define who owns the subscription
