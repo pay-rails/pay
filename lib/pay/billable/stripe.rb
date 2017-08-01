@@ -3,18 +3,10 @@ module Pay
     module Stripe
       def stripe_customer
         if processor_id?
-          customer = ::Stripe::Customer.retrieve(processor_id)
+          ::Stripe::Customer.retrieve(processor_id)
         else
-          customer = ::Stripe::Customer.create(email: email, source: card_token)
-          update(processor: 'stripe', processor_id: customer.id)
-
-          # Update the user's card on file if a token was passed in
-          if source = customer.sources.data.first
-            update_card_on_file customer.sources.retrieve(source.id)
-          end
+          create_stripe_customer
         end
-
-        customer
       end
 
       def create_stripe_subscription(name, plan)
@@ -45,6 +37,19 @@ module Pay
       end
 
       private
+
+      def create_stripe_customer
+        customer = ::Stripe::Customer.create(email: email, source: card_token)
+        update(processor: 'stripe', processor_id: customer.id)
+
+        # Update the user's card on file if a token was passed in
+        source = customer.sources.data.first
+        if source.present?
+          update_card_on_file customer.sources.retrieve(source.id)
+        end
+
+        customer
+      end
 
       def save_stripe_card(token, customer)
         card = customer.sources.create(source: token.id)

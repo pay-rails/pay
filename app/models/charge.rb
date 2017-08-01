@@ -12,7 +12,7 @@ class Charge < ApplicationRecord
     send("#{processor}_charge")
   end
 
-  def refund!(amount=nil)
+  def refund!(amount = nil)
     send("#{processor}_refund!", amount)
   end
 
