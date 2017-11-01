@@ -3,7 +3,9 @@ module Pay
     module Stripe
       def stripe_customer
         if processor_id?
-          customer = ::Stripe::Customer.retrieve(processor_id)
+         customer = ::Stripe::Customer.retrieve(processor_id)
+         customer.source = card_token 
+         customer.save
         else
           customer = ::Stripe::Customer.create(email: email, source: card_token)
           update(processor: 'stripe', processor_id: customer.id)
@@ -13,6 +15,7 @@ module Pay
       end
 
       def create_stripe_subscription(name, plan)
+
         stripe_sub = stripe_customer.subscriptions.create(plan: plan)
         subscription = create_subscription(stripe_sub, 'stripe', name, plan)
         subscription
