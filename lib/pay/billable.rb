@@ -9,6 +9,7 @@ module Pay
       include Pay::Billable::Stripe
       include Pay::Billable::Braintree
 
+      has_many :charges, foreign_key: :owner_id
       has_many :subscriptions, foreign_key: :owner_id
 
       attribute :plan, :string
