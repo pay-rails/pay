@@ -19,7 +19,9 @@ module Pay
 
     def customer
       check_for_processor
-      send("#{processor}_customer")
+      customer = send("#{processor}_customer")
+      update_card(card_token) if card_token.present?
+      customer
     end
 
     def subscribe(name = 'default', plan = 'default', processor = 'stripe')

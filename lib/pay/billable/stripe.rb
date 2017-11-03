@@ -20,7 +20,9 @@ module Pay
         token = ::Stripe::Token.retrieve(token)
 
         return if token.card.id == customer.default_source
-        save_stripe_card(token, customer)
+        result = save_stripe_card(token, customer)
+        self.card_token = nil
+        result
       end
 
       def stripe_subscription(subscription_id)
