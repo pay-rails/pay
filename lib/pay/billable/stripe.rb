@@ -4,8 +4,10 @@ module Pay
       def stripe_customer
         if processor_id?
          customer = ::Stripe::Customer.retrieve(processor_id)
-         customer.source = card_token 
-         customer.save
+         if card_token.present?
+           customer.source = card_token 
+           customer.save
+         end
         else
           customer = ::Stripe::Customer.create(email: email, source: card_token)
           update(processor: 'stripe', processor_id: customer.id)
