@@ -140,4 +140,14 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
     assert_equal @billable.card_brand, 'Discover'
     assert_equal @billable.card_last4, '1117'
   end
+
+  test 'creating a stripe customer with no card' do
+    @billable.processor = 'stripe'
+    @billable.email = 'gob.bluth@example.com'
+    @billable.customer
+
+    assert_nil @billable.card_last4
+    assert_equal @billable.processor, 'stripe'
+    assert_not_nil @billable.processor_id
+  end
 end
