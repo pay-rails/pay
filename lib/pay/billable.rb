@@ -9,6 +9,7 @@ module Pay
       include Pay::Billable::Stripe
       include Pay::Billable::Braintree
 
+      has_many :charges, foreign_key: :owner_id
       has_many :subscriptions, foreign_key: :owner_id
 
       attribute :plan, :string
@@ -18,7 +19,9 @@ module Pay
 
     def customer
       check_for_processor
-      send("#{processor}_customer")
+      customer = send("#{processor}_customer")
+      update_card(card_token) if card_token.present?
+      customer
     end
 
     def subscribe(name = 'default', plan = 'default', processor = 'stripe')

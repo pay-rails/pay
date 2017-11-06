@@ -42,6 +42,9 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
 
     assert_equal @billable.processor, 'stripe'
     assert_not_nil @billable.processor_id
+
+    assert @billable.card_brand == 'Visa'
+    assert @billable.card_last4 == '9191'
   end
 
   test 'can create a subscription' do
@@ -114,5 +117,37 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
     )
 
     assert_equal 1000, @billable.invoice!.total
+  end
+
+  test 'card gets updated automatically when retrieving customer' do
+    customer = Stripe::Customer.create(
+      email: 'johnny@appleseed.com',
+      card: @stripe_helper.generate_card_token
+    )
+
+    @billable.processor = 'stripe'
+    @billable.processor_id = customer.id
+
+    assert_equal @billable.customer, customer
+
+    @billable.card_token = @stripe_helper.generate_card_token(
+      brand: 'Discover',
+      last4: '1117'
+    )
+
+    # This should trigger update_card
+    assert_equal @billable.customer, customer
+    assert_equal @billable.card_brand, 'Discover'
+    assert_equal @billable.card_last4, '1117'
+  end
+
+  test 'creating a stripe customer with no card' do
+    @billable.processor = 'stripe'
+    @billable.email = 'gob.bluth@example.com'
+    @billable.customer
+
+    assert_nil @billable.card_last4
+    assert_equal @billable.processor, 'stripe'
+    assert_not_nil @billable.processor_id
   end
 end
