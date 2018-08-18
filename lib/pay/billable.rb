@@ -39,13 +39,13 @@ module Pay
       send("#{processor}_subscription", subscription_id)
     end
 
-    def subscribed?(name = 'default', plan = nil)
+    def subscribed?(name: 'default', processor_plan: nil)
       subscription = subscription(name)
 
       return false if subscription.nil?
-      return subscription.active? if plan.nil?
+      return subscription.active? if processor_plan.nil?
 
-      subscription.active? && subscription.plan == plan
+      subscription.active? && subscription.processor_plan == processor_plan
     end
 
     def subscription(name = 'default')

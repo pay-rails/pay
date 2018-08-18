@@ -1,6 +1,6 @@
 require 'stripe_event'
 
-Stripe.api_key = Rails.application.secrets.stripe_api_key
+Stripe.api_key = Rails.application.secrets.stripe_api_key || Rails.application.credentials.dig(:development, :stripe, :private_key)
 
 StripeEvent.configure do |events|
   # Listen to the charge event to make sure we get non-subscription

@@ -49,6 +49,7 @@ class Subscription < ApplicationRecord
     subscription = processor_subscription
     subscription.plan = processor_plan
     subscription.trial_end = on_trial? ? trial_ends_at.to_i : 'now'
+    subscription.cancel_at_period_end = false
     subscription.save
 
     update(ends_at: nil)

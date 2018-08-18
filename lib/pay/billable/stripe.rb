@@ -10,7 +10,7 @@ module Pay
       end
 
       def create_stripe_subscription(name, plan)
-        stripe_sub = stripe_customer.subscriptions.create(plan: plan)
+        stripe_sub   = customer.subscriptions.create(plan: plan)
         subscription = create_subscription(stripe_sub, 'stripe', name, plan)
         subscription
       end
