@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'stripe', '~> 3.22'
   s.add_dependency 'stripe_event', '~> 2.1'
 
+  s.add_development_dependency 'bundler', '< 2'
   s.add_development_dependency 'byebug'
   s.add_development_dependency 'mocha'
   s.add_development_dependency 'pry'
