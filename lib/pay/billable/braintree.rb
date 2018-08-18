@@ -49,9 +49,6 @@ module Pay
       end
 
       def braintree_trial_end_date(subscription)
-        p "OHAI"
-        p subscription
-        p processor
         return unless subscription.trial_period
         Time.zone.parse(subscription.first_billing_date)
       end
