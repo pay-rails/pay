@@ -81,25 +81,25 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     subscription.stubs(:active?).returns(false)
     @billable.stubs(:subscription).returns(subscription)
 
-    refute @billable.subscribed?('default', 'default')
+    refute @billable.subscribed?(name: 'default', processor_plan: 'default')
   end
 
   test 'checking for a subscription that is active for another plan' do
     subscription = mock('subscription')
     subscription.stubs(:active?).returns(true)
-    subscription.stubs(:plan).returns('superior')
+    subscription.stubs(:processor_plan).returns('superior')
     @billable.stubs(:subscription).returns(subscription)
 
-    refute @billable.subscribed?('default', 'default')
+    refute @billable.subscribed?(name: 'default', processor_plan: 'default')
   end
 
   test 'checking for a subscription that is active for a provided plan' do
     subscription = mock('subscription')
     subscription.stubs(:active?).returns(true)
-    subscription.stubs(:plan).returns('default')
+    subscription.stubs(:processor_plan).returns('default')
     @billable.stubs(:subscription).returns(subscription)
 
-    assert @billable.subscribed?('default', 'default')
+    assert @billable.subscribed?(name: 'default', processor_plan: 'default')
   end
 
   test 'getting a subscription by default name' do
