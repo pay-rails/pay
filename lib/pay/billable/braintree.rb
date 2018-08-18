@@ -9,7 +9,7 @@ module Pay
         if processor_id?
           gateway.customer.find(processor_id)
         else
-          result = gateway.customer.create(email: email, payment_token_nonce: card_token)
+          result = gateway.customer.create(email: email, payment_method_nonce: card_token)
           raise StandardError, result.inspect unless result.success?
 
           update(processor: 'braintree', processor_id: result.customer.id)
@@ -50,6 +50,11 @@ module Pay
         update_subscriptions_to_payment_method(result.payment_method.token)
       end
 
+      def trial_end_date(subscription)
+        return unless subscription.trial_period
+        Time.zone.parse(subscription.first_billing_date)
+      end
+
       def update_subscriptions_to_payment_method(token)
         subscriptions.each do |subscription|
           if subscription.active?
@@ -73,14 +78,8 @@ module Pay
       private
 
       def update_braintree_card_on_file(payment_method)
-        puts
-        puts
-        p payment_method.class
-        puts
-        puts
-
         case payment_method
-        when Braintree::CreditCard
+        when ::Braintree::CreditCard
           update!(
             card_brand: payment_method.card_type,
             card_last4: payment_method.last_4,
@@ -88,7 +87,7 @@ module Pay
             card_exp_year: payment_method.expiration_year
           )
 
-        when Braintree::PayPalAccount
+        when ::Braintree::PayPalAccount
           update!(
             card_brand: "PayPal",
             card_last4: payment_method.email
