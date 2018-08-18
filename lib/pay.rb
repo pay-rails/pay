@@ -4,6 +4,8 @@ require 'pay/engine'
 require 'pay/billable'
 require_relative 'pay/stripe/charge_succeeded'
 require_relative 'pay/stripe/charge_refunded'
+require_relative 'pay/subscription/stripe'
+require_relative 'pay/subscription/braintree'
 
 module Pay
   # Define who owns the subscription

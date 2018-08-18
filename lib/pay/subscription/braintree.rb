@@ -5,19 +5,18 @@ module Pay
         subscription = processor_subscription
 
         if on_trial?
-          gateway.subscription.cancel(subscription.id)
-
+          braintree_cancel_now!
         else
           gateway.subscription.update(subscription.id, {
             number_of_billing_cycles: subscription.current_billing_cycle
           })
-
           update(ends_at: subscription.billing_period_end_date)
         end
       end
 
       def braintree_cancel_now!
         gateway.subscription.cancel(processor_subscription.id)
+        update(ends_at: Time.zone.now, trial_ends_at: nil)
       end
 
       def braintree_resume
@@ -86,7 +85,7 @@ module Pay
 
         def discount_for_switching_to_monthly(current_plan, plan)
           cycles = (money_remaining_on_yearly_plan(current_plan) / plan.price).floor
-          Struct.new(
+          OpenStruct.new(
             amount: plan.price,
             number_of_billing_cycles: cycles
           )
@@ -106,7 +105,7 @@ module Pay
             end
           end
 
-          Struct.new(
+          OpenStruct.new(
             amount: amount,
             number_of_billing_cycles: 1
           )
@@ -139,7 +138,7 @@ module Pay
 
           cancel_now!
 
-          owner.subscribe(name, plan.id, options)
+          owner.subscribe(name, plan.id, processor, options)
         end
     end
   end

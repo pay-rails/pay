@@ -1,6 +1,3 @@
-require 'pay/subscription/stripe'
-require 'pay/subscription/braintree'
-
 class Subscription < ApplicationRecord
   include Pay::Subscription::Stripe
   include Pay::Subscription::Braintree
