@@ -50,6 +50,11 @@ module Pay
         update_subscriptions_to_payment_method(result.payment_method.token)
       end
 
+      def trial_end_date(subscription)
+        return unless subscription.trial_period
+        Time.zone.parse(subscription.first_billing_date)
+      end
+
       def update_subscriptions_to_payment_method(token)
         subscriptions.each do |subscription|
           if subscription.active?
@@ -73,12 +78,6 @@ module Pay
       private
 
       def update_braintree_card_on_file(payment_method)
-        puts
-        puts
-        p payment_method.class
-        puts
-        puts
-
         case payment_method
         when ::Braintree::CreditCard
           update!(
