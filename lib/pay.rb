@@ -14,4 +14,13 @@ module Pay
   def self.setup
     yield self
   end
+
+  def braintree_gateway(merchant_id:, public_key:, private_key:)
+    @braintree_gateway ||= Braintree::Gateway.new(
+      environment: :sandbox,
+      merchant_id: merchant_id,
+      public_key:  public_key,
+      private_key: private_key
+    )
+  end
 end

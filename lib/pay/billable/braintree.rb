@@ -1,27 +1,31 @@
 module Pay
   module Billable
     module Braintree
-       def braintree_customer
-         if processor_id?
-           ::Braintree::Customer.find(processor_id)
-         else
-           result = ::Braintree::Customer.create(email: email, payment_token_nonce: card_token)
-           raise StandardError, result.inspect unless result.success?
+      def gateway
+        Pay.braintree_gateway
+      end
 
-           update(processor: 'braintree', processor_id: result.customer.id)
+      def braintree_customer
+        if processor_id?
+          gateway.customer.find(processor_id)
+        else
+          result = gateway.customer.create(email: email, payment_token_nonce: card_token)
+          raise StandardError, result.inspect unless result.success?
 
-           if card_token.present?
-             update_braintree_card_on_file result.customer.payment_methods[0]
-           end
+          update(processor: 'braintree', processor_id: result.customer.id)
 
-           result.customer
-         end
-       end
+          if card_token.present?
+            update_braintree_card_on_file result.customer.payment_methods[0]
+          end
+
+          result.customer
+        end
+      end
 
       def create_braintree_subscription(name, plan)
-        token = braintree_customer.payment_methods.find(&:default?).token
+        token = customer.payment_methods.find(&:default?).token
 
-        result = ::Braintree::Subscription.create(
+        result = gateway.subscription.create(
           payment_method_token: token,
           plan_id: plan
         )
@@ -31,7 +35,7 @@ module Pay
       end
 
       def update_braintree_card(token)
-        result = ::Braintree::PaymentMethod.create(
+        result = gateway.payment_method.create(
           customer_id: processor_id,
           payment_method_nonce: token,
           options: {
@@ -49,13 +53,13 @@ module Pay
       def update_subscriptions_to_payment_method(token)
         subscriptions.each do |subscription|
           if subscription.active?
-            ::Braintree::Subscription.update(subscription.processor_id, { payment_method_token: token })
+            gateway.subscription.update(subscription.processor_id, { payment_method_token: token })
           end
         end
       end
 
       def braintree_subscription(subscription_id)
-        ::Braintree::Subscription.find(subscription_id)
+        gateway.subscription.find(subscription_id)
       end
 
       def braintree_invoice!
@@ -75,8 +79,21 @@ module Pay
         puts
         puts
 
-        update!(
-        )
+        case payment_method
+        when Braintree::CreditCard
+          update!(
+            card_brand: payment_method.card_type,
+            card_last4: payment_method.last_4,
+            card_exp_month: payment_method.expiration_month,
+            card_exp_year: payment_method.expiration_year
+          )
+
+        when Braintree::PayPalAccount
+          update!(
+            card_brand: "PayPal",
+            card_last4: payment_method.email
+          )
+        end
       end
     end
   end
