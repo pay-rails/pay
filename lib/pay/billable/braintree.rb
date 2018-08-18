@@ -9,7 +9,7 @@ module Pay
         if processor_id?
           gateway.customer.find(processor_id)
         else
-          result = gateway.customer.create(email: email, payment_token_nonce: card_token)
+          result = gateway.customer.create(email: email, payment_method_nonce: card_token)
           raise StandardError, result.inspect unless result.success?
 
           update(processor: 'braintree', processor_id: result.customer.id)
@@ -80,7 +80,7 @@ module Pay
         puts
 
         case payment_method
-        when Braintree::CreditCard
+        when ::Braintree::CreditCard
           update!(
             card_brand: payment_method.card_type,
             card_last4: payment_method.last_4,
@@ -88,7 +88,7 @@ module Pay
             card_exp_year: payment_method.expiration_year
           )
 
-        when Braintree::PayPalAccount
+        when ::Braintree::PayPalAccount
           update!(
             card_brand: "PayPal",
             card_last4: payment_method.email
