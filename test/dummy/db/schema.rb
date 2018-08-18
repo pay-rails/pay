@@ -12,6 +12,21 @@
 
 ActiveRecord::Schema.define(version: 20170727235816) do
 
+  create_table "charges", force: :cascade do |t|
+    t.integer "owner_id"
+    t.string "processor", null: false
+    t.string "processor_id", null: false
+    t.integer "amount", null: false
+    t.integer "amount_refunded"
+    t.string "card_type"
+    t.string "card_last4"
+    t.string "card_exp_month"
+    t.string "card_exp_year"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_id"], name: "index_charges_on_owner_id"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.integer "owner_id"
     t.string "name", null: false
@@ -28,7 +43,6 @@ ActiveRecord::Schema.define(version: 20170727235816) do
   create_table "users", force: :cascade do |t|
     t.string "processor"
     t.string "processor_id"
-    t.string "card_token"
     t.string "card_brand"
     t.string "card_last4"
     t.string "card_exp_month"
