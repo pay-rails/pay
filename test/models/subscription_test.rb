@@ -2,7 +2,7 @@ require 'test_helper'
 
 class Pay::Subscription::Test < ActiveSupport::TestCase
   setup do
-    @subscription = Subscription.new
+    @subscription = Subscription.new processor: 'stripe'
   end
 
   test 'belongs to the owner' do

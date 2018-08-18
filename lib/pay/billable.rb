@@ -24,9 +24,9 @@ module Pay
       customer
     end
 
-    def subscribe(name = 'default', plan = 'default', processor = 'stripe')
+    def subscribe(name = 'default', plan = 'default', processor = 'stripe', options={})
       self.processor = processor
-      send("create_#{processor}_subscription", name, plan)
+      send("create_#{processor}_subscription", name, plan, options={})
     end
 
     def update_card(token)
@@ -72,7 +72,7 @@ module Pay
         processor: processor,
         processor_id: subscription.id,
         processor_plan: plan,
-        trial_ends_at: trial_end_date(subscription),
+        trial_ends_at: send("#{processor}_trial_end_date",subscription),
         quantity: qty,
         ends_at: nil
       )

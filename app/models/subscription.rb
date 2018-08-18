@@ -1,4 +1,10 @@
+require 'pay/subscription/stripe'
+require 'pay/subscription/braintree'
+
 class Subscription < ApplicationRecord
+  include Pay::Subscription::Stripe
+  include Pay::Subscription::Braintree
+
   # Associations
   belongs_to :owner, class_name: Pay.billable_class, foreign_key: :owner_id
 
@@ -13,6 +19,14 @@ class Subscription < ApplicationRecord
   scope :for_name, ->(name) { where(name: name) }
 
   attribute :prorate, :boolean, default: true
+
+  def no_prorate
+    self.prorate = false
+  end
+
+  def skip_trial
+    self.trial_ends_at = nil
+  end
 
   def on_trial?
     trial_ends_at? && Time.zone.now < trial_ends_at
@@ -31,13 +45,11 @@ class Subscription < ApplicationRecord
   end
 
   def cancel
-    subscription = processor_subscription.delete(at_period_end: true)
-    update(ends_at: Time.at(subscription.current_period_end))
+    send("#{processor}_cancel")
   end
 
   def cancel_now!
-    subscription = processor_subscription.delete
-    update(ends_at: Time.at(subscription.current_period_end))
+    send("#{processor}_cancel_now!")
   end
 
   def resume
@@ -46,31 +58,14 @@ class Subscription < ApplicationRecord
             'You can only resume subscriptions within their grace period.'
     end
 
-    subscription = processor_subscription
-    subscription.plan = processor_plan
-    subscription.trial_end = on_trial? ? trial_ends_at.to_i : 'now'
-    subscription.cancel_at_period_end = false
-    subscription.save
+    send("#{processor}_resume")
 
     update(ends_at: nil)
     self
   end
 
-  def no_prorate
-    self.prorate = false
-  end
-
-  def skip_trial
-    self.trial_ends_at = nil
-  end
-
   def swap(plan)
-    subscription = processor_subscription
-    subscription.plan = plan
-    subscription.prorate = prorate
-    subscription.trial_end = on_trial? ? trial_ends_at : 'now'
-    subscription.quantity = quantity if quantity?
-    subscription.save
+    send("#{processor}_swap", plan)
     update(processor_plan: plan, ends_at: nil)
   end
 

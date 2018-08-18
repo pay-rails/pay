@@ -9,7 +9,7 @@ module Pay
         end
       end
 
-      def create_stripe_subscription(name, plan)
+      def create_stripe_subscription(name, plan, options={})
         stripe_sub   = customer.subscriptions.create(plan: plan)
         subscription = create_subscription(stripe_sub, 'stripe', name, plan)
         subscription
@@ -60,7 +60,7 @@ module Pay
         update_stripe_card_on_file(card)
       end
 
-      def trial_end_date(stripe_sub)
+      def stripe_trial_end_date(stripe_sub)
         stripe_sub.trial_end.present? ? Time.at(stripe_sub.trial_end) : nil
       end
 
