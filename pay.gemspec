@@ -21,10 +21,11 @@ Gem::Specification.new do |s|
     'README.md'
   ]
 
+  s.add_dependency 'braintree', '~> 2.80'
   s.add_dependency 'rails', '>= 4.2'
+  s.add_dependency 'rails-html-sanitizer', '~> 1.0.4'
   s.add_dependency 'stripe', '~> 3.8'
   s.add_dependency 'stripe_event', '~> 1.8'
-  s.add_dependency 'braintree', '~> 2.80'
 
   s.add_development_dependency 'byebug'
   s.add_development_dependency 'mocha'
