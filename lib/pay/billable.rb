@@ -77,14 +77,5 @@ module Pay
         ends_at: nil
       )
     end
-
-    def update_card_on_file(card)
-      update!(
-        card_brand: card.brand,
-        card_last4: card.last4,
-        card_exp_month: card.exp_month,
-        card_exp_year: card.exp_year
-      )
-    end
   end
 end

@@ -47,7 +47,7 @@ module Pay
         # Update the user's card on file if a token was passed in
         source = customer.sources.data.first
         if source.present?
-          update_card_on_file customer.sources.retrieve(source.id)
+          update_stripe_card_on_file customer.sources.retrieve(source.id)
         end
 
         customer
@@ -57,11 +57,20 @@ module Pay
         card = customer.sources.create(source: token.id)
         customer.default_source = card.id
         customer.save
-        update_card_on_file(card)
+        update_stripe_card_on_file(card)
       end
 
       def trial_end_date(stripe_sub)
         stripe_sub.trial_end.present? ? Time.at(stripe_sub.trial_end) : nil
+      end
+
+      def update_stripe_card_on_file(card)
+        update!(
+          card_brand: card.brand,
+          card_last4: card.last4,
+          card_exp_month: card.exp_month,
+          card_exp_year: card.exp_year
+        )
       end
     end
   end
