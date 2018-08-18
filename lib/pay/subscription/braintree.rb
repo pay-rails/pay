@@ -16,7 +16,7 @@ module Pay
 
       def braintree_cancel_now!
         gateway.subscription.cancel(processor_subscription.id)
-        update(ends_at: Time.zone.now, trial_ends_at: nil)
+        update(ends_at: Time.zone.now)
       end
 
       def braintree_resume
@@ -24,7 +24,7 @@ module Pay
 
         gateway.subscription.update(subscription.id, {
           never_expires: true,
-          number_of_billing_cycles: null
+          number_of_billing_cycles: nil
         })
       end
 
@@ -42,6 +42,7 @@ module Pay
 
         if would_change_billing_frequency?(braintree_plan) && prorate?
           swap_across_frequencies(braintree_plan)
+          return
         end
 
         subscription = processor_subscription
