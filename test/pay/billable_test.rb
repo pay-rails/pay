@@ -103,7 +103,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
   end
 
   test 'getting a subscription by default name' do
-    subscription = Subscription.create!(
+    subscription = ::Subscription.create!(
       name: 'default',
       owner: @billable,
       processor: 'stripe',
