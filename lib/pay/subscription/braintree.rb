@@ -5,7 +5,8 @@ module Pay
         subscription = processor_subscription
 
         if on_trial?
-          braintree_cancel_now!
+          gateway.subscription.cancel(processor_subscription.id)
+          update(ends_at: trial_ends_at)
         else
           gateway.subscription.update(subscription.id, {
             number_of_billing_cycles: subscription.current_billing_cycle
@@ -20,21 +21,36 @@ module Pay
       end
 
       def braintree_resume
-        subscription = processor_subscription
+        if cancelled? && on_trial?
+          duration = trial_ends_at.to_date - Date.today
 
-        gateway.subscription.update(subscription.id, {
-          never_expires: true,
-          number_of_billing_cycles: nil
-        })
+          owner.subscribe(
+            name,
+            processor_plan,
+            processor,
+            trial_period: true,
+            trial_duration: duration,
+            trial_duration_unit: :day
+          )
+
+        else
+          subscription = processor_subscription
+
+          gateway.subscription.update(subscription.id, {
+            never_expires: true,
+            number_of_billing_cycles: nil
+          })
+        end
       end
 
       def braintree_swap(plan)
         if on_grace_period? && processor_plan == plan
           resume
+          return
         end
 
         if !active?
-          owner.subscribe(name, plan, 'braintree', trial_period: false)
+          owner.subscribe(name, plan, processor, trial_period: false)
           return
         end
 

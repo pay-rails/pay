@@ -2,18 +2,18 @@ require 'test_helper'
 
 class Pay::Subscription::Test < ActiveSupport::TestCase
   setup do
-    @subscription = Subscription.new processor: 'stripe'
+    @subscription = ::Subscription.new processor: 'stripe'
   end
 
   test 'belongs to the owner' do
-    klass = Subscription.reflections['owner'].options[:class_name]
+    klass = ::Subscription.reflections['owner'].options[:class_name]
     assert klass, 'User'
   end
 
   test '.for_name(name) scope' do
     owner = User.create
 
-    subscription1 = Subscription.create!(
+    subscription1 = ::Subscription.create!(
       name: 'default',
       owner: owner,
       processor: 'stripe',
@@ -22,7 +22,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       quantity: '1'
     )
 
-    subscription2 = Subscription.create!(
+    subscription2 = ::Subscription.create!(
       name: 'superior',
       owner: owner,
       processor: 'stripe',
@@ -31,8 +31,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       quantity: '1'
     )
 
-    assert_includes Subscription.for_name('default'), subscription1
-    refute_includes Subscription.for_name('default'), subscription2
+    assert_includes ::Subscription.for_name('default'), subscription1
+    refute_includes ::Subscription.for_name('default'), subscription2
   end
 
   test 'active trial' do
@@ -103,10 +103,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test 'cancel_now!' do
-    expiration = DateTime.now
-
     cancelled_stripe = mock('cancelled_stripe_subscription')
-    cancelled_stripe.expects(:current_period_end).returns(expiration)
 
     stripe_sub = mock('stripe_subscription')
     stripe_sub.expects(:delete).returns(cancelled_stripe)
@@ -114,7 +111,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     @subscription.stubs(:processor_subscription).returns(stripe_sub)
     @subscription.cancel_now!
 
-    assert @subscription.ends_at, expiration
+    assert @subscription.ends_at <= Time.zone.now
   end
 
   test 'resume on grace period' do
