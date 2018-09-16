@@ -12,7 +12,7 @@ module Pay
         return if user.charges.where(processor_id: object.id).any?
 
         charge = create_charge(user, object)
-        notify_user(charge)
+        notify_user(user, charge)
       end
 
       def create_charge(user, object)
@@ -28,7 +28,7 @@ module Pay
         )
       end
 
-      def notify_user(charge)
+      def notify_user(user, charge)
         # Pay::UserMailer.receipt(charge).deliver_later
       end
     end
