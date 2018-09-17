@@ -2,7 +2,10 @@ module Pay
   module Subscription
     module Stripe
       def stripe_cancel
-        subscription = processor_subscription.delete(at_period_end: true)
+        subscription = processor_subscription
+        subscription.cancel_at_period_end
+        subscription.save
+
         new_ends_at  = on_trial? ? trial_ends_at : Time.at(subscription.current_period_end)
         update(ends_at: new_ends_at)
       end
@@ -24,7 +27,7 @@ module Pay
         subscription = processor_subscription
         subscription.plan = plan
         subscription.prorate = prorate
-        subscription.trial_end = on_trial? ? trial_ends_at : 'now'
+        subscription.trial_end = on_trial? ? trial_ends_at.to_i : 'now'
         subscription.quantity = quantity if quantity?
         subscription.save
       end
