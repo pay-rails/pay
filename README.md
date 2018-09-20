@@ -6,7 +6,7 @@ Pay is a subscription engine for Ruby on Rails.
 Supports Ruby on Rails 4.2 and higher.
 
 **Current Payment Providers**
-* Stripe
+* Stripe (API version [2018-08-23](https://stripe.com/docs/upgrades#2018-08-23) or higher required)
 
 **Payment Providers In Development**
 * Braintree

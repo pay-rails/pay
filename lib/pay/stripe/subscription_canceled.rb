@@ -4,7 +4,7 @@ module Pay
     class SubscriptionCanceled
       def call(event)
         object       = event.data.object
-        subscription = Subscription.find_by(stripe_id: object.id)
+        subscription = ::Subscription.find_by(processor: :stripe, processor_id: object.id)
 
         # We couldn't find the subscription for some reason, maybe it's from another service
         return if subscription.nil?

@@ -12,7 +12,9 @@ module Pay
       end
 
       def notify_user(user, charge)
-        # Pay::UserMailer.refund(charge).deliver_later
+        if Pay.send_emails
+          Pay::UserMailer.refund(user, charge).deliver_later
+        end
       end
     end
   end

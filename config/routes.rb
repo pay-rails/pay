@@ -1,5 +1,3 @@
-require 'stripe_event'
-
 Rails.application.routes.draw do
-  mount StripeEvent::Engine, at: '/webhooks/stripe'
+  post '/webhooks/stripe', to: 'stripe_event/webhook#event'
 end

@@ -5,7 +5,11 @@ module Pay
         if processor_id?
           gateway.customer.find(processor_id)
         else
-          result = gateway.customer.create(email: email, payment_method_nonce: card_token)
+          result = gateway.customer.create(
+            email: email,
+            first_name: try(:first_name),
+            last_name: try(:last_name)
+          )
           raise StandardError, result.inspect unless result.success?
 
           update(processor: 'braintree', processor_id: result.customer.id)
@@ -71,6 +75,14 @@ module Pay
 
       def braintree_upcoming_invoice
         # pass
+      end
+
+      def braintree?
+        processor == "braintree"
+      end
+
+      def paypal?
+        braintree? && card_brand == "PayPal"
       end
 
       private

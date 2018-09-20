@@ -38,6 +38,10 @@ module Pay
         ::Stripe::Invoice.upcoming(customer: processor_id)
       end
 
+      def stripe?
+        processor == "stripe"
+      end
+
       private
 
       def create_stripe_customer

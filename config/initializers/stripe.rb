@@ -1,7 +1,11 @@
 require 'stripe_event'
 
-Stripe.api_key             = Rails.application.secrets.stripe_api_key || Rails.application.credentials.dig(Rails.env, :stripe, :private_key)
-StripeEvent.signing_secret = Rails.application.secrets.stripe_signing_secret || Rails.application.credentials.dig(Rails.env, :stripe, :signing_secret)
+env         = Rails.env.to_sym
+secrets     = Rails.application.secrets
+credentials = Rails.application.credentials
+
+Stripe.api_key             = secrets.dig(env, :stripe, :private_key)    || credentials.dig(env, :stripe, :private_key)
+StripeEvent.signing_secret = secrets.dig(env, :stripe, :signing_secret) || credentials.dig(env, :stripe, :signing_secret)
 
 StripeEvent.configure do |events|
   # Listen to the charge event to make sure we get non-subscription
