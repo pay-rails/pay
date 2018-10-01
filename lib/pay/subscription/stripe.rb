@@ -3,7 +3,7 @@ module Pay
     module Stripe
       def stripe_cancel
         subscription = processor_subscription
-        subscription.cancel_at_period_end
+        subscription.cancel_at_period_end = true
         subscription.save
 
         new_ends_at  = on_trial? ? trial_ends_at : Time.at(subscription.current_period_end)
