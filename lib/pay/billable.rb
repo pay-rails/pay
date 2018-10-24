@@ -24,6 +24,11 @@ module Pay
       customer
     end
 
+    def charge(amount_in_cents, options={})
+      check_for_processor
+      send("create_#{processor}_charge", amount_in_cents, options)
+    end
+
     def subscribe(name = 'default', plan = 'default', processor = 'stripe', options={})
       self.processor = processor
       send("create_#{processor}_subscription", name, plan, options={})

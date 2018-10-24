@@ -69,10 +69,32 @@ end
 **To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
 
 ## User API
+
+#### Creating a Charge
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.co')
+user.processor = 'stripe'
+user.card_token = 'stripe-token'
+user.charge(1500) # $15.00 USD
+
+user = User.find_by(email: 'michael@bluthcompany.co')
+user.processor = 'braintree'
+user.card_token = 'nonce'
+user.charge(1500) # $15.00 USD
+```
+
+The `charge` method takes the amount in cents as the primary argument.
+
+You may pass optional arguments that will be directly passed on to
+either Stripe or Braintree. You can use these options to charge
+different currencies, etc.
+
 #### Creating a Subscription
 
 ```ruby
 user = User.find_by(email: 'michael@bluthcompany.co')
+user.processor = 'stripe'
 user.card_token = 'stripe-token'
 user.subscribe
 ```

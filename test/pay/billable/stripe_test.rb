@@ -47,6 +47,19 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
     assert @billable.card_last4 == '9191'
   end
 
+  test 'can create a charge' do
+    @billable.card_token = @stripe_helper.generate_card_token(
+      brand: 'Visa',
+      last4: '9191',
+      exp_year: 1984
+    )
+    @billable.processor = 'stripe'
+
+    charge = @billable.charge(2900)
+    assert_equal Stripe::Charge, charge.class
+    assert_equal 2900, charge.amount
+  end
+
   test 'can create a subscription' do
     @billable.card_token = @stripe_helper.generate_card_token(
       brand: 'Visa',

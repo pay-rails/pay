@@ -22,6 +22,16 @@ module Pay
         end
       end
 
+      def create_braintree_charge(amount, options={})
+        args = {
+          amount: amount / 100.0,
+          customer_id: customer.id,
+          options: { submit_for_settlement: true }
+        }.merge(options)
+
+        result = gateway.transaction.sale(args)
+      end
+
       def create_braintree_subscription(name, plan, options={})
         token = customer.payment_methods.find(&:default?).token
 

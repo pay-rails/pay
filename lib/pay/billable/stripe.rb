@@ -9,6 +9,16 @@ module Pay
         end
       end
 
+      def create_stripe_charge(amount, options={})
+        args = {
+          amount: amount,
+          currency: 'usd',
+          customer: customer.id,
+        }.merge(options)
+
+        ::Stripe::Charge.create(args)
+      end
+
       def create_stripe_subscription(name, plan, options={})
         stripe_sub   = customer.subscriptions.create(plan: plan, trial_from_plan: true)
         subscription = create_subscription(stripe_sub, 'stripe', name, plan)
