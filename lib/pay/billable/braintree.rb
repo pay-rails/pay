@@ -10,7 +10,7 @@ module Pay
             first_name: try(:first_name),
             last_name: try(:last_name)
           )
-          raise StandardError, result.inspect unless result.success?
+          raise Pay::Error.new(result) unless result.success?
 
           update(processor: 'braintree', processor_id: result.customer.id)
 
@@ -41,7 +41,7 @@ module Pay
         )
 
         result = gateway.subscription.create(subscription_options)
-        raise StandardError, result.inspect unless result.success?
+        raise Pay::Error.new(result) unless result.success?
 
         create_subscription(result.subscription, 'braintree', name, plan)
       end
@@ -55,7 +55,7 @@ module Pay
             verify_card: true
           }
         )
-        raise StandardError, result.inspect unless result.success?
+        raise Pay::Error.new(result) unless result.success?
 
         self.card_token = nil
         update_braintree_card_on_file result.payment_method
