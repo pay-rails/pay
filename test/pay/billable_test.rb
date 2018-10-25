@@ -2,7 +2,7 @@ require 'test_helper'
 
 class Pay::Billable::Test < ActiveSupport::TestCase
   setup do
-    @billable = User.new
+    @billable = User.new email: 'gob@bluth.com'
   end
 
   test 'truth' do
@@ -34,6 +34,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
   end
 
   test 'subscribing a stripe customer' do
+    @billable.processor = 'stripe'
     @billable.expects(:create_stripe_subscription)
              .with('default', 'default', {})
              .returns(:user)
@@ -44,6 +45,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test 'updating a stripe card' do
     @billable.processor = 'stripe'
+    @billable.processor_id = 1
     @billable.expects(:update_stripe_card).with('a1b2c3').returns(:card)
 
     assert_equal :card, @billable.update_card('a1b2c3')

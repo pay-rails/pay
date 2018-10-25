@@ -33,6 +33,25 @@ class Pay::Billable::Braintree::Test < ActiveSupport::TestCase
       @billable.customer
     end
 
-    assert_equal "Do Not Honor", err.result.message
+    assert_equal "Do Not Honor", err.message
+  end
+
+  test 'can update card' do
+    @billable.customer # Make sure we have a customer object
+    @billable.update_card('fake-valid-discover-nonce')
+    assert_equal 'Discover', @billable.card_brand
+  end
+
+  test 'can charge card' do
+    @billable.card_token = 'fake-valid-visa-nonce'
+    result = @billable.charge(2900)
+    assert result.success?
+    assert_equal 29.00, result.transaction.amount
+  end
+
+  test 'can create a subscription' do
+    @billable.card_token = 'fake-valid-visa-nonce'
+    @billable.subscribe('default', 'default')
+    assert @billable.subscribed?
   end
 end

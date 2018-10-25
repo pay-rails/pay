@@ -19,6 +19,8 @@ module Pay
 
     def customer
       check_for_processor
+      raise Pay::Error, "Email is required to create a customer" if email.nil?
+
       customer = send("#{processor}_customer")
       update_card(card_token) if card_token.present?
       customer
@@ -29,13 +31,14 @@ module Pay
       send("create_#{processor}_charge", amount_in_cents, options)
     end
 
-    def subscribe(name = 'default', plan = 'default', processor = 'stripe', options={})
-      self.processor = processor
+    def subscribe(name = 'default', plan = 'default', options={})
+      check_for_processor
       send("create_#{processor}_subscription", name, plan, options={})
     end
 
     def update_card(token)
       check_for_processor
+      customer if processor_id.nil?
       send("update_#{processor}_card", token)
     end
 

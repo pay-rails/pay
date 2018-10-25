@@ -33,11 +33,6 @@ module Pay
     yield self
   end
 
-  class Error < StandardError
-    attr_reader :result
-
-    def initialize(result)
-      @result = result
-    end
+  class Error < StandardError;
   end
 end

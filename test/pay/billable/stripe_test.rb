@@ -6,7 +6,8 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
   setup do
     StripeMock.start
 
-    @billable = User.new
+    @billable = User.new email: 'johnny@appleseed.com'
+    @billable.processor = 'stripe'
 
     @stripe_helper = StripeMock.create_test_helper
     @stripe_helper.create_plan(id: 'test-monthly', amount: 1500)
@@ -28,10 +29,8 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
   end
 
   test 'getting a stripe customer without a processor id' do
-    assert_nil @billable.processor
     assert_nil @billable.processor_id
 
-    @billable.email = 'gob.bluth@example.com'
     @billable.card_token = @stripe_helper.generate_card_token(
       brand: 'Visa',
       last4: '9191',
@@ -40,7 +39,6 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
 
     @billable.stripe_customer
 
-    assert_equal @billable.processor, 'stripe'
     assert_not_nil @billable.processor_id
 
     assert @billable.card_brand == 'Visa'
@@ -53,7 +51,6 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
       last4: '9191',
       exp_year: 1984
     )
-    @billable.processor = 'stripe'
 
     charge = @billable.charge(2900)
     assert_equal Stripe::Charge, charge.class
@@ -81,7 +78,6 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
 
     @billable.stubs(:customer).returns(customer)
     card = @stripe_helper.generate_card_token(brand: 'Visa', last4: '4242')
-    @billable.processor = 'stripe'
     @billable.update_card(card)
 
     assert @billable.card_brand == 'Visa'
@@ -134,7 +130,7 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
 
   test 'card gets updated automatically when retrieving customer' do
     customer = Stripe::Customer.create(
-      email: 'johnny@appleseed.com',
+      email: @billable.email,
       card: @stripe_helper.generate_card_token
     )
 
@@ -155,8 +151,6 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
   end
 
   test 'creating a stripe customer with no card' do
-    @billable.processor = 'stripe'
-    @billable.email = 'gob.bluth@example.com'
     @billable.customer
 
     assert_nil @billable.card_last4
