@@ -90,11 +90,10 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   test 'cancel' do
     expiration = 2.weeks.from_now
 
-    cancelled_stripe = mock('cancelled_stripe_subscription')
-    cancelled_stripe.expects(:current_period_end).returns(expiration)
-
     stripe_sub = mock('stripe_subscription')
-    stripe_sub.expects(:cancel_at_period_end).with(true)
+    stripe_sub.expects(:cancel_at_period_end=).with(true)
+    stripe_sub.expects(:save)
+    stripe_sub.expects(:current_period_end).returns(expiration)
 
     @subscription.stubs(:processor_subscription).returns(stripe_sub)
     @subscription.cancel
