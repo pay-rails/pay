@@ -70,6 +70,31 @@ end
 
 ## User API
 
+
+#### Trials
+
+You can check if the user is on a trial by simply asking:
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.co')
+user.on_trial?
+#=> true or false
+```
+
+#### Generic Trials
+
+Trials that don't require cards upfront simply
+
+```ruby
+user = User.create(
+  email: 'michael@bluthcompany.co',
+  trial_ends_at: 30.days.from_now
+)
+
+user.on_generic_trial?
+#=> true
+```
+
 #### Creating a Charge
 
 ```ruby
