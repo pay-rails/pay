@@ -42,6 +42,19 @@ module Pay
       send("update_#{processor}_card", token)
     end
 
+    def on_trial?(name: 'default', plan: nil)
+      # Generic trials don't have plans or custom names
+      return true if plan.nil? && name == 'default' && on_generic_trial?
+
+      sub = subscription(name)
+      sub && sub.on_trial? if plan.nil?
+      sub && sub.on_trial? && sub.processor_plan == plan
+    end
+
+    def on_generic_trial?
+      trial_ends_at? && trial_ends_at < Time.zone.now
+    end
+
     def processor_subscription(subscription_id)
       check_for_processor
       send("#{processor}_subscription", subscription_id)

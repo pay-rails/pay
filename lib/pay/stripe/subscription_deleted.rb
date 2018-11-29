@@ -1,7 +1,7 @@
 module Pay
   module Stripe
 
-    class SubscriptionCanceled
+    class SubscriptionDeleted
       def call(event)
         object       = event.data.object
         subscription = ::Subscription.find_by(processor: :stripe, processor_id: object.id)

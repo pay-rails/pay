@@ -1,4 +1,5 @@
 # Pay
+[![Build Status](https://travis-ci.org/excid3/pay.svg?branch=master)](https://travis-ci.org/excid3/pay)
 [ ![Codeship Status for jasoncharnes/pay](https://img.shields.io/codeship/72941cf0-31a8-0135-af58-3a3212f0f89d/master.svg)](https://app.codeship.com/projects/225793)
 
 Pay is a subscription engine for Ruby on Rails.
@@ -69,6 +70,31 @@ end
 **To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
 
 ## User API
+
+
+#### Trials
+
+You can check if the user is on a trial by simply asking:
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.co')
+user.on_trial?
+#=> true or false
+```
+
+#### Generic Trials
+
+Trials that don't require cards upfront simply
+
+```ruby
+user = User.create(
+  email: 'michael@bluthcompany.co',
+  trial_ends_at: 30.days.from_now
+)
+
+user.on_generic_trial?
+#=> true
+```
 
 #### Creating a Charge
 

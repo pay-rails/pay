@@ -20,5 +20,17 @@ StripeEvent.configure do |events|
   events.subscribe 'invoice.upcoming', Pay::Stripe::SubscriptionRenewing.new
 
   # When a customers subscription is canceled, we want to update our records
-  events.subscribe 'customer.subscription.deleted', Pay::Stripe::SubscriptionCanceled.new
+  events.subscribe 'customer.subscription.deleted', Pay::Stripe::SubscriptionDeleted.new
+
+  # If the plan, quantity, or trial ending date is updated on Stripe, we want to sync
+  events.subscribe 'customer.subscription.updated', Pay::Stripe::SubscriptionUpdated.new
+
+  # Monitor changes for customer's default card changing
+  events.subscribe 'customer.updated', Pay::Stripe::CustomerUpdated.new
+
+  # If a customer was deleted in Stripe, their subscriptions should be cancelled
+  events.subscribe 'customer.deleted', Pay::Stripe::CustomerDeleted.new
+
+  # If a customer's payment source was deleted in Stripe, we should update as well
+  events.subscribe 'customer.source.deleted', Pay::Stripe::SourceDeleted.new
 end

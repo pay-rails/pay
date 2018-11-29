@@ -9,10 +9,14 @@ require_relative 'pay/subscription/stripe'
 require_relative 'pay/subscription/braintree'
 
 # Webhook processors
-require_relative 'pay/stripe/charge_succeeded'
 require_relative 'pay/stripe/charge_refunded'
-require_relative 'pay/stripe/subscription_canceled'
+require_relative 'pay/stripe/charge_succeeded'
+require_relative 'pay/stripe/customer_deleted'
+require_relative 'pay/stripe/customer_updated'
+require_relative 'pay/stripe/source_deleted'
+require_relative 'pay/stripe/subscription_deleted'
 require_relative 'pay/stripe/subscription_renewing'
+require_relative 'pay/stripe/subscription_updated'
 
 module Pay
   # Define who owns the subscription

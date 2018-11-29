@@ -52,6 +52,25 @@ module Pay
         processor == "stripe"
       end
 
+      def update_card_from_stripe
+        customer = stripe_customer
+        default_source_id = customer.default_source_id
+
+        if default_source_id.present?
+          card = customer.sources.data.find{ |s| s.id == default_source_id }
+          update(
+            card_brand: card.brand,
+            card_last4: card.brand,
+            card_exp_month: card.exp_month,
+            card_exp_year: card.exp_year
+          )
+
+        # Customer has no default payment source
+        else
+          update(card_brand: nil, card_last4: nil)
+        end
+      end
+
       private
 
       def create_stripe_customer
