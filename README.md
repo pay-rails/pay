@@ -1,4 +1,5 @@
 # Pay
+[![Build Status](https://travis-ci.org/excid3/pay.svg?branch=master)](https://travis-ci.org/excid3/pay)
 [ ![Codeship Status for jasoncharnes/pay](https://img.shields.io/codeship/72941cf0-31a8-0135-af58-3a3212f0f89d/master.svg)](https://app.codeship.com/projects/225793)
 
 Pay is a subscription engine for Ruby on Rails.
@@ -6,7 +7,7 @@ Pay is a subscription engine for Ruby on Rails.
 Supports Ruby on Rails 4.2 and higher.
 
 **Current Payment Providers**
-* Stripe
+* Stripe (API version [2018-08-23](https://stripe.com/docs/upgrades#2018-08-23) or higher required)
 
 **Payment Providers In Development**
 * Braintree
@@ -69,10 +70,57 @@ end
 **To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
 
 ## User API
+
+
+#### Trials
+
+You can check if the user is on a trial by simply asking:
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.co')
+user.on_trial?
+#=> true or false
+```
+
+#### Generic Trials
+
+Trials that don't require cards upfront simply
+
+```ruby
+user = User.create(
+  email: 'michael@bluthcompany.co',
+  trial_ends_at: 30.days.from_now
+)
+
+user.on_generic_trial?
+#=> true
+```
+
+#### Creating a Charge
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.co')
+user.processor = 'stripe'
+user.card_token = 'stripe-token'
+user.charge(1500) # $15.00 USD
+
+user = User.find_by(email: 'michael@bluthcompany.co')
+user.processor = 'braintree'
+user.card_token = 'nonce'
+user.charge(1500) # $15.00 USD
+```
+
+The `charge` method takes the amount in cents as the primary argument.
+
+You may pass optional arguments that will be directly passed on to
+either Stripe or Braintree. You can use these options to charge
+different currencies, etc.
+
 #### Creating a Subscription
 
 ```ruby
 user = User.find_by(email: 'michael@bluthcompany.co')
+user.processor = 'stripe'
 user.card_token = 'stripe-token'
 user.subscribe
 ```
@@ -82,7 +130,7 @@ A `card_token` must be provided as an attribute.
 The subscribe method has three optional arguments with default values.
 
 ```ruby
-def subscribe(name = 'default', plan = 'default', processor = 'stripe')
+def subscribe(name = 'default', plan = 'default')
   ...
 end
 ```

@@ -9,6 +9,16 @@ module Pay
         end
       end
 
+      def create_stripe_charge(amount, options={})
+        args = {
+          amount: amount,
+          currency: 'usd',
+          customer: customer.id,
+        }.merge(options)
+
+        ::Stripe::Charge.create(args)
+      end
+
       def create_stripe_subscription(name, plan, options={})
         stripe_sub   = customer.subscriptions.create(plan: plan, trial_from_plan: true)
         subscription = create_subscription(stripe_sub, 'stripe', name, plan)
@@ -36,6 +46,29 @@ module Pay
 
       def stripe_upcoming_invoice
         ::Stripe::Invoice.upcoming(customer: processor_id)
+      end
+
+      def stripe?
+        processor == "stripe"
+      end
+
+      def update_card_from_stripe
+        customer = stripe_customer
+        default_source_id = customer.default_source_id
+
+        if default_source_id.present?
+          card = customer.sources.data.find{ |s| s.id == default_source_id }
+          update(
+            card_brand: card.brand,
+            card_last4: card.brand,
+            card_exp_month: card.exp_month,
+            card_exp_year: card.exp_year
+          )
+
+        # Customer has no default payment source
+        else
+          update(card_brand: nil, card_last4: nil)
+        end
       end
 
       private

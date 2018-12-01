@@ -5,21 +5,37 @@ module Pay
         if processor_id?
           gateway.customer.find(processor_id)
         else
-          result = gateway.customer.create(email: email, payment_method_nonce: card_token)
-          raise StandardError, result.inspect unless result.success?
+          result = gateway.customer.create(
+            email: email,
+            first_name: try(:first_name),
+            last_name: try(:last_name),
+            payment_method_nonce: card_token,
+          )
+          raise Pay::Error.new(result.message) unless result.success?
 
           update(processor: 'braintree', processor_id: result.customer.id)
 
           if card_token.present?
-            update_braintree_card_on_file result.customer.payment_methods[0]
+            update_braintree_card_on_file result.customer.payment_methods.last
           end
 
           result.customer
         end
       end
 
+      def create_braintree_charge(amount, options={})
+        args = {
+          amount: amount / 100.0,
+          customer_id: customer.id,
+          options: { submit_for_settlement: true }
+        }.merge(options)
+
+        result = gateway.transaction.sale(args)
+      end
+
       def create_braintree_subscription(name, plan, options={})
-        token = customer.payment_methods.find(&:default?).token
+        token = customer.payment_methods.find(&:default?).try(:token)
+        raise Pay::Error, "Customer has no default payment method" if token.nil?
 
         subscription_options = options.merge(
           payment_method_token: token,
@@ -27,7 +43,7 @@ module Pay
         )
 
         result = gateway.subscription.create(subscription_options)
-        raise StandardError, result.inspect unless result.success?
+        raise Pay::Error.new(result.message) unless result.success?
 
         create_subscription(result.subscription, 'braintree', name, plan)
       end
@@ -41,7 +57,7 @@ module Pay
             verify_card: true
           }
         )
-        raise StandardError, result.inspect unless result.success?
+        raise Pay::Error.new(result.message) unless result.success?
 
         self.card_token = nil
         update_braintree_card_on_file result.payment_method
@@ -71,6 +87,14 @@ module Pay
 
       def braintree_upcoming_invoice
         # pass
+      end
+
+      def braintree?
+        processor == "braintree"
+      end
+
+      def paypal?
+        braintree? && card_brand == "PayPal"
       end
 
       private

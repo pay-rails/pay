@@ -19,19 +19,40 @@ module Pay
 
     def customer
       check_for_processor
+      raise Pay::Error, "Email is required to create a customer" if email.nil?
+
       customer = send("#{processor}_customer")
       update_card(card_token) if card_token.present?
       customer
     end
 
+    def charge(amount_in_cents, options={})
+      check_for_processor
+      send("create_#{processor}_charge", amount_in_cents, options)
+    end
+
     def subscribe(name: 'default', plan: 'default', processor: 'stripe', options: {})
-      self.processor = processor
+      check_for_processor
       send("create_#{processor}_subscription", name, plan, options={})
     end
 
     def update_card(token)
       check_for_processor
+      customer if processor_id.nil?
       send("update_#{processor}_card", token)
+    end
+
+    def on_trial?(name: 'default', plan: nil)
+      # Generic trials don't have plans or custom names
+      return true if plan.nil? && name == 'default' && on_generic_trial?
+
+      sub = subscription(name)
+      sub && sub.on_trial? if plan.nil?
+      sub && sub.on_trial? && sub.processor_plan == plan
+    end
+
+    def on_generic_trial?
+      trial_ends_at? && trial_ends_at < Time.zone.now
     end
 
     def processor_subscription(subscription_id)
@@ -63,7 +84,7 @@ module Pay
     private
 
     def check_for_processor
-      raise StandardError, 'No processor selected' unless processor
+      raise StandardError, "No payment processor selected. Make sure to set the User's `processor` attribute to either 'stripe' or 'braintree'." unless processor
     end
 
     def create_subscription(subscription, processor, name, plan, qty = 1)

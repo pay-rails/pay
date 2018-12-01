@@ -8,11 +8,13 @@ module Pay
         return unless charge.present?
 
         charge.update(amount_refunded: object.amount_refunded)
-        notify_user(charge)
+        notify_user(charge.user, charge)
       end
 
-      def notify_user(charge)
-        # Pay::UserMailer.refund(charge).deliver_later
+      def notify_user(user, charge)
+        if Pay.send_emails
+          Pay::UserMailer.refund(user, charge).deliver_later
+        end
       end
     end
   end
