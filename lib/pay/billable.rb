@@ -24,7 +24,7 @@ module Pay
       customer
     end
 
-    def subscribe(name = 'default', plan = 'default', processor = 'stripe', options={})
+    def subscribe(name: 'default', plan: 'default', processor: 'stripe', options: {})
       self.processor = processor
       send("create_#{processor}_subscription", name, plan, options={})
     end
