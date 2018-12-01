@@ -63,7 +63,7 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
       last4: '9191',
       exp_year: 1984
     )
-    @billable.subscribe('default', 'test-monthly')
+    @billable.subscribe(name: 'default', plan: 'test-monthly')
 
     assert @billable.subscribed?
     assert_equal 'default', @billable.subscription.name

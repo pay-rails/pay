@@ -31,7 +31,7 @@ module Pay
       send("create_#{processor}_charge", amount_in_cents, options)
     end
 
-    def subscribe(name = 'default', plan = 'default', options={})
+    def subscribe(name: 'default', plan: 'default', processor: 'stripe', options: {})
       check_for_processor
       send("create_#{processor}_subscription", name, plan, options={})
     end
