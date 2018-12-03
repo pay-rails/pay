@@ -130,7 +130,7 @@ A `card_token` must be provided as an attribute.
 The subscribe method has three optional arguments with default values.
 
 ```ruby
-def subscribe(name = 'default', plan = 'default')
+def subscribe(name: 'default', plan: 'default')
   ...
 end
 ```
@@ -157,7 +157,7 @@ user.subscribed?
 The `subscribed?` method has two optional arguments with default values.
 
 ```ruby
-def subscribed?(name = 'default', plan = nil)
+def subscribed?(name: 'default', plan: nil)
   ...
 end
 ```
