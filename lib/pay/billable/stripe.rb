@@ -54,7 +54,7 @@ module Pay
 
       def update_card_from_stripe
         customer = stripe_customer
-        default_source_id = customer.default_source_id
+        default_source_id = customer.default_source
 
         if default_source_id.present?
           card = customer.sources.data.find{ |s| s.id == default_source_id }
