@@ -24,8 +24,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'braintree', '~> 2.92'
   s.add_dependency 'rails', '>= 4.2'
   s.add_dependency 'rails-html-sanitizer', '~> 1.0.4'
-  s.add_dependency 'stripe', '~> 3.22'
-  s.add_dependency 'stripe_event', '~> 2.1'
+  s.add_dependency 'stripe', '~> 4.2'
+  s.add_dependency 'stripe_event', '~> 2.2'
 
   s.add_development_dependency 'bundler', '< 2'
   s.add_development_dependency 'byebug'
