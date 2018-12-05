@@ -32,3 +32,6 @@ require 'minitest/mock'
 require 'mocha/mini_test'
 
 require 'stripe_mock'
+
+# Uncomment to view the stacktrace for debugging tests
+#Rails.backtrace_cleaner.remove_silencers!

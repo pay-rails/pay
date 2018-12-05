@@ -31,7 +31,7 @@ module Pay
       send("create_#{processor}_charge", amount_in_cents, options)
     end
 
-    def subscribe(name: 'default', plan: 'default', processor: 'stripe', options: {})
+    def subscribe(name: 'default', plan: 'default', options: {})
       check_for_processor
       send("create_#{processor}_subscription", name, plan, options={})
     end
@@ -61,7 +61,7 @@ module Pay
     end
 
     def subscribed?(name: 'default', processor_plan: nil)
-      subscription = subscription(name)
+      subscription = subscription(name: name)
 
       return false if subscription.nil?
       return subscription.active? if processor_plan.nil?
@@ -69,7 +69,7 @@ module Pay
       subscription.active? && subscription.processor_plan == processor_plan
     end
 
-    def subscription(name = 'default')
+    def subscription(name: 'default')
       subscriptions.for_name(name).last
     end
 

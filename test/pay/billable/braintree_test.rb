@@ -51,7 +51,7 @@ class Pay::Billable::Braintree::Test < ActiveSupport::TestCase
 
   test 'can create a subscription' do
     @billable.card_token = 'fake-valid-visa-nonce'
-    @billable.subscribe('default', 'default')
+    @billable.subscribe
     assert @billable.subscribed?
   end
 end
