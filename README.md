@@ -1,15 +1,11 @@
-# Pay
+# Pay - Payments engine for Ruby on Rails
 [![Build Status](https://travis-ci.org/excid3/pay.svg?branch=master)](https://travis-ci.org/excid3/pay)
 [ ![Codeship Status for jasoncharnes/pay](https://img.shields.io/codeship/72941cf0-31a8-0135-af58-3a3212f0f89d/master.svg)](https://app.codeship.com/projects/225793)
 
-Pay is a subscription engine for Ruby on Rails.
-
-Supports Ruby on Rails 4.2 and higher.
+Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
 **Current Payment Providers**
 * Stripe (API version [2018-08-23](https://stripe.com/docs/upgrades#2018-08-23) or higher required)
-
-**Payment Providers In Development**
 * Braintree
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
@@ -50,12 +46,18 @@ If you need to use a model other than `User`, check out the [wiki page](https://
 Finally, run the migrations with `$ rake db:migrate`
 
 #### Stripe
-You'll need to add your private Stripe API key to your Rails secrets. `config/secrets.yml`
+You'll need to add your private Stripe API key to your Rails secrets `config/secrets.yml`, credentials `rails credentials:edit`
 
 ```yaml
 development:
-  stripe_api_key: sk_test_....
+  stripe:
+    private_key: xxxx
+    public_key: yyyy
+    signing_secret: zzzz
 ```
+
+You can also use the `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET`
+environment variables.
 
 ## Usage
 Include the `Pay::Billable` module in the model you want to know about subscriptions.
