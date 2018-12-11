@@ -15,43 +15,56 @@ class Pay::Billable::Braintree::Test < ActiveSupport::TestCase
   end
 
   test 'getting a customer' do
-    customer = @billable.customer
-    assert customer.id.present?
-    assert_equal "test@example.com", customer.email
+    VCR.use_cassette('braintree-customer') do
+      customer = @billable.customer
+      assert customer.id.present?
+      assert_equal "test@example.com", customer.email
+    end
   end
 
   test 'can store card' do
-    @billable.card_token = 'fake-valid-visa-nonce'
-    result = @billable.customer
+    VCR.use_cassette('braintree-card') do
+      @billable.card_token = 'fake-valid-visa-nonce'
+      result = @billable.customer
 
-    assert_equal 'Visa', @billable.card_brand
+      assert_equal 'Visa', @billable.card_brand
+    end
   end
 
   test 'fails with invalid cards' do
-    @billable.card_token = 'fake-processor-declined-visa-nonce'
-    err = assert_raises Pay::Error do
-      @billable.customer
-    end
+    VCR.use_cassette('braintree-invalid-card') do
+      @billable.card_token = 'fake-processor-declined-visa-nonce'
+      err = assert_raises Pay::Error do
+        @billable.customer
+      end
 
-    assert_equal "Do Not Honor", err.message
+      assert_equal "Do Not Honor", err.message
+    end
   end
 
   test 'can update card' do
-    @billable.customer # Make sure we have a customer object
-    @billable.update_card('fake-valid-discover-nonce')
-    assert_equal 'Discover', @billable.card_brand
+    VCR.use_cassette('braintree-update-card') do
+      @billable.customer # Make sure we have a customer object
+      @billable.update_card('fake-valid-discover-nonce')
+      assert_equal 'Discover', @billable.card_brand
+    end
   end
 
   test 'can charge card' do
-    @billable.card_token = 'fake-valid-visa-nonce'
-    result = @billable.charge(2900)
-    assert result.success?
-    assert_equal 29.00, result.transaction.amount
+    VCR.use_cassette('braintree-charge') do
+      @billable.card_token = 'fake-valid-visa-nonce'
+      result = @billable.charge(2900)
+      assert result.success?
+      assert_equal 29.00, result.transaction.amount
+    end
   end
 
   test 'can create a subscription' do
-    @billable.card_token = 'fake-valid-visa-nonce'
-    @billable.subscribe
-    assert @billable.subscribed?
+    VCR.use_cassette('braintree-subscribe') do
+      @billable.card_token = 'fake-valid-visa-nonce'
+      @billable.card_token = 'fake-valid-visa-nonce'
+      @billable.subscribe
+      assert @billable.subscribed?
+    end
   end
 end

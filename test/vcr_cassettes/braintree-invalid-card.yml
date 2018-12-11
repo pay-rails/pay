@@ -1,0 +1,145 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.sandbox.braintreegateway.com/merchants/zyfwpztymjqdcc5g/customers
+    body:
+      encoding: UTF-8
+      string: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <customer>
+          <email>test@example.com</email>
+          <first-name nil="true"/>
+          <last-name nil="true"/>
+          <payment-method-nonce>fake-processor-declined-visa-nonce</payment-method-nonce>
+        </customer>
+    headers:
+      Accept-Encoding:
+      - gzip
+      Accept:
+      - application/xml
+      User-Agent:
+      - Braintree Ruby Gem 2.92.0
+      X-Apiversion:
+      - '5'
+      Content-Type:
+      - application/xml
+      Authorization:
+      - Basic NXI1OXJyeGhuODlucGM5bjowMGYwZGY3OTMwM2UxMjcwODgxZTVmZWRhNzc4ODkyNw==
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Tue, 11 Dec 2018 21:39:30 GMT
+      Content-Type:
+      - application/xml; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Authentication:
+      - basic_auth
+      X-User:
+      - k8kdyxqxh8zjnf35
+      Vary:
+      - Accept-Encoding
+      Content-Encoding:
+      - gzip
+      Etag:
+      - W/"da4a363f7d623d1c336ca294a16b23cf"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Runtime:
+      - '0.441267'
+      X-Request-Id:
+      - 01-1544564370.118-24.207.209.104-172881
+      Content-Security-Policy:
+      - frame-ancestors 'self'
+      X-Broxyid:
+      - 01-1544564370.118-24.207.209.104-172881
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAJIuEFwAA6xWy3KbMBTd5ys87BUs27RxBpOuklWniybttJuOQBdQIyQiCcf06yth8/AD15l0qXPPlS73dQjvNgWfrEFpJsXKw9dTbwIikZSJbOU9Pd6jG+8uugqTShtZgIquJpOQ0Wi2nC8+LoMAh749OdAak5wIg+z5T52+ln9MXfx+oUkSZKE/tDp2ypQ2SJACJoLxlWdUBZ7fmDgZsySyKImoj3AoCOORAW0+wYYUJYdrSw39Le4YZS7F8X0p2RxhrxBrZk68rYAYoIiYialLWHnUHg0rwItmU3yD8Axh/DjDt/Pl7Xz6M/R7h8a/Kunb/HuH7ftNAVDKgFPdhUSZQQlRVO8uJUqR2nPWffsWsVjMOLelRYRSBVq3+Lao4qWt5g5rq472Kz6Ee/J4SXeE0cK2r50u786qjQIwbeAjJNgYENRl7SyNy4RwZsaeUpDZaRgxllIbwpEdEYiWCzz9GPpDaPg5lTCqbmBEeJmT2eiHHzLnlzBFZWvAkn9QzyX8fT29u+Wdnd3c4Y/0pe1XES2m0ynGjiM63DU1cs9F35gmNrLuPGTkklPbpmMpcB3nFhMjPHoSz0K+CntTj/W0bSplipjWFREJDPnHxs7x/Ql+wwz2VNffxrZw9PR1wOzQlk8hZqb/ku2xN6ak4m3gsZQciPAil0FHbYw9uVK2OsgOTsXdBwwuPbS0LrApmWriQYUUJo/wzG7sQ/AEuwaiXPqWe/QG3WMDPYw9JVzDzmsQScZlbMfXJjJ5uA/i798q+oA5fcjXP++Xv38UCf7y+Dn0e1rrmAPhJreNNmiHAdbSWEEyQJXiUW5MqW99n2gNRl/HijDh1lpmM/NKaqdafknqAoT5VYDJJf3FZSb9te3x61JkdyDWTEnhCCtNBI3lxq7s7v7uRduIbppiIp770PbQltos5UWEMQ5Cf3dobTYUJflgNlqgIygoCRtUuwV6gqRV0qj+gNNhLU1XsU4UK10l96Wsn1Ujn0FESZwFy3nob0+trRLspWoWYtxMhE0Ps0qpIrKIkyCYkgXBGOh8EXyI02Ua39wsZh/iYGqbYdS1u/s/rLc1iEIiTZ9HOrKzDzyUDWM7rycz0uyKobzvAc0CDXfLFE7+HRxu2iP9f8vmOa/955X/nO5foPoXaf5ZxT+j9xeq/aVaf6nSX6zz/1T5/yJB7x6B0B90W3cAe+zbKbr6CwAA//8DADryheSMDAAA
+    http_version: 
+  recorded_at: Tue, 11 Dec 2018 21:39:30 GMT
+- request:
+    method: post
+    uri: https://api.sandbox.braintreegateway.com/merchants/zyfwpztymjqdcc5g/payment_methods
+    body:
+      encoding: UTF-8
+      string: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <payment-method>
+          <customer-id>293479551</customer-id>
+          <payment-method-nonce>fake-processor-declined-visa-nonce</payment-method-nonce>
+          <options>
+            <make-default type="boolean">true</make-default>
+            <verify-card type="boolean">true</verify-card>
+          </options>
+        </payment-method>
+    headers:
+      Accept-Encoding:
+      - gzip
+      Accept:
+      - application/xml
+      User-Agent:
+      - Braintree Ruby Gem 2.92.0
+      X-Apiversion:
+      - '5'
+      Content-Type:
+      - application/xml
+      Authorization:
+      - Basic NXI1OXJyeGhuODlucGM5bjowMGYwZGY3OTMwM2UxMjcwODgxZTVmZWRhNzc4ODkyNw==
+  response:
+    status:
+      code: 422
+      message: Unprocessable Entity
+    headers:
+      Date:
+      - Tue, 11 Dec 2018 21:39:31 GMT
+      Content-Type:
+      - application/xml; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Authentication:
+      - basic_auth
+      X-User:
+      - k8kdyxqxh8zjnf35
+      Vary:
+      - Accept-Encoding
+      Content-Encoding:
+      - gzip
+      Cache-Control:
+      - no-cache
+      X-Runtime:
+      - '0.372541'
+      X-Request-Id:
+      - 01-1544564370.835-24.207.209.104-173024
+      Content-Security-Policy:
+      - frame-ancestors 'self'
+      X-Broxyid:
+      - 01-1544564370.835-24.207.209.104-173024
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAJMuEFwAA5RWTY/bOAy9z68Icldj5aOdFB73Uix2D+2lnR72sqBlOlFjS64kZ+r59aX87cQeYIEcoscnkiKfKIeffufZ6orGSq2e1vxdsF6hEjqR6vS0fv7+F3tcf4oeQigkQ2O0YQZtoZXF6GG1CmvI+r/9YuWqAp/WYAxU603N2gy0sAADebejgCpH5ViO7qyTBiRYlNbpHA2TSbQ97vYfjocDDzdjuKNOPTCllcAohQuywmiB1lLGCYpMKkzYVVpoKOFmdmPnVReOymG7NSG5d5lgCmXmImdK8jCBBibVUqYVE2CSljhGugibSYjbdFqUzirOQCgd+LVKX4pXV+U/fyVCHE4Uf2R9aHx0paWd1sIJo8969VW71d9aaeN3NOhDl6YU4LNow1kHrrRRX7j/usKFm9bU8MT12quAkVQw+kLNuQMbMlztjXBq60rJ7Gnt69NopGUWmiJlNeM+xNuEwYl1BtExSBJi2BvaP42fNzmNqxM4fIGKbD9R+DLRP7BazaTetwKE0GXTEuroqEcjQyv9Xp7T2NsgCKiVC9bFvQ5/u5tuL7HaQuU+nyh458O1i7a9pTE0AiomrW6iPn/77G/fLbycDE2AyOrUjRS0RGucUFnOr69BFZxJ2H2NYpnR7lN/aVJprGMK8hn5kDmDt6xC5wWoatY2VcMshSqHKqEh8hYp0wIy6eaDGDzJOfX4Gg6qjo57Hnygeo2g4QjUJVMtnDHcTOoVCoOJdNOx4/QF51OIpYr2pD3OvR81Leo+4pwfwk276PMh100Xf9BkJYn066FqhTT1jGG5Vu4c8S29BrfgDLtCMHQX+HFCr9G7V8JXvR5jz99Gj0SPjrM96ywh26JISiV/lchUmcf1O0MjmaYkmgj2sTgcAtgD55js9of3cXpM48fH/fZ9fAhoyi9u7ZtssADS9rO6KP2i/JVogI5wRsjcmdLEgTPCOlqCsXQDo1n2xtJQ9+iOncqM5tco2p1ldDH8mJKQDeQRNnppjc5GnA7oCNLaktTHYlCXgTVBb4WsU+bt4N/eUex741BDnZSiHqOjMvZYew/ulO/vgj8zA9d+niS0dDLHtRfZI+Nbxvn3Lf+4O37c8X9rF+2G1kNZJP/Pw7Ch9aDQvWhzYc6AstC8KJRz4LfzLaff7rij27fAq5/46atNg3vms+wPAAAA//8DABQcCl7TCQAA
+    http_version: 
+  recorded_at: Tue, 11 Dec 2018 21:39:31 GMT
+recorded_with: VCR 4.0.0
