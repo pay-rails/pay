@@ -34,4 +34,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'stripe-ruby-mock', '~> 2.5'
+  s.add_development_dependency 'vcr'
+  s.add_development_dependency 'webmock'
 end

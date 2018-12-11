@@ -25,11 +25,10 @@ module Pay
           duration = trial_ends_at.to_date - Date.today
 
           owner.subscribe(
-            name,
-            processor_plan,
-            processor,
+            name: name,
+            plan: processor_plan,
             trial_period: true,
-            trial_duration: duration,
+            trial_duration: duration.to_i,
             trial_duration_unit: :day
           )
 
@@ -155,7 +154,7 @@ module Pay
 
           cancel_now!
 
-          owner.subscribe(name, plan.id, processor, options)
+          owner.subscribe(options.merge(name: name, plan: plan.id))
         end
     end
   end

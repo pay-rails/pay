@@ -29,9 +29,18 @@ Braintree::Configuration.public_key = "integration_public_key"
 Braintree::Configuration.private_key = "integration_private_key"
 
 require 'minitest/mock'
-require 'mocha/mini_test'
+require 'mocha/minitest'
 
 require 'stripe_mock'
 
 # Uncomment to view the stacktrace for debugging tests
-#Rails.backtrace_cleaner.remove_silencers!
+Rails.backtrace_cleaner.remove_silencers!
+
+require 'webmock/minitest'
+require 'vcr'
+
+VCR.configure do |c|
+  c.cassette_library_dir = 'test/vcr_cassettes'
+  c.hook_into :webmock
+  #c.allow_http_connections_when_no_cassette = true
+end

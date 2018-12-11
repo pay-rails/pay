@@ -98,7 +98,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     @subscription.stubs(:processor_subscription).returns(stripe_sub)
     @subscription.cancel
 
-    assert @subscription.ends_at, expiration
+    assert_in_delta @subscription.ends_at, expiration, 1.second
   end
 
   test 'cancel_now!' do
