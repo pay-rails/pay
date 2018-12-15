@@ -46,8 +46,8 @@ module Pay
       # Generic trials don't have plans or custom names
       return true if plan.nil? && name == 'default' && on_generic_trial?
 
-      sub = subscription(name)
-      sub && sub.on_trial? if plan.nil?
+      sub = subscription(name: name)
+      return sub && sub.on_trial? if plan.nil?
       sub && sub.on_trial? && sub.processor_plan == plan
     end
 

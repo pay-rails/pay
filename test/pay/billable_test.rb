@@ -147,4 +147,47 @@ class Pay::Billable::Test < ActiveSupport::TestCase
   test 'has charges' do
     assert @billable.respond_to?(:charges)
   end
+
+  test 'on_trial? with no plan' do
+    subscription = mock('subscription')
+    subscriptions = mock('subscriptions')
+    subscriptions.stubs(:last).returns(subscription)
+    subscription.stubs(:on_trial?).returns(true)
+    @billable.subscriptions.expects(:for_name).with('default').returns(subscriptions)
+
+    assert @billable.on_trial?
+  end
+
+  test 'on_trial? with no plan and on_generic_trial?' do
+    subscription = mock('subscription')
+    subscriptions = mock('subscriptions')
+    subscriptions.stubs(:last).returns(subscription)
+    @billable.stubs(:on_generic_trial?).returns(true)
+
+    assert @billable.on_trial?
+  end
+
+  test 'on_trial? with plan matching the subscription plan' do
+    plan_name = 'PROCESSORPLAN'
+    subscription = mock('subscription')
+    subscription.stubs(:processor_plan).returns(plan_name)
+    subscriptions = mock('subscriptions')
+    subscriptions.stubs(:last).returns(subscription)
+    subscription.stubs(:on_trial?).returns(true)
+    @billable.subscriptions.expects(:for_name).with('default').returns(subscriptions)
+
+    assert @billable.on_trial?(plan: plan_name)
+  end
+
+  test 'on_trial? with plan different than the subscription plan' do
+    plan_name = 'PROCESSORPLAN'
+    subscription = mock('subscription')
+    subscription.stubs(:processor_plan).returns(plan_name)
+    subscriptions = mock('subscriptions')
+    subscriptions.stubs(:last).returns(subscription)
+    subscription.stubs(:on_trial?).returns(true)
+    @billable.subscriptions.expects(:for_name).with('default').returns(subscriptions)
+
+    refute @billable.on_trial?(plan: 'OTHERPLAN')
+  end
 end
