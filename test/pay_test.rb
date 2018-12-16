@@ -14,7 +14,7 @@ class Pay::Test < ActiveSupport::TestCase
   end
 
   test 'default chargeable class is Charge' do
-    assert Pay.chargeable_class, 'Charge'
+    assert Pay.chargeable_class, 'Pay::Charge'
   end
 
   test 'default chargeable table is charges' do

@@ -11,6 +11,8 @@ module Pay
       validates :processor, presence: true
       validates :processor_id, presence: true
       validates :card_type, presence: true
+
+      self.table_name = Pay.chargeable_table
     end
 
     def processor_charge

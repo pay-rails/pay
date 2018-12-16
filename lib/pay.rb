@@ -29,8 +29,8 @@ module Pay
   @@billable_class = 'User'
   @@billable_table = @@billable_class.tableize
 
-  @@chargeable_class = 'Charge'
-  @@chargeable_table = @@chargeable_class.tableize
+  @@chargeable_class = 'Pay::Charge'
+  @@chargeable_table = 'charges'
 
   mattr_accessor :business_name
   mattr_accessor :business_address
