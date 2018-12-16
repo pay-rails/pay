@@ -22,10 +22,15 @@ module Pay
   # Define who owns the subscription
   mattr_accessor :billable_class
   mattr_accessor :billable_table
+  mattr_accessor :chargeable_class
+  mattr_accessor :chargeable_table
   mattr_accessor :braintree_gateway
 
   @@billable_class = 'User'
   @@billable_table = @@billable_class.tableize
+
+  @@chargeable_class = 'Charge'
+  @@chargeable_table = @@chargeable_class.tableize
 
   mattr_accessor :business_name
   mattr_accessor :business_address
