@@ -3,7 +3,10 @@ module Pay
     def receipt(user, charge)
       @user, @charge = user, charge
 
-      attachments[charge.filename] = charge.receipt.render
+      if charge.receipt
+        attachments[charge.filename] = charge.receipt.render
+      end
+
       mail(
         to: "#{user.name} <#{user.email}>",
         from: "Payment receipt"
