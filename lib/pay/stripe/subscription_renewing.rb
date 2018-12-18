@@ -3,7 +3,7 @@ module Pay
     class SubscriptionRenewing
       def call(event)
         object = event.data.object
-        subscription = ::Subscription.find_by(stripe_id: object.subscription)
+        subscription = ::Subscription.find_by(processor: :stripe, processor_id: object.id)
         notify_user(subscription.user, subscription) if subscription.present?
       end
 
