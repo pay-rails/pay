@@ -29,7 +29,12 @@ module Pay
 
         payment_method = Pay.braintree_gateway.payment_method.find(subscription.payment_method_token)
 
-        charge = user.charges.new(amount: subscription.price * 100)
+        charge = user.charges.new(
+          amount:       subscription.price * 100,
+          processor:    :braintree,
+          processor_id: subscription.transactions.first.id,
+        )
+
         case payment_method.class
         when Braintree::CreditCard, Braintree::ApplePayCard, Braintree::VisaCheckoutCard, Braintree::MasterpassCard, Braintree::SamsungPayCard
           charge.assign_attributtes(
