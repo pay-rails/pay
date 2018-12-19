@@ -86,6 +86,8 @@ Pay.setup do |config|
   # For use in the receipt/refund/renewal mailers
   config.business_name = "Business Name"
   config.business_address = "1600 Pennsylvania Avenue NW"
+  config.application_name = "My App"
+  config.support_email = "helpme@example.com"
 
   config.send_emails = true
 end
