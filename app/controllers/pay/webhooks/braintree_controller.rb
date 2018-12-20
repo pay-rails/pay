@@ -27,7 +27,11 @@ module Pay
         user = User.find_by(processor: :braintree, processor_id: subscription.id)
         return unless user.present?
 
-        user.save_braintree_transaction(subscription.transactions.first)
+        charge = user.save_braintree_transaction(subscription.transactions.first)
+
+        if Pay.send_emails
+          Pay::UserMailer.receipt(user, charge).deliver_later
+        end
       end
 
       def subscription_canceled(event)
