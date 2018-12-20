@@ -53,7 +53,7 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
     )
 
     charge = @billable.charge(2900)
-    assert_equal Stripe::Charge, charge.class
+    assert_equal Charge, charge.class
     assert_equal 2900, charge.amount
   end
 

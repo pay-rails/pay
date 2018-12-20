@@ -103,10 +103,12 @@ module Pay
         attrs = card_details_for_braintree_transaction(transaction)
         attrs.merge!(amount: transaction.amount.to_f * 100)
 
-        charges.find_or_initialize_by(
+        charge = charges.find_or_initialize_by(
           processor: :braintree,
           processor_id: transaction.id
-        ).update(attrs)
+        )
+        charge.update(attrs)
+        charge
       end
 
       private

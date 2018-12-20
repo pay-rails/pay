@@ -16,10 +16,12 @@ module Pay
       end
 
       def create_charge(user, object)
-        user.charges.find_or_initialize_by(
+        charge = user.charges.find_or_initialize_by(
           processor:      :stripe,
           processor_id:   object.id,
-        ).update(
+        )
+
+        charge.update(
           amount:         object.amount,
           card_last4:     object.source.last4,
           card_type:      object.source.brand,
@@ -27,6 +29,8 @@ module Pay
           card_exp_year:  object.source.exp_year,
           created_at:     Time.zone.at(object.created)
         )
+
+        charge
       end
 
       def notify_user(user, charge)

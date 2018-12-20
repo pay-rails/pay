@@ -19,7 +19,7 @@ module Pay
         stripe_charge = ::Stripe::Charge.create(args)
 
         # Save the charge to the db
-        ::Stripe::ChargeSucceeded.new.create_charge(self, stripe_charge)
+        Pay::Stripe::ChargeSucceeded.new.create_charge(self, stripe_charge)
       end
 
       def create_stripe_subscription(name, plan, options={})
