@@ -101,13 +101,12 @@ module Pay
 
       def save_braintree_transaction(transaction)
         attrs = card_details_for_braintree_transaction(transaction)
-        attrs.merge!(
-          processor:    :braintree,
-          processor_id: transaction.id,
-          amount:       transaction.amount.to_f * 100,
-        )
+        attrs.merge!(amount: transaction.amount.to_f * 100)
 
-        charges.create(attrs)
+        charges.find_or_initialize_by(
+          processor: :braintree,
+          processor_id: transaction.id
+        ).update(attrs)
       end
 
       private
