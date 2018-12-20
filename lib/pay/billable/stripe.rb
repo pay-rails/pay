@@ -16,6 +16,7 @@ module Pay
           customer: customer.id,
         }.merge(options)
 
+        # We don't need to record the charge here, it'll be handled by the webhook
         ::Stripe::Charge.create(args)
       end
 
