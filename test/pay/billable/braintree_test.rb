@@ -50,12 +50,39 @@ class Pay::Billable::Braintree::Test < ActiveSupport::TestCase
     end
   end
 
-  test 'can charge card' do
-    VCR.use_cassette('braintree-charge') do
+  test 'can charge card with credit card' do
+    VCR.use_cassette('braintree-credit-card-charge') do
       @billable.card_token = 'fake-valid-visa-nonce'
-      result = @billable.charge(2900)
+      result = @billable.charge(29_00)
       assert result.success?
       assert_equal 29.00, result.transaction.amount
+
+      # Make sure it saved to the database correctly
+      assert_equal result.transaction.id, @billable.charges.last.processor_id
+      assert_equal 29_00, @billable.charges.last.amount
+      assert_equal "Visa", @billable.charges.last.card_type
+    end
+  end
+
+  test 'can charge card with venmo' do
+    VCR.use_cassette('braintree-venmo-charge') do
+      @billable.card_token = 'fake-venmo-account-nonce'
+      result = @billable.charge(29_00)
+      assert result.success?
+
+      # Make sure it saved to the database correctly
+      assert_equal result.transaction.id, @billable.charges.last.processor_id
+      assert_equal "Venmo", @billable.charges.last.card_type
+    end
+  end
+
+  # Invalid amount will cause the transaction to fail
+  # https://developers.braintreepayments.com/reference/general/testing/ruby#amount-200000-300099
+  test 'handles charge failures' do
+    VCR.use_cassette('braintree-failed-charge') do
+      @billable.card_token = 'fake-valid-visa-nonce'
+      result = @billable.charge(2000_00)
+      assert !result.success?
     end
   end
 

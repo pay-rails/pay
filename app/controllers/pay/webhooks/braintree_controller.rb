@@ -27,42 +27,7 @@ module Pay
         user = User.find_by(processor: :braintree, processor_id: subscription.id)
         return unless user.present?
 
-        payment_method = Pay.braintree_gateway.payment_method.find(subscription.payment_method_token)
-
-        charge = user.charges.new(
-          amount:       subscription.price * 100,
-          processor:    :braintree,
-          processor_id: subscription.transactions.first.id,
-        )
-
-        case payment_method.class
-        when Braintree::CreditCard, Braintree::ApplePayCard, Braintree::VisaCheckoutCard, Braintree::MasterpassCard, Braintree::SamsungPayCard
-          charge.assign_attributtes(
-            card_type:      payment_method.card_type,
-            card_last4:     payment_method.last_4,
-            card_exp_month: payment_method.expiration_month,
-            card_exp_year:  payment_method.expiration_year,
-          )
-        when Braintree::PayPalAccount
-          charge.assign_attributtes(
-            card_type: "PayPal",
-            card_last4: payment_method.email,
-          )
-        when Braintree::AndroidPayCard
-          charge.assign_attributtes(
-            card_type:      payment_method.source_card_type,
-            card_last4:     payment_method.source_card_last_4,
-            card_exp_month: payment_method.expiration_month,
-            card_exp_year:  payment_method.expiration_year,
-          )
-        when Braintree::VenmoAccount
-          charge.assign_attributtes(
-            card_type:  "Venmo",
-            card_last4: payment_method.username,
-          )
-        end
-
-        charge.save!
+        user.save_braintree_transaction(subscription.transactions.first)
       end
 
       def subscription_canceled(event)
