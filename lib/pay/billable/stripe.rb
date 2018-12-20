@@ -16,8 +16,10 @@ module Pay
           customer: customer.id,
         }.merge(options)
 
-        # We don't need to record the charge here, it'll be handled by the webhook
-        ::Stripe::Charge.create(args)
+        stripe_charge = ::Stripe::Charge.create(args)
+
+        # Save the charge to the db
+        ::Stripe::ChargeSucceeded.new.create_charge(self, stripe_charge)
       end
 
       def create_stripe_subscription(name, plan, options={})

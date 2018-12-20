@@ -16,9 +16,10 @@ module Pay
       end
 
       def create_charge(user, object)
-        user.charges.create(
+        user.charges.find_or_initialize_by(
           processor:      :stripe,
           processor_id:   object.id,
+        ).update(
           amount:         object.amount,
           card_last4:     object.source.last4,
           card_type:      object.source.brand,
