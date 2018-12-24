@@ -10,6 +10,7 @@ ActiveRecord::Schema.define do
     t.string :card_last4
     t.string :card_exp_month
     t.string :card_exp_year
+    t.text :extra_billing_info
     t.timestamps
   end
 
