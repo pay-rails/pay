@@ -6,7 +6,7 @@ module Pay
       attachments[charge.filename] = charge.receipt.render
       mail(
         to: "#{user.name} <#{user.email}>",
-        from: "Payment receipt"
+        subject: "Payment receipt"
       )
     end
 
@@ -15,7 +15,7 @@ module Pay
 
       mail(
         to: "#{user.name} <#{user.email}>",
-        from: "Payment refunded",
+        subject: "Payment refunded",
       )
     end
 

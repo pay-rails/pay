@@ -7,7 +7,7 @@ RECEIPT - SUBSCRIPTION<br/>
 <br/>
 Amount: USD <%= ActionController::Base.helpers.number_to_currency(@charge.amount / 100.0) %><br/>
 <br/>
-Charged to: <%= @charge.card_brand %> (**** **** **** <%= @charge.card_last4 %>)<br/>
+Charged to: <%= @charge.card_type %> (**** **** **** <%= @charge.card_last4 %>)<br/>
 Transaction ID: <%= @charge.id %><br/>
 Date: <%= @charge.created_at %><br/>
 <% if @charge.user.extra_billing_info? %>
