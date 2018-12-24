@@ -157,4 +157,11 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
     assert_equal @billable.processor, 'stripe'
     assert_not_nil @billable.processor_id
   end
+
+  test 'email changed' do
+    @billable.subscriptions.expects(:any?).returns(true)
+    @billable.email = "mynewemail@example.org"
+    @billable.expects(:update_stripe_email!)
+    @billable.save
+  end
 end
