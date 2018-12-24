@@ -109,6 +109,8 @@ end
 
 ## Emails
 
+### Stripe
+
 Emails can be enabled/disabled using the `send_emails` configuration option (enabled per default). When enabled, the following emails will be sent:
 
 - When a charge succeeded
