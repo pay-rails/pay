@@ -6,7 +6,7 @@ module Pay
       attachments[charge.filename] = charge.receipt.render
       mail(
         to: to(user),
-        subject: "Payment receipt",
+        subject: Pay.email_receipt_subject,
       )
     end
 
@@ -15,14 +15,14 @@ module Pay
 
       mail(
         to: to(user),
-        subject: "Payment refunded",
+        subject: Pay.email_refund_subject,
       )
     end
 
     def subscription_renewing(user, subscription)
       mail(
         to: to(user),
-        subject: "Your upcoming subscription renewal",
+        subject: Pay.email_renewing_subject,
       )
     end
 

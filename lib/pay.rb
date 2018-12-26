@@ -33,6 +33,13 @@ module Pay
   mattr_accessor :send_emails
   @@send_emails = true
 
+  mattr_accessor :email_receipt_subject
+  @@email_receipt_subject = 'Payment receipt'
+  mattr_accessor :email_refund_subject
+  @@email_refund_subject = 'Payment refunded'
+  mattr_accessor :email_renewing_subject
+  @@email_renewing_subject = 'Your upcoming subscription renewal'
+
   def self.setup
     yield self
   end
