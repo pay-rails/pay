@@ -5,8 +5,8 @@ module Pay
 
       attachments[charge.filename] = charge.receipt.render
       mail(
-        to: "#{user.name} <#{user.email}>",
-        subject: "Payment receipt"
+        to: to(user),
+        subject: "Payment receipt",
       )
     end
 
@@ -14,16 +14,26 @@ module Pay
       @user, @charge = user, charge
 
       mail(
-        to: "#{user.name} <#{user.email}>",
+        to: to(user),
         subject: "Payment refunded",
       )
     end
 
     def subscription_renewing(user, subscription)
       mail(
-        to: "#{user.name} <#{user.email}>",
+        to: to(user),
         subject: "Your upcoming subscription renewal",
       )
+    end
+
+    private
+
+    def to(user)
+      if user.respond_to?(:name)
+        "#{user.name} <#{user.email}>"
+      else
+        user.email
+      end
     end
   end
 end
