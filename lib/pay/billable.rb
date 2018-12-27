@@ -10,7 +10,7 @@ module Pay
       include Pay::Billable::Braintree
       include Pay::Billable::SyncEmail
 
-      has_many :charges, foreign_key: :owner_id
+      has_many :charges, class_name: Pay.chargeable_class, foreign_key: :owner_id
       has_many :subscriptions, foreign_key: :owner_id
 
       attribute :plan, :string
