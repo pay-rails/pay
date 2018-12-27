@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'minitest/mock'
 
-class Pay::Billable::Braintree::Test < ActiveSupport::TestCase
+class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   setup do
     Pay.braintree_gateway = Braintree::Gateway.new(
       environment: :sandbox,

@@ -1,6 +1,6 @@
 module Pay
-  module Billable
-    module Braintree
+  module Braintree
+    module Billable
       def braintree_customer
         if processor_id?
           gateway.customer.find(processor_id)

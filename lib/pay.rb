@@ -1,22 +1,5 @@
-require 'braintree'
-require 'stripe'
-require 'stripe_event'
 require 'pay/engine'
 require 'pay/billable'
-
-# Subscription backends
-require_relative 'pay/subscription/stripe'
-require_relative 'pay/subscription/braintree'
-
-# Webhook processors
-require_relative 'pay/stripe/charge_refunded'
-require_relative 'pay/stripe/charge_succeeded'
-require_relative 'pay/stripe/customer_deleted'
-require_relative 'pay/stripe/customer_updated'
-require_relative 'pay/stripe/source_deleted'
-require_relative 'pay/stripe/subscription_deleted'
-require_relative 'pay/stripe/subscription_renewing'
-require_relative 'pay/stripe/subscription_updated'
 
 module Pay
   # Define who owns the subscription
@@ -30,7 +13,10 @@ module Pay
   @@billable_table = @@billable_class.tableize
 
   @@chargeable_class = 'Pay::Charge'
-  @@chargeable_table = 'charges'
+  @@chargeable_table = 'pay_charges'
+
+  mattr_accessor :subscription_class
+  @@subscription_class = 'Pay::Subscription'
 
   mattr_accessor :business_name
   mattr_accessor :business_address
@@ -47,6 +33,18 @@ module Pay
 
   def self.setup
     yield self
+  end
+
+  def self.user_model
+    @@user_model ||= billable_class.constantize
+  end
+
+  def self.charge_model
+    @@charge_model ||= chargeable_class.constantize
+  end
+
+  def self.subscription_model
+    @@subscription_model ||= subscription_class.constantize
   end
 
   class Error < StandardError;

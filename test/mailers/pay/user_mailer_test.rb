@@ -2,9 +2,7 @@ require 'test_helper'
 
 class UserMailerTest < ActionMailer::TestCase
   test "receipt" do
-    user = User.new(email: 'john@example.org')
-    user.stubs(:extra_billing_info?).returns(true)
-    user.stubs(:extra_billing_info).returns('extra billing info')
+    user   = User.new(email: 'john@example.org', extra_billing_info: 'extra billing info')
     charge = Pay::Charge.new(amount: 100, owner: user)
     receipt = mock('receipt')
     receipt.stubs(:render).returns('render content')

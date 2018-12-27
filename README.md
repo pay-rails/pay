@@ -14,6 +14,13 @@ Add this line to your application's Gemfile:
 
 ```ruby
 gem 'pay'
+
+# To use Stripe, also include:
+gem 'stripe', '< 5.0', '>= 2.8'
+gem 'stripe_event', '~> 2.2'
+
+# To use Braintree + PayPal, also include:
+gem 'braintree', '< 3.0', '>= 2.92.0'
 ```
 
 And then execute:

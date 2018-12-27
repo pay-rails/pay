@@ -1,6 +1,6 @@
 module Pay
-  module Billable
-    module Stripe
+  module Stripe
+    module Billable
       def stripe_customer
         if processor_id?
           ::Stripe::Customer.retrieve(processor_id)

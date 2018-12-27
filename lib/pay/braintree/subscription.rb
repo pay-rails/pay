@@ -1,6 +1,6 @@
 module Pay
-  module Subscription
-    module Braintree
+  module Braintree
+    module Subscription
       def braintree_cancel
         subscription = processor_subscription
 

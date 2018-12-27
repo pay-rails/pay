@@ -2,7 +2,7 @@ require 'test_helper'
 require 'stripe_mock'
 require 'minitest/mock'
 
-class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
+class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   setup do
     StripeMock.start
 

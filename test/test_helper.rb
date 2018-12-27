@@ -8,7 +8,6 @@ require "rails/test_help"
 
 ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: ':memory:'
 require "support/schema"
-require "support/user"
 
 # Filter out Minitest backtrace while allowing backtrace from other libraries
 # to be shown.
@@ -25,7 +24,7 @@ end
 require 'braintree'
 Braintree::Configuration.environment = :development
 Braintree::Configuration.merchant_id = "integration_merchant_id"
-Braintree::Configuration.public_key = "integration_public_key"
+Braintree::Configuration.public_key  = "integration_public_key"
 Braintree::Configuration.private_key = "integration_private_key"
 
 require 'minitest/mock'

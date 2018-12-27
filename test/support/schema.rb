@@ -15,7 +15,7 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
-  create_table :subscriptions, force: true do |t|
+  create_table :pay_subscriptions, force: true do |t|
     t.integer :owner_id, null: false
     t.string :name, null: false
     t.string :processor, null: false
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
-  create_table :charges do |t|
+  create_table :pay_charges do |t|
     t.references :owner
     t.string :processor, null: false
     t.string :processor_id, null: false

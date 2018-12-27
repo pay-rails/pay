@@ -2,18 +2,18 @@ require 'test_helper'
 
 class Pay::Subscription::Test < ActiveSupport::TestCase
   setup do
-    @subscription = ::Subscription.new processor: 'stripe'
+    @subscription = Pay.subscription_model.new processor: 'stripe'
   end
 
   test 'belongs to the owner' do
-    klass = ::Subscription.reflections['owner'].options[:class_name]
+    klass = Pay.subscription_model.reflections['owner'].options[:class_name]
     assert klass, 'User'
   end
 
   test '.for_name(name) scope' do
     owner = User.create
 
-    subscription1 = ::Subscription.create!(
+    subscription1 = Pay.subscription_model.create!(
       name: 'default',
       owner: owner,
       processor: 'stripe',
@@ -22,7 +22,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       quantity: '1'
     )
 
-    subscription2 = ::Subscription.create!(
+    subscription2 = Pay.subscription_model.create!(
       name: 'superior',
       owner: owner,
       processor: 'stripe',
@@ -31,8 +31,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       quantity: '1'
     )
 
-    assert_includes ::Subscription.for_name('default'), subscription1
-    refute_includes ::Subscription.for_name('default'), subscription2
+    assert_includes Pay.subscription_model.for_name('default'), subscription1
+    refute_includes Pay.subscription_model.for_name('default'), subscription2
   end
 
   test 'active trial' do
