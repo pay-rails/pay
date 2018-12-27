@@ -67,4 +67,11 @@ class Pay::Billable::Braintree::Test < ActiveSupport::TestCase
       assert @billable.subscribed?
     end
   end
+
+  test 'email changed' do
+    @billable.subscriptions.expects(:any?).returns(true)
+    @billable.email = "mynewemail@example.org"
+    @billable.expects(:update_braintree_email!)
+    @billable.save
+  end
 end

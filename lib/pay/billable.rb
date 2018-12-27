@@ -12,6 +12,8 @@ module Pay
       has_many :charges, foreign_key: :owner_id
       has_many :subscriptions, foreign_key: :owner_id
 
+      after_save :update_processor_email
+
       attribute :plan, :string
       attribute :quantity, :integer
       attribute :card_token, :string
@@ -82,6 +84,12 @@ module Pay
     end
 
     private
+
+    def update_processor_email
+      if saved_change_to_email? && subscriptions.any?
+        send("update_#{processor}_email!")
+      end
+    end
 
     def check_for_processor
       raise StandardError, "No payment processor selected. Make sure to set the User's `processor` attribute to either 'stripe' or 'braintree'." unless processor
