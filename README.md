@@ -70,6 +70,52 @@ end
 
 **To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
 
+## Configuration
+
+You can create an initializer `config/initializers/pay.rb`
+
+```ruby
+Pay.setup do |config|
+  config.billable_class = 'User'
+  config.billable_table = 'users'
+
+  config.chargeable_class = 'Pay::Charge'
+  config.chargeable_table = 'charges'
+
+  # For use in the receipt/refund/renewal mailers
+  config.business_name = "Business Name"
+  config.business_address = "1600 Pennsylvania Avenue NW"
+  config.application_name = "My App"
+  config.support_email = "helpme@example.com"
+
+  config.send_emails = true
+end
+```
+
+This allows you to create your own Charge class for instance, which could add receipt functionality:
+
+```ruby
+class Charge < Pay::Charge
+  def receipts
+    # do some receipts stuff using the https://github.com/excid3/receipts gem
+  end
+end
+
+Pay.setup do |config|
+  config.chargeable_class = 'Charge'
+end
+```
+
+## Emails
+
+### Stripe
+
+Emails can be enabled/disabled using the `send_emails` configuration option (enabled per default). When enabled, the following emails will be sent:
+
+- When a charge succeeded
+- When a charge was refunded
+- When a subscription is about to renew
+
 ## User API
 
 

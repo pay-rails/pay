@@ -11,6 +11,7 @@ ActiveRecord::Schema.define do
     t.string :card_exp_month
     t.string :card_exp_year
     t.datetime :trial_ends_at?
+    t.text :extra_billing_info
     t.timestamps
   end
 

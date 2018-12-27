@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 2017_07_27_235816) do
     t.string "card_last4"
     t.string "card_exp_month"
     t.string "card_exp_year"
+    t.text "extra_billing_info"
   end
 
 end

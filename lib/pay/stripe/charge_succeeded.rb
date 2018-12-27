@@ -34,7 +34,7 @@ module Pay
       end
 
       def notify_user(user, charge)
-        if Pay.send_emails
+        if Pay.send_emails && charge.receipt
           Pay::UserMailer.receipt(user, charge).deliver_later
         end
       end

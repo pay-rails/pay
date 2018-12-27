@@ -11,5 +11,6 @@ class AddFieldsToUsers < ActiveRecord::Migration[4.2]
     add_column Pay.billable_table, :card_last4, :string
     add_column Pay.billable_table, :card_exp_month, :string
     add_column Pay.billable_table, :card_exp_year, :string
+    add_column Pay.billable_table, :extra_billing_info, :text
   end
 end
