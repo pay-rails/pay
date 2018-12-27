@@ -5,8 +5,8 @@ module Pay
     included do
       include Pay::Billable::SyncEmail
 
-      has_many :charges, class_name: Pay.chargeable_class, foreign_key: :owner_id
-      has_many :subscriptions, class_name: Pay.subscription_class, foreign_key: :owner_id
+      has_many :charges, class_name: Pay.chargeable_class, foreign_key: :owner_id, inverse_of: :owner
+      has_many :subscriptions, class_name: Pay.subscription_class, foreign_key: :owner_id, inverse_of: :owner
 
       attribute :plan, :string
       attribute :quantity, :integer

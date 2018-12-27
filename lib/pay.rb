@@ -47,6 +47,14 @@ module Pay
     @@subscription_model ||= subscription_class.constantize
   end
 
+  def self.receipts_supported?
+    charge_model.respond_to?(:receipt) &&
+    application_name.present? &&
+    business_name &&
+    business_address &&
+    support_email
+  end
+
   class Error < StandardError;
   end
 end

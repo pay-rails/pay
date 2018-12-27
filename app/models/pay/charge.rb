@@ -1,12 +1,26 @@
 module Pay
   class Charge < ApplicationRecord
-    include Pay::Chargeable
+    self.table_name = Pay.chargeable_table
 
+    # Associations
+    belongs_to :owner, class_name: Pay.billable_class, foreign_key: :owner_id
+
+    # Scopes
     scope :sorted, ->{ order(created_at: :desc) }
     default_scope ->{ sorted }
 
-    def filename
-      "receipt-#{created_at.strftime("%Y-%m-%d")}.pdf"
+    # Validations
+    validates :amount, presence: true
+    validates :processor, presence: true
+    validates :processor_id, presence: true
+    validates :card_type, presence: true
+
+    def processor_charge
+      send("#{processor}_charge")
+    end
+
+    def refund!(amount = nil)
+      send("#{processor}_refund!", amount)
     end
   end
 end

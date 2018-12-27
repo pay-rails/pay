@@ -3,7 +3,7 @@ module Pay
     def receipt(user, charge)
       @user, @charge = user, charge
 
-      attachments[charge.filename] = charge.receipt.render
+      attachments[charge.filename] = charge.receipt if charge.respond_to? :receipt
 
       mail(
         to: to(user),
