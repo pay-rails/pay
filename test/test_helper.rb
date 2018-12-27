@@ -1,9 +1,11 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
+# Processors for testing
 require 'braintree'
 require 'stripe'
 require 'stripe_event'
+require 'stripe_mock'
 
 require File.expand_path("../../test/dummy/config/environment.rb", __FILE__)
 ActiveRecord::Migrator.migrations_paths = [File.expand_path("../../test/dummy/db/migrate", __FILE__)]
@@ -27,8 +29,6 @@ end
 
 require 'minitest/mock'
 require 'mocha/minitest'
-
-require 'stripe_mock'
 
 # Uncomment to view the stacktrace for debugging tests
 Rails.backtrace_cleaner.remove_silencers!
