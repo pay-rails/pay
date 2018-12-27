@@ -20,8 +20,6 @@ module Pay
         Pay.user_model.include Pay::Braintree::Billable
         Pay.subscription_model.include Pay::Braintree::Subscription
       end
-
-      raise StandardError, "\n\nThe Pay gem requires Stripe or Braintree at a minimum to use.\n\nAdd at least one of the following to your gemfile, bundle, and restart your app.\n\ngem 'stripe', '< 5.0', '>= 2.8'\ngem 'stripe_event'\n\ngem 'braintree', '< 3.0', '>= 2.92.0'" unless defined?(Stripe) || defined?(Braintree)
     end
   end
 end
