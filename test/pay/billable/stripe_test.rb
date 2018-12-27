@@ -159,9 +159,10 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
   end
 
   test 'email changed' do
-    @billable.subscriptions.expects(:any?).returns(true)
-    @billable.email = "mynewemail@example.org"
+    # Must already have a processor ID
+    @billable.customer # Sets customer ID
+
     @billable.expects(:update_stripe_email!)
-    @billable.save
+    @billable.update(email: "mynewemail@example.org")
   end
 end

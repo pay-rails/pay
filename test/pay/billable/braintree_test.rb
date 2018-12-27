@@ -96,9 +96,10 @@ class Pay::Billable::Braintree::Test < ActiveSupport::TestCase
   end
 
   test 'email changed' do
-    @billable.subscriptions.expects(:any?).returns(true)
-    @billable.email = "mynewemail@example.org"
+    # Must already have a processor ID
+    @billable.update(processor_id: "fake")
+
     @billable.expects(:update_braintree_email!)
-    @billable.save
+    @billable.update(email: "mynewemail@example.org")
   end
 end
