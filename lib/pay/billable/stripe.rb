@@ -38,6 +38,12 @@ module Pay
         result
       end
 
+      def update_stripe_email!
+        customer = stripe_customer
+        customer.email = email
+        customer.save
+      end
+
       def stripe_subscription(subscription_id)
         ::Stripe::Subscription.retrieve(subscription_id)
       end

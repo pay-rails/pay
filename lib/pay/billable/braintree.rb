@@ -66,6 +66,12 @@ module Pay
         update_subscriptions_to_payment_method(result.payment_method.token)
       end
 
+      def update_braintree_email!
+        braintree_customer.update(
+          "email" => email
+        )
+      end
+
       def braintree_trial_end_date(subscription)
         return unless subscription.trial_period
         Time.zone.parse(subscription.first_billing_date)
