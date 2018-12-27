@@ -1,6 +1,10 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
+require 'braintree'
+require 'stripe'
+require 'stripe_event'
+
 require File.expand_path("../../test/dummy/config/environment.rb", __FILE__)
 ActiveRecord::Migrator.migrations_paths = [File.expand_path("../../test/dummy/db/migrate", __FILE__)]
 ActiveRecord::Migrator.migrations_paths << File.expand_path('../../db/migrate', __FILE__)
@@ -20,8 +24,6 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActiveSupport::TestCase.file_fixture_path = ActiveSupport::TestCase.fixture_path + "/files"
   ActiveSupport::TestCase.fixtures :all
 end
-
-require 'braintree'
 Braintree::Configuration.environment = :development
 Braintree::Configuration.merchant_id = "integration_merchant_id"
 Braintree::Configuration.public_key  = "integration_public_key"
