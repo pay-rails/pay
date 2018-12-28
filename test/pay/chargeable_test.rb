@@ -2,8 +2,7 @@ require 'test_helper'
 
 class Pay::Chargeable::Test < ActiveSupport::TestCase
   setup do
-    user = User.new email: 'gob@bluth.com'
-    @chargeable = Charge.new(card_type: 'VISA', card_last4: 1234)
+    @chargeable = Charge.new
   end
 
   test 'truth' do
@@ -11,6 +10,8 @@ class Pay::Chargeable::Test < ActiveSupport::TestCase
   end
 
   test '#charged_to' do
+    @chargeable.card_type = 'VISA'
+    @chargeable.card_last4 = 1234
     assert_equal "VISA (**** **** **** 1234)", @chargeable.charged_to
   end
 end
