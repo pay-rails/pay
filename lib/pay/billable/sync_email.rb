@@ -15,16 +15,20 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        after_update :update_processor_email
+        after_update :enqeue_sync_email_job
+
+        def sync_email_with_processor
+          send("update_#{processor}_email!")
+        end
       end
 
       private
 
-        def update_processor_email
+        def enqeue_sync_email_job
           # Only update if the processor id is the same
           # This prevents duplicate API hits if this is their first time
           if processor_id? && !processor_id_changed? && saved_change_to_email?
-            send("update_#{processor}_email!")
+            EmailSyncJob.perform_later(id)
           end
         end
 

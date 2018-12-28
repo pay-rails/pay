@@ -162,7 +162,7 @@ class Pay::Billable::Stripe::Test < ActiveSupport::TestCase
     # Must already have a processor ID
     @billable.customer # Sets customer ID
 
-    @billable.expects(:update_stripe_email!)
+    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id)
     @billable.update(email: "mynewemail@example.org")
   end
 end
