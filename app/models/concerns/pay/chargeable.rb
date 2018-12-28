@@ -56,11 +56,15 @@ module Pay
           ["Account Billed", "#{owner.name} (#{owner.email})"],
           ["Product",        Pay.config.application_name],
           ["Amount",         ActionController::Base.helpers.number_to_currency(amount / 100.0)],
-          ["Charged to",     "#{card_type} (**** **** **** #{card_last4})"],
+          ["Charged to",     charged_to],
         ]
         line_items << ["Additional Info", owner.extra_billing_info] if owner.extra_billing_info?
         line_items
       end
+    end
+
+    def charged_to
+      "#{card_type} (**** **** **** #{card_last4})"
     end
 
     private
