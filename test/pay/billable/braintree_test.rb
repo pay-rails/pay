@@ -99,7 +99,7 @@ class Pay::Billable::Braintree::Test < ActiveSupport::TestCase
     # Must already have a processor ID
     @billable.update(processor_id: "fake")
 
-    @billable.expects(:update_braintree_email!)
+    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id)
     @billable.update(email: "mynewemail@example.org")
   end
 end

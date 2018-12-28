@@ -58,6 +58,9 @@ development:
 You can also use the `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET`
 environment variables.
 
+#### Background jobs
+If a users email is updated and they have a `processor_id` set, we'll enqueue a background job (EmailSyncJob) to sync the email with the payment processor. It's important you set a queue_adapter for this to happen, if you don't the code will be executed immediately upon user update. [More information here](https://guides.rubyonrails.org/v4.2/active_job_basics.html#backends)
+
 ## Usage
 Include the `Pay::Billable` module in the model you want to know about subscriptions.
 
