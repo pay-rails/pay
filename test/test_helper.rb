@@ -9,6 +9,7 @@ require "rails/test_help"
 ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: ':memory:'
 require "support/schema"
 require "support/user"
+require "support/charge"
 
 # Filter out Minitest backtrace while allowing backtrace from other libraries
 # to be shown.
