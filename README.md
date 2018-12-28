@@ -106,6 +106,16 @@ Pay.setup do |config|
 end
 ```
 
+### Generators
+
+#### Email Templates
+
+If you want to modify the email templates, you can copy over the view files using:
+
+```
+bin/rails generate pay:email_views
+```
+
 ## Emails
 
 ### Stripe
