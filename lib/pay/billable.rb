@@ -53,7 +53,7 @@ module Pay
     end
 
     def on_generic_trial?
-      trial_ends_at? && trial_ends_at < Time.zone.now
+      trial_ends_at? && trial_ends_at > Time.zone.now
     end
 
     def processor_subscription(subscription_id)
