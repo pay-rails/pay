@@ -36,7 +36,7 @@ module Pay
       update(amount_refunded: amount)
     end
 
-    if defined?(Receipts::Receipt) && required_receipt_attributes?
+    if defined?(Receipts::Receipt)
       def receipt
         Receipts::Receipt.new(
           id: id,
@@ -65,15 +65,6 @@ module Pay
 
     def charged_to
       "#{card_type} (**** **** **** #{card_last4})"
-    end
-
-    private
-
-    def required_receipt_attributes?
-      Pay.config.application_name.present? &&
-      Pay.config.business_name &&
-      Pay.config.business_address &&
-      Pay.config.support_email
     end
   end
 end
