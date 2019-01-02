@@ -21,7 +21,7 @@ module Pay
           processor_id:   object.id,
         )
 
-        charge.update(
+        charge.update!(
           amount:         object.amount,
           card_last4:     object.source.last4,
           card_type:      object.source.brand,
