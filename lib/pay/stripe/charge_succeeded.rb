@@ -21,7 +21,7 @@ module Pay
           processor_id:   object.id,
         )
 
-        charge.update(
+        charge.update!(
           amount:         object.amount,
           card_last4:     object.source.last4,
           card_type:      object.source.brand,
@@ -34,7 +34,7 @@ module Pay
       end
 
       def notify_user(user, charge)
-        if Pay.send_emails && charge.receipt
+        if Pay.send_emails && charge.respond_to?(:receipt)
           Pay::UserMailer.receipt(user, charge).deliver_later
         end
       end
