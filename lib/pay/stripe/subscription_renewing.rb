@@ -8,7 +8,7 @@ module Pay
           processor: :stripe,
           processor_id: event.data.object.subscription
         )
-        notify_user(subscription.user, subscription) if subscription.present?
+        notify_user(subscription.owner, subscription) if subscription.present?
       end
 
       def notify_user(user, subscription)
