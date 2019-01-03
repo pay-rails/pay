@@ -8,7 +8,7 @@ module Pay
         # Couldn't find user, we can skip
         return unless user.present?
 
-        user.update(
+        user.update!(
           processor_id:   nil,
           trial_ends_at:  nil,
           card_brand:     nil,
@@ -17,7 +17,7 @@ module Pay
           card_exp_year:  nil,
         )
 
-        user.subscriptions.update_all(
+        user.subscriptions.update_all!(
           trial_ends_at: nil,
           ends_at: Time.zone.now,
         )

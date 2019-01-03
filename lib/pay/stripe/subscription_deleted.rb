@@ -11,7 +11,7 @@ module Pay
 
         # User canceled subscriptions have an ends_at
         # Automatically canceled subscriptions need this value set
-        subscription.update(ends_at: Time.at(object.ended_at)) if subscription.ends_at.blank? && object.ended_at.present?
+        subscription.update!(ends_at: Time.at(object.ended_at)) if subscription.ends_at.blank? && object.ended_at.present?
       end
     end
 
