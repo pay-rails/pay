@@ -7,7 +7,7 @@ module Pay
 
         return unless charge.present?
 
-        charge.update(amount_refunded: object.amount_refunded)
+        charge.update!(amount_refunded: object.amount_refunded)
         notify_user(charge.owner, charge)
       end
 
