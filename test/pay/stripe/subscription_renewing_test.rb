@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class Pay::Stripe::ChargeRenewingTest < ActiveSupport::TestCase
+class Pay::Stripe::SubscriptionRenewingTest < ActiveSupport::TestCase
   setup do
     @event = OpenStruct.new
     @event.data = JSON.parse(File.read('test/support/fixtures/subscription_renewing_event.json'), object_class: OpenStruct)
