@@ -8,7 +8,7 @@ RECEIPT - REFUND<br/>
 <br/>
 Amount: USD <%= ActionController::Base.helpers.number_to_currency(@charge.amount / 100.0) %><br/>
 <br/>
-Refunded to: <%= @charge.card_type %> (**** **** **** <%= @charge.card_last4 %>)<br/>
+Refunded to: <%= @charge.charged_to %><br/>
 Transaction ID: <%= @charge.id %><br/>
 Date: <%= @charge.created_at %><br/>
 <% if @charge.owner.extra_billing_info? %>

@@ -167,6 +167,16 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert @billable.on_trial?
   end
 
+  test 'on_generic_trial? with a trial_ends_at in the future' do
+    @billable.trial_ends_at = 3.days.from_now
+    assert @billable.on_generic_trial?
+  end
+
+  test 'on_generic_trial? with a trial_ends_at in the past' do
+    @billable.trial_ends_at = 3.days.ago
+    refute @billable.on_generic_trial?
+  end
+
   test 'on_trial? with plan matching the subscription plan' do
     plan_name = 'PROCESSORPLAN'
     subscription = mock('subscription')

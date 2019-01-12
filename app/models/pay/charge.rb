@@ -22,5 +22,9 @@ module Pay
     def refund!(amount = nil)
       send("#{processor}_refund!", amount)
     end
+
+    def charged_to
+      "#{card_type} (**** **** **** #{card_last4})"
+    end
   end
 end
