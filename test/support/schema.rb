@@ -15,6 +15,11 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
+  create_table :teams, force: true do |t|
+    t.string :name
+    t.integer :owner_id, null: :false
+  end
+
   create_table :pay_subscriptions, force: true do |t|
     t.integer :owner_id, null: false
     t.string :name, null: false
