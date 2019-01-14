@@ -1,11 +1,5 @@
 require 'stripe_event'
-
-module Pay
-  module Stripe
-    module Webhooks
-    end
-  end
-end
+Dir[File.join(__dir__, 'webhooks', '**', '*.rb')].each { |file| require file }
 
 env         = Rails.env.to_sym
 secrets     = Rails.application.secrets

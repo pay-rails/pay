@@ -1,5 +1,6 @@
 require 'pay/engine'
 require 'pay/billable'
+require 'pay/receipts'
 
 module Pay
   # Define who owns the subscription

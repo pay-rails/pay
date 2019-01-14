@@ -1,3 +1,5 @@
+require 'pay/billable/sync_email'
+
 module Pay
   module Billable
     extend ActiveSupport::Concern
