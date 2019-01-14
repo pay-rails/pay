@@ -13,6 +13,8 @@ module Pay
         Pay.charge_model.include Pay::Stripe::Charge
         Pay.subscription_model.include Pay::Stripe::Subscription
         Pay.user_model.include Pay::Stripe::Billable
+
+        Pay::Stripe::Api.set_api_keys
       end
 
       if defined? Braintree
