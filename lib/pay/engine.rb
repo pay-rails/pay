@@ -23,6 +23,8 @@ module Pay
         Pay.charge_model.include Pay::Braintree::Charge
         Pay.subscription_model.include Pay::Braintree::Subscription
         Pay.user_model.include Pay::Braintree::Billable
+
+        Pay::Braintree::Api.set_api_keys
       end
 
       if defined?(Receipts::Receipt)
