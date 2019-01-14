@@ -2,7 +2,7 @@ module Pay
   module Braintree
     module Api
       def self.set_api_keys
-        environment = get_key_for(:environment)
+        environment = get_key_for(:environment, "sandbox")
         merchant_id = get_key_for(:merchant_id)
         public_key  = get_key_for(:public_key)
         private_key = get_key_for(:private_key)
@@ -15,12 +15,12 @@ module Pay
         )
       end
 
-      def self.get_key_for(name)
+      def self.get_key_for(name, default="")
         env         = Rails.env.to_sym
         secrets     = Rails.application.secrets
         credentials = Rails.application.credentials
 
-        secrets.dig(env, :braintree, name) || credentials.dig(env, :braintree, name) || ENV["BRAINTREE_#{name.upcase}"]
+        secrets.dig(env, :braintree, name) || credentials.dig(env, :braintree, name) || ENV["BRAINTREE_#{name.upcase}"] || default
       end
     end
   end
