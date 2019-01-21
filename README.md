@@ -42,8 +42,9 @@ To add the migrations to your application, run the following migration:
 `$ bin/rails pay:install:migrations`
 
 This will install two migrations:
-- db/migrate/create_subscriptions.rb
-- db/migrate/add_fields_to_users.rb
+- db/migrate/create_subscriptions.pay.rb
+- db/migrate/add_fields_to_users.pay.rb
+- db/migrate/create_charges.pay.rb
 
 #### Non-User Model
 If you need to use a model other than `User`, check out the [wiki page](https://github.com/jasoncharnes/pay/wiki/Model-Other-Than-User).
@@ -197,7 +198,7 @@ A `card_token` must be provided as an attribute.
 The subscribe method has three optional arguments with default values.
 
 ```ruby
-def subscribe(name: 'default', plan: 'default')
+def subscribe(name: 'default', plan: 'default', **options)
   ...
 end
 ```
