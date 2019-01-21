@@ -33,6 +33,10 @@ Or install it yourself as:
 $ gem install pay
 ```
 
+If you face: `NoMethodError (undefined method 'stripe_customer' for #<User:0x00007fbc34b9bf20>)` after adding the gem.
+
+Fully restart your Rails application `bin/spring stop && rails s`
+
 ## Setup
 #### Migrations
 This engine will create a subscription model and the neccessary migrations for the model you want to make "billable." The most common use case for the billable model is a User.
