@@ -82,7 +82,7 @@ module Pay
     private
 
     def check_for_processor
-      raise StandardError, "No payment processor selected. Make sure to set the User's `processor` attribute to either 'stripe' or 'braintree'." unless processor
+      raise StandardError, "No payment processor selected. Make sure to set the #{Pay.billable_class}'s `processor` attribute to either 'stripe' or 'braintree'." unless processor
     end
 
     def create_subscription(subscription, processor, name, plan, qty = 1)
