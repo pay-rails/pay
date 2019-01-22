@@ -20,4 +20,24 @@ class Pay::Test < ActiveSupport::TestCase
   test 'default chargeable table is charges' do
     assert Pay.chargeable_table, 'charges'
   end
+
+  test 'can set business name' do
+    assert Pay.respond_to?(:business_name)
+    assert Pay.respond_to?(:business_name=)
+  end
+
+  test 'can set business address' do
+    assert Pay.respond_to?(:business_address)
+    assert Pay.respond_to?(:business_address=)
+  end
+
+  test 'can set application name' do
+    assert Pay.respond_to?(:application_name)
+    assert Pay.respond_to?(:application_name=)
+  end
+
+  test 'can set support email' do
+    assert Pay.respond_to?(:support_email)
+    assert Pay.respond_to?(:support_email=)
+  end
 end

@@ -19,9 +19,13 @@ module Pay
   mattr_accessor :subscription_class
   @@subscription_class = 'Pay::Subscription'
 
-  mattr_accessor :business_name
+  # Business details for receipts
+  mattr_accessor :application_name
   mattr_accessor :business_address
+  mattr_accessor :business_name
+  mattr_accessor :support_email
 
+  # Email configuration
   mattr_accessor :send_emails
   @@send_emails = true
 
