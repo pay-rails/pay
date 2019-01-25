@@ -24,7 +24,7 @@ module Pay
         subscription = event.subscription
         return if subscription.nil?
 
-        user = User.find_by(processor: :braintree, processor_id: subscription.id)
+        user = Pay.user_model.find_by(processor: :braintree, processor_id: subscription.id)
         return unless user.present?
 
         charge = user.save_braintree_transaction(subscription.transactions.first)
@@ -38,7 +38,7 @@ module Pay
         subscription = event.subscription
         return if subscription.nil?
 
-        user = User.find_by(processor: :braintree, processor_id: subscription.id)
+        user = Pay.user_model.find_by(processor: :braintree, processor_id: subscription.id)
         return unless user.present?
 
         # User canceled or failed to make payments
