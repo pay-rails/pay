@@ -5,7 +5,7 @@ module Pay
       class ChargeSucceeded
         def call(event)
           object = event.data.object
-          user   = User.find_by(
+          user   = Pay.user_model.find_by(
             processor: :stripe,
             processor_id: object.customer
           )
@@ -41,7 +41,6 @@ module Pay
           end
         end
       end
-
     end
   end
 end
