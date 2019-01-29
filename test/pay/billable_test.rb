@@ -9,6 +9,13 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert_kind_of Module, Pay::Billable
   end
 
+  test 'customer name' do
+    assert_equal "", User.new.customer_name
+    assert_equal "Gob", User.new(first_name: "Gob").customer_name
+    assert_equal "Bluth", User.new(last_name: "Bluth").customer_name
+    assert_equal "Gob Bluth", User.new(first_name: "Gob", last_name: "Bluth").customer_name
+  end
+
   test 'has subscriptions' do
     assert @billable.respond_to?(:subscriptions)
   end

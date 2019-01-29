@@ -85,6 +85,10 @@ end
 
 **To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
 
+To sync over customer names, your Billable model should respond to
+`first_name` and `last_name` methods. We'll sync these over to your
+Customer objects in Stripe and Braintree.
+
 ## Configuration
 
 You can create an initializer `config/initializers/pay.rb`

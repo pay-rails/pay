@@ -24,6 +24,10 @@ module Pay
       customer
     end
 
+    def customer_name
+      [try(:first_name), try(:last_name)].compact.join(" ")
+    end
+
     def charge(amount_in_cents, options={})
       check_for_processor
       send("create_#{processor}_charge", amount_in_cents, options)

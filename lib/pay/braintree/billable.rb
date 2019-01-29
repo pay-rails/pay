@@ -68,7 +68,9 @@ module Pay
 
       def update_braintree_email!
         braintree_customer.update(
-          "email" => email
+          email:      email,
+          first_name: try(:first_name),
+          last_name:  try(:last_name),
         )
       end
 
