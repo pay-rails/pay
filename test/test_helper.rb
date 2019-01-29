@@ -12,7 +12,6 @@ ActiveRecord::Migrator.migrations_paths = [File.expand_path("../../test/dummy/db
 ActiveRecord::Migrator.migrations_paths << File.expand_path('../../db/migrate', __FILE__)
 require "rails/test_help"
 
-ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: ':memory:'
 require "support/schema"
 
 # Filter out Minitest backtrace while allowing backtrace from other libraries
