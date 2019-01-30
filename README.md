@@ -21,6 +21,9 @@ gem 'stripe_event', '~> 2.2'
 
 # To use Braintree + PayPal, also include:
 gem 'braintree', '< 3.0', '>= 2.92.0'
+
+# To use Receipts
+gem 'receipts', '~> 0.2.2'
 ```
 
 And then execute:
