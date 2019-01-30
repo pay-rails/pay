@@ -19,11 +19,14 @@ StripeEvent.configure do |events|
   # This probably should be ignored for monthly subscriptions.
   events.subscribe 'invoice.upcoming', Pay::Stripe::Webhooks::SubscriptionRenewing.new
 
-  # When a customers subscription is canceled, we want to update our records
-  events.subscribe 'customer.subscription.deleted', Pay::Stripe::Webhooks::SubscriptionDeleted.new
+  # If a subscription is manually created on Stripe, we want to sync
+  events.subscribe 'customer.subscription.created', Pay::Stripe::Webhooks::SubscriptionCreated.new
 
   # If the plan, quantity, or trial ending date is updated on Stripe, we want to sync
   events.subscribe 'customer.subscription.updated', Pay::Stripe::Webhooks::SubscriptionUpdated.new
+
+  # When a customers subscription is canceled, we want to update our records
+  events.subscribe 'customer.subscription.deleted', Pay::Stripe::Webhooks::SubscriptionDeleted.new
 
   # Monitor changes for customer's default card changing
   events.subscribe 'customer.updated', Pay::Stripe::Webhooks::CustomerUpdated.new
