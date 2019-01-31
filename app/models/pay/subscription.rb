@@ -1,5 +1,7 @@
 module Pay
   class Subscription < ApplicationRecord
+    self.table_name = Pay.subscription_table
+
     # Associations
     belongs_to :owner, class_name: Pay.billable_class, foreign_key: :owner_id
 

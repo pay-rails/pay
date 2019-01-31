@@ -6,18 +6,20 @@ module Pay
   # Define who owns the subscription
   mattr_accessor :billable_class
   mattr_accessor :billable_table
-  mattr_accessor :chargeable_class
-  mattr_accessor :chargeable_table
   mattr_accessor :braintree_gateway
 
   @@billable_class = 'User'
   @@billable_table = @@billable_class.tableize
 
+  mattr_accessor :chargeable_class
+  mattr_accessor :chargeable_table
   @@chargeable_class = 'Pay::Charge'
   @@chargeable_table = 'pay_charges'
 
   mattr_accessor :subscription_class
+  mattr_accessor :subscription_table
   @@subscription_class = 'Pay::Subscription'
+  @@subscription_table = 'pay_subscriptions'
 
   # Business details for receipts
   mattr_accessor :application_name
