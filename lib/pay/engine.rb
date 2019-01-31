@@ -1,5 +1,7 @@
 module Pay
   class Engine < ::Rails::Engine
+    isolate_namespace Pay
+
     initializer 'pay.processors' do
       # Include processor backends
       require 'pay/stripe'    if defined? ::Stripe
