@@ -19,7 +19,7 @@ class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
       processor_plan: 'some-plan'
     )
 
-    User.any_instance.expects(:update_card_from_stripe)
+    User.any_instance.expects(:sync_card_from_stripe)
     Pay::Stripe::Webhooks::CustomerUpdated.new.call(@event)
   end
 
@@ -36,7 +36,7 @@ class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
       processor_plan: 'some-plan'
     )
 
-    User.any_instance.expects(:update_card_from_stripe).never
+    User.any_instance.expects(:sync_card_from_stripe).never
     Pay::Stripe::Webhooks::CustomerUpdated.new.call(@event)
   end
 end

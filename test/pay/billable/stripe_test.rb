@@ -80,8 +80,9 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     card = @stripe_helper.generate_card_token(brand: 'Visa', last4: '4242')
     @billable.update_card(card)
 
-    assert @billable.card_type == 'Visa'
-    assert @billable.card_last4 == '4242'
+    assert_equal 'Visa', @billable.card_type
+    assert_equal '4242', @billable.card_last4
+    assert_equal nil, @billable.card_token
 
     card = @stripe_helper.generate_card_token(
       brand: 'Discover',

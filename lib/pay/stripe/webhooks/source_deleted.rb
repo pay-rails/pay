@@ -10,7 +10,7 @@ module Pay
           # Couldn't find user, we can skip
           return unless user.present?
 
-          user.update_card_from_stripe
+          user.sync_card_from_stripe
         end
       end
 

@@ -1,6 +1,7 @@
 module Pay
   module Braintree
     module Billable
+      # Handles Billable#customer
       def braintree_customer
         if processor_id?
           gateway.customer.find(processor_id)
@@ -23,6 +24,7 @@ module Pay
         end
       end
 
+      # Handles Billable#charge
       def create_braintree_charge(amount, options={})
         args = {
           amount: amount / 100.0,
@@ -35,6 +37,7 @@ module Pay
         result
       end
 
+      # Handles Billable#subscribe
       def create_braintree_subscription(name, plan, options={})
         token = customer.payment_methods.find(&:default?).try(:token)
         raise Pay::Error, "Customer has no default payment method" if token.nil?
@@ -50,6 +53,7 @@ module Pay
         create_subscription(result.subscription, 'braintree', name, plan)
       end
 
+      # Handles Billable#update_card
       def update_braintree_card(token)
         result = gateway.payment_method.create(
           customer_id: processor_id,
@@ -61,7 +65,6 @@ module Pay
         )
         raise Pay::Error.new(result.message) unless result.success?
 
-        self.card_token = nil
         update_braintree_card_on_file result.payment_method
         update_subscriptions_to_payment_method(result.payment_method.token)
       end
@@ -141,6 +144,9 @@ module Pay
               card_last4: payment_method.email
             )
           end
+
+          # Clear the card token so we don't accidentally update twice
+          self.card_token = nil
         end
 
         def card_details_for_braintree_transaction(transaction)

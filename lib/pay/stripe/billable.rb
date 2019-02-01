@@ -1,6 +1,7 @@
 module Pay
   module Stripe
     module Billable
+      # Handles Billable#customer
       def stripe_customer
         if processor_id?
           ::Stripe::Customer.retrieve(processor_id)
@@ -9,6 +10,7 @@ module Pay
         end
       end
 
+      # Handles Billable#charge
       def create_stripe_charge(amount, options={})
         args = {
           amount: amount,
@@ -23,20 +25,25 @@ module Pay
         Pay::Stripe::Webhooks::ChargeSucceeded.new.create_charge(self, stripe_charge)
       end
 
+      # Handles Billable#subscribe
       def create_stripe_subscription(name, plan, options={})
         stripe_sub   = customer.subscriptions.create(plan: plan, trial_from_plan: true)
         subscription = create_subscription(stripe_sub, 'stripe', name, plan)
         subscription
       end
 
+      # Handles Billable#update_card
       def update_stripe_card(token)
         customer = stripe_customer
         token = ::Stripe::Token.retrieve(token)
 
         return if token.card.id == customer.default_source
-        result = save_stripe_card(token, customer)
-        self.card_token = nil
-        result
+
+        card = customer.sources.create(source: token.id)
+        customer.default_source = card.id
+        customer.save
+
+        update_stripe_card_on_file(card)
       end
 
       def update_stripe_email!
@@ -63,12 +70,13 @@ module Pay
         processor == "stripe"
       end
 
-      def update_card_from_stripe
-        customer = stripe_customer
-        default_source_id = customer.default_source
+      # Used by webhooks when the customer or source changes
+      def sync_card_from_stripe
+        stripe_cust = stripe_customer
+        default_source_id = stripe_cust.default_source
 
         if default_source_id.present?
-          card = customer.sources.data.find{ |s| s.id == default_source_id }
+          card = stripe_customer.sources.data.find{ |s| s.id == default_source_id }
           update(
             card_type:      card.brand,
             card_last4:     card.last4,
@@ -97,17 +105,11 @@ module Pay
         customer
       end
 
-      def save_stripe_card(token, customer)
-        card = customer.sources.create(source: token.id)
-        customer.default_source = card.id
-        customer.save
-        update_stripe_card_on_file(card)
-      end
-
       def stripe_trial_end_date(stripe_sub)
         stripe_sub.trial_end.present? ? Time.at(stripe_sub.trial_end) : nil
       end
 
+      # Save the card to the database as the user's current card
       def update_stripe_card_on_file(card)
         update!(
           card_type:      card.brand,
@@ -115,6 +117,8 @@ module Pay
           card_exp_month: card.exp_month,
           card_exp_year:  card.exp_year
         )
+
+        self.card_token = nil
       end
     end
   end

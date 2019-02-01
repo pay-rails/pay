@@ -28,10 +28,12 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
       result = @billable.customer
 
       assert_equal 'Visa', @billable.card_type
+      assert_equal nil, @billable.card_token
     end
   end
 
   test 'fails with invalid cards' do
+    # This requires Card Verification to be enabled in the Braintree account
     VCR.use_cassette('braintree-invalid-card') do
       @billable.card_token = 'fake-processor-declined-visa-nonce'
       err = assert_raises Pay::Error do
@@ -47,6 +49,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
       @billable.customer # Make sure we have a customer object
       @billable.update_card('fake-valid-discover-nonce')
       assert_equal 'Discover', @billable.card_type
+      assert_equal nil, @billable.card_token
     end
   end
 
@@ -88,7 +91,6 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
 
   test 'can create a subscription' do
     VCR.use_cassette('braintree-subscribe') do
-      @billable.card_token = 'fake-valid-visa-nonce'
       @billable.card_token = 'fake-valid-visa-nonce'
       @billable.subscribe
       assert @billable.subscribed?
