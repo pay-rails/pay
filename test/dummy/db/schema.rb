@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2017_07_27_235816) do
 
-  create_table "charges", force: :cascade do |t|
+  create_table "pay_charges", force: :cascade do |t|
     t.integer "owner_id"
     t.string "processor", null: false
     t.string "processor_id", null: false
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2017_07_27_235816) do
     t.index ["owner_id"], name: "index_charges_on_owner_id"
   end
 
-  create_table "subscriptions", force: :cascade do |t|
+  create_table "pay_subscriptions", force: :cascade do |t|
     t.integer "owner_id"
     t.string "name", null: false
     t.string "processor", null: false
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2017_07_27_235816) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "email"
     t.string "processor"
     t.string "processor_id"
     t.datetime "trial_ends_at"
