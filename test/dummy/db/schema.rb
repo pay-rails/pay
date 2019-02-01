@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(version: 2017_07_27_235816) do
     t.string "processor"
     t.string "processor_id"
     t.datetime "trial_ends_at"
-    t.string "card_brand"
+    t.string "card_type"
     t.string "card_last4"
     t.string "card_exp_month"
     t.string "card_exp_year"

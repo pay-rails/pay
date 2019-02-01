@@ -13,7 +13,7 @@ module Pay
           user.update(
             processor_id:   nil,
             trial_ends_at:  nil,
-            card_brand:     nil,
+            card_type:      nil,
             card_last4:     nil,
             card_exp_month: nil,
             card_exp_year:  nil,

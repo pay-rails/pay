@@ -27,7 +27,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
       @billable.card_token = 'fake-valid-visa-nonce'
       result = @billable.customer
 
-      assert_equal 'Visa', @billable.card_brand
+      assert_equal 'Visa', @billable.card_type
     end
   end
 
@@ -46,7 +46,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
     VCR.use_cassette('braintree-update-card') do
       @billable.customer # Make sure we have a customer object
       @billable.update_card('fake-valid-discover-nonce')
-      assert_equal 'Discover', @billable.card_brand
+      assert_equal 'Discover', @billable.card_type
     end
   end
 

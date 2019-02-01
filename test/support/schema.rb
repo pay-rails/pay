@@ -8,7 +8,7 @@ ActiveRecord::Schema.define do
     t.string :email
     t.string :processor
     t.string :processor_id
-    t.string :card_brand
+    t.string :card_type
     t.string :card_last4
     t.string :card_exp_month
     t.string :card_exp_year

@@ -41,7 +41,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
     assert_not_nil @billable.processor_id
 
-    assert @billable.card_brand == 'Visa'
+    assert @billable.card_type == 'Visa'
     assert @billable.card_last4 == '9191'
   end
 
@@ -80,7 +80,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     card = @stripe_helper.generate_card_token(brand: 'Visa', last4: '4242')
     @billable.update_card(card)
 
-    assert @billable.card_brand == 'Visa'
+    assert @billable.card_type == 'Visa'
     assert @billable.card_last4 == '4242'
 
     card = @stripe_helper.generate_card_token(
@@ -89,7 +89,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     )
     @billable.update_card(card)
 
-    assert @billable.card_brand == 'Discover'
+    assert @billable.card_type == 'Discover'
     assert @billable.card_last4 == '1117'
   end
 
@@ -146,7 +146,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
     # This should trigger update_card
     assert_equal @billable.customer, customer
-    assert_equal @billable.card_brand, 'Discover'
+    assert_equal @billable.card_type, 'Discover'
     assert_equal @billable.card_last4, '1117'
   end
 

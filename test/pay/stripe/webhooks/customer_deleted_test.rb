@@ -11,7 +11,7 @@ class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
       email: 'gob@bluth.com',
       processor: :stripe,
       processor_id: @event.data.object.id,
-      card_brand: 'Visa',
+      card_type: 'Visa',
       card_exp_month: 1,
       card_exp_year: 2019,
       card_last4: '4444',
@@ -28,7 +28,7 @@ class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
     Pay::Stripe::Webhooks::CustomerDeleted.new.call(@event)
 
     assert_nil user.reload.processor_id
-    assert_nil user.reload.card_brand
+    assert_nil user.reload.card_type
     assert_nil user.reload.card_exp_month
     assert_nil user.reload.card_exp_year
     assert_nil user.reload.card_last4

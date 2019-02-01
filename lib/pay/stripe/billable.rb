@@ -70,15 +70,15 @@ module Pay
         if default_source_id.present?
           card = customer.sources.data.find{ |s| s.id == default_source_id }
           update(
-            card_brand: card.brand,
-            card_last4: card.brand,
+            card_type:      card.brand,
+            card_last4:     card.last4,
             card_exp_month: card.exp_month,
-            card_exp_year: card.exp_year
+            card_exp_year:  card.exp_year
           )
 
         # Customer has no default payment source
         else
-          update(card_brand: nil, card_last4: nil)
+          update(card_type: nil, card_last4: nil)
         end
       end
 
@@ -110,10 +110,10 @@ module Pay
 
       def update_stripe_card_on_file(card)
         update!(
-          card_brand: card.brand,
-          card_last4: card.last4,
+          card_type:      card.brand,
+          card_last4:     card.last4,
           card_exp_month: card.exp_month,
-          card_exp_year: card.exp_year
+          card_exp_year:  card.exp_year
         )
       end
     end

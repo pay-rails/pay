@@ -104,7 +104,7 @@ module Pay
       end
 
       def paypal?
-        braintree? && card_brand == "PayPal"
+        braintree? && card_type == "PayPal"
       end
 
       def save_braintree_transaction(transaction)
@@ -129,7 +129,7 @@ module Pay
           case payment_method
           when ::Braintree::CreditCard
             update!(
-              card_brand: payment_method.card_type,
+              card_type: payment_method.card_type,
               card_last4: payment_method.last_4,
               card_exp_month: payment_method.expiration_month,
               card_exp_year: payment_method.expiration_year
@@ -137,7 +137,7 @@ module Pay
 
           when ::Braintree::PayPalAccount
             update!(
-              card_brand: "PayPal",
+              card_type: "PayPal",
               card_last4: payment_method.email
             )
           end
