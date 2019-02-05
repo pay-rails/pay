@@ -168,23 +168,24 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   end
 
   test 'handles exception when creating a customer' do
-    custom_error = StandardError.new("Oops")
+    custom_error = ::Stripe::StripeError.new("Oops")
     StripeMock.prepare_error(custom_error, :new_customer)
 
     exception = assert_raises(Pay::Error) { @billable.stripe_customer }
-    assert_equal( "Oops", exception.message )
+    assert_equal "Oops", exception.message
+    assert_equal custom_error, exception.cause
   end
 
   test 'handles exception when creating a charge' do
-    custom_error = StandardError.new("Oops")
+    custom_error = ::Stripe::StripeError.new("Oops")
     StripeMock.prepare_error(custom_error, :new_charge)
 
     exception = assert_raises(Pay::Error) { @billable.charge(1000) }
-    assert_equal( "Oops", exception.message )
+    assert_equal "Oops", exception.message
   end
 
   test 'handles exception when creating a subscription' do
-    custom_error = StandardError.new("Oops")
+    custom_error = ::Stripe::StripeError.new("Oops")
     StripeMock.prepare_error(custom_error, :create_customer_subscription)
 
     @billable.card_token = @stripe_helper.generate_card_token(
@@ -194,11 +195,11 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     )
 
     exception = assert_raises(Pay::Error) { @billable.subscribe plan: 'test-monthly' }
-    assert_equal( "Oops", exception.message )
+    assert_equal "Oops", exception.message
   end
 
   test 'handles exception when updating a card' do
-    custom_error = StandardError.new("Oops")
+    custom_error = ::Stripe::StripeError.new("Oops")
     StripeMock.prepare_error(custom_error, :create_source)
 
     card_token = @stripe_helper.generate_card_token(
@@ -208,6 +209,6 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     )
 
     exception = assert_raises(Pay::Error) { @billable.update_card(card_token) }
-    assert_equal( "Oops", exception.message )
+    assert_equal "Oops", exception.message
   end
 end

@@ -6,6 +6,8 @@ module Pay
 
       def stripe_charge
         Stripe::Charge.retrieve(processor_id)
+      rescue ::Stripe::StripeError => e
+        raise Error, e.message
       end
 
       def stripe_refund!(amount)
@@ -15,6 +17,8 @@ module Pay
         )
 
         update(amount_refunded: amount)
+      rescue ::Stripe::StripeError => e
+        raise Error, e.message
       end
     end
 

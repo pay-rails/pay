@@ -13,11 +13,15 @@ module Pay
           })
           update(ends_at: subscription.billing_period_end_date)
         end
+      rescue ::Braintree::BraintreeError => e
+        raise Error, e.message
       end
 
       def braintree_cancel_now!
         gateway.subscription.cancel(processor_subscription.id)
         update(ends_at: Time.zone.now)
+      rescue ::Braintree::BraintreeError => e
+        raise Error, e.message
       end
 
       def braintree_resume
@@ -40,6 +44,8 @@ module Pay
             number_of_billing_cycles: nil
           })
         end
+      rescue ::Braintree::BraintreeError => e
+        raise Error, e.message
       end
 
       def braintree_swap(plan)
@@ -75,8 +81,10 @@ module Pay
         if result.success?
           update(processor_plan: braintree_plan.id, ends_at: nil)
         else
-          raise StandardError, "Braintree failed to swap plans: #{result.message}"
+          raise Error, "Braintree failed to swap plans: #{result.message}"
         end
+      rescue ::Braintree::BraintreeError => e
+        raise Error, e.message
       end
 
       private

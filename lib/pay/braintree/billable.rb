@@ -22,6 +22,8 @@ module Pay
 
           result.customer
         end
+      rescue ::Braintree::BraintreeError => e
+        raise Error, e.message
       end
 
       # Handles Billable#charge
@@ -35,6 +37,8 @@ module Pay
         result = gateway.transaction.sale(args)
         save_braintree_transaction(result.transaction) if result.success?
         result
+      rescue ::BraintreeError => e
+        raise Error, e.message
       end
 
       # Handles Billable#subscribe
@@ -51,6 +55,8 @@ module Pay
         raise Pay::Error.new(result.message) unless result.success?
 
         create_subscription(result.subscription, 'braintree', name, plan)
+      rescue ::Braintree::BraintreeError => e
+        raise Error, e.message
       end
 
       # Handles Billable#update_card
@@ -67,6 +73,8 @@ module Pay
 
         update_braintree_card_on_file result.payment_method
         update_subscriptions_to_payment_method(result.payment_method.token)
+      rescue ::Braintree::BraintreeError => e
+        raise Error, e.message
       end
 
       def update_braintree_email!

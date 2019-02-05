@@ -8,7 +8,7 @@ module Pay
         else
           create_stripe_customer
         end
-      rescue => e
+      rescue ::Stripe::StripeError => e
         raise Error, e.message
       end
 
@@ -25,7 +25,7 @@ module Pay
 
         # Save the charge to the db
         Pay::Stripe::Webhooks::ChargeSucceeded.new.create_charge(self, stripe_charge)
-      rescue => e
+      rescue ::Stripe::StripeError => e
         raise Error, e.message
       end
 
@@ -34,7 +34,7 @@ module Pay
         stripe_sub   = customer.subscriptions.create(plan: plan, trial_from_plan: true)
         subscription = create_subscription(stripe_sub, 'stripe', name, plan)
         subscription
-      rescue => e
+      rescue ::Stripe::StripeError => e
         raise Error, e.message
       end
 
@@ -50,7 +50,7 @@ module Pay
         customer.save
 
         update_stripe_card_on_file(card)
-      rescue => e
+      rescue ::Stripe::StripeError => e
         raise Error, e.message
       end
 
