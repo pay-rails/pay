@@ -3,13 +3,6 @@ require 'minitest/mock'
 
 class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   setup do
-    Pay.braintree_gateway = Braintree::Gateway.new(
-      environment: :sandbox,
-      merchant_id: "zyfwpztymjqdcc5g",
-      public_key:  "5r59rrxhn89npc9n",
-      private_key: "00f0df79303e1270881e5feda7788927",
-    )
-
     @billable = User.new email: "test@example.com"
     @billable.processor = "braintree"
   end
@@ -28,7 +21,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
       result = @billable.customer
 
       assert_equal 'Visa', @billable.card_type
-      assert_equal nil, @billable.card_token
+      assert_nil @billable.card_token
     end
   end
 
@@ -49,33 +42,29 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
       @billable.customer # Make sure we have a customer object
       @billable.update_card('fake-valid-discover-nonce')
       assert_equal 'Discover', @billable.card_type
-      assert_equal nil, @billable.card_token
+      assert_nil @billable.card_token
     end
   end
 
   test 'can charge card with credit card' do
     VCR.use_cassette('braintree-credit-card-charge') do
       @billable.card_token = 'fake-valid-visa-nonce'
-      result = @billable.charge(29_00)
-      assert result.success?
-      assert_equal 29.00, result.transaction.amount
+      charge = @billable.charge(29_00)
 
       # Make sure it saved to the database correctly
-      assert_equal result.transaction.id, @billable.charges.last.processor_id
-      assert_equal 29_00, @billable.charges.last.amount
-      assert_equal "Visa", @billable.charges.last.card_type
+      assert_equal 29_00, charge.amount
+      assert_equal "Visa", charge.card_type
     end
   end
 
   test 'can charge card with venmo' do
     VCR.use_cassette('braintree-venmo-charge') do
       @billable.card_token = 'fake-venmo-account-nonce'
-      result = @billable.charge(29_00)
-      assert result.success?
+      charge = @billable.charge(29_00)
 
       # Make sure it saved to the database correctly
-      assert_equal result.transaction.id, @billable.charges.last.processor_id
-      assert_equal "Venmo", @billable.charges.last.card_type
+      assert_equal 29_00, charge.amount
+      assert_equal "Venmo", charge.card_type
     end
   end
 
@@ -84,8 +73,8 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   test 'handles charge failures' do
     VCR.use_cassette('braintree-failed-charge') do
       @billable.card_token = 'fake-valid-visa-nonce'
-      result = @billable.charge(2000_00)
-      assert !result.success?
+      charge = @billable.charge(2000_00)
+      assert_nil charge
     end
   end
 

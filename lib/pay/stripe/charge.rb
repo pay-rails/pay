@@ -10,13 +10,13 @@ module Pay
         raise Error, e.message
       end
 
-      def stripe_refund!(amount)
+      def stripe_refund!(amount_to_refund)
         Stripe::Refund.create(
           charge: processor_id,
-          amount: amount
+          amount: amount_to_refund
         )
 
-        update(amount_refunded: amount)
+        update(amount_refunded: amount_to_refund)
       rescue ::Stripe::StripeError => e
         raise Error, e.message
       end

@@ -15,6 +15,7 @@ module Pay
 
           charge = create_charge(user, object)
           notify_user(user, charge)
+          charge
         end
 
         def create_charge(user, object)

@@ -19,8 +19,9 @@ module Pay
       send("#{processor}_charge")
     end
 
-    def refund!(amount = nil)
-      send("#{processor}_refund!", amount)
+    def refund!(refund_amount = nil)
+      refund_amount ||= amount
+      send("#{processor}_refund!", refund_amount)
     end
 
     def charged_to

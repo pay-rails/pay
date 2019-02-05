@@ -23,7 +23,7 @@ module Pay
 
         stripe_charge = ::Stripe::Charge.create(args)
 
-        # Save the charge to the db
+        # Save the charge to the db, returns Charge
         Pay::Stripe::Webhooks::ChargeSucceeded.new.create_charge(self, stripe_charge)
       rescue ::Stripe::StripeError => e
         raise Error, e.message

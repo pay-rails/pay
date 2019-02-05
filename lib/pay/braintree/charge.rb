@@ -10,8 +10,10 @@ module Pay
         raise Error, e.message
       end
 
-      def braintree_refund!(amount)
-        Pay.braintree_gateway.transaction.refund(processor_id, amount / 100.0)
+      def braintree_refund!(amount_to_refund)
+        Pay.braintree_gateway.transaction.refund(processor_id, amount_to_refund / 100.0)
+
+        update(amount_refunded: amount_to_refund)
       rescue ::Braintree::BraintreeError => e
         raise Error, e.message
       end

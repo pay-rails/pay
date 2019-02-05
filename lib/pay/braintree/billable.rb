@@ -36,7 +36,6 @@ module Pay
 
         result = gateway.transaction.sale(args)
         save_braintree_transaction(result.transaction) if result.success?
-        result
       rescue ::BraintreeError => e
         raise Error, e.message
       end
