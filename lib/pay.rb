@@ -62,6 +62,6 @@ module Pay
     support_email
   end
 
-  class Error < StandardError;
+  class Error < StandardError
   end
 end
