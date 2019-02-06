@@ -189,25 +189,17 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     custom_error = ::Stripe::StripeError.new("Oops")
     StripeMock.prepare_error(custom_error, :create_customer_subscription)
 
-    @billable.card_token = @stripe_helper.generate_card_token(
-      brand: 'Visa',
-      last4: '9191',
-      exp_year: 1984
-    )
+    @billable.card_token = @stripe_helper.generate_card_token(brand: 'Visa', last4: '9191', exp_year: 1984)
 
     exception = assert_raises(Pay::Error) { @billable.subscribe plan: 'test-monthly' }
     assert_equal "Oops", exception.message
   end
 
   test 'handles exception when updating a card' do
+    card_token = @stripe_helper.generate_card_token(brand: 'Visa', last4: '9191', exp_year: 1984)
+
     custom_error = ::Stripe::StripeError.new("Oops")
     StripeMock.prepare_error(custom_error, :create_source)
-
-    card_token = @stripe_helper.generate_card_token(
-      brand: 'Visa',
-      last4: '9191',
-      exp_year: 1984
-    )
 
     exception = assert_raises(Pay::Error) { @billable.update_card(card_token) }
     assert_equal "Oops", exception.message
