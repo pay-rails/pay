@@ -31,7 +31,8 @@ module Pay
 
       # Handles Billable#subscribe
       def create_stripe_subscription(name, plan, options={})
-        stripe_sub   = customer.subscriptions.create(plan: plan, trial_from_plan: true)
+        opts = { plan: plan, trial_from_plan: true).merge(options)
+        stripe_sub   = customer.subscriptions.create(opts)
         subscription = create_subscription(stripe_sub, 'stripe', name, plan)
         subscription
       rescue ::Stripe::StripeError => e
