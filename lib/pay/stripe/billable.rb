@@ -2,6 +2,8 @@ module Pay
   module Stripe
     module Billable
       # Handles Billable#customer
+      #
+      # Returns Stripe::Customer
       def stripe_customer
         if processor_id?
           ::Stripe::Customer.retrieve(processor_id)
@@ -13,6 +15,8 @@ module Pay
       end
 
       # Handles Billable#charge
+      #
+      # Returns Pay::Charge
       def create_stripe_charge(amount, options={})
         args = {
           amount: amount,
@@ -30,6 +34,8 @@ module Pay
       end
 
       # Handles Billable#subscribe
+      #
+      # Returns Pay::Subscription
       def create_stripe_subscription(name, plan, options={})
         opts = { plan: plan, trial_from_plan: true).merge(options)
         stripe_sub   = customer.subscriptions.create(opts)
@@ -40,6 +46,8 @@ module Pay
       end
 
       # Handles Billable#update_card
+      #
+      # Returns true if successful
       def update_stripe_card(token)
         customer = stripe_customer
         token = ::Stripe::Token.retrieve(token)
@@ -51,6 +59,7 @@ module Pay
         customer.save
 
         update_stripe_card_on_file(card)
+        true
       rescue ::Stripe::StripeError => e
         raise Error, e.message
       end
