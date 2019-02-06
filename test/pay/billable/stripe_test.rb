@@ -11,6 +11,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
     @stripe_helper = StripeMock.create_test_helper
     @stripe_helper.create_plan(id: 'test-monthly', amount: 1500)
+    @stripe_helper.create_coupon # id: '10BUCKS'
   end
 
   teardown do
@@ -210,5 +211,12 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
     exception = assert_raises(Pay::Error) { @billable.update_card(card_token) }
     assert_equal "Oops", exception.message
+  end
+
+  test 'handles coupons' do
+    @billable.card_token = @stripe_helper.generate_card_token(brand: 'Visa', last4: '9191', exp_year: 1984)
+
+    subscription = @billable.subscribe(plan: 'test-monthly', coupon: '10BUCKS')
+    assert_equal '10BUCKS', subscription.processor_subscription.discount.coupon.id
   end
 end
