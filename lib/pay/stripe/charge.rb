@@ -4,6 +4,10 @@ module Pay
     module Charge
       extend ActiveSupport::Concern
 
+      def stripe?
+        processor == "stripe"
+      end
+
       def stripe_charge
         Stripe::Charge.retrieve(processor_id)
       rescue ::Stripe::StripeError => e

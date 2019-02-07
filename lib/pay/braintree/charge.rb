@@ -4,6 +4,10 @@ module Pay
     module Charge
       extend ActiveSupport::Concern
 
+      def braintree?
+        processor == "stripe"
+      end
+
       def braintree_charge
         Pay.braintree_gateway.transaction.find(processor_id)
       rescue ::Braintree::BraintreeError => e

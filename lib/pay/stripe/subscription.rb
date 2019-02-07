@@ -1,6 +1,10 @@
 module Pay
   module Stripe
     module Subscription
+      def stripe?
+        processor == "stripe"
+      end
+
       def stripe_cancel
         subscription = processor_subscription
         subscription.cancel_at_period_end = true
