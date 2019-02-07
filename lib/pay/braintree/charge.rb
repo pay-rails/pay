@@ -5,7 +5,7 @@ module Pay
       extend ActiveSupport::Concern
 
       def braintree?
-        processor == "stripe"
+        processor == "braintree"
       end
 
       def braintree_charge
