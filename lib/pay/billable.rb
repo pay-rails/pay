@@ -13,7 +13,7 @@ module Pay
       attribute :plan, :string
       attribute :quantity, :integer
       attribute :card_token, :string
-   end
+    end
 
     def customer
       check_for_processor
@@ -28,7 +28,7 @@ module Pay
       [try(:first_name), try(:last_name)].compact.join(" ")
     end
 
-    def charge(amount_in_cents, options={})
+    def charge(amount_in_cents, options = {})
       check_for_processor
       send("create_#{processor}_charge", amount_in_cents, options)
     end
@@ -45,11 +45,11 @@ module Pay
     end
 
     def on_trial?(name: 'default', plan: nil)
-      # Generic trials don't have plans or custom names
-      return true if plan.nil? && name == 'default' && on_generic_trial?
+      return true if default_generic_trial?(name, plan)
 
       sub = subscription(name: name)
       return sub && sub.on_trial? if plan.nil?
+
       sub && sub.on_trial? && sub.processor_plan == plan
     end
 
@@ -95,10 +95,15 @@ module Pay
         processor: processor,
         processor_id: subscription.id,
         processor_plan: plan,
-        trial_ends_at: send("#{processor}_trial_end_date",subscription),
+        trial_ends_at: send("#{processor}_trial_end_date", subscription),
         quantity: qty,
         ends_at: nil
       )
+    end
+
+    def default_generic_trial?(name, plan)
+      # Generic trials don't have plans or custom names
+      plan.nil? && name == 'default' && on_generic_trial?
     end
   end
 end

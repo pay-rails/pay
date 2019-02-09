@@ -1,5 +1,7 @@
 module Pay
   class Engine < ::Rails::Engine
+    engine_name 'pay'
+
     initializer 'pay.processors' do
       # Include processor backends
       require 'pay/stripe'    if defined? ::Stripe
@@ -10,9 +12,7 @@ module Pay
       Pay::Stripe.setup    if defined? ::Stripe
       Pay::Braintree.setup if defined? ::Braintree
 
-      if defined?(Receipts::Receipt)
-        Pay.charge_model.include Pay::Receipts
-      end
+      Pay.charge_model.include Pay::Receipts if defined? Receipts::Receipt
     end
   end
 end
