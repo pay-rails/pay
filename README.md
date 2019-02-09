@@ -1,7 +1,5 @@
 <p align="center"><img src="logo.png"></p>
 
----
-
 ## Pay
 
 ### Payments engine for Ruby on Rails
