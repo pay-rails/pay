@@ -56,10 +56,10 @@ module Pay
 
   def self.receipts_supported?
     charge_model.respond_to?(:receipt) &&
-    application_name.present? &&
-    business_name &&
-    business_address &&
-    support_email
+      application_name.present? &&
+      business_name &&
+      business_address &&
+      support_email
   end
 
   class Error < StandardError

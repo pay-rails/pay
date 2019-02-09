@@ -7,8 +7,8 @@ require 'pay/version'
 Gem::Specification.new do |s|
   s.name        = 'pay'
   s.version     = Pay::VERSION
-  s.authors     = ['Jason Charnes']
-  s.email       = ['jason@thecharnes.com']
+  s.authors     = ['Jason Charnes', 'Chris Oliver']
+  s.email       = ['jason@thecharnes.com', 'excid3@gmail.com']
   s.homepage    = 'https://github.com/jasoncharnes/pay'
   s.summary     = 'A Ruby on Rails subscription engine.'
   s.description = 'A Ruby on Rails subscription engine.'
@@ -32,7 +32,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'byebug'
   s.add_development_dependency 'mocha'
   s.add_development_dependency 'pry'
-  s.add_development_dependency 'rubocop'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'stripe-ruby-mock', '~> 2.5'
   s.add_development_dependency 'vcr'
