@@ -43,15 +43,27 @@ module Pay
   end
 
   def self.user_model
-    billable_class.constantize
+    if Rails.application.config.cache_classes
+      @@user_model ||= billable_class.constantize
+    else
+      billable_class.constantize
+    end
   end
 
   def self.charge_model
-    chargeable_class.constantize
+    if Rails.application.config.cache_classes
+      @@charge_model ||= chargeable_class.constantize
+    else
+      chargeable_class.constantize
+    end
   end
 
   def self.subscription_model
-    subscription_class.constantize
+    if Rails.application.config.cache_classes
+      @@subscription_model ||= subscription_class.constantize
+    else
+      subscription_class.constantize
+    end
   end
 
   def self.receipts_supported?
