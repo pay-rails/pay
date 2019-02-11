@@ -396,6 +396,36 @@ user = User.find_by(email: 'lucille2@bluthcompany.co')
 user.subscription.processor_subscription
 ```
 
+### Customizing Pay Models
+
+Want to add methods to `Pay::Subscription` or `Pay::Charge`? You can
+define a concern and simply include it in the model when Rails loads the
+code.
+
+We'll be using the `to_prepare` method to allow our concerns to be
+included every time Rails reloads the models in development as well.
+
+```ruby
+# app/models/concerns/subscription_extensions.rb
+module SubscriptionExtensions
+  extend ActiveSupport::Concern
+
+  included do
+    # associations and other class level things go here
+  end
+
+  # instance methods and code go here
+end
+
+```ruby
+# config/initializers/subscription_extensions.rb
+
+# Re-include the SubscriptionExtensions every time Rails reloads
+Rails.application.config.to_prepare do
+  Pay.subscription_model.include SubscriptionExtensions
+end
+```
+
 ## Contributors
 
 - [Jason Charnes](https://twitter.com/jmcharnes)
