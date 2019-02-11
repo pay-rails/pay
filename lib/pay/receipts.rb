@@ -1,7 +1,7 @@
 module Pay
   module Receipts
     def filename
-      "receipt-#{created_at.strftime("%Y-%m-%d")}.pdf"
+      "receipt-#{created_at.strftime('%Y-%m-%d')}.pdf"
     end
 
     # Must return a file object
@@ -18,7 +18,7 @@ module Pay
           address: Pay.config.business_address,
           email:   Pay.config.support_email,
         },
-        line_items: line_items,
+        line_items: line_items
       )
     end
 

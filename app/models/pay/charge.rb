@@ -6,8 +6,8 @@ module Pay
     belongs_to :owner, class_name: Pay.billable_class, foreign_key: :owner_id
 
     # Scopes
-    scope :sorted, ->{ order(created_at: :desc) }
-    default_scope ->{ sorted }
+    scope :sorted, -> { order(created_at: :desc) }
+    default_scope -> { sorted }
 
     # Validations
     validates :amount, presence: true

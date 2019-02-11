@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 2017_07_27_235816) do
     t.string "card_exp_year"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["owner_id"], name: "index_charges_on_owner_id"
+    t.index ["owner_id"], name: "index_pay_charges_on_owner_id"
   end
 
   create_table "pay_subscriptions", force: :cascade do |t|
@@ -41,9 +41,9 @@ ActiveRecord::Schema.define(version: 2017_07_27_235816) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "email"
-    t.string "first_name"
-    t.string "last_name"
+    t.string "email", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string "processor"
     t.string "processor_id"
     t.datetime "trial_ends_at"
@@ -52,11 +52,6 @@ ActiveRecord::Schema.define(version: 2017_07_27_235816) do
     t.string "card_exp_month"
     t.string "card_exp_year"
     t.text "extra_billing_info"
-  end
-
-  create_table :teams, force: true do |t|
-    t.string :name
-    t.integer :owner_id, null: :false
   end
 
 end

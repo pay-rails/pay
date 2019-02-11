@@ -1,4 +1,4 @@
-class AddFieldsToUsers < ActiveRecord::Migration[4.2]
+class CreateUsers < ActiveRecord::Migration[4.2]
   def change
     create_table :users do |t|
       t.string :email, null: false
@@ -7,4 +7,3 @@ class AddFieldsToUsers < ActiveRecord::Migration[4.2]
     end
   end
 end
-
