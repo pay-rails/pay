@@ -43,15 +43,15 @@ module Pay
   end
 
   def self.user_model
-    @@user_model ||= billable_class.constantize
+    billable_class.constantize
   end
 
   def self.charge_model
-    @@charge_model ||= chargeable_class.constantize
+    chargeable_class.constantize
   end
 
   def self.subscription_model
-    @@subscription_model ||= subscription_class.constantize
+    subscription_class.constantize
   end
 
   def self.receipts_supported?
