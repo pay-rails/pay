@@ -11,7 +11,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test '.for_name(name) scope' do
-    owner = User.create
+    owner = User.create email: "bill@microsoft.com"
 
     subscription1 = Pay.subscription_model.create!(
       name: 'default',
