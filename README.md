@@ -402,7 +402,7 @@ Want to add methods to `Pay::Subscription` or `Pay::Charge`? You can
 define a concern and simply include it in the model when Rails loads the
 code.
 
-We'll be using the `to_prepare` method to allow our concerns to be
+Pay uses the `to_prepare` method to allow concerns to be
 included every time Rails reloads the models in development as well.
 
 ```ruby
@@ -416,6 +416,7 @@ module SubscriptionExtensions
 
   # instance methods and code go here
 end
+```
 
 ```ruby
 # config/initializers/subscription_extensions.rb
