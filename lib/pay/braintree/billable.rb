@@ -180,6 +180,8 @@ module Pay
             {
               card_type: "PayPal",
               card_last4: transaction.paypal_details.payer_email,
+              card_exp_month: nil,
+              card_exp_year: nil,
             }
 
           when "android_pay_card"
@@ -195,6 +197,8 @@ module Pay
             {
               card_type: "Venmo",
               card_last4: transaction.venmo_account_details.username
+              card_exp_month: nil,
+              card_exp_year: nil,
             }
 
           when "apple_pay_card"
