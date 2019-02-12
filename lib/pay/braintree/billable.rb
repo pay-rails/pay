@@ -196,7 +196,7 @@ module Pay
           when "venmo_account"
             {
               card_type: "Venmo",
-              card_last4: transaction.venmo_account_details.username
+              card_last4: transaction.venmo_account_details.username,
               card_exp_month: nil,
               card_exp_year: nil,
             }
