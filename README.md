@@ -102,7 +102,7 @@ Pay.setup do |config|
   config.billable_table = 'users'
 
   config.chargeable_class = 'Pay::Charge'
-  config.chargeable_table = 'charges'
+  config.chargeable_table = 'pay_charges'
 
   # For use in the receipt/refund/renewal mailers
   config.business_name = "Business Name"
