@@ -2,6 +2,7 @@ require 'test_helper'
 
 class Pay::Subscription::Test < ActiveSupport::TestCase
   setup do
+    @owner = User.create email: "bill@microsoft.com"
     @subscription = Pay.subscription_model.new processor: 'stripe'
   end
 
@@ -11,28 +12,64 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test '.for_name(name) scope' do
-    owner = User.create email: "bill@microsoft.com"
+    subscription1 = create_subscription(name: "default")
+    subscription2 = create_subscription(name: "superior")
 
-    subscription1 = Pay.subscription_model.create!(
-      name: 'default',
-      owner: owner,
-      processor: 'stripe',
-      processor_id: '1',
-      processor_plan: 'default',
-      quantity: '1'
-    )
+    subscriptions = Pay.subscription_model.for_name('default')
+    assert_includes subscriptions, subscription1
+    refute_includes subscriptions, subscription2
+  end
 
-    subscription2 = Pay.subscription_model.create!(
-      name: 'superior',
-      owner: owner,
-      processor: 'stripe',
-      processor_id: '1',
-      processor_plan: 'superior',
-      quantity: '1'
-    )
+  test 'on trial scope' do
+    subscription1 = create_subscription(trial_ends_at: 7.days.from_now)
+    subscription2 = create_subscription(trial_ends_at: nil)
+    subscription3 = create_subscription(trial_ends_at: 7.days.ago)
 
-    assert_includes Pay.subscription_model.for_name('default'), subscription1
-    refute_includes Pay.subscription_model.for_name('default'), subscription2
+    subscriptions = Pay.subscription_model.on_trial
+
+    assert_includes subscriptions, subscription1
+    refute_includes subscriptions, subscription2
+    refute_includes subscriptions, subscription3
+  end
+
+  test 'cancelled scope' do
+    subscription1 = create_subscription(ends_at: 7.days.ago)
+    subscription2 = create_subscription(ends_at: 7.days.from_now)
+    subscription3 = create_subscription(ends_at: nil)
+
+    subscriptions = Pay.subscription_model.cancelled
+
+    assert_includes subscriptions, subscription1
+    assert_includes subscriptions, subscription2
+    refute_includes subscriptions, subscription3
+  end
+
+  test 'on grace period scope' do
+    subscription1 = create_subscription(ends_at: 7.days.from_now)
+    subscription2 = create_subscription(ends_at: nil)
+    subscription3 = create_subscription(ends_at: 7.days.ago)
+
+    subscriptions = Pay.subscription_model.on_grace_period
+
+    assert_includes subscriptions, subscription1
+    refute_includes subscriptions, subscription2
+    refute_includes subscriptions, subscription3
+  end
+
+  test 'active scope' do
+    subscription1 = create_subscription
+    subscription2 = create_subscription(trial_ends_at: 7.days.from_now)
+    subscription3 = create_subscription(ends_at: 7.days.from_now)
+    subscription4 = create_subscription(ends_at: 7.days.ago)
+    subscription5 = create_subscription(ends_at: 8.days.ago, trial_ends_at: 7.days.ago)
+
+    subscriptions = Pay.subscription_model.active
+
+    assert_includes subscriptions, subscription1
+    assert_includes subscriptions, subscription2
+    assert_includes subscriptions, subscription3
+    refute_includes subscriptions, subscription4
+    refute_includes subscriptions, subscription5
   end
 
   test 'active trial' do
@@ -164,4 +201,19 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
 
     assert_equal "yearly", @subscription.processor_subscription.plan
   end
+
+  private
+
+    def create_subscription(options={})
+      defaults = {
+        name: 'default',
+        owner: @owner,
+        processor: 'stripe',
+        processor_id: '1',
+        processor_plan: 'default',
+        quantity: '1'
+      }
+
+      Pay.subscription_model.create! defaults.merge(options)
+    end
 end

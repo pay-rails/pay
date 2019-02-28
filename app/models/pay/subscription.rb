@@ -14,6 +14,10 @@ module Pay
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
+    scope :on_trial, ->{ where.not(trial_ends_at: nil).where("? < trial_ends_at", Time.zone.now) }
+    scope :cancelled, ->{ where.not(ends_at: nil) }
+    scope :on_grace_period, ->{ cancelled.where("? < ends_at", Time.zone.now) }
+    scope :active, ->{ where(ends_at: nil).or(on_grace_period).or(on_trial) }
 
     attribute :prorate, :boolean, default: true
 
