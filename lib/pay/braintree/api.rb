@@ -20,9 +20,9 @@ module Pay
         secrets     = Rails.application.secrets
         credentials = Rails.application.credentials
 
-        secrets.dig(env, :braintree, name) ||
+        ENV["BRAINTREE_#{name.upcase}"] ||
+          secrets.dig(env, :braintree, name) ||
           credentials.dig(env, :braintree, name) ||
-          ENV["BRAINTREE_#{name.upcase}"] ||
           default
       end
     end

@@ -5,7 +5,7 @@ env         = Rails.env.to_sym
 secrets     = Rails.application.secrets
 credentials = Rails.application.credentials
 
-StripeEvent.signing_secret = secrets.dig(env, :stripe, :signing_secret) || credentials.dig(env, :stripe, :signing_secret) || ENV["STRIPE_SIGNING_SECRET"]
+StripeEvent.signing_secret = ENV["STRIPE_SIGNING_SECRET"] || secrets.dig(env, :stripe, :signing_secret) || credentials.dig(env, :stripe, :signing_secret)
 
 StripeEvent.configure do |events|
   # Listen to the charge event to make sure we get non-subscription
