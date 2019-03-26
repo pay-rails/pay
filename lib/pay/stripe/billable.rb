@@ -84,10 +84,6 @@ module Pay
         ::Stripe::Invoice.upcoming(customer: processor_id)
       end
 
-      def stripe?
-        processor == "stripe"
-      end
-
       # Used by webhooks when the customer or source changes
       def sync_card_from_stripe
         stripe_cust = stripe_customer

@@ -118,14 +118,6 @@ module Pay
         # pass
       end
 
-      def braintree?
-        processor == "braintree"
-      end
-
-      def paypal?
-        braintree? && card_type == "PayPal"
-      end
-
       def save_braintree_transaction(transaction)
         attrs = card_details_for_braintree_transaction(transaction)
         attrs.merge!(amount: transaction.amount.to_f * 100)

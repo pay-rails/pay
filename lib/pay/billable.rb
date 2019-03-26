@@ -83,6 +83,18 @@ module Pay
       send("#{processor}_upcoming_invoice")
     end
 
+    def stripe?
+      processor == "stripe"
+    end
+
+    def braintree?
+      processor == "braintree"
+    end
+
+    def paypal?
+      braintree? && card_type == "PayPal"
+    end
+
     private
 
     def check_for_processor
