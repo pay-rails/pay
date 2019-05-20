@@ -1,3 +1,5 @@
+<p align="center"><img src="http://i.ebayimg.com/images/i/350773752203-0-1/s-l1000.jpg"></p>
+
 <p align="center"><img src="logo.png"></p>
 
 ## Pay
