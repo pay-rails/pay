@@ -1,5 +1,5 @@
 module Pay
-  class ApplicationRecord < ActiveRecord::Base
+  class ApplicationRecord < Mongoid::Document
     self.abstract_class = true
   end
 end
