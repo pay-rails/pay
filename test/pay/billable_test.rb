@@ -207,4 +207,12 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
     refute @billable.on_trial?(plan: 'OTHERPLAN')
   end
+
+  test 'updating processor clears processor id' do
+    @billable.processor = 'stripe'
+    @billable.processor_id = 1
+
+    @billable.processor = 'braintree'
+    assert_equal nil, @billable.processor_id
+  end
 end

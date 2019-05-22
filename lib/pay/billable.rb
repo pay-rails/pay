@@ -15,6 +15,11 @@ module Pay
       attribute :card_token, :string
     end
 
+    def processor=(value)
+      super(value)
+      self.processor_id = nil if processor_changed?
+    end
+
     def customer
       check_for_processor
       raise Pay::Error, "Email is required to create a customer" if email.nil?
