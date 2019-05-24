@@ -12,7 +12,7 @@ module Pay
       Pay::Stripe.setup    if defined? ::Stripe
       Pay::Braintree.setup if defined? ::Braintree
 
-      Pay.charge_model.include Pay::Receipts if defined? Receipts::Receipt
+      Pay.charge_model.include Pay::Receipts if defined? ::Receipts::Receipt
     end
   end
 end
