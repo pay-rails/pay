@@ -4,19 +4,23 @@ module Pay
       "receipt-#{created_at.strftime('%Y-%m-%d')}.pdf"
     end
 
+    def product
+      Pay.application_name
+    end
+
     # Must return a file object
     def receipt
       receipt_pdf.render
     end
 
     def receipt_pdf
-      Receipts::Receipt.new(
+      ::Receipts::Receipt.new(
         id: id,
-        product: Pay.config.application_name,
+        product: product,
         company: {
-          name:    Pay.config.business_name,
-          address: Pay.config.business_address,
-          email:   Pay.config.support_email,
+          name:    Pay.business_name,
+          address: Pay.business_address,
+          email:   Pay.support_email,
         },
         line_items: line_items
       )
@@ -26,7 +30,7 @@ module Pay
       line_items = [
         ["Date",           created_at.to_s],
         ["Account Billed", "#{owner.name} (#{owner.email})"],
-        ["Product",        Pay.config.application_name],
+        ["Product",        product],
         ["Amount",         ActionController::Base.helpers.number_to_currency(amount / 100.0)],
         ["Charged to",     charged_to],
       ]
