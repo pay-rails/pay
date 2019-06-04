@@ -6,15 +6,15 @@ module Pay
       end
 
       def create
-        case verified_event.kind
-        when "subscription_charged_successfully"
-          subscription_charged_successfully(verified_event)
-        when "subscription_canceled"
-          subscription_canceled(verified_event)
+        case webhook_notification.kind
+        when 'subscription_charged_successfully'
+          subscription_charged_successfully(webhook_notification)
+        when 'subscription_canceled'
+          subscription_canceled(webhook_notification)
         end
 
-        render json: {success: true}
-      rescue Braintree::InvalidSignature => e
+        render json: { success: true }, status: :ok
+      rescue ::Braintree::InvalidSignature => e
         head :ok
       end
 
@@ -45,8 +45,8 @@ module Pay
         user.update(braintree_subscription_id: nil)
       end
 
-      def verified_webhook
-        @webhook_notification ||= Braintree::WebhookNotification.parse(
+      def webhook_notification
+        @webhook_notification ||= ::Braintree::WebhookNotification.parse(
           params[:bt_signature],
           params[:bt_payload]
         )
