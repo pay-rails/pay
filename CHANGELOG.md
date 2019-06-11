@@ -1,5 +1,10 @@
 ### Unreleased
 
+### 1.0.0
+
+* Add `stripe?`, `braintree?`, and `paypal?` to Pay::Charge
+* Add webhook mounting and path options
+
 ### 1.0.0.beta4 - 2019-03-26
 
 * Makes `stripe?`, `braintree?`, and `paypal?` helper methods always
