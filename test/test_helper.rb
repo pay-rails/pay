@@ -1,16 +1,20 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
-# Processors for testing
-require 'braintree'
-require 'stripe'
-require 'stripe_event'
-require 'stripe_mock'
+# Disable warnings locally
+$VERBOSE = ENV["CI"]
 
 require File.expand_path("../../test/dummy/config/environment.rb", __FILE__)
 ActiveRecord::Migrator.migrations_paths = [File.expand_path("../../test/dummy/db/migrate", __FILE__)]
 ActiveRecord::Migrator.migrations_paths << File.expand_path('../../db/migrate', __FILE__)
 require "rails/test_help"
+require "minitest/rails"
+
+# Processors for testing
+require 'braintree'
+require 'stripe'
+require 'stripe_event'
+require 'stripe_mock'
 
 # Filter out Minitest backtrace while allowing backtrace from other libraries
 # to be shown.
@@ -49,3 +53,11 @@ Pay.braintree_gateway = Braintree::Gateway.new(
 logger = Logger.new("/dev/null")
 logger.level = Logger::INFO
 Pay.braintree_gateway.config.logger = logger
+
+module Braintree
+  class Configuration
+    def self.gateway
+      Pay.braintree_gateway
+    end
+  end
+end

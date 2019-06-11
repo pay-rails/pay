@@ -135,6 +135,9 @@ Pay.setup do |config|
   config.support_email = "helpme@example.com"
 
   config.send_emails = true
+
+  config.automount_webhook_routes = true
+  config.webhooks_path = "/webhooks" # Only when automount_webhook_routes is true
 end
 ```
 
@@ -425,6 +428,30 @@ end
 Rails.application.config.to_prepare do
   Pay.subscription_model.include SubscriptionExtensions
 end
+```
+
+## Webhooks
+
+Webhooks are automatically mounted to `/webhooks/{provider}`.
+
+#### Customizing webhook mount path
+
+If you have a catch all route (for 404s etc) and need to control where/when the webhook endpoints mount, you will need to disable automatic mounting and mount the engine above your catch all route.
+
+```ruby
+# config/initializers/pay.rb
+config.automount_webhook_routes = false
+
+# config/routes.rb
+mount Pay::Engine, at: '/secret-webhook-path'
+```
+
+If you just want to modify where the engine mounts it's routes then you can change the path.
+
+```ruby
+# config/initializers/pay.rb
+
+config.webhooks_path = '/secret-webhook-path'
 ```
 
 ## Contributors

@@ -38,6 +38,12 @@ module Pay
   mattr_accessor :email_renewing_subject
   @@email_renewing_subject = 'Your upcoming subscription renewal'
 
+  mattr_accessor :automount_webhook_routes
+  @@automount_webhook_routes = true
+
+  mattr_accessor :webhooks_path
+  @@webhooks_path = '/webhooks'
+
   def self.setup
     yield self
   end
