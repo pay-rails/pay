@@ -30,4 +30,10 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
       assert_equal 37_00, charge.amount_refunded
     end
   end
+
+  test 'you can ask the charge for the type' do
+    assert Pay::Charge.new(processor: "stripe").stripe?
+    assert Pay::Charge.new(processor: "braintree").braintree?
+    assert Pay::Charge.new(processor: "braintree", card_type: "PayPal").paypal?
+  end
 end
