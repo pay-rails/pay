@@ -76,6 +76,11 @@ module Pay
       subscription.active? && subscription.processor_plan == processor_plan
     end
 
+    def on_trial_or_subscribed?(name: 'default', processor_plan: nil)
+      on_trial?(name: name, plan: processor_plan) ||
+        subscribed?(name: name, processor_plan: processor_plan)
+    end
+
     def subscription(name: 'default')
       subscriptions.for_name(name).last
     end
