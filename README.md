@@ -278,6 +278,21 @@ user = User.find_by(email: 'gob@bluthcompany.co')
 user.subscription(name: 'bananastand+')
 ```
 
+#### Checking a User's Trial/Subscription Status
+
+```ruby
+user = User.find_by(email: 'george.senior@bluthcompany.co')
+user.on_trial_or_subscribed?
+```
+
+The `on_trial_or_subscribed?` method has two optional arguments with default values.
+
+```ruby
+def on_trial_or_subscribed?(name: 'default', plan: nil)
+  ...
+end
+```
+
 #### Checking a User's Subscription Status
 
 ```ruby

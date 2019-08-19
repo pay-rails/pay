@@ -208,6 +208,45 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     refute @billable.on_trial?(plan: 'OTHERPLAN')
   end
 
+  test 'on_trial_or_subscribed? with no plan' do
+    subscription = mock('subscription')
+    subscriptions = mock('subscriptions')
+    subscriptions.stubs(:last).returns(subscription)
+    subscription.stubs(:on_trial?).returns(true)
+    @billable.subscriptions.expects(:for_name).with('default').returns(subscriptions)
+
+    assert @billable.on_trial_or_subscribed?
+  end
+
+  test 'on_trial_or_subscribed? with no plan and on_generic_trial?' do
+    subscription = mock('subscription')
+    subscriptions = mock('subscriptions')
+    subscriptions.stubs(:last).returns(subscription)
+    @billable.stubs(:on_generic_trial?).returns(true)
+
+    assert @billable.on_trial_or_subscribed?
+  end
+
+  test 'on_trial_or_subscribed? with a subscription that is active for another plan' do
+    subscription = mock('subscription')
+    subscription.stubs(:active?).returns(true)
+    subscription.stubs(:processor_plan).returns('superior')
+    subscription.stubs(:on_trial?).returns(false)
+    @billable.stubs(:subscription).returns(subscription)
+
+    refute @billable.on_trial_or_subscribed?(name: 'default', processor_plan: 'default')
+  end
+
+  test 'on_trial_or_subscribed? with a subscription that is active for a provided plan' do
+    subscription = mock('subscription')
+    subscription.stubs(:active?).returns(true)
+    subscription.stubs(:processor_plan).returns('default')
+    subscription.stubs(:on_trial?).returns(false)
+    @billable.stubs(:subscription).returns(subscription)
+
+    assert @billable.on_trial_or_subscribed?(name: 'default', processor_plan: 'default')
+  end
+
   test 'updating processor clears processor id' do
     @billable.processor = 'stripe'
     @billable.processor_id = 1
