@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 1.0.2
+
+* Add `on_trial_or_subscribed?` convenience method
+
 ### 1.0.1
 
 * Removed Rails HTML Sanitizer dependency since it wasn't being used
