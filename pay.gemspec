@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
   ]
 
   s.add_dependency 'rails', '>= 4.2'
-  s.add_dependency 'rails-html-sanitizer', '~> 1.0.4'
 
   s.add_development_dependency 'braintree', '< 3.0', '>= 2.92.0'
   s.add_development_dependency 'stripe', '< 5.0', '>= 2.8'
