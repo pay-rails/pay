@@ -1,5 +1,13 @@
 ### Unreleased
 
+### 1.0.2
+
+* Add `on_trial_or_subscribed?` convenience method
+
+### 1.0.1
+
+* Removed Rails HTML Sanitizer dependency since it wasn't being used
+
 ### 1.0.0
 
 * Add `stripe?`, `braintree?`, and `paypal?` to Pay::Charge
