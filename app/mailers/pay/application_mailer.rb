@@ -1,6 +1,6 @@
 module Pay
   class ApplicationMailer < ActionMailer::Base
-    default from: 'from@example.com'
+    default from: Pay.support_email
     layout 'mailer'
   end
 end
