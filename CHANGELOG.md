@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 1.0.3
+
+* Set default from email to `Pay.support_email`
+
 ### 1.0.2
 
 * Add `on_trial_or_subscribed?` convenience method
