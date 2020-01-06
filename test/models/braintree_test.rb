@@ -27,13 +27,15 @@ class Pay::Subscription::BraintreeTest < ActiveSupport::TestCase
 
   test 'resume on grace period' do
     VCR.use_cassette('braintree-resume') do
-      @billable.subscribe(trial_duration: 14)
-      @subscription = @billable.subscription
-      @subscription.cancel
-      assert_equal @subscription.ends_at, @subscription.trial_ends_at
+      travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
+        @billable.subscribe(trial_duration: 14)
+        @subscription = @billable.subscription
+        @subscription.cancel
+        assert_equal @subscription.ends_at, @subscription.trial_ends_at
 
-      @subscription.resume
-      assert_nil @subscription.ends_at
+        @subscription.resume
+        assert_nil @subscription.ends_at
+      end
     end
   end
 
