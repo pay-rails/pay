@@ -1,7 +1,6 @@
 module Pay
   module Stripe
     module Webhooks
-
       class CustomerDeleted
         def call(event)
           object = event.data.object
@@ -11,12 +10,12 @@ module Pay
           return unless user.present?
 
           user.update(
-            processor_id:   nil,
-            trial_ends_at:  nil,
-            card_type:      nil,
-            card_last4:     nil,
+            processor_id: nil,
+            trial_ends_at: nil,
+            card_type: nil,
+            card_last4: nil,
             card_exp_month: nil,
-            card_exp_year:  nil,
+            card_exp_year: nil,
           )
 
           user.subscriptions.update_all(
@@ -25,7 +24,6 @@ module Pay
           )
         end
       end
-
     end
   end
 end

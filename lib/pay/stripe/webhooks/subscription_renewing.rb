@@ -1,7 +1,6 @@
 module Pay
   module Stripe
     module Webhooks
-
       class SubscriptionRenewing
         def call(event)
           # Event is of type "invoice" see:
@@ -19,7 +18,6 @@ module Pay
           end
         end
       end
-
     end
   end
 end

@@ -1,8 +1,8 @@
-require 'pay/env'
-require 'pay/stripe/billable'
-require 'pay/stripe/charge'
-require 'pay/stripe/subscription'
-require 'pay/stripe/webhooks'
+require "pay/env"
+require "pay/stripe/billable"
+require "pay/stripe/charge"
+require "pay/stripe/subscription"
+require "pay/stripe/webhooks"
 
 module Pay
   module Stripe

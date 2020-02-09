@@ -1,7 +1,7 @@
 module Pay
   module Receipts
     def filename
-      "receipt-#{created_at.strftime('%Y-%m-%d')}.pdf"
+      "receipt-#{created_at.strftime("%Y-%m-%d")}.pdf"
     end
 
     def product
@@ -18,9 +18,9 @@ module Pay
         id: id,
         product: product,
         company: {
-          name:    Pay.business_name,
+          name: Pay.business_name,
           address: Pay.business_address,
-          email:   Pay.support_email,
+          email: Pay.support_email,
         },
         line_items: line_items
       )
@@ -28,11 +28,11 @@ module Pay
 
     def line_items
       line_items = [
-        ["Date",           created_at.to_s],
+        ["Date", created_at.to_s],
         ["Account Billed", "#{owner.name} (#{owner.email})"],
-        ["Product",        product],
-        ["Amount",         ActionController::Base.helpers.number_to_currency(amount / 100.0)],
-        ["Charged to",     charged_to],
+        ["Product", product],
+        ["Amount", ActionController::Base.helpers.number_to_currency(amount / 100.0)],
+        ["Charged to", charged_to],
       ]
       line_items << ["Additional Info", owner.extra_billing_info] if owner.extra_billing_info?
       line_items

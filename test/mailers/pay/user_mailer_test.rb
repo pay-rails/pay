@@ -1,8 +1,8 @@
-require 'test_helper'
+require "test_helper"
 
 class UserMailerTest < ActionMailer::TestCase
   setup do
-    @user   = User.new(email: 'john@example.org', extra_billing_info: 'extra billing info')
+    @user = User.new(email: "john@example.org", extra_billing_info: "extra billing info")
     @charge = @user.charges.new(amount: 100, created_at: Time.zone.now)
   end
 
@@ -14,10 +14,10 @@ class UserMailerTest < ActionMailer::TestCase
   end
 
   test "attaches refunds to receipt" do
-    filename = 'receipt.pdf'
+    filename = "receipt.pdf"
 
-    receipt = mock('receipt')
-    receipt.stubs(:render).returns('render content')
+    receipt = mock("receipt")
+    receipt.stubs(:render).returns("render content")
     receipt.stubs(:length).returns(1024)
 
     @charge.stubs(:filename).returns(filename)

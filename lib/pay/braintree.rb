@@ -1,7 +1,7 @@
-require 'pay/env'
-require 'pay/braintree/billable'
-require 'pay/braintree/charge'
-require 'pay/braintree/subscription'
+require "pay/env"
+require "pay/braintree/billable"
+require "pay/braintree/charge"
+require "pay/braintree/subscription"
 
 module Pay
   module Braintree
@@ -13,7 +13,7 @@ module Pay
       Pay.braintree_gateway = ::Braintree::Gateway.new(
         environment: environment.to_sym,
         merchant_id: merchant_id,
-        public_key:  public_key,
+        public_key: public_key,
         private_key: private_key
       )
 
@@ -35,7 +35,7 @@ module Pay
     end
 
     def environment
-      find_value_by_name(:braintree, :environment) || 'sandbox'
+      find_value_by_name(:braintree, :environment) || "sandbox"
     end
   end
 end

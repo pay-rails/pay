@@ -1,7 +1,6 @@
 module Pay
   module Stripe
     module Webhooks
-
       class ChargeRefunded
         def call(event)
           object = event.data.object
@@ -19,7 +18,6 @@ module Pay
           end
         end
       end
-
     end
   end
 end

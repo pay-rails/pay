@@ -1,7 +1,6 @@
 module Pay
   module Stripe
     module Webhooks
-
       class CustomerUpdated
         def call(event)
           object = event.data.object
@@ -13,7 +12,6 @@ module Pay
           user.sync_card_from_stripe
         end
       end
-
     end
   end
 end

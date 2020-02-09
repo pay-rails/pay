@@ -1,215 +1,206 @@
-require 'test_helper'
-require 'stripe_mock'
-require 'minitest/mock'
+require "test_helper"
 
 class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   setup do
-    StripeMock.start
+    @billable = User.new email: "johnny@appleseed.com"
+    @billable.processor = "stripe"
 
-    @billable = User.new email: 'johnny@appleseed.com'
-    @billable.processor = 'stripe'
+    @customer = ::Stripe::Customer.create(email: @billable.email)
 
-    @stripe_helper = StripeMock.create_test_helper
-    @product = @stripe_helper.create_product
-    @stripe_helper.create_plan(id: 'test-monthly', amount: 1500, product: @product.id)
-    @stripe_helper.create_coupon # id: '10BUCKS'
+    @plan = ::Stripe::Plan.retrieve("small-monthly")
   end
 
-  teardown do
-    StripeMock.stop
+  test "getting a stripe customer with a processor id" do
+    @billable.processor_id = @customer.id
+    assert_equal @billable.stripe_customer, @customer
   end
 
-  test 'getting a stripe customer with a processor id' do
-    customer = Stripe::Customer.create(
-      email: 'johnny@appleseed.com',
-      card: @stripe_helper.generate_card_token
-    )
-
-    @billable.processor_id = customer.id
-
-    assert_equal @billable.stripe_customer, customer
-  end
-
-  test 'getting a stripe customer without a processor id' do
+  test "getting a stripe customer without a processor id" do
     assert_nil @billable.processor_id
 
-    @billable.card_token = @stripe_helper.generate_card_token(
-      brand: 'Visa',
-      last4: '9191',
-      exp_year: 1984
-    )
-
+    @billable.card_token = payment_method.id
     @billable.stripe_customer
 
     assert_not_nil @billable.processor_id
-
-    assert @billable.card_type == 'Visa'
-    assert @billable.card_last4 == '9191'
+    assert @billable.card_type == "Visa"
+    assert @billable.card_last4 == "4242"
   end
 
-  test 'can create a charge' do
-    @billable.card_token = @stripe_helper.generate_card_token(
-      brand: 'Visa',
-      last4: '9191',
-      exp_year: 1984
-    )
+  test "can create a charge" do
+    @billable.card_token = payment_method.id
 
     charge = @billable.charge(2900)
     assert_equal Pay::Charge, charge.class
     assert_equal 2900, charge.amount
   end
 
-  test 'can create a subscription' do
-    @billable.card_token = @stripe_helper.generate_card_token(
-      brand: 'Visa',
-      last4: '9191',
-      exp_year: 1984
-    )
-    @billable.subscribe(name: 'default', plan: 'test-monthly')
+  test "raises action required error when SCA required" do
+    exception = assert_raises(Pay::ActionRequired) {
+      @billable.card_token = sca_payment_method.id
+      @billable.charge(2900)
+    }
+    assert_equal "This payment attempt failed because additional action is required before it can be completed.", exception.message
+  end
+
+  test "can create a subscription" do
+    @billable.card_token = payment_method.id
+    @billable.subscribe(name: "default", plan: "small-monthly")
 
     assert @billable.subscribed?
-    assert_equal 'default', @billable.subscription.name
-    assert_equal 'test-monthly', @billable.subscription.processor_plan
+    assert_equal "default", @billable.subscription.name
+    assert_equal "small-monthly", @billable.subscription.processor_plan
   end
 
-  test 'can update their card' do
-    customer = Stripe::Customer.create(
-      email: 'johnny@appleseed.com',
-      card: @stripe_helper.generate_card_token
-    )
+  test "can swap a subscription" do
+    @billable.card_token = payment_method.id
+    subscription = @billable.subscribe(name: "default", plan: "small-monthly")
+    subscription.swap("small-annual")
+    assert @billable.subscribed?
+    assert_equal "default", @billable.subscription.name
+    assert_equal "small-annual", @billable.subscription.processor_plan
+  end
 
-    @billable.stubs(:customer).returns(customer)
-    card = @stripe_helper.generate_card_token(brand: 'Visa', last4: '4242')
-    @billable.update_card(card)
+  test "fails when subscribing with no payment method" do
+    exception = assert_raises(Pay::Error) {
+      @billable.subscribe(name: "default", plan: "small-monthly")
+    }
+    assert_equal "This customer has no attached payment source", exception.message
+  end
 
-    assert_equal 'Visa', @billable.card_type
-    assert_equal '4242', @billable.card_last4
+  test "fails when subscribing with SCA card" do
+    exception = assert_raises(Pay::ActionRequired) {
+      @billable.card_token = sca_payment_method.id
+      @billable.subscribe(name: "default", plan: "small-monthly")
+    }
+
+    assert_equal "This payment attempt failed because additional action is required before it can be completed.", exception.message
+  end
+
+  test "can update their card" do
+    @billable.update_card(payment_method.id)
+
+    assert_equal "Visa", @billable.card_type
+    assert_equal "4242", @billable.card_last4
     assert_nil @billable.card_token
 
-    card = @stripe_helper.generate_card_token(
-      brand: 'Discover',
-      last4: '1117'
-    )
-    @billable.update_card(card)
+    payment_method = create_payment_method(card: {number: "6011 1111 1111 1117"})
+    @billable.update_card(payment_method.id)
 
-    assert @billable.card_type == 'Discover'
-    assert @billable.card_last4 == '1117'
+    assert @billable.card_type == "Discover"
+    assert @billable.card_last4 == "1117"
   end
 
-  test 'retriving a stripe subscription' do
-    @stripe_helper.create_plan(id: 'default', amount: 1500, product: @product.id)
-
-    customer = Stripe::Customer.create(
-      email: 'johnny@appleseed.com',
-      source: @stripe_helper.generate_card_token(brand: 'Visa', last4: '4242')
-    )
-
-    subscription = Stripe::Subscription.create(
-      plan: 'default',
-      customer: customer.id
-    )
-
+  test "retriving a stripe subscription" do
+    @billable.processor_id = @customer.id
+    @billable.update_card(payment_method.id)
+    subscription = ::Stripe::Subscription.create(plan: "small-monthly", customer: @customer.id)
     assert_equal @billable.stripe_subscription(subscription.id), subscription
   end
 
-  test 'can create an invoice' do
-    customer = Stripe::Customer.create(
-      email: 'johnny@appleseed.com',
-      card: @stripe_helper.generate_card_token
-    )
-    @billable.stubs(:customer).returns(customer)
-    @billable.processor = 'stripe'
-    @billable.processor_id = customer.id
+  test "can create an invoice" do
+    @billable.processor_id = @customer.id
+    @billable.update_card(payment_method.id)
 
-    Stripe::InvoiceItem.create(
-      customer: customer.id,
+    ::Stripe::InvoiceItem.create(
+      customer: @customer.id,
       amount: 1000,
-      currency: 'usd',
-      description: 'One-time setup fee'
+      currency: "usd",
+      description: "One-time setup fee"
     )
 
     assert_equal 1000, @billable.invoice!.total
   end
 
-  test 'card gets updated automatically when retrieving customer' do
-    customer = Stripe::Customer.create(
-      email: @billable.email,
-      card: @stripe_helper.generate_card_token
-    )
+  test "card gets updated automatically when retrieving customer" do
+    assert_nil @billable.card_type
 
-    @billable.processor = 'stripe'
-    @billable.processor_id = customer.id
+    @billable.processor = "stripe"
+    @billable.processor_id = @customer.id
 
-    assert_equal @billable.customer, customer
+    assert_equal @billable.customer, @customer
 
-    @billable.card_token = @stripe_helper.generate_card_token(
-      brand: 'Discover',
-      last4: '1117'
-    )
+    @billable.card_token = payment_method.id
 
     # This should trigger update_card
-    assert_equal @billable.customer, customer
-    assert_equal @billable.card_type, 'Discover'
-    assert_equal @billable.card_last4, '1117'
+    assert_equal @billable.customer, @customer
+    assert_equal @billable.card_type, "Visa"
+    assert_equal @billable.card_last4, "4242"
   end
 
-  test 'creating a stripe customer with no card' do
+  test "creating a stripe customer with no card" do
     @billable.customer
 
     assert_nil @billable.card_last4
-    assert_equal @billable.processor, 'stripe'
+    assert_equal @billable.processor, "stripe"
     assert_not_nil @billable.processor_id
   end
 
-  test 'email changed' do
+  test "email changed" do
     # Must already have a processor ID
     @billable.customer # Sets customer ID
-
     Pay::EmailSyncJob.expects(:perform_later).with(@billable.id)
     @billable.update(email: "mynewemail@example.org")
   end
 
-  test 'handles exception when creating a customer' do
-    custom_error = ::Stripe::StripeError.new("Oops")
-    StripeMock.prepare_error(custom_error, :new_customer)
-
+  test "handles exception when creating a customer" do
+    @billable.card_token = "invalid"
     exception = assert_raises(Pay::Error) { @billable.stripe_customer }
-    assert_equal "Oops", exception.message
-    assert_equal custom_error, exception.cause
+    assert_equal "No such payment_method: invalid", exception.message
   end
 
-  test 'handles exception when creating a charge' do
-    custom_error = ::Stripe::StripeError.new("Oops")
-    StripeMock.prepare_error(custom_error, :new_charge)
-
-    exception = assert_raises(Pay::Error) { @billable.charge(1000) }
-    assert_equal "Oops", exception.message
+  test "handles exception when creating a charge" do
+    exception = assert_raises(Pay::Error) { @billable.charge(0) }
+    assert_equal "Invalid positive integer", exception.message
   end
 
-  test 'handles exception when creating a subscription' do
-    custom_error = ::Stripe::StripeError.new("Oops")
-    StripeMock.prepare_error(custom_error, :create_customer_subscription)
-
-    @billable.card_token = @stripe_helper.generate_card_token(brand: 'Visa', last4: '9191', exp_year: 1984)
-
-    exception = assert_raises(Pay::Error) { @billable.subscribe plan: 'test-monthly' }
-    assert_equal "Oops", exception.message
+  test "handles exception when creating a subscription" do
+    exception = assert_raises(Pay::Error) { @billable.subscribe plan: "invalid" }
+    assert_equal "No such plan: invalid", exception.message
   end
 
-  test 'handles exception when updating a card' do
-    card_token = @stripe_helper.generate_card_token(brand: 'Visa', last4: '9191', exp_year: 1984)
-
-    custom_error = ::Stripe::StripeError.new("Oops")
-    StripeMock.prepare_error(custom_error, :create_source)
-
-    exception = assert_raises(Pay::Error) { @billable.update_card(card_token) }
-    assert_equal "Oops", exception.message
+  test "handles exception when updating a card" do
+    exception = assert_raises(Pay::Error) { @billable.update_card("abcd") }
+    assert_equal "No such payment_method: abcd", exception.message
   end
 
-  test 'handles coupons' do
-    @billable.card_token = @stripe_helper.generate_card_token(brand: 'Visa', last4: '9191', exp_year: 1984)
+  test "handles coupons" do
+    @billable.card_token = payment_method.id
+    subscription = @billable.subscribe(plan: "small-monthly", coupon: "10BUCKS")
+    assert_equal "10BUCKS", subscription.processor_subscription.discount.coupon.id
+  end
 
-    subscription = @billable.subscribe(plan: 'test-monthly', coupon: '10BUCKS')
-    assert_equal '10BUCKS', subscription.processor_subscription.discount.coupon.id
+  test "stripe trial period options" do
+    travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
+      @billable.card_token = payment_method.id
+      subscription = @billable.subscribe(plan: "small-monthly", trial_period_days: 15)
+      assert_equal "trialing", subscription.status
+      assert_not_nil subscription.trial_ends_at
+      assert subscription.trial_ends_at > 14.days.from_now
+    end
+  end
+
+  private
+
+  def payment_method
+    @payment_method ||= create_payment_method
+  end
+
+  def sca_payment_method
+    @sca_payment_method ||= create_payment_method(card: {number: "4000 0027 6000 3184"})
+  end
+
+  def create_payment_method(options = {})
+    defaults = {
+      type: "card",
+      billing_details: {name: "Jane Doe"},
+      card: {
+        number: "4242 4242 4242 4242",
+        exp_month: 9,
+        exp_year: Time.now.year + 5,
+        cvc: 123,
+      },
+    }
+
+    ::Stripe::PaymentMethod.create(defaults.deep_merge(options))
   end
 end

@@ -7,13 +7,15 @@ module Pay
 
       def create
         case webhook_notification.kind
-        when 'subscription_charged_successfully'
+        when "subscription_charged_successfully"
           subscription_charged_successfully(webhook_notification)
-        when 'subscription_canceled'
+        when "subscription_canceled"
           subscription_canceled(webhook_notification)
+        when "subscription_trial_ended"
+          subscription_trial_ended(webhook_notification)
         end
 
-        render json: { success: true }, status: :ok
+        render json: {success: true}, status: :ok
       rescue ::Braintree::InvalidSignature => e
         head :ok
       end
@@ -24,9 +26,10 @@ module Pay
         subscription = event.subscription
         return if subscription.nil?
 
-        user = Pay.user_model.find_by(processor: :braintree, processor_id: subscription.id)
-        return unless user.present?
+        pay_subscription = Pay.subscription_model.find_by(processor: :braintree, processor_id: subscription.id)
+        return unless pay_subscription.present?
 
+        user = pay_subscription.owner
         charge = user.save_braintree_transaction(subscription.transactions.first)
 
         if Pay.send_emails
@@ -45,8 +48,18 @@ module Pay
         user.update(braintree_subscription_id: nil)
       end
 
+      def subscription_trial_ended(event)
+        subscription = event.subscription
+        return if subscription.nil?
+
+        pay_subscription = Pay.subscription_model.find_by(processor: :braintree, processor_id: subscription.id)
+        return unless pay_subscription.present?
+
+        pay_subscription.update(trial_ends_at: Time.zone.now)
+      end
+
       def webhook_notification
-        @webhook_notification ||= ::Braintree::WebhookNotification.parse(
+        @webhook_notification ||= Pay.braintree_gateway.webhook_notification.parse(
           params[:bt_signature],
           params[:bt_payload]
         )

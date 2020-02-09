@@ -1,0 +1,134 @@
+<div id="app" class="h-full md:flex md:justify-center md:items-center">
+  <div class="w-full max-w-lg">
+    <!-- Status Messages -->
+    <p class="flex items-center mb-4 bg-red-100 border border-red-200 px-5 py-2 rounded-lg text-red-500" v-if="errorMessage">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="flex-shrink-0 w-6 h-6">
+        <path class="fill-current text-red-300" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/>
+        <path class="fill-current text-red-500" d="M12 18a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm1-5.9c-.13 1.2-1.88 1.2-2 0l-.5-5a1 1 0 0 1 1-1.1h1a1 1 0 0 1 1 1.1l-.5 5z"/>
+      </svg>
+
+      <span class="ml-3">{{ errorMessage }}</span>
+    </p>
+
+    <p class="flex items-center mb-4 bg-green-100 border border-green-200 px-5 py-4 rounded-lg text-green-700" v-if="paymentProcessed && successMessage">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="flex-shrink-0 w-6 h-6">
+        <circle cx="12" cy="12" r="10" class="fill-current text-green-300"/>
+        <path class="fill-current text-green-500" d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"/>
+      </svg>
+
+      <span class="ml-3">{{ successMessage }}</span>
+    </p>
+
+    <div class="bg-white rounded-lg shadow-xl p-4 sm:py-6 sm:px-10 mb-5">
+      <% if @payment.succeeded? %>
+        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "successful.header" %></h1>
+        <p class="mb-6"><%=t "successful.description" %></p>
+
+      <% elsif @payment.canceled? %>
+        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "cancelled.header" %></h1>
+        <p class="mb-6"><%=t "cancelled.description" %></p>
+
+      <% else %>
+        <div id="payment-elements" v-if="! paymentProcessed">
+          <!-- Instructions -->
+          <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "requires_action.header", amount: number_to_currency(@payment.amount / 100.0) %></h1>
+          <p class="mb-6"><%=t "requires_action.description" %></p>
+
+          <div v-show="status == 'requires_payment_method'">
+            <!-- Name -->
+            <label for="cardholder-name" class="inline-block text-sm text-gray-700 font-semibold mb-2"><%=t "requires_action.full_name" %></label>
+            <input id="cardholder-name" type="text" placeholder="Jane Doe" required class="inline-block text-black bg-gray-200 border border-gray-400 rounded-lg w-full px-4 py-3 mb-3 focus:outline-none" v-model="name">
+
+            <!-- Card -->
+            <label for="card-element" class="inline-block text-sm text-gray-700 font-semibold mb-2"><%=t "requires_action.card" %></label>
+            <div id="card-element" class="bg-gray-200 border border-gray-400 rounded-lg p-4 mb-6"></div>
+          </div>
+
+          <!-- Pay Button -->
+          <button id="card-button" class="inline-block w-full px-4 py-3 mb-4 text-white rounded-lg bg-blue-400 hover:bg-blue-500" :class="{ 'bg-blue-400': paymentProcessing, 'bg-blue-600': ! paymentProcessing }" @click="confirmPayment" :disabled="paymentProcessing">
+            <%=t "requires_action.button", amount: number_to_currency(@payment.amount / 100.0) %>
+          </button>
+        </div>
+      <% end %>
+
+      <%= link_to t("back"), root_path, class: "inline-block w-full px-4 py-3 bg-gray-200 hover:bg-gray-300 text-center text-gray-700 rounded-lg" %>
+    </div>
+
+    <p class="text-center text-gray-500 text-sm">
+      © <%= Date.current.year %> <%= Pay.business_name %> <%=t "all_rights_reserved" %>
+    </p>
+  </div>
+</div>
+
+<script>
+  window.stripe = Stripe('<%= Pay::Stripe.public_key %>');
+  var app = new Vue({
+    el: '#app',
+    data: {
+      clientSecret: '<%= @payment.client_secret %>',
+      status: '<%= @payment.status %>',
+      name: '',
+      cardElement: null,
+      paymentProcessing: false,
+      paymentProcessed: false,
+      successMessage: '',
+      errorMessage: ''
+    },
+
+    mounted: function () {
+      if (this.status == "succeeded" || this.status == "canceled") {
+        return
+      }
+
+      // We can trigger SCA immediately if this payment requires action
+      // This makes sure a new SCA subscription doesn't have to put in their card twice
+      if (this.status == "requires_action") {
+        this.paymentProcessing = true
+        this.paymentProcessed = false
+        stripe.confirmCardPayment(this.clientSecret).then(this.handleConfirmResult.bind(this))
+      }
+
+      // Setup elements in case the authentication fails and user needs to put in a new card
+      const elements = stripe.elements();
+      this.cardElement = elements.create('card');
+      this.cardElement.mount('#card-element');
+    },
+
+    methods: {
+      confirmPayment: function () {
+        this.paymentProcessing = true
+        this.paymentProcessed = false
+        this.successMessage = ''
+        this.errorMessage = ''
+
+        stripe.confirmCardPayment(
+          this.clientSecret,
+          {
+            payment_method: {
+              card: this.cardElement,
+              billing_details: { name: this.name }
+            },
+            save_payment_method: true,
+            setup_future_usage: 'off_session',
+          }
+        ).then(this.handleConfirmResult.bind(this))
+      },
+
+      handleConfirmResult(result) {
+        this.paymentProcessing = false;
+        if (result.error) {
+          if (result.error.code === 'parameter_invalid_empty' &&
+            result.error.param === 'payment_method_data[billing_details][name]') {
+            this.errorMessage = '<%=t "requires_action.name_missing" %>'
+          } else {
+            this.errorMessage = result.error.message
+            this.status = result.error.payment_intent.status
+          }
+        } else {
+          this.paymentProcessed = true;
+          this.successMessage = '<%=t "requires_action.success" %>'
+        }
+      }
+    },
+  })
+</script>

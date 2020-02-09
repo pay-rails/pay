@@ -1,26 +1,26 @@
-require 'test_helper'
+require "test_helper"
 
 class Pay::Subscription::Test < ActiveSupport::TestCase
   setup do
     @owner = User.create email: "bill@microsoft.com"
-    @subscription = Pay.subscription_model.new processor: 'stripe'
+    @subscription = Pay.subscription_model.new processor: "stripe", status: "active"
   end
 
-  test 'belongs to the owner' do
-    klass = Pay.subscription_model.reflections['owner'].options[:class_name]
-    assert klass, 'User'
+  test "belongs to the owner" do
+    klass = Pay.subscription_model.reflections["owner"].options[:class_name]
+    assert klass, "User"
   end
 
-  test '.for_name(name) scope' do
+  test ".for_name(name) scope" do
     subscription1 = create_subscription(name: "default")
     subscription2 = create_subscription(name: "superior")
 
-    subscriptions = Pay.subscription_model.for_name('default')
+    subscriptions = Pay.subscription_model.for_name("default")
     assert_includes subscriptions, subscription1
     refute_includes subscriptions, subscription2
   end
 
-  test 'on trial scope' do
+  test "on trial scope" do
     subscription1 = create_subscription(trial_ends_at: 7.days.from_now)
     subscription2 = create_subscription(trial_ends_at: nil)
     subscription3 = create_subscription(trial_ends_at: 7.days.ago)
@@ -32,7 +32,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription3
   end
 
-  test 'cancelled scope' do
+  test "cancelled scope" do
     subscription1 = create_subscription(ends_at: 7.days.ago)
     subscription2 = create_subscription(ends_at: 7.days.from_now)
     subscription3 = create_subscription(ends_at: nil)
@@ -44,7 +44,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription3
   end
 
-  test 'on grace period scope' do
+  test "on grace period scope" do
     subscription1 = create_subscription(ends_at: 7.days.from_now)
     subscription2 = create_subscription(ends_at: nil)
     subscription3 = create_subscription(ends_at: 7.days.ago)
@@ -56,7 +56,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription3
   end
 
-  test 'active scope' do
+  test "active scope" do
     subscription1 = create_subscription
     subscription2 = create_subscription(trial_ends_at: 7.days.from_now)
     subscription3 = create_subscription(ends_at: 7.days.from_now)
@@ -72,62 +72,62 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription5
   end
 
-  test 'active trial' do
+  test "active trial" do
     @subscription.trial_ends_at = 5.minutes.from_now
     assert @subscription.on_trial?
   end
 
-  test 'inactive trial' do
+  test "inactive trial" do
     @subscription.trial_ends_at = 5.minutes.ago
     refute @subscription.on_trial?
   end
 
-  test 'no trial' do
+  test "no trial" do
     @subscription.trial_ends_at = nil
     refute @subscription.on_trial?
   end
 
-  test 'cancelled' do
+  test "cancelled" do
     @subscription.ends_at = 1.week.ago
     assert @subscription.cancelled?
   end
 
-  test 'not cancelled' do
+  test "not cancelled" do
     @subscription.ends_at = nil
     refute @subscription.cancelled?
   end
 
-  test 'on grace period' do
+  test "on grace period" do
     @subscription.ends_at = 5.minutes.from_now
     assert @subscription.on_grace_period?
   end
 
-  test 'off grace period' do
+  test "off grace period" do
     @subscription.ends_at = 5.minutes.ago
     refute @subscription.on_grace_period?
   end
 
-  test 'no grace period' do
+  test "no grace period" do
     @subscription.ends_at = nil
     refute @subscription.on_grace_period?
   end
 
-  test 'active' do
+  test "active" do
     @subscription.ends_at = nil
     @subscription.trial_ends_at = nil
     assert @subscription.active?
   end
 
-  test 'inactive' do
+  test "inactive" do
     @subscription.ends_at = 5.minutes.ago
     @subscription.trial_ends_at = nil
     refute @subscription.active?
   end
 
-  test 'cancel' do
+  test "cancel" do
     expiration = 2.weeks.from_now
 
-    stripe_sub = mock('stripe_subscription')
+    stripe_sub = mock("stripe_subscription")
     stripe_sub.expects(:cancel_at_period_end=).with(true)
     stripe_sub.expects(:save)
     stripe_sub.expects(:current_period_end).returns(expiration)
@@ -138,10 +138,10 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_in_delta @subscription.ends_at, expiration, 1.second
   end
 
-  test 'cancel_now!' do
-    cancelled_stripe = mock('cancelled_stripe_subscription')
+  test "cancel_now!" do
+    cancelled_stripe = mock("cancelled_stripe_subscription")
 
-    stripe_sub = mock('stripe_subscription')
+    stripe_sub = mock("stripe_subscription")
     stripe_sub.expects(:delete).returns(cancelled_stripe)
 
     @subscription.stubs(:processor_subscription).returns(stripe_sub)
@@ -150,16 +150,16 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert @subscription.ends_at <= Time.zone.now
   end
 
-  test 'resume on grace period' do
+  test "resume on grace period" do
     @subscription.ends_at = 2.weeks.from_now
 
-    stripe_sub = mock('stripe_subscription')
+    stripe_sub = mock("stripe_subscription")
     stripe_sub.expects(:plan=)
     stripe_sub.expects(:trial_end=)
     stripe_sub.expects(:cancel_at_period_end=)
     stripe_sub.expects(:save).returns(true)
 
-    @subscription.processor_plan = 'default'
+    @subscription.processor_plan = "default"
 
     @subscription.stubs(:on_grace_period?).returns(true)
     @subscription.stubs(:processor_subscription).returns(stripe_sub)
@@ -170,7 +170,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_nil @subscription.ends_at
   end
 
-  test 'resume off grace period' do
+  test "resume off grace period" do
     @subscription.stubs(:on_grace_period?).returns(false)
 
     assert_raises StandardError do
@@ -178,8 +178,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     end
   end
 
-  test 'processor subscription' do
-    user = mock('user')
+  test "processor subscription" do
+    user = mock("user")
     user.expects(:processor_subscription).returns(:result)
 
     @subscription.stubs(:owner).returns(user)
@@ -187,8 +187,9 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_equal :result, @subscription.processor_subscription
   end
 
-  test 'can swap plans' do
-    stripe_sub = mock('stripe_subscription')
+  test "can swap plans" do
+    stripe_sub = mock("stripe_subscription")
+    stripe_sub.expects(:cancel_at_period_end=)
     stripe_sub.expects(:plan=).returns("yearly")
     stripe_sub.expects(:prorate=)
     stripe_sub.expects(:trial_end=)
@@ -202,18 +203,38 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_equal "yearly", @subscription.processor_subscription.plan
   end
 
+  test "statuses affect active state" do
+    %w[trialing active].each do |state|
+      @subscription.status = state
+      assert @subscription.active?
+    end
+
+    %w[incomplete incomplete_expired past_due canceled unpaid].each do |state|
+      @subscription.status = state
+      assert_not @subscription.active?
+    end
+  end
+
+  test "correctly handles v1 subscriptions without statuses" do
+    # Subscriptions in Pay v1.x didn't have a status column, so we've set all their statuses to active
+    # We just want to make sure those old, ended subscriptions are still correct
+    assert_not Pay::Subscription.new(status: :active, ends_at: 1.day.ago).active?
+    assert Pay::Subscription.new(status: :active, ends_at: 1.day.ago).canceled?
+  end
+
   private
 
-    def create_subscription(options={})
-      defaults = {
-        name: 'default',
-        owner: @owner,
-        processor: 'stripe',
-        processor_id: '1',
-        processor_plan: 'default',
-        quantity: '1'
-      }
+  def create_subscription(options = {})
+    defaults = {
+      name: "default",
+      owner: @owner,
+      processor: "stripe",
+      processor_id: "1",
+      processor_plan: "default",
+      quantity: "1",
+      status: "active",
+    }
 
-      Pay.subscription_model.create! defaults.merge(options)
-    end
+    Pay.subscription_model.create! defaults.merge(options)
+  end
 end

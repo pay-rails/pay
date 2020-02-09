@@ -1,6 +1,7 @@
-require 'pay/engine'
-require 'pay/billable'
-require 'pay/receipts'
+require "pay/engine"
+require "pay/billable"
+require "pay/receipts"
+require "pay/payment"
 
 module Pay
   # Define who owns the subscription
@@ -8,18 +9,18 @@ module Pay
   mattr_accessor :billable_table
   mattr_accessor :braintree_gateway
 
-  @@billable_class = 'User'
+  @@billable_class = "User"
   @@billable_table = @@billable_class.tableize
 
   mattr_accessor :chargeable_class
   mattr_accessor :chargeable_table
-  @@chargeable_class = 'Pay::Charge'
-  @@chargeable_table = 'pay_charges'
+  @@chargeable_class = "Pay::Charge"
+  @@chargeable_table = "pay_charges"
 
   mattr_accessor :subscription_class
   mattr_accessor :subscription_table
-  @@subscription_class = 'Pay::Subscription'
-  @@subscription_table = 'pay_subscriptions'
+  @@subscription_class = "Pay::Subscription"
+  @@subscription_table = "pay_subscriptions"
 
   # Business details for receipts
   mattr_accessor :application_name
@@ -32,17 +33,19 @@ module Pay
   @@send_emails = true
 
   mattr_accessor :email_receipt_subject
-  @@email_receipt_subject = 'Payment receipt'
+  @@email_receipt_subject = "Payment receipt"
   mattr_accessor :email_refund_subject
-  @@email_refund_subject = 'Payment refunded'
+  @@email_refund_subject = "Payment refunded"
   mattr_accessor :email_renewing_subject
-  @@email_renewing_subject = 'Your upcoming subscription renewal'
+  @@email_renewing_subject = "Your upcoming subscription renewal"
+  mattr_accessor :email_action_required_subject
+  @@email_action_required_subject = "Confirm your payment"
 
-  mattr_accessor :automount_webhook_routes
-  @@automount_webhook_routes = true
+  mattr_accessor :automount_routes
+  @@automount_routes = true
 
-  mattr_accessor :webhooks_path
-  @@webhooks_path = '/webhooks'
+  mattr_accessor :routes_path
+  @@routes_path = "/pay"
 
   def self.setup
     yield self
@@ -81,5 +84,29 @@ module Pay
   end
 
   class Error < StandardError
+  end
+
+  class InvalidPaymentMethod < Error
+    attr_reader :payment
+
+    def initialize(payment)
+      @payment = payment
+    end
+
+    def message
+      "This payment attempt failed beacuse of an invalid payment method."
+    end
+  end
+
+  class ActionRequired < Error
+    attr_reader :payment
+
+    def initialize(payment)
+      @payment = payment
+    end
+
+    def message
+      "This payment attempt failed because additional action is required before it can be completed."
+    end
   end
 end

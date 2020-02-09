@@ -1,5 +1,4 @@
 <p align="center"><img src="logo.png"></p>
-
 ## Pay
 
 ### Payments engine for Ruby on Rails
@@ -10,21 +9,21 @@ Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
 **Current Payment Providers**
 
-- Stripe (API version [2018-08-23](https://stripe.com/docs/upgrades#2018-08-23) or higher required)
+- Stripe ([supports SCA](https://stripe.com/docs/strong-customer-authentication), API version [2019-03-14](https://stripe.com/docs/upgrades#2019-03-14) or higher required)
 - Braintree
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add these lines to your application's Gemfile:
 
 ```ruby
 gem 'pay'
 
 # To use Stripe, also include:
-gem 'stripe', '< 5.0', '>= 2.8'
-gem 'stripe_event', '~> 2.2'
+gem 'stripe', '< 6.0', '>= 2.8'
+gem 'stripe_event', '~> 2.3'
 
 # To use Braintree + PayPal, also include:
 gem 'braintree', '< 3.0', '>= 2.92.0'
@@ -36,18 +35,18 @@ gem 'receipts', '~> 0.2.2'
 And then execute:
 
 ```bash
-$ bundle
+bundle
 ```
 
 Or install it yourself as:
 
 ```bash
-$ gem install pay
+gem install pay
 ```
 
 ## Setup
 
-#### Migrations
+### Migrations
 
 This engine will create a subscription model and the neccessary migrations for the model you want to make "billable." The most common use case for the billable model is a User.
 
@@ -55,31 +54,50 @@ To add the migrations to your application, run the following migration:
 
 `$ bin/rails pay:install:migrations`
 
-This will install three migrations:
+This will install four migrations:
 
 - db/migrate/create_subscriptions.pay.rb
 - db/migrate/add_fields_to_users.pay.rb
 - db/migrate/create_charges.pay.rb
+- db/migrate/add_status_to_subscriptions.pay.rb
 
-#### The User Model
+### The Billable Module
 
-If you have a `User` model defined in `app/models/user.rb` Pay will add the fields it needs to the `users` table.
+To enable payments for a model, you simply include the `Pay::Billable`
+module in it. By default, we assume this is `User`.
 
-If you do not have a `User` model defined, Pay will create a `users` table and you will need to add `app/models/user.rb`.
+If you'd like to use a different model, you can configure it in an
+initializer:
 
-#### Non-User Model
+```ruby
+Pay.setup do |config|
+  # Make the billable class the same name as your ActiveRecord model
+  config.billable_class = "Team"
 
-If you need to use a model other than `User`, check out the [wiki page](https://github.com/jasoncharnes/pay/wiki/Model-Other-Than-User).
+  # Make the billable table the same name as your ActiveRecord table name for the model
+  # This is optional.
+  # Once you update the billable class, the table name will use the ActiveRecord inflected table name
+  config.billable_table = "teams"
+end
+```
 
 #### Run the Migrations
 
 Finally, run the migrations with `$ rake db:migrate`
 
-#### Getting NoMethodError?
+####  Getting NoMethodError?
 
 `NoMethodError (undefined method 'stripe_customer' for #<User:0x00007fbc34b9bf20>)`
 
 Fully restart your Rails application `bin/spring stop && rails s`
+
+## Payment Providers
+
+We support both Stripe and Braintree and make our best attempt to
+standardize the two. They function differently so keep that in mind if
+you plan on doing more complex payments. It would be best to stick with
+a single payment provider in that case so you don't run into
+discrepancies.
 
 #### Stripe
 
@@ -96,6 +114,30 @@ development:
 You can also use the `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
 
 **To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
+
+##### Strong Customer Authentication (SCA)
+
+Our Stripe integration **requires** the use of Payment Method objects to correctly support Strong Customer Authentication with Stripe. If you've previously been using card tokens, you'll need to upgrade your Javascript integration.
+
+Subscriptions that require SCA are marked as `incomplete` by default.
+Once payment is authenticated, Stripe will send a webhook updating the
+status of the subscription. You'll need to use the [Stripe CLI](https://github.com/stripe/stripe-cli) to forward
+webhooks to your application to make sure your subscriptions work
+correctly for SCA payments.
+
+```bash
+stripe listen --forward-to localhost:3000/pay/webhooks/stripe
+```
+
+You should use `stripe.handleCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.handleCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
+
+**Payment Confirmations**
+
+Sometimes you'll have a payment that requires extra authentication. In this case, Pay provides a webhook and action for handling these payments. It will automatically email the customer and provide a link with the PaymentIntent ID in the url where the customer will be asked to fill out their name and card number to confirm the payment. Once done, they'll be redirected back to your application.
+
+If you'd like to change the views of the payment confirmation page, you can install the views using the generator and modify the template.
+
+[<img src="https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png?X-CloudApp-Visitor-Id=51470" alt="Stripe SCA Payment Confirmation" style="zoom: 25%;" />](https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png)
 
 #### Background jobs
 
@@ -137,7 +179,7 @@ Pay.setup do |config|
   config.send_emails = true
 
   config.automount_webhook_routes = true
-  config.webhooks_path = "/webhooks" # Only when automount_webhook_routes is true
+  config.routes_path = "/pay" # Only when automount_webhook_routes is true
 end
 ```
 
@@ -155,19 +197,38 @@ Pay.setup do |config|
 end
 ```
 
+### Credentials
+
+You'll need to add your private Stripe API key to your Rails secrets `config/secrets.yml`, credentials `rails credentials:edit`
+
+```yaml
+development:
+  stripe:
+    private_key: xxxx
+    public_key: yyyy
+    signing_secret: zzzz
+  braintree:
+    private_key: xxxx
+    public_key: yyyy
+```
+
+You can also use the `STRIPE_PUBLIC_KEY`, `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
+
 ### Generators
 
-#### Email Templates
+If you want to modify the Stripe SCA template or any other views, you can copy over the view files using:
+
+```bash
+bin/rails generate pay:views
+```
 
 If you want to modify the email templates, you can copy over the view files using:
 
-```
-$ bin/rails generate pay:email_views
+```bash
+bin/rails generate pay:email_views
 ```
 
-## Emails
-
-### Stripe
+### Emails
 
 Emails can be enabled/disabled using the `send_emails` configuration option (enabled per default). When enabled, the following emails will be sent:
 
@@ -175,7 +236,7 @@ Emails can be enabled/disabled using the `send_emails` configuration option (ena
 - When a charge was refunded
 - When a subscription is about to renew
 
-## User API
+## Billable API
 
 #### Trials
 
@@ -214,7 +275,7 @@ user.on_generic_trial? #=> true
 user = User.find_by(email: 'michael@bluthcompany.co')
 
 user.processor = 'stripe'
-user.card_token = 'stripe-token'
+user.card_token = 'payment_method_id'
 user.charge(1500) # $15.00 USD
 
 user = User.find_by(email: 'michael@bluthcompany.co')
@@ -236,7 +297,7 @@ different currencies, etc.
 user = User.find_by(email: 'michael@bluthcompany.co')
 
 user.processor = 'stripe'
-user.card_token = 'stripe-token'
+user.card_token = 'payment_method_id'
 user.subscribe
 ```
 
@@ -260,7 +321,9 @@ Plan is the plan ID from the payment processor.
 
 ##### Options
 
-They do something?
+By default, the trial specified on the subscription will be used.
+
+`trial_period_days: 30` can be set to override and a trial to the subscription. This works the same for Braintree and Stripe.
 
 #### Retrieving a Subscription from the Database
 
@@ -329,7 +392,7 @@ user.customer #> Stripe or Braintree customer account
 ```ruby
 user = User.find_by(email: 'tobias@bluthcompany.co')
 
-user.update_card('stripe-token')
+user.update_card('payment_method_id')
 ```
 
 #### Retrieving a Customer's Subscription from the Processor
@@ -445,9 +508,13 @@ Rails.application.config.to_prepare do
 end
 ```
 
-## Webhooks
+## Routes & Webhooks
 
-Webhooks are automatically mounted to `/webhooks/{provider}`.
+Routes are automatically mounted to `/pay` by default.
+
+We provide a route for confirming SCA payments at `/pay/payments/:payment_intent_id`
+
+Webhooks are automatically mounted at `/pay/webhooks/{provider}`
 
 #### Customizing webhook mount path
 
@@ -455,7 +522,7 @@ If you have a catch all route (for 404s etc) and need to control where/when the 
 
 ```ruby
 # config/initializers/pay.rb
-config.automount_webhook_routes = false
+config.automount_routes = false
 
 # config/routes.rb
 mount Pay::Engine, at: '/secret-webhook-path'
@@ -466,7 +533,7 @@ If you just want to modify where the engine mounts it's routes then you can chan
 ```ruby
 # config/initializers/pay.rb
 
-config.webhooks_path = '/secret-webhook-path'
+config.routes_path = '/secret-webhook-path'
 ```
 
 ## Contributors

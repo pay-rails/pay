@@ -1,6 +1,5 @@
 module Pay
   module Env
-
     private
 
     # Search for environment variables

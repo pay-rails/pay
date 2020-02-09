@@ -1,6 +1,5 @@
 module Pay
   module Braintree
-
     module Charge
       extend ActiveSupport::Concern
 
@@ -22,6 +21,5 @@ module Pay
         raise Error, e.message
       end
     end
-
   end
 end

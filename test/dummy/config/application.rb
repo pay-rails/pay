@@ -1,6 +1,6 @@
-require_relative 'boot'
+require_relative "boot"
 
-require 'rails/all'
+require "rails/all"
 
 Bundler.require(*Rails.groups)
 require "pay"
@@ -14,4 +14,3 @@ module Dummy
     config.load_defaults 5.2
   end
 end
-

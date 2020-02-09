@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Pay::Engine.routes.draw do
-  post 'stripe',    to: 'stripe_event/webhook#event'
-  post 'braintree', to: 'pay/webhooks/braintree#create'
+  resources :payments, only: [:show], module: :pay
+  post "webhooks/stripe", to: "stripe_event/webhook#event"
+  post "webhooks/braintree", to: "pay/webhooks/braintree#create"
 end

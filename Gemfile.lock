@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pay (1.0.3)
+    pay (2.0.0)
       rails (>= 4.2)
 
 GEM
@@ -74,7 +74,6 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     crass (1.0.6)
-    dante (0.2.0)
     erubi (1.9.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
@@ -98,7 +97,6 @@ GEM
       minitest (~> 5.10)
       railties (~> 6.0.0)
     mocha (1.11.2)
-    multi_json (1.14.1)
     nio4r (2.5.2)
     nokogiri (1.10.7)
       mini_portile2 (~> 2.4.0)
@@ -140,13 +138,15 @@ GEM
       thor (>= 0.20.3, < 2.0)
     rainbow (3.0.0)
     rake (13.0.1)
-    rubocop (0.79.0)
+    rubocop (0.77.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
-      parser (>= 2.7.0.1)
+      parser (>= 2.6)
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 1.7)
+    rubocop-performance (1.5.2)
+      rubocop (>= 0.71.0)
     ruby-progressbar (1.10.1)
     safe_yaml (1.0.5)
     sprockets (4.0.0)
@@ -157,11 +157,12 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     sqlite3 (1.4.2)
+    standard (0.1.7)
+      rubocop (~> 0.77.0)
+      rubocop-performance (~> 1.5.1)
+    standardrb (1.0.0)
+      standard
     stripe (5.14.0)
-    stripe-ruby-mock (3.0.1)
-      dante (>= 0.2.0)
-      multi_json (~> 1.0)
-      stripe (> 5, < 6)
     stripe_event (2.3.0)
       activesupport (>= 3.1)
       stripe (>= 2.8, < 6)
@@ -191,10 +192,9 @@ DEPENDENCIES
   mocha
   pay!
   pry
-  rubocop (~> 0.7)
   sqlite3 (~> 1.4)
-  stripe (~> 5.0)
-  stripe-ruby-mock (~> 3.0)
+  standardrb
+  stripe (>= 2.8)
   stripe_event (~> 2.3)
   vcr
   webmock

@@ -15,12 +15,11 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        after_commit :enqeue_sync_email_job,
-                     if: :should_sync_email_with_processor?
+        after_update :enqeue_sync_email_job, if: :should_sync_email_with_processor?
       end
 
       def should_sync_email_with_processor?
-        respond_to? :saved_change_to_email?
+        try(:saved_change_to_email?)
       end
 
       def sync_email_with_processor
