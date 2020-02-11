@@ -1,4 +1,4 @@
-class CreateSubscriptions < ActiveRecord::Migration[4.2]
+class CreatePaySubscriptions < ActiveRecord::Migration[4.2]
   def change
     create_table :pay_subscriptions do |t|
       t.references :owner
