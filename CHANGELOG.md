@@ -1,3 +1,8 @@
+### 2.0.1
+
+* [FIX] Stripe Refund and Charge references weren't matching the right
+  class
+
 ### 2.0.0
 
 * [NEW] Stripe SCA support
