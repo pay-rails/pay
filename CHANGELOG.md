@@ -1,3 +1,7 @@
+### 2.0.2
+
+* [FIX] Styling tweaks for payment intent page
+
 ### 2.0.1
 
 * [FIX] Stripe Refund and Charge references weren't matching the right
