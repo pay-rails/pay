@@ -82,7 +82,7 @@ module Pay
 
       send("#{processor}_resume")
 
-      update(ends_at: nil)
+      update(ends_at: nil, status: "active")
       self
     end
 
