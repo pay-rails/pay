@@ -139,8 +139,8 @@ module Pay
 
         # Update the user's card on file if a token was passed in
         if card_token.present?
-          ::Stripe::PaymentMethod.attach(card_token, {customer: customer.id})
-          customer.invoice_settings.default_payment_method = card_token
+          payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: customer.id})
+          customer.invoice_settings.default_payment_method = payment_method.id
           customer.save
 
           update_stripe_card_on_file ::Stripe::PaymentMethod.retrieve(card_token).card
