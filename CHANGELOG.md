@@ -1,3 +1,8 @@
+### 2.0.3
+
+* [FIX] Stripe subscription cancel shouldn't change status
+* [FIX] Stripe test payment methods should now work (ie. `pm_card_visa`)
+
 ### 2.0.2
 
 * [FIX] Styling tweaks for payment intent page
