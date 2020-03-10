@@ -11,7 +11,7 @@ module Pay
         subscription.save
 
         new_ends_at = on_trial? ? trial_ends_at : Time.at(subscription.current_period_end)
-        update(ends_at: new_ends_at, status: :canceled)
+        update(ends_at: new_ends_at)
       rescue ::Stripe::StripeError => e
         raise Error, e.message
       end
