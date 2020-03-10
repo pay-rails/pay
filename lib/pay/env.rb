@@ -13,10 +13,10 @@ module Pay
     # 3. Check unscoped credentials, then secrets
     def find_value_by_name(scope, name)
       ENV["#{scope.upcase}_#{name.upcase}"] ||
-        credentials.dig(env, scope, name) ||
-        secrets.dig(env, scope, name) ||
-        credentials.dig(scope, name) ||
-        secrets.dig(scope, name)
+        credentials&.dig(env, scope, name) ||
+        secrets&.dig(env, scope, name) ||
+        credentials&.dig(scope, name) ||
+        secrets&.dig(scope, name)
     end
 
     def env
@@ -28,7 +28,7 @@ module Pay
     end
 
     def credentials
-      Rails.application.credentials
+      Rails.application.credentials if Rails.application.respond_to?(:credentials)
     end
   end
 end

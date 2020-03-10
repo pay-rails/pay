@@ -143,6 +143,10 @@ stripe listen --forward-to localhost:3000/pay/webhooks/stripe
 
 You should use `stripe.handleCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.handleCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
 
+The Javascript will now need to use createPaymentMethod instead of createToken. https://stripe.com/docs/js/payment_intents/create_payment_method
+
+The Javascript also needs to have a PaymentIntent or SetupIntent created server-side and the ID passed into the Javascript to do this. That way it knows how to safely handle the card tokenization if it meets the SCA requirements.
+
 **Payment Confirmations**
 
 Sometimes you'll have a payment that requires extra authentication. In this case, Pay provides a webhook and action for handling these payments. It will automatically email the customer and provide a link with the PaymentIntent ID in the url where the customer will be asked to fill out their name and card number to confirm the payment. Once done, they'll be redirected back to your application.
@@ -190,8 +194,8 @@ Pay.setup do |config|
 
   config.send_emails = true
 
-  config.automount_webhook_routes = true
-  config.routes_path = "/pay" # Only when automount_webhook_routes is true
+  config.automount_routes = true
+  config.routes_path = "/pay" # Only when automount_routes is true
 end
 ```
 

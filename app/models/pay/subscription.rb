@@ -17,9 +17,9 @@ module Pay
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
-    scope :on_trial, -> { where.not(trial_ends_at: nil).where("trial_ends_at > ?", Time.zone.now) }
+    scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.zone.now) }
     scope :cancelled, -> { where.not(ends_at: nil) }
-    scope :on_grace_period, -> { cancelled.where("ends_at > ?", Time.zone.now) }
+    scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.zone.now) }
     scope :active, -> { where(ends_at: nil).or(on_grace_period).or(on_trial) }
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
@@ -82,7 +82,7 @@ module Pay
 
       send("#{processor}_resume")
 
-      update(ends_at: nil)
+      update(ends_at: nil, status: "active")
       self
     end
 

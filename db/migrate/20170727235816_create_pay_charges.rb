@@ -1,4 +1,4 @@
-class CreatePayCharges < ActiveRecord::Migration[5.1]
+class CreatePayCharges < ActiveRecord::Migration[4.2]
   def change
     create_table :pay_charges do |t|
       t.references :owner
