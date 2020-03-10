@@ -100,6 +100,17 @@ you plan on doing more complex payments. It would be best to stick with
 a single payment provider in that case so you don't run into
 discrepancies.
 
+#### Braintree
+
+```yaml
+development:
+  braintree:
+    private_key: xxxx
+    public_key: yyyy
+    merchant_id: zzzz
+    environment: sandbox
+```
+
 #### Stripe
 
 You'll need to add your private Stripe API key to your Rails secrets `config/secrets.yml`, credentials `rails credentials:edit`
@@ -211,9 +222,12 @@ development:
   braintree:
     private_key: xxxx
     public_key: yyyy
+    merchant_id: aaaa
+    environment: sandbox
 ```
 
-You can also use the `STRIPE_PUBLIC_KEY`, `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
+For Stripe, you can also use the `STRIPE_PUBLIC_KEY`, `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
+For Braintree, you can also use `BRAINTREE_MERCHANT_ID`, `BRAINTREE_PUBLIC_KEY`, `BRAINTREE_PRIVATE_KEY`, and `BRAINTREE_ENVIRONMENT` environment variables.
 
 ### Generators
 
