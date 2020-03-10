@@ -20,7 +20,7 @@ Want to add a new payment provider? Contributions are welcome and the instructio
 Add these lines to your application's Gemfile:
 
 ```ruby
-gem 'pay'
+gem 'pay', '~> 2.0'
 
 # To use Stripe, also include:
 gem 'stripe', '< 6.0', '>= 2.8'
@@ -30,7 +30,7 @@ gem 'stripe_event', '~> 2.3'
 gem 'braintree', '< 3.0', '>= 2.92.0'
 
 # To use Receipts
-gem 'receipts', '~> 0.2.2'
+gem 'receipts', '~> 1.0.0'
 ```
 
 And then execute:
