@@ -1,8 +1,6 @@
-<p align="center"><img src="logo.png"></p>
+<p align="center"><img src="logo.svg" height="50px"></p>
 
-## Pay
-
-### Payments engine for Ruby on Rails
+## Pay - Payments engine for Ruby on Rails
 
 [![Build Status](https://github.com/excid3/pay/workflows/Tests/badge.svg)](https://github.com/excid3/pay/actions)
 
