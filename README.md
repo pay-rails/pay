@@ -13,6 +13,12 @@ Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
 
+## Tutorial
+
+Want to see how Pay works? Check out our video getting started guide.
+
+<a href="https://www.youtube.com/watch?v=hYlOmqyJIgc" target="_blank"><img width="50%" src="http://i3.ytimg.com/vi/hYlOmqyJIgc/maxresdefault.jpg"></a>
+
 ## Installation
 
 Add these lines to your application's Gemfile:
