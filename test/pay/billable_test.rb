@@ -16,8 +16,12 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert_equal "Gob Bluth", User.new(first_name: "Gob", last_name: "Bluth").customer_name
   end
 
+  test "has charges" do
+    assert_equal Pay::Charge.none, @billable.charges
+  end
+
   test "has subscriptions" do
-    assert @billable.respond_to?(:subscriptions)
+    assert_equal Pay::Subscription.none, @billable.subscriptions
   end
 
   test "customer with stripe processor" do
@@ -148,10 +152,6 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     @billable.processor = "stripe"
     @billable.expects(:stripe_upcoming_invoice).returns(:invoice)
     assert_equal :invoice, @billable.upcoming_invoice
-  end
-
-  test "has charges" do
-    assert @billable.respond_to?(:charges)
   end
 
   test "on_trial? with no plan" do

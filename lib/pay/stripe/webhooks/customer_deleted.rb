@@ -4,12 +4,12 @@ module Pay
       class CustomerDeleted
         def call(event)
           object = event.data.object
-          user = Pay.user_model.find_by(processor: :stripe, processor_id: object.id)
+          billable = Pay.find_billable(processor: :stripe, processor_id: object.id)
 
           # Couldn't find user, we can skip
-          return unless user.present?
+          return unless billable.present?
 
-          user.update(
+          billable.update(
             processor_id: nil,
             trial_ends_at: nil,
             card_type: nil,
@@ -18,7 +18,7 @@ module Pay
             card_exp_year: nil,
           )
 
-          user.subscriptions.update_all(
+          billable.subscriptions.update_all(
             trial_ends_at: nil,
             ends_at: Time.zone.now,
           )

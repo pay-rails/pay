@@ -3,7 +3,7 @@ module Pay
     self.table_name = Pay.chargeable_table
 
     # Associations
-    belongs_to :owner, class_name: Pay.billable_class, foreign_key: :owner_id
+    belongs_to :owner, polymorphic: true
 
     # Scopes
     scope :sorted, -> { order(created_at: :desc) }

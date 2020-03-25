@@ -13,6 +13,7 @@
 ActiveRecord::Schema.define(version: 2019_08_16_015720) do
   create_table "pay_charges", force: :cascade do |t|
     t.integer "owner_id"
+    t.string "owner_type"
     t.string "processor", null: false
     t.string "processor_id", null: false
     t.integer "amount", null: false
@@ -28,6 +29,7 @@ ActiveRecord::Schema.define(version: 2019_08_16_015720) do
 
   create_table "pay_subscriptions", force: :cascade do |t|
     t.integer "owner_id"
+    t.string "owner_type"
     t.string "name", null: false
     t.string "processor", null: false
     t.string "processor_id", null: false
@@ -43,6 +45,14 @@ ActiveRecord::Schema.define(version: 2019_08_16_015720) do
   create_table "teams", force: :cascade do |t|
     t.string "email"
     t.string "name"
+    t.string "processor"
+    t.string "processor_id"
+    t.datetime "trial_ends_at"
+    t.string "card_type"
+    t.string "card_last4"
+    t.string "card_exp_month"
+    t.string "card_exp_year"
+    t.text "extra_billing_info"
   end
 
   create_table "users", force: :cascade do |t|

@@ -4,8 +4,21 @@ module Pay
   module Billable
     extend ActiveSupport::Concern
 
-    included do
+    # Keep track of which Billable models we have
+    class << self
+      attr_reader :includers
+    end
+
+    def self.included(base = nil, &block)
+      @includers ||= []
+      @includers << base if base
+      super
+    end
+
+    included do |base|
       include Pay::Billable::SyncEmail
+      include Pay::Stripe::Billable if defined? ::Stripe
+      include Pay::Braintree::Billable if defined? ::Braintree
 
       has_many :charges, class_name: Pay.chargeable_class, foreign_key: :owner_id, inverse_of: :owner
       has_many :subscriptions, class_name: Pay.subscription_class, foreign_key: :owner_id, inverse_of: :owner
@@ -112,7 +125,7 @@ module Pay
     private
 
     def check_for_processor
-      raise StandardError, "No payment processor selected. Make sure to set the #{Pay.billable_class}'s `processor` attribute to either 'stripe' or 'braintree'." unless processor
+      raise StandardError, "No payment processor selected. Make sure to set the #{self.class.name}'s `processor` attribute to either 'stripe' or 'braintree'." unless processor
     end
 
     # Used for creating a Pay::Subscription in the database

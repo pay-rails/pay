@@ -138,7 +138,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   test "email changed" do
     # Must already have a processor ID
     @billable.customer # Sets customer ID
-    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id)
+    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id, @billable.class.name)
     @billable.update(email: "mynewemail@example.org")
   end
 

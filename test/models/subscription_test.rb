@@ -6,9 +6,11 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     @subscription = Pay.subscription_model.new processor: "stripe", status: "active"
   end
 
-  test "belongs to the owner" do
-    klass = Pay.subscription_model.reflections["owner"].options[:class_name]
-    assert klass, "User"
+  test "belongs to a polymorphic owner" do
+    @subscription.owner = @owner
+    assert_equal User, @subscription.owner.class
+    @subscription.owner = Team.new
+    assert_equal Team, @subscription.owner.class
   end
 
   test ".for_name(name) scope" do

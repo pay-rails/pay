@@ -51,7 +51,23 @@ module Pay
     yield self
   end
 
+  def self.billable_models
+    Pay::Billable.includers
+  end
+
+  def self.find_billable(processor:, processor_id:)
+    billable_models.each do |model|
+      if (record = model.find_by(processor: processor, processor_id: processor_id))
+        return record
+      end
+    end
+
+    nil
+  end
+
   def self.user_model
+    ActiveSupport::Deprecation.warn("Pay.user_model is deprecated and will be removed in v3. Instead, use `Pay.billable_models` now to support more than one billable model.")
+
     if Rails.application.config.cache_classes
       @@user_model ||= billable_class.constantize
     else

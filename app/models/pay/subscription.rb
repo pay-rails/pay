@@ -5,7 +5,7 @@ module Pay
     STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid]
 
     # Associations
-    belongs_to :owner, class_name: Pay.billable_class, foreign_key: :owner_id
+    belongs_to :owner, polymorphic: true
 
     # Validations
     validates :name, presence: true

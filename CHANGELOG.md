@@ -1,3 +1,24 @@
+### 2.1.0
+
+* [BREAKING] Subscription & Charge associations to `owner` are now polymorphic.
+
+  Requires adding `owner_type:string` to both Pay::Charge and Pay::Subscription models and setting the value for all existing records to your model name.
+
+```ruby
+class AddOwnerTypeToPay < ActiveRecord::Migration[6.0]
+  def change
+    add_column :pay_charges, :owner_type, :string
+    add_column :pay_subscriptions, :owner_type, :string
+
+    # Backfill owner_type column to match your Billable model
+    Pay::Charge.update_all owner_type: "User"
+    Pay::Subscription.update_all owner_type: "User"
+  end
+end
+```
+
+  `Pay.billable_class` is now deprecated and will be removed in a future version. You should also update your existing Pay migrations to reference the `:users` table rather than `Pay.billable_class` and any other code you may have that references this method.
+
 ### 2.0.3
 
 * [FIX] Stripe subscription cancel shouldn't change status
