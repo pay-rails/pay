@@ -12,7 +12,7 @@ module Pay
             email: email,
             first_name: try(:first_name),
             last_name: try(:last_name),
-            payment_method_nonce: card_token,
+            payment_method_nonce: card_token
           )
           raise Pay::Error.new(result.message) unless result.success?
 
@@ -35,7 +35,7 @@ module Pay
         args = {
           amount: amount / 100.0,
           customer_id: customer.id,
-          options: {submit_for_settlement: true},
+          options: {submit_for_settlement: true}
         }.merge(options)
 
         result = gateway.transaction.sale(args)
@@ -78,7 +78,7 @@ module Pay
           payment_method_nonce: token,
           options: {
             make_default: true,
-            verify_card: true,
+            verify_card: true
           }
         )
         raise Pay::Error.new(result.message) unless result.success?
@@ -94,7 +94,7 @@ module Pay
         braintree_customer.update(
           email: email,
           first_name: try(:first_name),
-          last_name: try(:last_name),
+          last_name: try(:last_name)
         )
       end
 
@@ -171,7 +171,7 @@ module Pay
             card_type: payment_method.card_type,
             card_last4: payment_method.last_4,
             card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year,
+            card_exp_year: payment_method.expiration_year
           }
 
         when "paypal_account"
@@ -179,7 +179,7 @@ module Pay
             card_type: "PayPal",
             card_last4: transaction.paypal_details.payer_email,
             card_exp_month: nil,
-            card_exp_year: nil,
+            card_exp_year: nil
           }
 
         when "android_pay_card"
@@ -188,7 +188,7 @@ module Pay
             card_type: payment_method.source_card_type,
             card_last4: payment_method.source_card_last_4,
             card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year,
+            card_exp_year: payment_method.expiration_year
           }
 
         when "venmo_account"
@@ -196,7 +196,7 @@ module Pay
             card_type: "Venmo",
             card_last4: transaction.venmo_account_details.username,
             card_exp_month: nil,
-            card_exp_year: nil,
+            card_exp_year: nil
           }
 
         when "apple_pay_card"
@@ -205,7 +205,7 @@ module Pay
             card_type: payment_method.card_type,
             card_last4: payment_method.last_4,
             card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year,
+            card_exp_year: payment_method.expiration_year
           }
 
         else

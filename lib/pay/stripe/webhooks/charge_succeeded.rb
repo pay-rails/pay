@@ -17,7 +17,7 @@ module Pay
         def create_charge(user, object)
           charge = user.charges.find_or_initialize_by(
             processor: :stripe,
-            processor_id: object.id,
+            processor_id: object.id
           )
 
           charge.update(

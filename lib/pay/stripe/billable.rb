@@ -17,7 +17,7 @@ module Pay
       def create_setup_intent
         ::Stripe::SetupIntent.create(
           customer: processor_id,
-          usage: :off_session,
+          usage: :off_session
         )
       end
 
@@ -32,7 +32,7 @@ module Pay
           confirmation_method: :automatic,
           currency: "usd",
           customer: customer.id,
-          payment_method: customer.invoice_settings.default_payment_method,
+          payment_method: customer.invoice_settings.default_payment_method
         }.merge(options)
 
         payment_intent = ::Stripe::PaymentIntent.create(args)
@@ -51,7 +51,7 @@ module Pay
         opts = {
           expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
           items: [plan: plan],
-          off_session: true,
+          off_session: true
         }.merge(options)
 
         # Inherit trial from plan unless trial override was specified

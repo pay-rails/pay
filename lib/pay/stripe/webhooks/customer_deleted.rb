@@ -15,12 +15,12 @@ module Pay
             card_type: nil,
             card_last4: nil,
             card_exp_month: nil,
-            card_exp_year: nil,
+            card_exp_year: nil
           )
 
           billable.subscriptions.update_all(
             trial_ends_at: nil,
-            ends_at: Time.zone.now,
+            ends_at: Time.zone.now
           )
         end
       end

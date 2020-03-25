@@ -9,7 +9,7 @@ module Pay
 
       mail(
         to: to(user),
-        subject: Pay.email_receipt_subject,
+        subject: Pay.email_receipt_subject
       )
     end
 
@@ -18,7 +18,7 @@ module Pay
 
       mail(
         to: to(user),
-        subject: Pay.email_refund_subject,
+        subject: Pay.email_refund_subject
       )
     end
 
@@ -27,7 +27,7 @@ module Pay
 
       mail(
         to: to(user),
-        subject: Pay.email_renewing_subject,
+        subject: Pay.email_renewing_subject
       )
     end
 

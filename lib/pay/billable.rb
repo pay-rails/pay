@@ -138,7 +138,7 @@ module Pay
         processor_id: subscription.id,
         processor_plan: plan,
         trial_ends_at: send("#{processor}_trial_end_date", subscription),
-        ends_at: nil,
+        ends_at: nil
       )
       subscriptions.create!(options)
     end

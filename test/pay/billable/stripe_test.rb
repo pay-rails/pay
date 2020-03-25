@@ -197,8 +197,8 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
         number: "4242 4242 4242 4242",
         exp_month: 9,
         exp_year: Time.now.year + 5,
-        cvc: 123,
-      },
+        cvc: 123
+      }
     }
 
     ::Stripe::PaymentMethod.create(defaults.deep_merge(options))

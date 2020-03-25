@@ -234,7 +234,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       processor_id: "1",
       processor_plan: "default",
       quantity: "1",
-      status: "active",
+      status: "active"
     }
 
     Pay.subscription_model.create! defaults.merge(options)
