@@ -4,12 +4,12 @@ module Pay
       class CustomerUpdated
         def call(event)
           object = event.data.object
-          user = Pay.user_model.find_by(processor: :stripe, processor_id: object.id)
+          billable = Pay.find_billable(processor: :stripe, processor_id: object.id)
 
           # Couldn't find user, we can skip
-          return unless user.present?
+          return unless billable.present?
 
-          user.sync_card_from_stripe
+          billable.sync_card_from_stripe
         end
       end
     end

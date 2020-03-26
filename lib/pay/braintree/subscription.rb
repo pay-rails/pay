@@ -13,7 +13,7 @@ module Pay
           update(status: :canceled, ends_at: trial_ends_at)
         else
           gateway.subscription.update(subscription.id, {
-            number_of_billing_cycles: subscription.current_billing_cycle,
+            number_of_billing_cycles: subscription.current_billing_cycle
           })
           update(status: :canceled, ends_at: subscription.billing_period_end_date.to_date)
         end
@@ -45,7 +45,7 @@ module Pay
 
           gateway.subscription.update(subscription.id, {
             never_expires: true,
-            number_of_billing_cycles: nil,
+            number_of_billing_cycles: nil
           })
         end
 
@@ -80,8 +80,8 @@ module Pay
           never_expires: true,
           number_of_billing_cycles: nil,
           options: {
-            prorate_charges: prorate?,
-          },
+            prorate_charges: prorate?
+          }
         })
 
         if result.success?
@@ -159,10 +159,10 @@ module Pay
                 {
                   inherited_from_id: "plan-credit",
                   amount: discount.amount,
-                  number_of_billing_cycles: discount.number_of_billing_cycles,
-                },
-              ],
-            },
+                  number_of_billing_cycles: discount.number_of_billing_cycles
+                }
+              ]
+            }
           }
         end
 

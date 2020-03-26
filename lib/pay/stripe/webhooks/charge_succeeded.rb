@@ -4,23 +4,20 @@ module Pay
       class ChargeSucceeded
         def call(event)
           object = event.data.object
-          user = Pay.user_model.find_by(
-            processor: :stripe,
-            processor_id: object.customer
-          )
+          billable = Pay.find_billable(processor: :stripe, processor_id: object.customer)
 
-          return unless user.present?
-          return if user.charges.where(processor_id: object.id).any?
+          return unless billable.present?
+          return if billable.charges.where(processor_id: object.id).any?
 
-          charge = create_charge(user, object)
-          notify_user(user, charge)
+          charge = create_charge(billable, object)
+          notify_user(billable, charge)
           charge
         end
 
         def create_charge(user, object)
           charge = user.charges.find_or_initialize_by(
             processor: :stripe,
-            processor_id: object.id,
+            processor_id: object.id
           )
 
           charge.update(

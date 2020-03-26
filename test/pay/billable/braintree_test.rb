@@ -24,10 +24,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   test "fails with invalid cards" do
     # This requires Card Verification to be enabled in the Braintree account
     @billable.card_token = "fake-processor-declined-visa-nonce"
-    err = assert_raises Pay::Error do
-      @billable.customer
-    end
-
+    err = assert_raises(Pay::Error) { @billable.customer }
     assert_equal "Do Not Honor", err.message
   end
 
@@ -74,7 +71,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
     # Must already have a processor ID
     @billable.update(processor_id: "fake")
 
-    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id)
+    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id, @billable.class.name)
     @billable.update(email: "mynewemail@example.org")
   end
 

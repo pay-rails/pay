@@ -17,7 +17,7 @@ class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
       processor_id: "sub_someid",
       name: "default",
       processor_plan: "some-plan",
-      status: "active",
+      status: "active"
     )
 
     User.any_instance.expects(:sync_card_from_stripe)
@@ -35,7 +35,7 @@ class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
       processor_id: "sub_someid",
       name: "default",
       processor_plan: "some-plan",
-      status: "active",
+      status: "active"
     )
 
     User.any_instance.expects(:sync_card_from_stripe).never

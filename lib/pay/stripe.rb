@@ -16,7 +16,6 @@ module Pay
 
       Pay.charge_model.include Pay::Stripe::Charge
       Pay.subscription_model.include Pay::Stripe::Subscription
-      Pay.user_model.include Pay::Stripe::Billable
     end
 
     def public_key

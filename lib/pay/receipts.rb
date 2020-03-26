@@ -20,7 +20,7 @@ module Pay
         company: {
           name: Pay.business_name,
           address: Pay.business_address,
-          email: Pay.support_email,
+          email: Pay.support_email
         },
         line_items: line_items
       )
@@ -32,7 +32,7 @@ module Pay
         ["Account Billed", "#{owner.name} (#{owner.email})"],
         ["Product", product],
         ["Amount", ActionController::Base.helpers.number_to_currency(amount / 100.0)],
-        ["Charged to", charged_to],
+        ["Charged to", charged_to]
       ]
       line_items << ["Additional Info", owner.extra_billing_info] if owner.extra_billing_info?
       line_items

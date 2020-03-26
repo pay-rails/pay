@@ -8,12 +8,15 @@ module Pay
           # We may already have the subscription in the database, so we can update that record
           subscription = Pay.subscription_model.find_by(processor: :stripe, processor_id: object.id)
 
+          # Create the subscription in the database if we don't have it already
           if subscription.nil?
             # The customer should already be in the database
-            owner = Pay.user_model.find_by(processor: :stripe, processor_id: object.customer)
+            owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
 
-            Rails.logger.error("[Pay] Unable to find #{Pay.user_model} with processor: :stripe and processor_id: '#{object.customer}'")
-            return if owner.nil?
+            if owner.nil?
+              Rails.logger.error("[Pay] Unable to find Pay::Billable with processor: :stripe and processor_id: '#{object.customer}'. Searched these models: #{Pay.billable_models.join(", ")}")
+              return
+            end
 
             subscription = Pay.subscription_model.new(owner: owner)
           end

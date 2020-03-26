@@ -2,11 +2,11 @@ module Pay
   class EmailSyncJob < ApplicationJob
     queue_as :default
 
-    def perform(id)
-      billable = Pay.user_model.find(id)
+    def perform(id, class_name)
+      billable = class_name.constantize.find(id)
       billable.sync_email_with_processor
     rescue ActiveRecord::RecordNotFound
-      Rails.logger.info "Couldn't find a #{Pay.billable_class} with ID = #{id}"
+      Rails.logger.info "Couldn't find a #{class_name} with ID = #{id}"
     end
   end
 end

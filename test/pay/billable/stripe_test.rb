@@ -138,7 +138,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   test "email changed" do
     # Must already have a processor ID
     @billable.customer # Sets customer ID
-    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id)
+    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id, @billable.class.name)
     @billable.update(email: "mynewemail@example.org")
   end
 
@@ -197,8 +197,8 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
         number: "4242 4242 4242 4242",
         exp_month: 9,
         exp_year: Time.now.year + 5,
-        cvc: 123,
-      },
+        cvc: 123
+      }
     }
 
     ::Stripe::PaymentMethod.create(defaults.deep_merge(options))

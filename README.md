@@ -59,32 +59,17 @@ To add the migrations to your application, run the following migration:
 
 `$ bin/rails pay:install:migrations`
 
-This will install four migrations:
+This will install three migrations:
 
 - db/migrate/create_subscriptions.pay.rb
-- db/migrate/add_fields_to_users.pay.rb
 - db/migrate/create_charges.pay.rb
 - db/migrate/add_status_to_subscriptions.pay.rb
 
-### The Billable Module
+You'll also need a model that can make payments. This is called a
+`Billable` model. The `pay` generator will add fields to the model and
+add the `Pay::Billable` module to it.
 
-To enable payments for a model, you simply include the `Pay::Billable`
-module in it. By default, we assume this is `User`.
-
-If you'd like to use a different model, you can configure it in an
-initializer:
-
-```ruby
-Pay.setup do |config|
-  # Make the billable class the same name as your ActiveRecord model
-  config.billable_class = "Team"
-
-  # Make the billable table the same name as your ActiveRecord table name for the model
-  # This is optional.
-  # Once you update the billable class, the table name will use the ActiveRecord inflected table name
-  config.billable_table = "teams"
-end
-```
+`$ bin/rails g pay User`
 
 #### Run the Migrations
 
@@ -96,78 +81,9 @@ Finally, run the migrations with `$ rake db:migrate`
 
 Fully restart your Rails application `bin/spring stop && rails s`
 
-## Payment Providers
-
-We support both Stripe and Braintree and make our best attempt to
-standardize the two. They function differently so keep that in mind if
-you plan on doing more complex payments. It would be best to stick with
-a single payment provider in that case so you don't run into
-discrepancies.
-
-#### Braintree
-
-```yaml
-development:
-  braintree:
-    private_key: xxxx
-    public_key: yyyy
-    merchant_id: zzzz
-    environment: sandbox
-```
-
-#### Stripe
-
-You'll need to add your private Stripe API key to your Rails secrets `config/secrets.yml`, credentials `rails credentials:edit`
-
-```yaml
-development:
-  stripe:
-    private_key: xxxx
-    public_key: yyyy
-    signing_secret: zzzz
-```
-
-You can also use the `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
-
-**To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
-
-##### Strong Customer Authentication (SCA)
-
-Our Stripe integration **requires** the use of Payment Method objects to correctly support Strong Customer Authentication with Stripe. If you've previously been using card tokens, you'll need to upgrade your Javascript integration.
-
-Subscriptions that require SCA are marked as `incomplete` by default.
-Once payment is authenticated, Stripe will send a webhook updating the
-status of the subscription. You'll need to use the [Stripe CLI](https://github.com/stripe/stripe-cli) to forward
-webhooks to your application to make sure your subscriptions work
-correctly for SCA payments.
-
-```bash
-stripe listen --forward-to localhost:3000/pay/webhooks/stripe
-```
-
-You should use `stripe.handleCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.handleCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
-
-The Javascript will now need to use createPaymentMethod instead of createToken. https://stripe.com/docs/js/payment_intents/create_payment_method
-
-The Javascript also needs to have a PaymentIntent or SetupIntent created server-side and the ID passed into the Javascript to do this. That way it knows how to safely handle the card tokenization if it meets the SCA requirements.
-
-**Payment Confirmations**
-
-Sometimes you'll have a payment that requires extra authentication. In this case, Pay provides a webhook and action for handling these payments. It will automatically email the customer and provide a link with the PaymentIntent ID in the url where the customer will be asked to fill out their name and card number to confirm the payment. Once done, they'll be redirected back to your application.
-
-If you'd like to change the views of the payment confirmation page, you can install the views using the generator and modify the template.
-
-[<img src="https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png?X-CloudApp-Visitor-Id=51470" alt="Stripe SCA Payment Confirmation" style="zoom: 25%;" />](https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png)
-
-#### Background jobs
-
-If a user's email is updated and they have a `processor_id` set, Pay will enqueue a background job (EmailSyncJob) to sync the email with the payment processor.
-
-It's important you set a queue_adapter for this to happen. If you don't, the code will be executed immediately upon user update. [More information here](https://guides.rubyonrails.org/v4.2/active_job_basics.html#backends)
-
 ## Usage
 
-Include the `Pay::Billable` module in the model you want to know about subscriptions.
+The `Pay::Billable` module should be included in the models you want to make payments and subscriptions.
 
 ```ruby
 # app/models/user.rb
@@ -184,9 +100,6 @@ Need to make some changes to how Pay is used? You can create an initializer `con
 
 ```ruby
 Pay.setup do |config|
-  config.billable_class = 'User'
-  config.billable_table = 'users'
-
   config.chargeable_class = 'Pay::Charge'
   config.chargeable_table = 'pay_charges'
 
@@ -258,6 +171,7 @@ Emails can be enabled/disabled using the `send_emails` configuration option (ena
 - When a charge succeeded
 - When a charge was refunded
 - When a subscription is about to renew
+
 
 ## Billable API
 
@@ -558,6 +472,75 @@ If you just want to modify where the engine mounts it's routes then you can chan
 
 config.routes_path = '/secret-webhook-path'
 ```
+
+## Payment Providers
+
+We support both Stripe and Braintree and make our best attempt to
+standardize the two. They function differently so keep that in mind if
+you plan on doing more complex payments. It would be best to stick with
+a single payment provider in that case so you don't run into
+discrepancies.
+
+#### Braintree
+
+```yaml
+development:
+  braintree:
+    private_key: xxxx
+    public_key: yyyy
+    merchant_id: zzzz
+    environment: sandbox
+```
+
+#### Stripe
+
+You'll need to add your private Stripe API key to your Rails secrets `config/secrets.yml`, credentials `rails credentials:edit`
+
+```yaml
+development:
+  stripe:
+    private_key: xxxx
+    public_key: yyyy
+    signing_secret: zzzz
+```
+
+You can also use the `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
+
+**To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
+
+##### Strong Customer Authentication (SCA)
+
+Our Stripe integration **requires** the use of Payment Method objects to correctly support Strong Customer Authentication with Stripe. If you've previously been using card tokens, you'll need to upgrade your Javascript integration.
+
+Subscriptions that require SCA are marked as `incomplete` by default.
+Once payment is authenticated, Stripe will send a webhook updating the
+status of the subscription. You'll need to use the [Stripe CLI](https://github.com/stripe/stripe-cli) to forward
+webhooks to your application to make sure your subscriptions work
+correctly for SCA payments.
+
+```bash
+stripe listen --forward-to localhost:3000/pay/webhooks/stripe
+```
+
+You should use `stripe.handleCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.handleCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
+
+The Javascript will now need to use createPaymentMethod instead of createToken. https://stripe.com/docs/js/payment_intents/create_payment_method
+
+The Javascript also needs to have a PaymentIntent or SetupIntent created server-side and the ID passed into the Javascript to do this. That way it knows how to safely handle the card tokenization if it meets the SCA requirements.
+
+**Payment Confirmations**
+
+Sometimes you'll have a payment that requires extra authentication. In this case, Pay provides a webhook and action for handling these payments. It will automatically email the customer and provide a link with the PaymentIntent ID in the url where the customer will be asked to fill out their name and card number to confirm the payment. Once done, they'll be redirected back to your application.
+
+If you'd like to change the views of the payment confirmation page, you can install the views using the generator and modify the template.
+
+[<img src="https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png?X-CloudApp-Visitor-Id=51470" alt="Stripe SCA Payment Confirmation" style="zoom: 25%;" />](https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png)
+
+#### Background jobs
+
+If a user's email is updated and they have a `processor_id` set, Pay will enqueue a background job (EmailSyncJob) to sync the email with the payment processor.
+
+It's important you set a queue_adapter for this to happen. If you don't, the code will be executed immediately upon user update. [More information here](https://guides.rubyonrails.org/v4.2/active_job_basics.html#backends)
 
 ## Contributors
 
