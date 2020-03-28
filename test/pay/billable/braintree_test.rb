@@ -57,8 +57,14 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   # https://developers.braintreepayments.com/reference/general/testing/ruby#amount-200000-300099
   test "handles charge failures" do
     @billable.card_token = "fake-valid-visa-nonce"
-    charge = @billable.charge(2000_00)
-    assert_nil charge
+    @billable.customer
+    assert_raises(Pay::Error) { @billable.charge(2000_00) }
+  end
+
+  test "fails with paypal processor declined" do
+    @billable.card_token = "fake-paypal-billing-agreement-nonce	"
+    @billable.customer
+    assert_raises(Pay::Error) { @billable.charge(5001_01) }
   end
 
   test "can create a braintree subscription" do

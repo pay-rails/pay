@@ -14,7 +14,7 @@ module Pay
             last_name: try(:last_name),
             payment_method_nonce: card_token
           )
-          raise Pay::Error.new(result.message) unless result.success?
+          raise BraintreeError.new(result), result.message unless result.success?
 
           update(processor: "braintree", processor_id: result.customer.id)
 
@@ -25,7 +25,7 @@ module Pay
           result.customer
         end
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise BraintreeError, e.message
       end
 
       # Handles Billable#charge
@@ -39,9 +39,11 @@ module Pay
         }.merge(options)
 
         result = gateway.transaction.sale(args)
-        save_braintree_transaction(result.transaction) if result.success?
-      rescue ::BraintreeError => e
-        raise Error, e.message
+        raise BraintreeError.new(result), result.message unless result.success?
+
+        save_braintree_transaction(result.transaction)
+      rescue ::Braintree::BraintreeError => e
+        raise BraintreeError, e.message
       end
 
       # Handles Billable#subscribe
@@ -62,11 +64,11 @@ module Pay
         )
 
         result = gateway.subscription.create(subscription_options)
-        raise Pay::Error.new(result.message) unless result.success?
+        raise BraintreeError.new(result), result.message unless result.success?
 
         create_subscription(result.subscription, "braintree", name, plan, status: :active)
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise BraintreeError, e.message
       end
 
       # Handles Billable#update_card
@@ -81,13 +83,13 @@ module Pay
             verify_card: true
           }
         )
-        raise Pay::Error.new(result.message) unless result.success?
+        raise BraintreeError.new(result), result.message unless result.success?
 
         update_braintree_card_on_file result.payment_method
         update_subscriptions_to_payment_method(result.payment_method.token)
         true
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise BraintreeError, e.message
       end
 
       def update_braintree_email!

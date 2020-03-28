@@ -1,3 +1,9 @@
+### 2.1.1
+
+* [FIX] The `charge` method now raises `Pay::BraintreeError` when a
+  charge fails. This makes it work consistently with the Stripe
+  implementation which raises an error on charge failure.
+
 ### 2.1.0
 
 * [BREAKING] Subscription & Charge associations to `owner` are now polymorphic.

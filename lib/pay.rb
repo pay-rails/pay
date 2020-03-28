@@ -102,6 +102,14 @@ module Pay
   class Error < StandardError
   end
 
+  class BraintreeError < Error
+    attr_reader :result
+
+    def initialize(result)
+      @result = result
+    end
+  end
+
   class InvalidPaymentMethod < Error
     attr_reader :payment
 

@@ -34,6 +34,11 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     assert_equal 2900, charge.amount
   end
 
+  test "handles stripe card declined" do
+    @billable.card_token = "pm_card_chargeDeclined"
+    assert_raises(Pay::Error) { @billable.charge(2900) }
+  end
+
   test "raises action required error when SCA required" do
     exception = assert_raises(Pay::ActionRequired) {
       @billable.card_token = sca_payment_method.id
@@ -64,7 +69,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     exception = assert_raises(Pay::Error) {
       @billable.subscribe(name: "default", plan: "small-monthly")
     }
-    assert_equal "This customer has no attached payment source", exception.message
+    assert_equal "This customer has no attached payment source or default payment method.", exception.message
   end
 
   test "fails when subscribing with SCA card" do
@@ -145,12 +150,12 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   test "handles exception when creating a customer" do
     @billable.card_token = "invalid"
     exception = assert_raises(Pay::Error) { @billable.stripe_customer }
-    assert_equal "No such payment_method: invalid", exception.message
+    assert_equal "No such PaymentMethod: invalid", exception.message
   end
 
   test "handles exception when creating a charge" do
     exception = assert_raises(Pay::Error) { @billable.charge(0) }
-    assert_equal "Invalid positive integer", exception.message
+    assert_equal "This value must be greater than or equal to 1.", exception.message
   end
 
   test "handles exception when creating a subscription" do
@@ -160,7 +165,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
   test "handles exception when updating a card" do
     exception = assert_raises(Pay::Error) { @billable.update_card("abcd") }
-    assert_equal "No such payment_method: abcd", exception.message
+    assert_equal "No such PaymentMethod: abcd", exception.message
   end
 
   test "handles coupons" do

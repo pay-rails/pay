@@ -228,6 +228,9 @@ You may pass optional arguments that will be directly passed on to
 either Stripe or Braintree. You can use these options to charge
 different currencies, etc.
 
+On failure, a `Pay::Error` will be raised with details about the payment
+failure.
+
 #### Creating a Subscription
 
 ```ruby
