@@ -59,11 +59,12 @@ To add the migrations to your application, run the following migration:
 
 `$ bin/rails pay:install:migrations`
 
-This will install three migrations:
+This will install four migrations:
 
-- db/migrate/create_subscriptions.pay.rb
-- db/migrate/create_charges.pay.rb
-- db/migrate/add_status_to_subscriptions.pay.rb
+- db/migrate/*_create_subscriptions.pay.rb
+- db/migrate/*_create_charges.pay.rb
+- db/migrate/*_add_status_to_subscriptions.pay.rb
+- db/migrate/*_add_fields_to_billable.pay.rb
 
 You'll also need a model that can make payments. This is called a
 `Billable` model. The `pay` generator will add fields to the model and
