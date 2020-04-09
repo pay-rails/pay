@@ -66,12 +66,15 @@ This will install four migrations:
 - db/migrate/*_add_status_to_subscriptions.pay.rb
 - db/migrate/*_add_fields_to_billable.pay.rb
 
-You'll also need a model that can make payments. This is called a
-`Billable` model. The `pay` generator will add fields to the model and
-add the `Pay::Billable` module to it.
+Before running these migrations, make sure to pick one of your models as a billable model.
+By default we're using `User` model as a Billable model. In case you want to change that, add couple of lines to pay initializer file `config/initializers/pay.rb`.
 
-`$ bin/rails g pay User`
-
+```ruby
+Pay.setup do |config|
+  config.billable_table = 'stores'
+  config.billable_class = 'Store'
+end
+```
 #### Run the Migrations
 
 Finally, run the migrations with `$ rake db:migrate`
