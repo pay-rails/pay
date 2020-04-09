@@ -1,4 +1,4 @@
- should I just remove list of migrations? <p align="center"><img src="docs/logo.svg" height="50px"></p>
+<p align="center"><img src="docs/logo.svg" height="50px"></p>
 
 ## Pay - Payments engine for Ruby on Rails
 
