@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/logo.svg" height="50px"></p>
+ should I just remove list of migrations? <p align="center"><img src="docs/logo.svg" height="50px"></p>
 
 ## Pay - Payments engine for Ruby on Rails
 
@@ -59,15 +59,7 @@ To add the migrations to your application, run the following migration:
 
 `$ bin/rails pay:install:migrations`
 
-This will install four migrations:
-
-- db/migrate/*_create_subscriptions.pay.rb
-- db/migrate/*_create_charges.pay.rb
-- db/migrate/*_add_status_to_subscriptions.pay.rb
-- db/migrate/*_add_fields_to_billable.pay.rb
-
-Before running these migrations, make sure to pick one of your models as a billable model.
-By default we're using `User` model as a Billable model. In case you want to change that, add couple of lines to pay initializer file `config/initializers/pay.rb`.
+This will install four migrations. But before running these migrations, make sure to pick one of your models as a billable model. By default we're using `User` model as a Billable model. In case you want to change that, add couple of lines to pay initializer file `config/initializers/pay.rb`.
 
 ```ruby
 Pay.setup do |config|
