@@ -61,7 +61,7 @@ To add the migrations to your application, run the following migration:
 
 This will install four migrations. 
 
-But before running these migrations, make sure to pick one of your models as a billable model. By default we're using `User` model as a Billable model. In case you want to change that, add couple of lines to pay initializer file `config/initializers/pay.rb`.
+But before running these migrations, make sure to pick one of your models as a billable model. By default we're using `User` model, but in case you want to change that, add couple of lines to pay initializer file `config/initializers/pay.rb`.
 
 ```ruby
 Pay.setup do |config|
