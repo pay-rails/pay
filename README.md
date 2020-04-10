@@ -65,8 +65,8 @@ But before running these migrations, make sure to pick one of your models as a b
 
 ```ruby
 Pay.setup do |config|
-  config.billable_table = 'stores'
-  config.billable_class = 'Store'
+  config.billable_table = 'clients'
+  config.billable_class = 'Client'
 end
 ```
 #### Run the Migrations
