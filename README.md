@@ -45,37 +45,21 @@ And then execute:
 bundle
 ```
 
-Or install it yourself as:
-
-```bash
-gem install pay
-```
-
-## Setup
-
-### Migrations
-
-This engine will create a subscription model and the neccessary migrations for the model you want to make "billable." The most common use case for the billable model is a User.
+#### Migrations
 
 To add the migrations to your application, run the following migration:
 
-`$ bin/rails pay:install:migrations`
+`bin/rails pay:install:migrations`
 
-This will install three migrations:
+We also need to run migrations to add Pay to the User, Account, Team, etc models that we want to make payments in our app.
 
-- db/migrate/create_subscriptions.pay.rb
-- db/migrate/create_charges.pay.rb
-- db/migrate/add_status_to_subscriptions.pay.rb
+`bin/rails g pay User`
 
-You'll also need a model that can make payments. This is called a
-`Billable` model. The `pay` generator will add fields to the model and
-add the `Pay::Billable` module to it.
+This will generate a migration to add Pay fields to our User model and automatically includes the `Pay::Billable` module in our `User` model. Repeat this for all the models you want to make payments in your app.
 
-`$ bin/rails g pay User`
+Finally, run the migrations
 
-#### Run the Migrations
-
-Finally, run the migrations with `$ rake db:migrate`
+`rake db:migrate`
 
 ####  Getting NoMethodError?
 
