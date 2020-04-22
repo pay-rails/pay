@@ -6,6 +6,8 @@
 
 Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
+**Note:* If you're updating to the latest version of Pay, check the CHANGELOG for any require migrations or changes needed to use the latest version.
+
 **Current Payment Providers**
 
 - Stripe ([supports SCA](https://stripe.com/docs/strong-customer-authentication), API version [2019-03-14](https://stripe.com/docs/upgrades#2019-03-14) or higher required)
@@ -541,6 +543,7 @@ If you'd like to change the views of the payment confirmation page, you can inst
 If a user's email is updated and they have a `processor_id` set, Pay will enqueue a background job (EmailSyncJob) to sync the email with the payment processor.
 
 It's important you set a queue_adapter for this to happen. If you don't, the code will be executed immediately upon user update. [More information here](https://guides.rubyonrails.org/v4.2/active_job_basics.html#backends)
+
 
 ## Contributors
 
