@@ -6,14 +6,14 @@
 
 Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
-**Note:* If you're updating to the latest version of Pay, check the CHANGELOG for any require migrations or changes needed to use the latest version.
-
 **Current Payment Providers**
 
 - Stripe ([supports SCA](https://stripe.com/docs/strong-customer-authentication), API version [2019-03-14](https://stripe.com/docs/upgrades#2019-03-14) or higher required)
 - Braintree
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
+
+**Check the CHANGELOG for any required migrations or changes needed if you're upgrading from a previous version of Pay.**
 
 ## Tutorial
 
