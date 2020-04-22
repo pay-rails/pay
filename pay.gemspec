@@ -27,7 +27,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "stripe", ">= 2.8"
   s.add_development_dependency "stripe_event", "~> 2.3"
 
-  s.add_development_dependency "bundler"
   s.add_development_dependency "byebug"
   s.add_development_dependency "minitest-rails", "~> 6"
   s.add_development_dependency "mocha"
