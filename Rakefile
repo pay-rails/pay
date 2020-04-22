@@ -19,7 +19,9 @@ load 'rails/tasks/engine.rake'
 
 load 'rails/tasks/statistics.rake'
 
-require 'bundler/gem_tasks'
+unless Rails.env.test?
+  require "bundler/gem_tasks"
+end
 
 require 'rake/testtask'
 
