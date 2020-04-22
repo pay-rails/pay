@@ -13,6 +13,8 @@ Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
 
+**Check the CHANGELOG for any required migrations or changes needed if you're upgrading from a previous version of Pay.**
+
 ## Tutorial
 
 Want to see how Pay works? Check out our video getting started guide.
@@ -544,6 +546,7 @@ If you'd like to change the views of the payment confirmation page, you can inst
 If a user's email is updated and they have a `processor_id` set, Pay will enqueue a background job (EmailSyncJob) to sync the email with the payment processor.
 
 It's important you set a queue_adapter for this to happen. If you don't, the code will be executed immediately upon user update. [More information here](https://guides.rubyonrails.org/v4.2/active_job_basics.html#backends)
+
 
 ## Contributors
 
