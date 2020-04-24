@@ -1,3 +1,7 @@
+### 2.1.2
+
+* [FIX] Remove old billable migration
+
 ### 2.1.1
 
 * [FIX] The `charge` method now raises `Pay::BraintreeError` when a
