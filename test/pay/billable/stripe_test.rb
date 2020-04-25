@@ -184,6 +184,12 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     end
   end
 
+  test "can create setup intent" do
+    assert_nothing_raised do
+      @billable.create_setup_intent
+    end
+  end
+
   private
 
   def payment_method
