@@ -190,6 +190,20 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     end
   end
 
+  test "can pass shipping information to charge" do
+    @billable.card_token = payment_method.id
+    charge = @billable.charge(25_00, shipping: {
+      name: "Recipient",
+      address: {
+        line1: "One Infinite Loop",
+        city: "Cupertino",
+        state: "CA",
+      }
+    })
+
+    assert_equal "Cupertino", charge.processor_charge.shipping.address.city
+  end
+
   private
 
   def payment_method
