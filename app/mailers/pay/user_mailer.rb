@@ -44,8 +44,8 @@ module Pay
     private
 
     def to(user)
-      if user.respond_to?(:name)
-        "#{user.name} <#{user.email}>"
+      if user.respond_to?(:customer_name)
+        "#{user.customer_name} <#{user.email}>"
       else
         user.email
       end
