@@ -204,6 +204,13 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     assert_equal "Cupertino", charge.processor_charge.shipping.address.city
   end
 
+  test "allows subscription quantities" do
+    @billable.card_token = payment_method.id
+    subscription = @billable.subscribe(plan: "small-monthly", quantity: 10)
+    assert_equal 10, subscription.processor_subscription.quantity
+    assert_equal 10, subscription.quantity
+  end
+
   private
 
   def payment_method
