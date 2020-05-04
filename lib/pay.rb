@@ -105,8 +105,14 @@ module Pay
   class BraintreeError < Error
     attr_reader :result
 
-    def initialize(result)
+    def initialize(result=nil)
       @result = result
+    end
+  end
+
+  class BraintreeAuthorizationError < BraintreeError
+    def message
+      "Either the data you submitted is malformed and does not match the API or the API key you used may not be authorized to perform this action."
     end
   end
 

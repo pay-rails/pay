@@ -24,7 +24,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   test "fails with invalid cards" do
     # This requires Card Verification to be enabled in the Braintree account
     @billable.card_token = "fake-processor-declined-visa-nonce"
-    err = assert_raises(Pay::Error) { @billable.customer }
+    err = assert_raises(Pay::BraintreeError) { @billable.customer }
     assert_equal "Do Not Honor", err.message
   end
 
@@ -91,5 +91,24 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
       # Time.zone may not match the timezone in your Braintree account, so we'll be lenient on this assertion
       assert subscription.trial_ends_at > 14.days.from_now
     end
+  end
+
+  test "fails charges with invalid cards" do
+    # This requires Card Verification to be enabled in the Braintree account
+    @billable.card_token = "fake-processor-declined-visa-nonce"
+    err = assert_raises(Pay::BraintreeError) { @billable.charge(10_00) }
+    assert_equal "Do Not Honor", err.message
+  end
+
+  test "fails subscribing with invalid cards" do
+    # This requires Card Verification to be enabled in the Braintree account
+    @billable.card_token = "fake-processor-declined-visa-nonce"
+    err = assert_raises(Pay::BraintreeError) { @billable.subscribe }
+    assert_equal "Do Not Honor", err.message
+  end
+
+  test "handles invalid parameters" do
+    err = assert_raises(Pay::BraintreeAuthorizationError) { @billable.charge(10_00, metadata: {}) }
+    assert_equal "Either the data you submitted is malformed and does not match the API or the API key you used may not be authorized to perform this action.", err.message
   end
 end
