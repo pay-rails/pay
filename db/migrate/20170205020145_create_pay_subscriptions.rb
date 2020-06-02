@@ -1,7 +1,7 @@
 class CreatePaySubscriptions < ActiveRecord::Migration[4.2]
   def change
     create_table :pay_subscriptions do |t|
-      t.references :owner
+      t.references :owner, type: :string
       t.string :name, null: false
       t.string :processor, null: false
       t.string :processor_id, null: false
