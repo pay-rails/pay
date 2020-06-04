@@ -48,9 +48,10 @@ module Pay
       #
       # Returns Pay::Subscription
       def create_stripe_subscription(name, plan, options = {})
+        quantity = options.delete(:quantity) || 1
         opts = {
           expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
-          items: [plan: plan],
+          items: [plan: plan, quantity: quantity],
           off_session: true
         }.merge(options)
 
@@ -58,7 +59,7 @@ module Pay
         opts[:trial_from_plan] = true unless opts[:trial_period_days]
 
         stripe_sub = customer.subscriptions.create(opts)
-        subscription = create_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status)
+        subscription = create_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity)
 
         # No trial, card requires SCA
         if subscription.incomplete?

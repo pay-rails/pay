@@ -1,3 +1,8 @@
+### Unreleased
+
+* Added `Pay::BraintreeAuthorizationError` to catch Braintree actions
+  with malformed data or unauthorized API access.
+
 ### 2.1.2
 
 * [FIX] Remove old billable migration
