@@ -39,5 +39,9 @@ module Pay
     def paypal?
       braintree? && card_type == "PayPal"
     end
+
+    def paddle?
+      processor == "paddle"
+    end
   end
 end

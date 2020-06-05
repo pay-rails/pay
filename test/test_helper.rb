@@ -15,6 +15,7 @@ require "byebug"
 require "braintree"
 require "stripe"
 require "stripe_event"
+require "paddle_pay"
 
 # Filter out Minitest backtrace while allowing backtrace from other libraries
 # to be shown.
@@ -41,6 +42,8 @@ VCR.configure do |c|
   c.cassette_library_dir = "test/vcr_cassettes"
   c.hook_into :webmock
   c.allow_http_connections_when_no_cassette = true
+  c.filter_sensitive_data('<VENDOR_ID>') { ENV['PADDLE_VENDOR_ID'] }
+  c.filter_sensitive_data('<VENDOR_AUTH_CODE>') { ENV['PADDLE_VENDOR_AUTH_CODE'] }
 end
 
 Pay.braintree_gateway = Braintree::Gateway.new(

@@ -211,7 +211,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       assert @subscription.active?
     end
 
-    %w[incomplete incomplete_expired past_due canceled unpaid].each do |state|
+    %w[incomplete incomplete_expired past_due canceled unpaid paused].each do |state|
       @subscription.status = state
       assert_not @subscription.active?
     end

@@ -3,7 +3,7 @@ require "test_helper"
 class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
   setup do
     @event = OpenStruct.new
-    @event.data = JSON.parse(File.read("test/support/fixtures/customer_updated_event.json"), object_class: OpenStruct)
+    @event.data = JSON.parse(File.read("test/support/fixtures/stripe/customer_updated_event.json"), object_class: OpenStruct)
   end
 
   test "update_card_from stripe is called upon customer update" do

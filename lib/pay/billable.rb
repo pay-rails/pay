@@ -19,6 +19,7 @@ module Pay
       include Pay::Billable::SyncEmail
       include Pay::Stripe::Billable if defined? ::Stripe
       include Pay::Braintree::Billable if defined? ::Braintree
+      include Pay::Paddle::Billable if defined? ::PaddlePay
 
       has_many :charges, class_name: Pay.chargeable_class, foreign_key: :owner_id, inverse_of: :owner
       has_many :subscriptions, class_name: Pay.subscription_class, foreign_key: :owner_id, inverse_of: :owner
@@ -116,6 +117,10 @@ module Pay
 
     def paypal?
       braintree? && card_type == "PayPal"
+    end
+
+    def paddle?
+      processor == "paddle"
     end
 
     def has_incomplete_payment?(name: "default")

@@ -1,0 +1,118 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://vendors.paddle.com/api/2.0/subscription/payments
+    body:
+      encoding: UTF-8
+      string: is_paid=1&subscription_id=3576390&vendor_auth_code=d4fa0981f2c51335215bfbf31cddfbf1af76951baa11427910&vendor_id=123456
+    headers:
+      User-Agent:
+      - Faraday v1.0.1
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 05 Jun 2020 13:15:54 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=d57823b3a3144a7f376ed5bfa074706bb1591362954; expires=Sun, 05-Jul-20
+        13:15:54 GMT; path=/; domain=.paddle.com; HttpOnly; SameSite=Lax
+      - paddle_session_vendor=eyJpdiI6IlZYMkkxMkh1RWJEdDNSRFI4R3JwOVlZQzBOSnpIMnkzaE5lT3VCMGFhWm89IiwidmFsdWUiOiJJTzNZeGhrcGFGZUl2SUlcL2o4Y21UejZ0WGh0alhlRjVSTzdzRlhJVzk4dWc2bHdJWEs0RXFIV1B6OEJId0JzRWVxbXAzZEowWDhVNFJ2S2xwR0FTMVE9PSIsIm1hYyI6IjkyOWZiYmY0ZWVkNzc4YWE2NTdjNDc3ZDk3MjY1MTY4ZmI1ODA0MDJjZjM0NDY3YTRmMTFlZjFmZTNhYWJmZDYifQ%3D%3D;
+        expires=Fri, 05-Jun-2020 15:15:54 GMT; Max-Age=7200; path=/; domain=vendors.paddle.com;
+        secure; HttpOnly;SameSite=none;Secure
+      X-Powered-By:
+      - PHP/7.2.31
+      Cache-Control:
+      - no-cache
+      X-Frame-Options:
+      - sameorigin
+      P3p:
+      - CP="CAO CUR ADMa DEVa TAIa OUR DELa STP ONL NAV STA PUR"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Cf-Request-Id:
+      - '032638bdc200000c210e3c5200000001'
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 59ea2a42dfa20c21-AMS
+    body:
+      encoding: ASCII-8BIT
+      string: '{"success":true,"response":[{"id":10996435,"subscription_id":3576390,"amount":0,"currency":"USD","payout_date":"2020-06-04","is_paid":1,"is_one_off_charge":false,"receipt_url":"https:\/\/my.paddle.com\/receipt\/15134577-10996435\/58042319-chre8cc7b3d10d5-1696e20c8b"},{"id":11018517,"subscription_id":3576390,"amount":1.19,"currency":"USD","payout_date":"2020-06-05","is_paid":1,"is_one_off_charge":true,"receipt_url":"https:\/\/my.paddle.com\/receipt\/15134577-11018517\/58042319-chre8cc7b3d10d5-1696e20c8b"}]}'
+    http_version: null
+  recorded_at: Fri, 05 Jun 2020 13:15:55 GMT
+- request:
+    method: post
+    uri: https://vendors.paddle.com/api/2.0/payment/refund
+    body:
+      encoding: UTF-8
+      string: amount=119&order_id=11018517&vendor_auth_code=d4fa0981f2c51335215bfbf31cddfbf1af76951baa11427910&vendor_id=123456
+    headers:
+      User-Agent:
+      - Faraday v1.0.1
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 05 Jun 2020 13:15:55 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=d98c28cf6edf90626eb5202d2e7ef16711591362955; expires=Sun, 05-Jul-20
+        13:15:55 GMT; path=/; domain=.paddle.com; HttpOnly; SameSite=Lax
+      - paddle_session_vendor=eyJpdiI6InVMdUorZkFQYzJGZGV5cjhrNFlMdjRLRnN6QlV3WUFsTVJFNnZsVXRNcEU9IiwidmFsdWUiOiJVdzcxSEVGYmo1REs1WFZZYzVqTUx4V08ybkFaV0h3OEhVTThmK1BiY3VFUVcrOVVCRFBRUm1tSVhWZXNYTVN2VUhxMklobGRxcFU5NjdSaHZPWUZjZz09IiwibWFjIjoiYWM0NWE2NjE0MmFjZjM1YjU4YzczNDZmOTg1NzEyYzM3MTZhYWY3NWJjOGYxNGQxZWJmZGQ3MGY5ODU1ODY5ZiJ9;
+        expires=Fri, 05-Jun-2020 15:15:55 GMT; Max-Age=7200; path=/; domain=vendors.paddle.com;
+        secure; HttpOnly;SameSite=none;Secure
+      X-Powered-By:
+      - PHP/7.2.31
+      Cache-Control:
+      - no-cache
+      X-Frame-Options:
+      - sameorigin
+      P3p:
+      - CP="CAO CUR ADMa DEVa TAIa OUR DELa STP ONL NAV STA PUR"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Cf-Request-Id:
+      - '032638bfc20000d92dcf9ab200000001'
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 59ea2a460975d92d-AMS
+    body:
+      encoding: ASCII-8BIT
+      string: '{"success":false,"error":{"code":172,"message":"The transaction can
+        no longer be refunded."}}'
+    http_version: null
+  recorded_at: Fri, 05 Jun 2020 13:15:55 GMT
+recorded_with: VCR 5.1.0

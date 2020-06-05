@@ -11,6 +11,11 @@ begin
   require "stripe_event"
 rescue LoadError
 end
+
+begin
+  require "paddle_pay"
+rescue LoadError
+end
 # rubocop:enable Lint/HandleExceptions
 
 module Pay
@@ -21,6 +26,7 @@ module Pay
       # Include processor backends
       require "pay/stripe" if defined? ::Stripe
       require "pay/braintree" if defined? ::Braintree
+      require "pay/paddle" if defined? ::PaddlePay
 
       if Pay.automount_routes
         app.routes.append do
@@ -32,6 +38,7 @@ module Pay
     config.to_prepare do
       Pay::Stripe.setup if defined? ::Stripe
       Pay::Braintree.setup if defined? ::Braintree
+      Pay::Paddle.setup if defined? ::PaddlePay
 
       Pay.charge_model.include Pay::Receipts if defined? ::Receipts::Receipt
     end
