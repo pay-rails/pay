@@ -1,7 +1,8 @@
 class CreatePaySubscriptions < ActiveRecord::Migration[4.2]
   def change
     create_table :pay_subscriptions do |t|
-      t.references :owner
+      # Some Billable objects use string as ID, add `type: :string` if needed
+      t.references :owner, polymorphic: true
       t.string :name, null: false
       t.string :processor, null: false
       t.string :processor_id, null: false
