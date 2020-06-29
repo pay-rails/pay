@@ -250,7 +250,7 @@ Name is an internally used name for the subscription.
 
 ##### Plan
 
-Plan is the plan ID from the payment processor.
+Plan is the plan ID or price ID from the payment processor. For example: `plan_xxxxx` or `price_xxxxx`
 
 ##### Options
 
