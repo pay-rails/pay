@@ -237,6 +237,13 @@ def subscribe(name: 'default', plan: 'default', **options)
 end
 ```
 
+For example, you can pass the `quantity` option to subscribe to a plan with for per-seat pricing.
+
+```ruby
+
+user.subscribe(name: "default", plan: "default", quantity: 3)
+```
+
 ##### Name
 
 Name is an internally used name for the subscription.
