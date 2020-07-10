@@ -24,6 +24,7 @@ module Pay
       attribute :plan, :string
       attribute :quantity, :integer
       attribute :card_token, :string
+      attribute :marketplace_id, :string
       attribute :pay_fake_processor_allowed, :boolean, default: false
 
       validate :pay_fake_processor_is_allowed, if: :processor_changed?

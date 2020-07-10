@@ -27,7 +27,7 @@ module Pay
       # Returns Stripe::Customer
       def customer
         stripe_customer = if processor_id?
-          ::Stripe::Customer.retrieve(processor_id)
+          retrieve_customer_with_marketplace
         else
           sc = ::Stripe::Customer.create(email: email, name: customer_name)
           billable.update(processor: :stripe, processor_id: sc.id)
@@ -44,6 +44,12 @@ module Pay
         stripe_customer
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      def retrieve_customer_with_marketplace
+        ::Stripe::Customer.retrieve(processor_id, {
+          stripe_account: marketplace_id
+        })
       end
 
       # Handles Billable#charge
@@ -148,6 +154,32 @@ module Pay
 
       def create_setup_intent
         ::Stripe::SetupIntent.create(customer: processor_id, usage: :off_session)
+      end
+
+      def payment_method_with_marketplace(payment_method_id)
+        ::Stripe::PaymentMethod.retrieve(
+          payment_method_id,
+          { stripe_account: marketplace_id }
+        )
+      end
+
+      private
+
+      def create_stripe_customer
+        customer = ::Stripe::Customer.create(email: email, name: customer_name)
+        update(processor: "stripe", processor_id: customer.id)
+
+        # Update the user's card on file if a token was passed in
+        if card_token.present?
+          payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: customer.id})
+          customer.invoice_settings.default_payment_method = payment_method.id
+          customer.save
+
+          update_stripe_card_on_file ::Stripe::PaymentMethod.retrieve(card_token).card
+        end
+
+        customer
+>>>>>>> 356f27f (Stripe Connected Customer & Card Sync)
       end
 
       def trial_end_date(stripe_sub)
