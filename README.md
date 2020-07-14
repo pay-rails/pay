@@ -78,6 +78,8 @@ class User < ActiveRecord::Base
 end
 ```
 
+An `email` attribute or method on your `Billable` model is required.
+
 To sync over customer names, your `Billable` model should respond to the `first_name` and `last_name` methods. Pay will sync these over to your Customer objects in Stripe and Braintree.
 
 ## Configuration
