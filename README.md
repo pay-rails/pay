@@ -520,9 +520,7 @@ correctly for SCA payments.
 stripe listen --forward-to localhost:3000/pay/webhooks/stripe
 ```
 
-You should use `stripe.handleCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.handleCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
-
-The Javascript will now need to use createPaymentMethod instead of createToken. https://stripe.com/docs/js/payment_intents/create_payment_method
+You should use `stripe.confirmCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.confirmCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
 
 The Javascript also needs to have a PaymentIntent or SetupIntent created server-side and the ID passed into the Javascript to do this. That way it knows how to safely handle the card tokenization if it meets the SCA requirements.
 
