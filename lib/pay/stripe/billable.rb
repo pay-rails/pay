@@ -24,8 +24,9 @@ module Pay
       # Handles Billable#charge
       #
       # Returns Pay::Charge
-      def create_stripe_charge(amount, options = {}, idempotency_key = SecureRandom.uuid)
+      def create_stripe_charge(amount, options = {})
         customer = stripe_customer
+        idempotency_key = options.delete(:idempotency_key) || SecureRandom.uuid
         args = {
           amount: amount,
           confirm: true,
@@ -52,8 +53,9 @@ module Pay
       # Handles Billable#subscribe
       #
       # Returns Pay::Subscription
-      def create_stripe_subscription(name, plan, options = {}, idempotency_key = SecureRandom.uuid)
+      def create_stripe_subscription(name, plan, options = {})
         quantity = options.delete(:quantity) || 1
+        idempotency_key = options.delete(:idempotency_key) || SecureRandom.uuid
         opts = {
           expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
           items: [plan: plan, quantity: quantity],
