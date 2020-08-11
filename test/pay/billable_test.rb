@@ -47,7 +47,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
   test "subscribing a stripe customer" do
     @billable.processor = "stripe"
     @billable.expects(:create_stripe_subscription)
-      .with("default", "default", {})
+      .with("default", "default", {}, "")
       .returns(:user)
 
     assert_equal :user, @billable.subscribe
