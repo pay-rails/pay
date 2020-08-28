@@ -1,5 +1,8 @@
 ### Unreleased
 
+### 2.1.3
+
+* Add support for `quantity` option on `subscribe` for subscription quantities
 * Added `Pay::BraintreeAuthorizationError` to catch Braintree actions
   with malformed data or unauthorized API access.
 

@@ -35,15 +35,27 @@ require "mocha/minitest"
 # Uncomment to view the stacktrace for debugging tests
 Rails.backtrace_cleaner.remove_silencers!
 
-require "webmock/minitest"
-require "vcr"
+unless ENV["SKIP_VCR"]
+  require "webmock/minitest"
+  require "vcr"
 
-VCR.configure do |c|
-  c.cassette_library_dir = "test/vcr_cassettes"
-  c.hook_into :webmock
-  c.allow_http_connections_when_no_cassette = true
-  c.filter_sensitive_data('<VENDOR_ID>') { ENV['PADDLE_VENDOR_ID'] }
-  c.filter_sensitive_data('<VENDOR_AUTH_CODE>') { ENV['PADDLE_VENDOR_AUTH_CODE'] }
+  VCR.configure do |c|
+    c.cassette_library_dir = "test/vcr_cassettes"
+    c.hook_into :webmock
+    c.allow_http_connections_when_no_cassette = true
+    c.filter_sensitive_data('<VENDOR_ID>') { ENV['PADDLE_VENDOR_ID'] }
+    c.filter_sensitive_data('<VENDOR_AUTH_CODE>') { ENV['PADDLE_VENDOR_AUTH_CODE'] }
+  end
+
+  class ActiveSupport::TestCase
+    setup do
+      VCR.insert_cassette name
+    end
+
+    teardown do
+      VCR.eject_cassette name
+    end
+  end
 end
 
 Pay.braintree_gateway = Braintree::Gateway.new(
@@ -62,15 +74,5 @@ module Braintree
     def self.gateway
       Pay.braintree_gateway
     end
-  end
-end
-
-class ActiveSupport::TestCase
-  setup do
-    VCR.insert_cassette name
-  end
-
-  teardown do
-    VCR.eject_cassette name
   end
 end

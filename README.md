@@ -2,7 +2,7 @@
 
 ## Pay - Payments engine for Ruby on Rails
 
-[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions)
+[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay)
 
 Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
@@ -81,6 +81,8 @@ class User < ActiveRecord::Base
   include Pay::Billable
 end
 ```
+
+An `email` attribute or method on your `Billable` model is required.
 
 To sync over customer names, your `Billable` model should respond to the `first_name` and `last_name` methods. Pay will sync these over to your Customer objects in Stripe and Braintree.
 
@@ -263,13 +265,20 @@ def subscribe(name: 'default', plan: 'default', **options)
 end
 ```
 
-###### Name
+For example, you can pass the `quantity` option to subscribe to a plan with for per-seat pricing.
+
+```ruby
+
+user.subscribe(name: "default", plan: "default", quantity: 3)
+```
+
+##### Name
 
 Name is an internally used name for the subscription.
 
 ###### Plan
 
-Plan is the plan ID from the payment processor.
+Plan is the plan ID or price ID from the payment processor. For example: `plan_xxxxx` or `price_xxxxx`
 
 ###### Options
 
@@ -620,9 +629,7 @@ correctly for SCA payments.
 stripe listen --forward-to localhost:3000/pay/webhooks/stripe
 ```
 
-You should use `stripe.handleCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.handleCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
-
-The Javascript will now need to use createPaymentMethod instead of createToken. https://stripe.com/docs/js/payment_intents/create_payment_method
+You should use `stripe.confirmCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.confirmCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
 
 The Javascript also needs to have a PaymentIntent or SetupIntent created server-side and the ID passed into the Javascript to do this. That way it knows how to safely handle the card tokenization if it meets the SCA requirements.
 
