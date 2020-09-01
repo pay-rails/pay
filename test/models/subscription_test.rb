@@ -193,7 +193,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     stripe_sub = mock("stripe_subscription")
     stripe_sub.expects(:cancel_at_period_end=)
     stripe_sub.expects(:plan=).returns("yearly")
-    stripe_sub.expects(:prorate=)
+    stripe_sub.expects(:proration_behavior=)
     stripe_sub.expects(:trial_end=)
     stripe_sub.expects(:quantity=)
     stripe_sub.expects(:save)
