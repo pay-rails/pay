@@ -150,7 +150,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   test "handles exception when creating a customer" do
     @billable.card_token = "invalid"
     exception = assert_raises(Pay::Error) { @billable.stripe_customer }
-    assert_equal "No such PaymentMethod: invalid", exception.message
+    assert_equal "No such PaymentMethod: 'invalid'", exception.message
   end
 
   test "handles exception when creating a charge" do
@@ -160,12 +160,12 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
   test "handles exception when creating a subscription" do
     exception = assert_raises(Pay::Error) { @billable.subscribe plan: "invalid" }
-    assert_equal "No such plan: invalid", exception.message
+    assert_equal "No such plan: 'invalid'", exception.message
   end
 
   test "handles exception when updating a card" do
     exception = assert_raises(Pay::Error) { @billable.update_card("abcd") }
-    assert_equal "No such PaymentMethod: abcd", exception.message
+    assert_equal "No such PaymentMethod: 'abcd'", exception.message
   end
 
   test "handles coupons" do

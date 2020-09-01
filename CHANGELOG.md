@@ -1,5 +1,13 @@
 ### Unreleased
 
+### 2.2.0
+
+Stripe API 2020-08-27 changes:
+
+* Use `proration_behavior` instead of `prorate` for Stripe subscription changes
+* Switch to `::Stripe::Subscription.create` instead of `customer.subscriptions` as Stripe no longer includes this by default for performance
+* Set Stripe API version for easier gem management
+
 ### 2.1.3
 
 * Add support for `quantity` option on `subscribe` for subscription quantities
