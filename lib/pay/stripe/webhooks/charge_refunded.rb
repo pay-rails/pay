@@ -14,7 +14,7 @@ module Pay
 
         def notify_user(user, charge)
           if Pay.send_emails
-            Pay::UserMailer.refund(user, charge).deliver_later
+            Pay.user_mailer_model.refund(user, charge).deliver_later
           end
         end
       end

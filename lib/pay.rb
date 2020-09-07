@@ -22,6 +22,9 @@ module Pay
   @@subscription_class = "Pay::Subscription"
   @@subscription_table = "pay_subscriptions"
 
+  mattr_accessor :user_mailer_class
+  @@user_mailer_class = "Pay::UserMailer"
+
   # Business details for receipts
   mattr_accessor :application_name
   mattr_accessor :business_address
@@ -88,6 +91,14 @@ module Pay
       @@subscription_model ||= subscription_class.constantize
     else
       subscription_class.constantize
+    end
+  end
+
+  def self.user_mailer_model
+    if Rails.application.config.cache_classes
+      @@user_mailer_model ||= user_mailer_class.constantize
+    else
+      user_mailer_class.constantize
     end
   end
 

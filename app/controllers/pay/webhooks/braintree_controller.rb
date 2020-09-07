@@ -33,7 +33,7 @@ module Pay
         charge = billable.save_braintree_transaction(subscription.transactions.first)
 
         if Pay.send_emails
-          Pay::UserMailer.receipt(billable, charge).deliver_later
+          Pay.user_mailer_model.receipt(billable, charge).deliver_later
         end
       end
 

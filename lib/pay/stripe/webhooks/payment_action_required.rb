@@ -18,7 +18,7 @@ module Pay
 
         def notify_user(user, payment_intent_id, subscription)
           if Pay.send_emails
-            Pay::UserMailer.payment_action_required(user, payment_intent_id, subscription).deliver_later
+            Pay.user_mailer_model.payment_action_required(user, payment_intent_id, subscription).deliver_later
           end
         end
       end

@@ -41,4 +41,14 @@ class UserMailerTest < ActionMailer::TestCase
     assert_equal [@user.email], email.to
     assert_equal Pay.email_renewing_subject, email.subject
   end
+
+  test "custom model" do
+    klass = Class.new(Pay::UserMailer)
+    Pay.user_mailer_model = klass
+
+    email = Pay.user_mailer_model.subscription_renewing(@user, @charge)
+
+    assert_equal [@user.email], email.to
+    assert_equal Pay.email_renewing_subject, email.subject
+  end
 end

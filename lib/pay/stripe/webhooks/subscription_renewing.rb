@@ -14,7 +14,7 @@ module Pay
 
         def notify_user(user, subscription)
           if Pay.send_emails
-            Pay::UserMailer.subscription_renewing(user, subscription).deliver_later
+            Pay.user_mailer_model.subscription_renewing(user, subscription).deliver_later
           end
         end
       end
