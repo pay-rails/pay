@@ -58,7 +58,9 @@ module Pay
         # Inherit trial from plan unless trial override was specified
         opts[:trial_from_plan] = true unless opts[:trial_period_days]
 
-        stripe_sub = customer.subscriptions.create(opts)
+        opts[:customer] = stripe_customer.id
+
+        stripe_sub = ::Stripe::Subscription.create(opts)
         subscription = create_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity)
 
         # No trial, card requires SCA

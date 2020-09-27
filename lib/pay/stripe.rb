@@ -12,6 +12,7 @@ module Pay
 
     def setup
       ::Stripe.api_key = private_key
+      ::Stripe.api_version = '2020-08-27'
       ::StripeEvent.signing_secret = signing_secret
 
       Pay.charge_model.include Pay::Stripe::Charge

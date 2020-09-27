@@ -19,7 +19,7 @@ module Pay
 
       Pay.charge_model.include Pay::Braintree::Charge
       Pay.subscription_model.include Pay::Braintree::Subscription
-      Pay.billable_models.each { |model| model.include Pay::Stripe::Billable }
+      Pay.billable_models.each { |model| model.include Pay::Braintree::Billable }
     end
 
     def public_key
