@@ -280,11 +280,17 @@ By default, the trial specified on the subscription will be used.
 ##### Paddle
 It is currently not possible to create a subscription through the API. Instead the subscription in Pay is created by the Paddle Subscription Webhook. In order to be able to assign the subcription to the correct owner, the Paddle [passthrough parameter](https://developer.paddle.com/guides/how-tos/checkout/pass-parameters) has to be used for checkout.
 
+Javascript Checkout:
 ```javascript
 Paddle.Checkout.open({
 	product: 12345,
 	passthrough: "{\"owner_id\": 98765, \"owner_type\": \"User\"}"
 });
+```
+
+Paddle Button Checkout:
+```html
+<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= { owner_id: current_user.id, owner_type: "User" }.to_json %>"
 ```
 
 Pay parses the passthrough JSON string and seach for the polymorphic `owner_type` and `owner_id`. The passthrough parameter is only required for creating a subscription.

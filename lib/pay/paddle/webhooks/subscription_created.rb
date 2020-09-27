@@ -12,7 +12,7 @@ module Pay
           if subscription.nil?
 
             # The customer could already be in the database
-            owner = Pay.find_billable(processor: :stripe, processor_id: data["user_id"])
+            owner = Pay.find_billable(processor: :paddle, processor_id: data["user_id"])
             
             if owner.nil?
               owner = owner_by_passtrough(data["passthrough"])

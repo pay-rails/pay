@@ -11,7 +11,7 @@ module Pay
 
           # User canceled subscriptions have an ends_at
           # Automatically canceled subscriptions need this value set
-          subscription.update!(ends_at:DateTime.parse(data["cancellation_effective_date"])) if subscription.ends_at.blank? && data["cancellation_effective_date"].present?
+          subscription.update!(ends_at: DateTime.parse(data["cancellation_effective_date"])) if subscription.ends_at.blank? && data["cancellation_effective_date"].present?
         end
 
       end
