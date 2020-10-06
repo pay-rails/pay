@@ -20,8 +20,8 @@ module Pay
       include Pay::Stripe::Billable if defined? ::Stripe
       include Pay::Braintree::Billable if defined? ::Braintree
 
-      has_many :charges, class_name: Pay.chargeable_class, foreign_key: :owner_id, inverse_of: :owner
-      has_many :subscriptions, class_name: Pay.subscription_class, foreign_key: :owner_id, inverse_of: :owner
+      has_many :charges, class_name: Pay.chargeable_class, foreign_key: :owner_id, inverse_of: :owner, as: :owner
+      has_many :subscriptions, class_name: Pay.subscription_class, foreign_key: :owner_id, inverse_of: :owner, as: :owner
 
       attribute :plan, :string
       attribute :quantity, :integer
