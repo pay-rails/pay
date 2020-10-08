@@ -566,7 +566,10 @@ If you have an issue you'd like to submit, please do so using the issue tracker 
 
 If you'd like to open a PR please make sure the following things pass:
 
-- `rake test`
+```ruby
+bin/rails db:test:prepare
+bin/rails test
+```
 
 ## License
 
