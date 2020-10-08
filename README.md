@@ -621,6 +621,20 @@ You can also use the `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environmen
 
 **To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
 
+You need the following event types to trigger the webhook:
+
+```
+customer.subscription.updated
+customer.subscription.deleted
+customer.subscription.created
+payment_method.updated
+invoice.payment_action_required
+customer.updated
+customer.deleted
+charge.succeeded
+charge.refunded
+```
+
 ##### Strong Customer Authentication (SCA)
 
 Our Stripe integration **requires** the use of Payment Method objects to correctly support Strong Customer Authentication with Stripe. If you've previously been using card tokens, you'll need to upgrade your Javascript integration.

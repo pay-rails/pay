@@ -253,4 +253,17 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     @billable.processor = "braintree"
     assert_equal nil, @billable.processor_id
   end
+
+  test "finds polymorphic subscription" do
+    user_billable = User.create! email: "test@example.com", id: 1001
+    team_billable = Team.create! id: 1001, owner: user_billable
+
+    subscription = Pay.subscription_model.create!(
+      owner: team_billable, name: "default", processor: "stripe", processor_id: "1",
+      processor_plan: "default", quantity: "1", status: "active"
+    )
+
+    assert_equal nil, user_billable.subscription
+    assert_equal subscription, team_billable.subscription
+  end
 end
