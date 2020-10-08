@@ -26,7 +26,7 @@ module ActiveRecord
         end
 
         indent_depth = class_path.size - 1
-        content = content.split("\n").map { |line| "  " * indent_depth + line } .join("\n") << "\n"
+        content = content.split("\n").map { |line| "  " * indent_depth + line }.join("\n") << "\n"
 
         inject_into_class(model_path, class_path.last, content) if model_exists?
       end

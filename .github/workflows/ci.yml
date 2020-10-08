@@ -34,6 +34,9 @@ jobs:
           gem install bundler
           bundle install --path vendor/bundle --jobs 4 --retry 3
 
+      - name: Standardrb Check
+        run: bundle exec standardrb
+
       - name: Run tests
         env:
           RAILS_ENV: test
