@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 2019_08_16_015720) do
   end
 
   create_table "teams", force: :cascade do |t|
+    t.integer "owner_id"
     t.string "email"
     t.string "name"
     t.string "processor"
