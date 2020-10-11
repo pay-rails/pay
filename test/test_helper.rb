@@ -65,6 +65,9 @@ Pay.braintree_gateway = Braintree::Gateway.new(
   private_key: "00f0df79303e1270881e5feda7788927"
 )
 
+paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle/verification/paddle_public_key.pem"))
+ENV["PADDLE_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
+
 logger = Logger.new("/dev/null")
 logger.level = Logger::INFO
 Pay.braintree_gateway.config.logger = logger
