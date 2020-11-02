@@ -4,10 +4,9 @@ module Pay
   module Generators
     module OrmHelpers
       def model_contents
-        buffer = <<-CONTENT
+        <<-CONTENT
   include Pay::Billable
         CONTENT
-        buffer
       end
 
       private

@@ -105,7 +105,7 @@ module Pay
   class BraintreeError < Error
     attr_reader :result
 
-    def initialize(result=nil)
+    def initialize(result = nil)
       @result = result
     end
   end

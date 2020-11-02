@@ -197,7 +197,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
       address: {
         line1: "One Infinite Loop",
         city: "Cupertino",
-        state: "CA",
+        state: "CA"
       }
     })
 
