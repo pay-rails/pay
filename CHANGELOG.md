@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.2.1
+
+* [NEW] Allow passing `?back=/path/to/item` for customizing the back link for SCA payments page
+
 ### 2.2.0
 
 Stripe API 2020-08-27 changes:
