@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.2.2
+
+* Bugfixes
+
 ### 2.2.1
 
 * [NEW] Allow passing `?back=/path/to/item` for customizing the back link for SCA payments page
