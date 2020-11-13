@@ -1,0 +1,61 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://vendors.paddle.com/api/2.0/subscription/users
+    body:
+      encoding: UTF-8
+      string: subscription_id=3575629&vendor_auth_code=d4fa0981f2c51335215bfbf31cddfbf1af76951baa11427910&vendor_id=123456
+    headers:
+      User-Agent:
+      - Faraday v1.0.1
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 04 Jun 2020 11:18:36 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=def60256f56aa34fc89f86d1276351d501591269516; expires=Sat, 04-Jul-20
+        11:18:36 GMT; path=/; domain=.paddle.com; HttpOnly; SameSite=Lax
+      - paddle_session_vendor=eyJpdiI6ImQ3OVNkK0VhWWlnU25WbDZcL1dBNXM5ZWRkOTZBcGdrUXdkbzlhWXBLRVwvdz0iLCJ2YWx1ZSI6IjMyS1YyTUQ0SmpxNys2Q2Jwd0NDUGpUOXYrRHhzSkh2Y3RSckdZeWFKc1ZGOElMRGFFajQzRWJ6UmVOdDFZb1g5RmhKNnd0OHRSamRoRU9PQU8zVzZ3PT0iLCJtYWMiOiIwNGMyOWU1OGQyMzNkOTU2NWRhODg1MTRmOGU5NDNjMGI2ZTFiMzc2MmYzODYxN2QwZDNjYzUzMzFhMDBjZWEyIn0%3D;
+        expires=Thu, 04-Jun-2020 13:18:36 GMT; Max-Age=7200; path=/; domain=vendors.paddle.com;
+        secure; HttpOnly;SameSite=none;Secure
+      X-Powered-By:
+      - PHP/7.2.31
+      Cache-Control:
+      - no-cache
+      X-Frame-Options:
+      - sameorigin
+      P3p:
+      - CP="CAO CUR ADMa DEVa TAIa OUR DELa STP ONL NAV STA PUR"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Cf-Request-Id:
+      - 0320a6fc890000c82f48224200000001
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 59e1410da83ec82f-AMS
+    body:
+      encoding: ASCII-8BIT
+      string: '{"success":true,"response":[{"subscription_id":3575629,"plan_id":594470,"user_id":17368056,"user_email":"test@example.com","marketing_consent":false,"update_url":"https:\/\/checkout.paddle.com\/subscription\/update?user=17368056&subscription=3575629&hash=73e02975016fe45e1c9dbc2ae9ad7310059c610331fbbed1e94dd322f0151b9a","cancel_url":"https:\/\/checkout.paddle.com\/subscription\/cancel?user=17368056&subscription=3575629&hash=da80216fe65319dba5903f403dfb9485f843ff01311ca723fa9463e4f54edace","state":"deleted","signup_date":"2020-06-04
+        10:47:37","last_payment":{"amount":0,"currency":"USD","date":"2020-06-04"},"linked_subscriptions":[],"payment_information":{"payment_method":"paypal"}}]}'
+    http_version: null
+  recorded_at: Thu, 04 Jun 2020 11:18:36 GMT
+recorded_with: VCR 5.1.0

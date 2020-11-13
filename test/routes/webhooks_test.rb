@@ -15,4 +15,9 @@ class WebhookRoutesTest < ActionDispatch::IntegrationTest
     post "/pay/webhooks/braintree", as: :json
     assert_equal 200, response.status
   end
+
+  test "paddle webhook routes get mounted correctly" do
+    post "/pay/webhooks/paddle", as: :json
+    assert_equal 200, response.status
+  end
 end
