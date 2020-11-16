@@ -18,7 +18,7 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
       processor_id: "11018517",
       amount: 119,
       card_type: "card",
-      receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
+      paddle_receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
       created_at: DateTime.now
     )
     paddle_charge = charge.paddle_charge
@@ -32,7 +32,7 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
       processor_id: "11018517",
       amount: 119,
       card_type: "card",
-      receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
+      paddle_receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
       created_at: DateTime.now
     )
 
@@ -47,7 +47,7 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
       processor_id: "does-not-exist",
       amount: 119,
       card_type: "card",
-      receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
+      paddle_receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
       created_at: DateTime.now
     )
 

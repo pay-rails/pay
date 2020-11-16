@@ -13,7 +13,7 @@ module Pay
 
             # The customer could already be in the database
             owner = Pay.find_billable(processor: :paddle, processor_id: data["user_id"])
-            
+
             if owner.nil?
               owner = owner_by_passtrough(data["passthrough"])
               owner.update!(processor: "paddle", processor_id: data["user_id"]) if owner
@@ -29,8 +29,8 @@ module Pay
 
           subscription.quantity = data["quantity"]
           subscription.processor_plan = data["subscription_plan_id"]
-          subscription.update_url = data["update_url"]
-          subscription.cancel_url = data["cancel_url"]
+          subscription.paddle_update_url = data["update_url"]
+          subscription.paddle_cancel_url = data["cancel_url"]
           subscription.trial_ends_at = Time.zone.parse(data["next_bill_date"]) if data["status"] == "trialing"
 
           # If user was on trial, their subscription ends at the end of the trial
@@ -47,7 +47,7 @@ module Pay
           subscription.save!
         end
 
-        private 
+        private
 
         def owner_by_passtrough(passthrough)
           passthrough_json = JSON.parse(passthrough)

@@ -18,8 +18,8 @@ class Pay::Paddle::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
     subscription = Pay.subscription_model.last
     assert_equal @data["quantity"].to_i, subscription.quantity
     assert_equal @data["subscription_plan_id"], subscription.processor_plan
-    assert_equal @data["update_url"], subscription.update_url
-    assert_equal @data["cancel_url"], subscription.cancel_url
+    assert_equal @data["update_url"], subscription.paddle_update_url
+    assert_equal @data["cancel_url"], subscription.paddle_cancel_url
     assert_equal DateTime.parse(@data["next_bill_date"]), subscription.trial_ends_at
     assert_nil subscription.ends_at
   end

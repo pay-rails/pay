@@ -10,9 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_13_230148) do
+ActiveRecord::Schema.define(version: 2020_11_16_191926) do
 
-  create_table "pay_charges", force: :cascade do |t|
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "pay_charges", id: :serial, force: :cascade do |t|
     t.string "owner_type"
     t.integer "owner_id"
     t.string "processor", null: false
@@ -28,7 +31,7 @@ ActiveRecord::Schema.define(version: 2020_11_13_230148) do
     t.text "data"
   end
 
-  create_table "pay_subscriptions", force: :cascade do |t|
+  create_table "pay_subscriptions", id: :serial, force: :cascade do |t|
     t.string "owner_type"
     t.integer "owner_id"
     t.string "name", null: false
@@ -48,7 +51,7 @@ ActiveRecord::Schema.define(version: 2020_11_13_230148) do
     t.string "email"
     t.string "name"
     t.string "owner_type"
-    t.integer "owner_id"
+    t.bigint "owner_id"
     t.string "processor"
     t.string "processor_id"
     t.datetime "trial_ends_at"

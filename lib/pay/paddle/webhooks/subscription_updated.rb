@@ -11,8 +11,8 @@ module Pay
           subscription.status = data["status"] == "deleted" ? "canceled" : data["status"]
           subscription.quantity = data["new_quantity"]
           subscription.processor_plan = data["subscription_plan_id"]
-          subscription.update_url = data["update_url"]
-          subscription.cancel_url = data["cancel_url"]
+          subscription.paddle_update_url = data["update_url"]
+          subscription.paddle_cancel_url = data["cancel_url"]
 
           subscription.trial_ends_at = DateTime.parse(data["next_bill_date"]) if data["status"] == "trialing"
 
