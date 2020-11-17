@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", ">= 4.2"
 
-  s.add_development_dependency "braintree", ">= 2.92.0", "< 3.0"
+  s.add_development_dependency "braintree", ">= 2.92.0", "< 4.0"
   s.add_development_dependency "stripe", ">= 2.8"
   s.add_development_dependency "stripe_event", "~> 2.3"
 
