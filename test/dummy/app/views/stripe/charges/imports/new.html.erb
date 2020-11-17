@@ -1,0 +1,10 @@
+<h1>Import Stripe Charge</h1>
+
+<%= form_with url: stripe_charges_import_path do |form| %>
+  <div class="form-group">
+    <%= form.label :id, "Charge or PaymentIntent ID" %>
+    <%= form.text_field :id, class: "form-control", placeholder: "ch_xxxxxx or pi_xxxxxx" %>
+  </div>
+
+  <%= form.submit "Import", class: "btn btn-primary" %>
+<% end %>

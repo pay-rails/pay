@@ -1,0 +1,8 @@
+<h1>Braintree Subscription</h1>
+
+<pre><code><%= @subscription.pretty_inspect %></code></pre>
+
+<h6>Actions</h6>
+<%= link_to "Resume", resume_braintree_subscription_path(@subscription), method: :patch, class: "d-block" if @subscription.on_grace_period?%>
+<%= link_to "Cancel at period end", cancel_braintree_subscription_path(@subscription), method: :patch, class: "d-block" %>
+<%= link_to "Cancel immediately", braintree_subscription_path(@subscription), method: :delete, class: "d-block" %>

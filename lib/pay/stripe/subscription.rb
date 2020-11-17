@@ -1,6 +1,12 @@
 module Pay
   module Stripe
     module Subscription
+      extend ActiveSupport::Concern
+
+      included do
+        scope :stripe, ->{ where(processor: :stripe) }
+      end
+
       def stripe?
         processor == "stripe"
       end
