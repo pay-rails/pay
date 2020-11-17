@@ -9,13 +9,11 @@ module Pay
           return unless billable.present?
           return if billable.charges.where(processor_id: object.id).any?
 
-          charge = create_charge(billable, object)
-          notify_user(billable, charge)
-          charge
+          create_charge(billable, object)
         end
 
-        def create_charge(user, object)
-          charge = user.charges.find_or_initialize_by(
+        def create_charge(billable, object)
+          charge = billable.charges.find_or_initialize_by(
             processor: :stripe,
             processor_id: object.id
           )
@@ -29,12 +27,14 @@ module Pay
             created_at: Time.zone.at(object.created)
           )
 
+          notify_user(billable, charge)
+
           charge
         end
 
-        def notify_user(user, charge)
+        def notify_user(billable, charge)
           if Pay.send_emails && charge.respond_to?(:receipt)
-            Pay::UserMailer.receipt(user, charge).deliver_later
+            Pay::UserMailer.receipt(billable, charge).deliver_later
           end
         end
       end
