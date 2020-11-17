@@ -4,7 +4,7 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        scope :stripe, ->{ where(processor: :stripe) }
+        scope :stripe, -> { where(processor: :stripe) }
       end
 
       # Handles Billable#customer

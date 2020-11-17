@@ -4,7 +4,7 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        scope :braintree, ->{ where(processor: :braintree) }
+        scope :braintree, -> { where(processor: :braintree) }
       end
 
       # Handles Billable#customer
