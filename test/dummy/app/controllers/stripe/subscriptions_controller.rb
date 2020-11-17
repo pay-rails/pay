@@ -12,7 +12,7 @@ class Stripe::SubscriptionsController < ApplicationController
   end
 
   def create
-    current_user.processor = "stripe"
+    current_user.processor = params[:processor]
     current_user.card_token = params[:card_token]
     subscription = current_user.subscribe(plan: params[:price_id])
     redirect_to stripe_subscription_path(subscription)

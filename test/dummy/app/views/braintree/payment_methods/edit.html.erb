@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="col-sm-6">
+    <%= form_with url: braintree_payment_method_path,
+      method: :patch,
+      data: {
+        controller: "braintree",
+        target: "braintree.form",
+        braintree_env: Pay.braintree_gateway.config.environment,
+        braintree_client_token: Pay.braintree_gateway.client_token.generate
+      } do |form| %>
+
+      <%= tag.div nil, data: { target: "braintree.dropin" } %>
+
+      <div class="my-8 text-center">
+        <%= form.button "Save Payment Method", class: "btn btn-primary", data: { action: "click->braintree#submit", } %>
+      </div>
+    <% end %>
+  </div>
+
+
+  <div class="col-sm-6">
+    <h6>Test cards</h6>
+    <div>
+      <code class="mr-3">4111111111111111</code>
+      Visa
+    </div>
+
+    <%= link_to "All Test Cards", "https://developers.braintreepayments.com/reference/general/testing/ruby", target: :_blank, class: "btn btn-outline-dark btn-sm mt-3" %>
+  </div>
+</div>
+

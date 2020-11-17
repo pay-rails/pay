@@ -12,8 +12,8 @@ class Stripe::ChargesController < ApplicationController
   end
 
   def create
-    current_user.processor = "stripe"
-    current_user.update_card(params["card_token"])
+    current_user.processor = params[:processor]
+    current_user.card_token = params[:card_token]
     charge = current_user.charge(params[:amount])
     redirect_to stripe_charge_path(charge)
   rescue Pay::ActionRequired => e

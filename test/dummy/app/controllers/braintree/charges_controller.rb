@@ -12,8 +12,8 @@ class Braintree::ChargesController < ApplicationController
   end
 
   def create
-    current_user.processor = "braintree"
-    current_user.update_card(params["card_token"])
+    current_user.processor = params[:processor]
+    current_user.card_token = params[:card_token]
     charge = current_user.charge(params[:amount])
     redirect_to braintree_charge_path(charge)
   rescue Pay::Error => e
