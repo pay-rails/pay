@@ -287,22 +287,25 @@ By default, the trial specified on the subscription will be used.
 `trial_period_days: 30` can be set to override and a trial to the subscription. This works the same for Braintree and Stripe.
 
 ##### Paddle
-It is currently not possible to create a subscription through the API. Instead the subscription in Pay is created by the Paddle Subscription Webhook. In order to be able to assign the subcription to the correct owner, the Paddle [passthrough parameter](https://developer.paddle.com/guides/how-tos/checkout/pass-parameters) has to be used for checkout.
+It is currently not possible to create a subscription through the API. Instead the subscription in Pay is created by the Paddle Subscription Webhook. In order to be able to assign the subcription to the correct owner, the Paddle [passthrough parameter](https://developer.paddle.com/guides/how-tos/checkout/pass-parameters) has to be used for checkout. 
+
+To ensure that the owner cannot be tampered with, Pay uses a Signed Global ID with a purpose. The purpose string consists of "paddle_" and the subscription plan id (or product id respectively).
 
 Javascript Checkout:
 ```javascript
 Paddle.Checkout.open({
 	product: 12345,
-	passthrough: "{\"owner_id\": 98765, \"owner_type\": \"User\"}"
+	passthrough: "{\"owner_sgid\": \"<%= current_user.to_sgid(for: 'paddle_12345') %>\"}"
 });
 ```
 
 Paddle Button Checkout:
 ```html
-<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= { owner_id: current_user.id, owner_type: "User" }.to_json %>"
+<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= { owner_sgid: current_user.to_sgid(for: 'paddle_12345') }.to_json %>"
 ```
 
-Pay parses the passthrough JSON string and seach for the polymorphic `owner_type` and `owner_id`. The passthrough parameter is only required for creating a subscription.
+Pay parses the passthrough JSON string and verifies the `owner_sgid` hash. 
+The passthrough parameter `owner_sgid` is only required for creating a subscription.
 
 #### Retrieving a Subscription from the Database
 
