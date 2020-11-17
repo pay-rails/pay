@@ -1,7 +1,6 @@
 module Pay
   module Paddle
     module Billable
-
       def paddle_customer
         # pass
       end

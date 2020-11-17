@@ -9,6 +9,7 @@ class Pay::Paddle::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
     @user = User.create!(email: "gob@bluth.com")
 
     assert_difference "Pay.subscription_model.count" do
+      @data["passthrough"] = {owner_sgid: @user.to_sgid(for: "paddle_#{@data["subscription_plan_id"]}").to_s}.to_json
       Pay::Paddle::Webhooks::SubscriptionCreated.new(@data)
     end
 

@@ -63,5 +63,4 @@ class Pay::Paddle::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
 
     assert_equal 3.days.from_now.beginning_of_day, subscription.reload.ends_at
   end
-
 end

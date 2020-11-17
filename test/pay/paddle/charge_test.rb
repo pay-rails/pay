@@ -26,7 +26,6 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
   end
 
   test "paddle can fully refund a transaction" do
-
     charge = @billable.charges.create!(
       processor: :paddle,
       processor_id: "11018517",
@@ -41,7 +40,6 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
   end
 
   test "paddle cannot refund a transaction without payment" do
-
     charge = @billable.charges.create!(
       processor: :paddle,
       processor_id: "does-not-exist",
@@ -57,5 +55,4 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
   test "you can ask the charge for the paddle type" do
     assert Pay::Charge.new(processor: "paddle").paddle?
   end
-
 end

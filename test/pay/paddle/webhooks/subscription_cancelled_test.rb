@@ -59,5 +59,4 @@ class Pay::Paddle::Webhooks::SubscriptionCancelledTest < ActiveSupport::TestCase
     Pay.subscription_model.any_instance.expects(:update!).with(ends_at: DateTime.parse(@data["cancellation_effective_date"])).never
     Pay::Paddle::Webhooks::SubscriptionCancelled.new(@data)
   end
-
 end

@@ -56,7 +56,7 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
     )
     @subscription = @billable.subscription
     next_payment_date = DateTime.parse(@subscription.processor_subscription.next_payment[:date])
-    response = @subscription.pause
+    @subscription.pause
     assert_equal next_payment_date, @subscription.ends_at
     assert_equal "paused", @subscription.status
   end
@@ -69,7 +69,7 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
         name: "default",
         processor_plan: "some-plan",
         status: "trialing",
-        trial_ends_at: (Date.today + 3).to_datetime 
+        trial_ends_at: (Date.today + 3).to_datetime
       )
       @subscription = @billable.subscription
       next_payment_date = DateTime.parse(@subscription.processor_subscription.next_payment[:date])
@@ -88,7 +88,7 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       processor_id: "3576390",
       name: "default",
       processor_plan: "594469",
-      status: "active",
+      status: "active"
     )
     @billable.subscription.swap("594470")
 

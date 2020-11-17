@@ -1,12 +1,11 @@
-require 'base64'
-require 'json'
-require 'openssl'
+require "base64"
+require "json"
+require "openssl"
 
 module Pay
   module Paddle
     module Webhooks
       class SignatureVerifier
-
         def initialize(data)
           @data = data
           @public_key_base64 = Pay::Paddle.public_key_base64
@@ -15,29 +14,29 @@ module Pay
         def verify
           data = @data
           public_key = Base64.decode64(@public_key_base64) if @public_key_base64
-          return false unless data && data['p_signature'] && public_key
+          return false unless data && data["p_signature"] && public_key
 
           # 'data' represents all of the POST fields sent with the request.
           # Get the p_signature parameter & base64 decode it.
-          signature = Base64.decode64(data['p_signature'])
+          signature = Base64.decode64(data["p_signature"])
 
           # Remove the p_signature parameter
-          data.delete('p_signature')
+          data.delete("p_signature")
 
           # Ensure all the data fields are strings
-          data.each {|key, value|data[key] = String(value)}
+          data.each { |key, value| data[key] = String(value) }
 
           # Sort the data
-          data_sorted = data.sort_by{|key, value| key}
+          data_sorted = data.sort_by { |key, value| key }
 
           # and serialize the fields
           # serialization library is available here: https://github.com/jqr/php-serialize
           data_serialized = serialize(data_sorted, true)
 
           # verify the data
-          digest    = OpenSSL::Digest::SHA1.new
-          pub_key   = OpenSSL::PKey::RSA.new(public_key)
-          verified  = pub_key.verify(digest, signature, data_serialized)
+          digest = OpenSSL::Digest.new("SHA1")
+          pub_key = OpenSSL::PKey::RSA.new(public_key)
+          pub_key.verify(digest, signature, data_serialized)
         end
 
         private
@@ -57,42 +56,42 @@ module Pay
         # If 'assoc' is specified, Array's who's first element is a two value
         # array will be assumed to be an associative array, and will be serialized
         # as a PHP associative array rather than a multidimensional array.
-        def serialize(var, assoc = false) # {{{
-          s = String.new
+        def serialize(var, assoc = false)
+          s = ""
           case var
             when Array
               s << "a:#{var.size}:{"
-              if assoc and var.first.is_a?(Array) and var.first.size == 2
-                var.each { |k,v|
+              if assoc && var.first.is_a?(Array) && (var.first.size == 2)
+                var.each do |k, v|
                   s << serialize(k, assoc) << serialize(v, assoc)
-                }
+                end
               else
-                var.each_with_index { |v,i|
+                var.each_with_index do |v, i|
                   s << "i:#{i};#{serialize(v, assoc)}"
-                }
+                end
               end
-              s << '}'
+              s << "}"
             when Hash
               s << "a:#{var.size}:{"
-              var.each do |k,v|
+              var.each do |k, v|
                 s << "#{serialize(k, assoc)}#{serialize(v, assoc)}"
               end
-              s << '}'
+              s << "}"
             when Struct
               # encode as Object with same name
               s << "O:#{var.class.to_s.bytesize}:\"#{var.class.to_s.downcase}\":#{var.members.length}:{"
               var.members.each do |member|
                 s << "#{serialize(member, assoc)}#{serialize(var[member], assoc)}"
               end
-              s << '}'
+              s << "}"
             when String, Symbol
-              s << "s:#{var.to_s.bytesize}:\"#{var.to_s}\";"
+              s << "s:#{var.to_s.bytesize}:\"#{var}\";"
             when Integer
               s << "i:#{var};"
             when Float
               s << "d:#{var};"
             when NilClass
-              s << 'N;'
+              s << "N;"
             when FalseClass, TrueClass
               s << "b:#{var ? 1 : 0};"
             else
@@ -100,14 +99,14 @@ module Pay
                 v = var.to_assoc
                 # encode as Object with same name
                 s << "O:#{var.class.to_s.bytesize}:\"#{var.class.to_s.downcase}\":#{v.length}:{"
-                v.each do |k,v|
+                v.each do |k, v|
                   s << "#{serialize(k.to_s, assoc)}#{serialize(v, assoc)}"
                 end
-                s << '}'
+                s << "}"
               else
                 raise TypeError, "Unable to serialize type #{var.class}"
               end
-            end
+          end
           s
         end
       end
