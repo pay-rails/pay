@@ -2,7 +2,6 @@ module Pay
   module Paddle
     module Webhooks
       class SubscriptionUpdated
-
         def initialize(data)
           subscription = Pay.subscription_model.find_by(processor: :paddle, processor_id: data["subscription_id"])
 
@@ -29,7 +28,6 @@ module Pay
 
           subscription.save!
         end
-
       end
     end
   end

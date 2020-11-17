@@ -85,13 +85,17 @@ module Pay
 
     def resume
       unless on_grace_period?
-        raise StandardError,
-          "You can only resume subscriptions within their grace period." unless paddle?
+        unless paddle?
+          raise StandardError,
+            "You can only resume subscriptions within their grace period."
+        end
       end
 
       unless paused?
-        raise StandardError,
-        "You can only resume paused subscriptions." if paddle?
+        if paddle?
+          raise StandardError,
+            "You can only resume paused subscriptions."
+        end
       end
 
       send("#{processor}_resume")

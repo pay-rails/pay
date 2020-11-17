@@ -2,7 +2,6 @@ module Pay
   module Paddle
     module Webhooks
       class SubscriptionPaymentSucceeded
-
         def initialize(data)
           billable = Pay.find_billable(processor: :paddle, processor_id: data["user_id"])
           return unless billable.present?
@@ -10,7 +9,6 @@ module Pay
 
           charge = create_charge(billable, data)
           notify_user(billable, charge)
-          charge
         end
 
         def create_charge(user, data)
@@ -34,7 +32,6 @@ module Pay
             Pay::UserMailer.receipt(user, charge).deliver_later
           end
         end
-
       end
     end
   end

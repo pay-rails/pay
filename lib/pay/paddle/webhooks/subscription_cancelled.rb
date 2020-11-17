@@ -2,7 +2,6 @@ module Pay
   module Paddle
     module Webhooks
       class SubscriptionCancelled
-
         def initialize(data)
           subscription = Pay.subscription_model.find_by(processor: :paddle, processor_id: data["subscription_id"])
 
@@ -13,9 +12,7 @@ module Pay
           # Automatically canceled subscriptions need this value set
           subscription.update!(ends_at: DateTime.parse(data["cancellation_effective_date"])) if subscription.ends_at.blank? && data["cancellation_effective_date"].present?
         end
-
       end
     end
   end
 end
-

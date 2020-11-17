@@ -35,5 +35,4 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
       Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new(@data)
     end
   end
-
 end

@@ -25,13 +25,13 @@ module Pay
       end
 
       def paddle_pause
-        attributes = { pause: true }
+        attributes = {pause: true}
         response = PaddlePay::Subscription::User.update(processor_id, attributes)
         update(status: :paused, ends_at: DateTime.parse(response[:next_payment][:date]))
       end
 
       def paddle_resume
-        attributes = { pause: false }
+        attributes = {pause: false}
         PaddlePay::Subscription::User.update(processor_id, attributes)
         update(status: :active, ends_at: nil)
       rescue ::PaddlePay::PaddlePayError => e
@@ -39,10 +39,10 @@ module Pay
       end
 
       def paddle_swap(plan)
-        attributes = { plan_id: plan, prorate: prorate }
+        attributes = {plan_id: plan, prorate: prorate}
         attributes[:quantity] = quantity if quantity?
         PaddlePay::Subscription::User.update(processor_id, attributes)
-      rescue ::PaddlePay::PaddlePayError=> e
+      rescue ::PaddlePay::PaddlePayError => e
         raise Error, e.message
       end
     end

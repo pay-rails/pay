@@ -1,11 +1,10 @@
 module Pay
   module Paddle
     module Billable
-    
       def paddle_customer
         # pass
       end
-      
+
       def create_paddle_charge(amount, options = {})
         return unless subscription.processor_id
         raise Pay::Error, "A charge_name is required to create a one-time charge" if options[:charge_name].nil?
@@ -24,35 +23,35 @@ module Pay
       rescue ::PaddlePay::PaddlePayError => e
         raise Error, e.message
       end
-      
+
       def create_paddle_subscription(name, plan, options = {})
         # pass
       end
-      
+
       def update_paddle_card(token)
         # pass
       end
-      
+
       def update_paddle_email!
         # pass
       end
-      
+
       def paddle_trial_end_date(subscription)
         return unless subscription.state == "trialing"
         DateTime.parse(subscription.next_payment[:date]).end_of_day
       end
-      
+
       def paddle_subscription(subscription_id, options = {})
         hash = PaddlePay::Subscription::User.list({subscription_id: subscription_id}, options).try(:first)
         OpenStruct.new(hash)
       rescue ::PaddlePay::PaddlePayError => e
         raise Error, e.message
       end
-      
+
       def paddle_invoice!(options = {})
         # pass
       end
-      
+
       def paddle_upcoming_invoice
         # pass
       end

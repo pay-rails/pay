@@ -30,6 +30,5 @@ module Pay
     def public_key_base64
       find_value_by_name(:paddle, :public_key_base64)
     end
-
   end
 end

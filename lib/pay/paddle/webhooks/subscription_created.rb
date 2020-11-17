@@ -2,9 +2,7 @@ module Pay
   module Paddle
     module Webhooks
       class SubscriptionCreated
-
         def initialize(data)
-
           # We may already have the subscription in the database, so we can update that record
           subscription = Pay.subscription_model.find_by(processor: :paddle, processor_id: data["subscription_id"])
 
@@ -13,10 +11,10 @@ module Pay
 
             # The customer could already be in the database
             owner = Pay.find_billable(processor: :paddle, processor_id: data["user_id"])
-            
+
             if owner.nil?
               owner = owner_by_passtrough(data["passthrough"], data["subscription_plan_id"])
-              owner.update!(processor: "paddle", processor_id: data["user_id"]) if owner
+              owner&.update!(processor: "paddle", processor_id: data["user_id"])
             end
 
             if owner.nil?
@@ -47,7 +45,7 @@ module Pay
           subscription.save!
         end
 
-        private 
+        private
 
         def owner_by_passtrough(passthrough, product_id)
           passthrough_json = JSON.parse(passthrough)
@@ -55,7 +53,6 @@ module Pay
         rescue JSON::ParserError
           nil
         end
-
       end
     end
   end

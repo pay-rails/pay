@@ -2,7 +2,6 @@ module Pay
   module Paddle
     module Webhooks
       class SubscriptionPaymentRefunded
-
         def initialize(data)
           charge = Pay.charge_model.find_by(processor: :paddle, processor_id: data["subscription_payment_id"])
           return unless charge.present?
@@ -16,7 +15,6 @@ module Pay
             Pay::UserMailer.refund(user, charge).deliver_later
           end
         end
-
       end
     end
   end

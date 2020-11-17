@@ -9,5 +9,4 @@ class Pay::Paddle::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
     verifier = Pay::Paddle::Webhooks::SignatureVerifier.new(@data)
     assert verifier.verify
   end
-
 end

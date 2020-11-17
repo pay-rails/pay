@@ -23,7 +23,7 @@ class Pay::Paddle::Billable::Test < ActiveSupport::TestCase
   end
 
   test "retriving a paddle subscription" do
-    subscription = ::PaddlePay::Subscription::User.list({subscription_id: "3576390"}, options = {}).try(:first)
+    subscription = ::PaddlePay::Subscription::User.list({subscription_id: "3576390"}, {}).try(:first)
     assert_equal @billable.paddle_subscription("3576390").subscription_id, subscription[:subscription_id]
   end
 end
