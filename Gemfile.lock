@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pay (2.2.0)
+    pay (2.2.2)
       rails (>= 4.2)
 
 GEM
@@ -65,8 +65,10 @@ GEM
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.1)
-    braintree (2.103.0)
-      builder (>= 2.0.0)
+    bindex (0.8.1)
+    braintree (3.1.0)
+      builder (>= 3.2.4)
+      libxml-ruby (>= 3.2.0)
     builder (3.2.4)
     byebug (11.1.3)
     coderay (1.1.3)
@@ -82,6 +84,7 @@ GEM
     i18n (1.8.5)
       concurrent-ruby (~> 1.0)
     json (2.3.0)
+    libxml-ruby (3.2.1)
     loofah (2.7.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -106,13 +109,17 @@ GEM
       faraday (~> 1.0)
       json (~> 2.0)
     parallel (1.19.2)
-    parser (2.7.1.5)
+    parser (2.7.2.0)
       ast (~> 2.4.1)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (4.0.6)
+    puma (5.0.4)
+      nio4r (~> 2.0)
     rack (2.2.3)
+    rack-proxy (0.6.5)
+      rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (6.0.3.4)
@@ -143,23 +150,24 @@ GEM
       thor (>= 0.20.3, < 2.0)
     rainbow (3.0.0)
     rake (13.0.1)
-    regexp_parser (1.8.1)
+    regexp_parser (1.8.2)
     rexml (3.2.4)
-    rubocop (0.92.0)
+    rubocop (1.0.0)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
-      regexp_parser (>= 1.7)
+      regexp_parser (>= 1.8)
       rexml
-      rubocop-ast (>= 0.5.0)
+      rubocop-ast (>= 0.6.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (0.7.1)
+    rubocop-ast (1.1.0)
       parser (>= 2.7.1.5)
     rubocop-performance (1.8.1)
       rubocop (>= 0.87.0)
       rubocop-ast (>= 0.4.0)
     ruby-progressbar (1.10.1)
+    semantic_range (2.3.0)
     sprockets (4.0.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -168,25 +176,38 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     sqlite3 (1.4.2)
-    standard (0.7)
-      rubocop (= 0.92)
+    standard (0.8.1)
+      rubocop (= 1.0.0)
       rubocop-performance (= 1.8.1)
     standardrb (1.0.0)
       standard
-    stripe (5.26.0)
+    stripe (5.28.0)
     stripe_event (2.3.1)
       activesupport (>= 3.1)
       stripe (>= 2.8, < 6)
     thor (1.0.1)
     thread_safe (0.3.6)
+    turbolinks (5.2.1)
+      turbolinks-source (~> 5.2)
+    turbolinks-source (5.2.0)
     tzinfo (1.2.7)
       thread_safe (~> 0.1)
     unicode-display_width (1.7.0)
     vcr (6.0.0)
-    webmock (3.9.1)
+    web-console (4.1.0)
+      actionview (>= 6.0.0)
+      activemodel (>= 6.0.0)
+      bindex (>= 0.4.0)
+      railties (>= 6.0.0)
+    webmock (3.9.3)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
+    webpacker (5.2.1)
+      activesupport (>= 5.2)
+      rack-proxy (>= 0.6.1)
+      railties (>= 5.2)
+      semantic_range (>= 2.3.0)
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -196,20 +217,24 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  braintree (>= 2.92.0, < 3.0)
+  braintree (>= 2.92.0, < 4.0)
   byebug
   minitest-rails (~> 6)
   mocha
   paddle_pay (~> 0.0.1)
   pay!
   pry
+  puma
   sqlite3 (~> 1.4)
   standard
   standardrb
   stripe (>= 2.8)
   stripe_event (~> 2.3)
+  turbolinks
   vcr
+  web-console
   webmock
+  webpacker
 
 BUNDLED WITH
    2.1.4

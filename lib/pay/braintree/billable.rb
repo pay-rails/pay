@@ -1,6 +1,12 @@
 module Pay
   module Braintree
     module Billable
+      extend ActiveSupport::Concern
+
+      included do
+        scope :braintree, -> { where(processor: :braintree) }
+      end
+
       # Handles Billable#customer
       #
       # Returns Braintree::Customer
@@ -35,7 +41,7 @@ module Pay
       # Returns a Pay::Charge
       def create_braintree_charge(amount, options = {})
         args = {
-          amount: amount / 100.0,
+          amount: amount.to_i / 100.0,
           customer_id: customer.id,
           options: {submit_for_settlement: true}
         }.merge(options)
@@ -111,11 +117,11 @@ module Pay
       def braintree_trial_end_date(subscription)
         return unless subscription.trial_period
         # Braintree returns dates without time zones, so we'll assume they're UTC
-        Time.parse(subscription.first_billing_date).end_of_day
+        subscription.first_billing_date.end_of_day
       end
 
       def update_subscriptions_to_payment_method(token)
-        subscriptions.each do |subscription|
+        subscriptions.braintree.each do |subscription|
           if subscription.active?
             gateway.subscription.update(subscription.processor_id, {payment_method_token: token})
           end

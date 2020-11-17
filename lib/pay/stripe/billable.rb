@@ -1,6 +1,12 @@
 module Pay
   module Stripe
     module Billable
+      extend ActiveSupport::Concern
+
+      included do
+        scope :stripe, -> { where(processor: :stripe) }
+      end
+
       # Handles Billable#customer
       #
       # Returns Stripe::Customer
@@ -97,7 +103,7 @@ module Pay
       def update_stripe_email!
         customer = stripe_customer
         customer.email = email
-        customer.description = customer_name
+        customer.name = customer_name
         customer.save
       end
 
@@ -137,7 +143,7 @@ module Pay
       private
 
       def create_stripe_customer
-        customer = ::Stripe::Customer.create(email: email, description: customer_name)
+        customer = ::Stripe::Customer.create(email: email, name: customer_name)
         update(processor: "stripe", processor_id: customer.id)
 
         # Update the user's card on file if a token was passed in

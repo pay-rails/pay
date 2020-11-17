@@ -11,4 +11,8 @@ gemspec
 # Git. Remember to move these dependencies to your gemspec before releasing
 # your gem to rubygems.org.
 
+gem "puma"
 gem "standard"
+gem "turbolinks"
+gem "web-console", group: :development
+gem "webpacker"

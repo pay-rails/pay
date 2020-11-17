@@ -124,7 +124,7 @@ module Pay
     end
 
     def message
-      "This payment attempt failed beacuse of an invalid payment method."
+      "This payment attempt failed because of an invalid payment method."
     end
   end
 

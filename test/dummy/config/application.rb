@@ -4,6 +4,7 @@ require "rails/all"
 
 Bundler.require(*Rails.groups)
 require "pay"
+require "pp"
 
 module Dummy
   class Application < Rails::Application
