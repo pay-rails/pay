@@ -3,6 +3,10 @@ module Pay
     module Charge
       extend ActiveSupport::Concern
 
+      included do
+        scope :braintree, -> { where(processor: :braintree) }
+      end
+
       def braintree?
         processor == "braintree"
       end

@@ -1,0 +1,12 @@
+<div class="d-flex justify-content-between">
+  <h1>Stripe Subscriptions</h1>
+  <div>
+    <%= link_to "New Stripe Subscription", new_stripe_subscription_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% @subscriptions.each do |subscription| %>
+  <div>
+    <%= link_to "Pay::Subscription #{subscription.id}", stripe_subscription_path(subscription) %>
+  </div>
+<% end %>
