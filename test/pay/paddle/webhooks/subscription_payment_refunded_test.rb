@@ -11,7 +11,7 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentRefundedTest < ActiveSupport::Te
 
     Pay::Paddle::Webhooks::SubscriptionPaymentRefunded.new(@data)
 
-    assert_equal 16, charge.reload.amount_refunded
+    assert_equal Integer(@data["gross_refund"].to_f * 100), charge.reload.amount_refunded
   end
 
   test "a charge isn't updated with the refunded amount if a corresponding charge can't be found (obviously)" do

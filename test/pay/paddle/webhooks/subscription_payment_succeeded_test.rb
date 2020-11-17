@@ -13,7 +13,7 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
     end
 
     charge = Pay.charge_model.last
-    assert_equal 10539, charge.amount
+    assert_equal Integer(@data["sale_gross"].to_f * 100), charge.amount
     assert_equal @data["payment_method"], charge.card_type
     assert_equal @data["receipt_url"], charge.receipt_url
   end

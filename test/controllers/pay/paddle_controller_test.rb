@@ -17,6 +17,7 @@ module Pay
       user = User.create!
       params = JSON.parse(File.read("test/support/fixtures/paddle/subscription_created.json"))
 
+      GlobalID::Locator.expects(:locate_signed).returns(user)
       assert_difference("Pay.subscription_model.count") do
         post webhooks_paddle_path, params: params
         assert_response :success
