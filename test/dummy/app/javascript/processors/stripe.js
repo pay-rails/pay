@@ -87,6 +87,7 @@ function setupStripe() {
         if (result.error) {
           displayError.textContent = result.error.message
         } else {
+          addHiddenField(form, "processor", "stripe")
           addHiddenField(form, "card_token", result.setupIntent.payment_method)
           form.submit()
         }
@@ -99,6 +100,7 @@ function setupStripe() {
         if (result.error) {
           displayError.textContent = result.error.message
         } else {
+          addHiddenField(form, "processor", "stripe")
           addHiddenField(form, "card_token", result.paymentMethod.id)
           form.submit()
         }
