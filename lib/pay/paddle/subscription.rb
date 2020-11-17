@@ -4,6 +4,8 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
+        scope :paddle, -> { where(processor: :paddle) }
+
         store_accessor :data, :paddle_update_url
         store_accessor :data, :paddle_cancel_url
       end

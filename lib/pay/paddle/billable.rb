@@ -1,6 +1,12 @@
 module Pay
   module Paddle
     module Billable
+      extend ActiveSupport::Concern
+
+      included do
+        scope :paddle, -> { where(processor: :paddle) }
+      end
+
       def paddle_customer
         # pass
       end

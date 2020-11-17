@@ -23,6 +23,12 @@
     <%= tag.meta name: "stripe-key", content: Pay::Stripe.public_key %>
     <script src="https://js.stripe.com/v3/"></script>
 
+    <%# Paddle dependencies %>
+    <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+    <script type="text/javascript">
+      Paddle.Setup({ vendor: <%= Pay::Paddle.vendor_id %> });
+    </script>
+
     <%# Braintree dependencies %>
     <%= javascript_include_tag 'https://js.braintreegateway.com/web/dropin/1.25.0/js/dropin.min.js' %>
 
@@ -52,6 +58,16 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <%= link_to "Charges", braintree_charges_path, class: "dropdown-item" %>
               <%= link_to "Subscriptions", braintree_subscriptions_path, class: "dropdown-item" %>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Paddle
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <%= link_to "Charges", paddle_charges_path, class: "dropdown-item" %>
+              <%= link_to "Subscriptions", paddle_subscriptions_path, class: "dropdown-item" %>
             </div>
           </li>
 
