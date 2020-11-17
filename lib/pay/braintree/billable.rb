@@ -117,7 +117,7 @@ module Pay
       def braintree_trial_end_date(subscription)
         return unless subscription.trial_period
         # Braintree returns dates without time zones, so we'll assume they're UTC
-        Time.parse(subscription.first_billing_date).end_of_day
+        subscription.first_billing_date.end_of_day
       end
 
       def update_subscriptions_to_payment_method(token)

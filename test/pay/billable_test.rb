@@ -251,7 +251,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     @billable.processor_id = 1
 
     @billable.processor = "braintree"
-    assert_equal nil, @billable.processor_id
+    assert_nil @billable.processor_id
   end
 
   test "finds polymorphic subscription" do
@@ -263,7 +263,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
       processor_plan: "default", quantity: "1", status: "active"
     )
 
-    assert_equal nil, user_billable.subscription
+    assert_nil user_billable.subscription
     assert_equal subscription, team_billable.subscription
   end
 end
