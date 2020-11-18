@@ -7,9 +7,10 @@ class Pay::Paddle::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
   end
 
   test "paddle passthrough" do
-    passthrough = Pay::Paddle.passthrough(owner: @user)
-    expected = {owner_sgid: @user.to_sgid.to_s}.to_json
-    assert_equal expected, passthrough
+    passthrough = Pay::Paddle.passthrough(owner: @user, foo: :bar)
+    parsed = JSON.parse(passthrough)
+    assert_equal "bar", parsed["foo"]
+    assert_equal @user, GlobalID::Locator.locate_signed(parsed["owner_sgid"])
   end
 
   test "a subscription is created" do
