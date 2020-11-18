@@ -8,7 +8,7 @@ on:
     branches:
       - master
 jobs:
-  test-sqlite:
+  sqlite:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -40,7 +40,7 @@ jobs:
           bin/rails db:test:prepare
           bin/rails test
 
-  test-postgres:
+  postgres:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -84,15 +84,15 @@ jobs:
           bin/rails db:test:prepare
           bin/rails test
 
-  test-mysql:
+  mysql:
     runs-on: ubuntu-latest
     services:
       mysql:
         image: mysql:8
         env:
           MYSQL_ROOT_PASSWORD: password
-        ports:
-            - 3306
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@master
       - name: Set up Ruby 2.7
