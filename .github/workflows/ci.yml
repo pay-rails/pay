@@ -8,25 +8,14 @@ on:
     branches:
       - master
 jobs:
-  test:
+  sqlite:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-        ports: ['5432:5432']
-
     steps:
       - uses: actions/checkout@master
-
       - name: Set up Ruby 2.7
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
-
       - name: Cache gems
         uses: actions/cache@v1
         with:
@@ -34,7 +23,6 @@ jobs:
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gem-
-
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -42,15 +30,95 @@ jobs:
           gem update --system
           gem install bundler
           bundle install --path vendor/bundle --jobs 4 --retry 3
-
       - name: StandardRb check
         run: bundle exec standardrb
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+          STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
+        run: |
+          bin/rails db:test:prepare
+          bin/rails test
 
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports: ['5432:5432']
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+            - 3306
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Ruby 2.7
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - name: Cache gems
+        uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gem-
+      - name: Install dependencies
+        run: |
+          gem update --system
+          gem install bundler
+          bundle install --path vendor/bundle --jobs 4 --retry 3
+      - name: StandardRb check
+        run: bundle exec standardrb
       - name: Run tests
         env:
           RAILS_ENV: test
           STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
           DATABASE_URL: postgres://postgres:password@localhost:5432/test
+        run: |
+          bin/rails db:test:prepare
+          bin/rails test
+
+  mysql:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Ruby 2.7
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - name: Cache gems
+        uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gem-
+      - name: Install dependencies
+        run: |
+          gem update --system
+          gem install bundler
+          bundle install --path vendor/bundle --jobs 4 --retry 3
+      - name: StandardRb check
+        run: bundle exec standardrb
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+          STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
+          DATABASE_URL: mysql2://root:password@127.0.0.1:3306/test
         run: |
           bin/rails db:test:prepare
           bin/rails test
