@@ -391,7 +391,7 @@ Paddle provides a unique [Update URL](https://developer.paddle.com/guides/how-to
 ```ruby
 user = User.find_by(email: 'tobias@bluthcompany.co')
 
-user.subscription.update_url
+user.subscription.paddle_update_url
 ```
 
 
@@ -460,7 +460,7 @@ user.subscription.cancel
 In addition to the API, Paddle provides a subscription [Cancel URL](https://developer.paddle.com/guides/how-tos/subscriptions/cancel-and-pause) that you can redirect customers to cancel their subscription.
 
 ```ruby
-user.subscription.cancel_url
+user.subscription.paddle_cancel_url
 ```
 
 #### Cancel a Subscription Immediately
@@ -606,7 +606,7 @@ Paddle receipts can be retrieved by a charge receipt URL.
 user = User.find_by(email: 'annyong@bluthcompany.co')
 
 charge = user.charges.first
-charge.receipt_url
+charge.paddle_receipt_url
 ```
 #### Stripe
 
