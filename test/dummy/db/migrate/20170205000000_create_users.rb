@@ -9,6 +9,7 @@ class CreateUsers < ActiveRecord::Migration[5.2]
     create_table :teams do |t|
       t.string :email
       t.string :name
+      t.references :owner, polymorphic: true
     end
   end
 end

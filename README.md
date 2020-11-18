@@ -205,7 +205,7 @@ user.on_generic_trial? #=> true
 
 #### Creating a Charge
 
-##### Stripe and Braintree 
+##### Stripe and Braintree
 
 ```ruby
 user = User.find_by(email: 'michael@bluthcompany.co')
@@ -287,7 +287,7 @@ By default, the trial specified on the subscription will be used.
 `trial_period_days: 30` can be set to override and a trial to the subscription. This works the same for Braintree and Stripe.
 
 ##### Paddle
-It is currently not possible to create a subscription through the API. Instead the subscription in Pay is created by the Paddle Subscription Webhook. In order to be able to assign the subcription to the correct owner, the Paddle [passthrough parameter](https://developer.paddle.com/guides/how-tos/checkout/pass-parameters) has to be used for checkout. 
+It is currently not possible to create a subscription through the API. Instead the subscription in Pay is created by the Paddle Subscription Webhook. In order to be able to assign the subcription to the correct owner, the Paddle [passthrough parameter](https://developer.paddle.com/guides/how-tos/checkout/pass-parameters) has to be used for checkout.
 
 To ensure that the owner cannot be tampered with, Pay uses a Signed Global ID with a purpose. The purpose string consists of "paddle_" and the subscription plan id (or product id respectively).
 
@@ -295,16 +295,28 @@ Javascript Checkout:
 ```javascript
 Paddle.Checkout.open({
 	product: 12345,
-	passthrough: "{\"owner_sgid\": \"<%= current_user.to_sgid(for: 'paddle_12345') %>\"}"
+	passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
 });
 ```
 
 Paddle Button Checkout:
 ```html
-<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= { owner_sgid: current_user.to_sgid(for: 'paddle_12345') }.to_json %>"
+<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= Pay::Paddle.passthrough(owner: current_user) %>"
 ```
 
-Pay parses the passthrough JSON string and verifies the `owner_sgid` hash. 
+###### Passthrough
+
+Pay providers a helper method for generating the passthrough JSON object to associate the purchase with the correct Rails model.
+
+```ruby
+Pay::Paddle.passthrough(owner: current_user, foo: :bar)
+#=> { owner_sgid: "xxxxxxxx", foo: "bar" }
+
+# To generate manually without the helper
+#=> { owner_sgid: current_user.to_sgid.to_s, foo: "bar" }.to_json
+```
+
+Pay parses the passthrough JSON string and verifies the `owner_sgid` hash to match the webhook with the correct billable record.
 The passthrough parameter `owner_sgid` is only required for creating a subscription.
 
 #### Retrieving a Subscription from the Database
@@ -391,7 +403,7 @@ Paddle provides a unique [Update URL](https://developer.paddle.com/guides/how-to
 ```ruby
 user = User.find_by(email: 'tobias@bluthcompany.co')
 
-user.subscription.update_url
+user.subscription.paddle_update_url
 ```
 
 
@@ -460,7 +472,7 @@ user.subscription.cancel
 In addition to the API, Paddle provides a subscription [Cancel URL](https://developer.paddle.com/guides/how-tos/subscriptions/cancel-and-pause) that you can redirect customers to cancel their subscription.
 
 ```ruby
-user.subscription.cancel_url
+user.subscription.paddle_cancel_url
 ```
 
 #### Cancel a Subscription Immediately
@@ -606,7 +618,7 @@ Paddle receipts can be retrieved by a charge receipt URL.
 user = User.find_by(email: 'annyong@bluthcompany.co')
 
 charge = user.charges.first
-charge.receipt_url
+charge.paddle_receipt_url
 ```
 #### Stripe
 

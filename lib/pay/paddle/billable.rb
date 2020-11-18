@@ -1,6 +1,12 @@
 module Pay
   module Paddle
     module Billable
+      extend ActiveSupport::Concern
+
+      included do
+        scope :paddle, -> { where(processor: :paddle) }
+      end
+
       def paddle_customer
         # pass
       end
@@ -16,7 +22,7 @@ module Pay
         charge.update(
           amount: Integer(response[:amount].to_f * 100),
           card_type: subscription.processor_subscription.payment_information[:payment_method],
-          receipt_url: response[:receipt_url],
+          paddle_receipt_url: response[:receipt_url],
           created_at: DateTime.parse(response[:payment_date])
         )
         charge

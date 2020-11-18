@@ -18,13 +18,14 @@ class Pay::Paddle::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = @user.subscriptions.create!(processor: :paddle, processor_id: @data["subscription_id"], name: "default", processor_plan: "some-plan", status: "active")
 
     Pay::Paddle::Webhooks::SubscriptionUpdated.new(@data)
+    subscription.reload
 
-    assert_equal 2, subscription.reload.quantity
-    assert_equal @data["subscription_plan_id"], subscription.reload.processor_plan
-    assert_equal @data["update_url"], subscription.reload.update_url
-    assert_equal @data["cancel_url"], subscription.reload.cancel_url
-    assert_nil subscription.reload.trial_ends_at
-    assert_nil subscription.reload.ends_at
+    assert_equal 2, subscription.quantity
+    assert_equal @data["subscription_plan_id"], subscription.processor_plan
+    assert_equal @data["update_url"], subscription.paddle_update_url
+    assert_equal @data["cancel_url"], subscription.paddle_cancel_url
+    assert_nil subscription.trial_ends_at
+    assert_nil subscription.ends_at
   end
 
   test "subscription is updated with subscription status = trialing" do

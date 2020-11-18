@@ -12,6 +12,9 @@ module Pay
   @@billable_class = "User"
   @@billable_table = @@billable_class.tableize
 
+  mattr_accessor :model_parent_class
+  @@model_parent_class = "ApplicationRecord"
+
   mattr_accessor :chargeable_class
   mattr_accessor :chargeable_table
   @@chargeable_class = "Pay::Charge"

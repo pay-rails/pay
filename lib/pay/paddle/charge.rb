@@ -3,6 +3,12 @@ module Pay
     module Charge
       extend ActiveSupport::Concern
 
+      included do
+        scope :paddle, -> { where(processor: :paddle) }
+
+        store_accessor :data, :paddle_receipt_url
+      end
+
       def paddle?
         processor == "paddle"
       end

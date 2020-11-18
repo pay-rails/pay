@@ -27,8 +27,8 @@ module Pay
 
           subscription.quantity = data["quantity"]
           subscription.processor_plan = data["subscription_plan_id"]
-          subscription.update_url = data["update_url"]
-          subscription.cancel_url = data["cancel_url"]
+          subscription.paddle_update_url = data["update_url"]
+          subscription.paddle_cancel_url = data["cancel_url"]
           subscription.trial_ends_at = Time.zone.parse(data["next_bill_date"]) if data["status"] == "trialing"
 
           # If user was on trial, their subscription ends at the end of the trial
@@ -49,7 +49,7 @@ module Pay
 
         def owner_by_passtrough(passthrough, product_id)
           passthrough_json = JSON.parse(passthrough)
-          GlobalID::Locator.locate_signed(passthrough_json["owner_sgid"], for: "paddle_#{product_id}")
+          GlobalID::Locator.locate_signed(passthrough_json["owner_sgid"])
         rescue JSON::ParserError
           nil
         end

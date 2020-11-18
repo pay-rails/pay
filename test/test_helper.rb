@@ -4,9 +4,8 @@ ENV["RAILS_ENV"] = "test"
 # Disable warnings locally
 $VERBOSE = ENV["CI"]
 
-require File.expand_path("../../test/dummy/config/environment.rb", __FILE__)
-ActiveRecord::Migrator.migrations_paths = [File.expand_path("../../test/dummy/db/migrate", __FILE__)]
-ActiveRecord::Migrator.migrations_paths << File.expand_path("../../db/migrate", __FILE__)
+require File.expand_path("dummy/config/environment.rb", __dir__)
+ActiveRecord::Migrator.migrations_paths = [File.expand_path("dummy/db/migrate", __dir__), File.expand_path("../db/migrate", __dir__)]
 require "rails/test_help"
 require "minitest/rails"
 require "byebug"

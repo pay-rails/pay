@@ -29,4 +29,10 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert_equal [], user_chargeable.charges
     assert_equal [charge], team_chargeable.charges
   end
+
+  test "stores data about the charge" do
+    data = { "foo" => "bar" }
+    @charge.update(data: data)
+    assert_equal data, @charge.data
+  end
 end

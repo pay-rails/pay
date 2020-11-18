@@ -20,7 +20,7 @@ module Pay
           charge.update(
             amount: Integer(data["sale_gross"].to_f * 100),
             card_type: data["payment_method"],
-            receipt_url: data["receipt_url"],
+            paddle_receipt_url: data["receipt_url"],
             created_at: DateTime.parse(data["event_time"])
           )
 

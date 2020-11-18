@@ -1,5 +1,9 @@
 ### Unreleased
 
+* `Pay.model_parent_class` defaults to `ApplicationRecord` - @excid3
+* Add `data` json column to Charge and Subscription models - @excid3
+* Test suite now runs against sqlite, mysql, and postgresql - @excid3
+
 ### 2.2.2
 
 * Bugfixes

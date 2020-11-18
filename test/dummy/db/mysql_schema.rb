@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_13_230148) do
+ActiveRecord::Schema.define(version: 2020_11_16_191926) do
 
-  create_table "pay_charges", force: :cascade do |t|
+  create_table "pay_charges", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "owner_type"
     t.integer "owner_id"
     t.string "processor", null: false
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 2020_11_13_230148) do
     t.text "data"
   end
 
-  create_table "pay_subscriptions", force: :cascade do |t|
+  create_table "pay_subscriptions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "owner_type"
     t.integer "owner_id"
     t.string "name", null: false
@@ -44,11 +44,11 @@ ActiveRecord::Schema.define(version: 2020_11_13_230148) do
     t.text "data"
   end
 
-  create_table "teams", force: :cascade do |t|
+  create_table "teams", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email"
     t.string "name"
     t.string "owner_type"
-    t.integer "owner_id"
+    t.bigint "owner_id"
     t.string "processor"
     t.string "processor_id"
     t.datetime "trial_ends_at"
@@ -60,7 +60,7 @@ ActiveRecord::Schema.define(version: 2020_11_13_230148) do
     t.index ["owner_type", "owner_id"], name: "index_teams_on_owner_type_and_owner_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email"
     t.string "first_name"
     t.string "last_name"
