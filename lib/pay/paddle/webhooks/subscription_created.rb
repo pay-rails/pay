@@ -49,7 +49,7 @@ module Pay
 
         def owner_by_passtrough(passthrough, product_id)
           passthrough_json = JSON.parse(passthrough)
-          GlobalID::Locator.locate_signed(passthrough_json["owner_sgid"], for: "paddle_#{product_id}")
+          GlobalID::Locator.locate_signed(passthrough_json["owner_sgid"])
         rescue JSON::ParserError
           nil
         end

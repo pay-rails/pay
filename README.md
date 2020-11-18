@@ -295,16 +295,28 @@ Javascript Checkout:
 ```javascript
 Paddle.Checkout.open({
 	product: 12345,
-	passthrough: "{\"owner_sgid\": \"<%= current_user.to_sgid(for: 'paddle_12345').to_s %>\"}"
+	passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
 });
 ```
 
 Paddle Button Checkout:
 ```html
-<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= { owner_sgid: current_user.to_sgid(for: 'paddle_12345').to_s }.to_json %>"
+<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= Pay::Paddle.passthrough(owner: current_user) %>"
 ```
 
-Pay parses the passthrough JSON string and verifies the `owner_sgid` hash.
+###### Passthrough
+
+Pay providers a helper method for generating the passthrough JSON object to associate the purchase with the correct Rails model.
+
+```ruby
+Pay::Paddle.passthrough(owner: current_user, foo: :bar)
+#=> { owner_sgid: "xxxxxxxx", foo: "bar" }
+
+# To generate manually without the helper
+#=> { owner_sgid: current_user.to_sgid.to_s, foo: "bar" }.to_json
+```
+
+Pay parses the passthrough JSON string and verifies the `owner_sgid` hash to match the webhook with the correct billable record.
 The passthrough parameter `owner_sgid` is only required for creating a subscription.
 
 #### Retrieving a Subscription from the Database

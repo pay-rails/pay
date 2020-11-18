@@ -3,13 +3,18 @@ require "test_helper"
 class Pay::Paddle::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
   setup do
     @data = JSON.parse(File.read("test/support/fixtures/paddle/subscription_created.json"))
+    @user = User.create!(email: "gob@bluth.com")
+  end
+
+  test "paddle passthrough" do
+    passthrough = Pay::Paddle.passthrough(owner: @user)
+    expected = { owner_sgid: @user.to_sgid.to_s }.to_json
+    assert_equal expected, passthrough
   end
 
   test "a subscription is created" do
-    @user = User.create!(email: "gob@bluth.com")
-
     assert_difference "Pay.subscription_model.count" do
-      @data["passthrough"] = {owner_sgid: @user.to_sgid(for: "paddle_#{@data["subscription_plan_id"]}").to_s}.to_json
+      @data["passthrough"] = Pay::Paddle.passthrough(owner: @user)
       Pay::Paddle::Webhooks::SubscriptionCreated.new(@data)
     end
 
