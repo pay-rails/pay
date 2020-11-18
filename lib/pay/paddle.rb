@@ -31,7 +31,7 @@ module Pay
       find_value_by_name(:paddle, :public_key_base64)
     end
 
-    def passthrough(owner: , **options)
+    def passthrough(owner:, **options)
       options.merge(owner_sgid: owner.to_sgid.to_s).to_json
     end
   end

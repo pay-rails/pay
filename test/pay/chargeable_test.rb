@@ -31,7 +31,7 @@ class Pay::Charge::Test < ActiveSupport::TestCase
   end
 
   test "stores data about the charge" do
-    data = { "foo" => "bar" }
+    data = {"foo" => "bar"}
     @charge.update(data: data)
     assert_equal data, @charge.data
   end

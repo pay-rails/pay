@@ -8,7 +8,7 @@ class Pay::Paddle::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
 
   test "paddle passthrough" do
     passthrough = Pay::Paddle.passthrough(owner: @user)
-    expected = { owner_sgid: @user.to_sgid.to_s }.to_json
+    expected = {owner_sgid: @user.to_sgid.to_s}.to_json
     assert_equal expected, passthrough
   end
 
