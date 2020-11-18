@@ -2,7 +2,7 @@ module Pay
   class Subscription < ApplicationRecord
     self.table_name = Pay.subscription_table
 
-    STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid]
+    STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid paused]
 
     # Associations
     belongs_to :owner, polymorphic: true
@@ -66,6 +66,15 @@ module Pay
       past_due? || incomplete?
     end
 
+    def paused?
+      status == "paused"
+    end
+
+    def pause
+      return unless paddle?
+      send("#{processor}_pause")
+    end
+
     def cancel
       send("#{processor}_cancel")
     end
@@ -76,8 +85,17 @@ module Pay
 
     def resume
       unless on_grace_period?
-        raise StandardError,
-          "You can only resume subscriptions within their grace period."
+        unless paddle?
+          raise StandardError,
+            "You can only resume subscriptions within their grace period."
+        end
+      end
+
+      unless paused?
+        if paddle?
+          raise StandardError,
+            "You can only resume paused subscriptions."
+        end
       end
 
       send("#{processor}_resume")
