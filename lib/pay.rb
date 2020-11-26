@@ -103,6 +103,11 @@ module Pay
   end
 
   class Error < StandardError
+    attr_reader :result
+
+    def initialize(result = nil)
+      @result = result
+    end
   end
 
   class BraintreeError < Error
