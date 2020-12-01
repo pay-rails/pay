@@ -181,7 +181,7 @@ module Pay
 
       def card_details_for_braintree_transaction(transaction)
         case transaction.payment_instrument_type
-        when "credit_card", "samsung_pay_card", "masterpass_card", "samsung_pay_card", "visa_checkout_card"
+        when "credit_card", "samsung_pay_card", "masterpass_card", "visa_checkout_card"
           payment_method = transaction.send("#{transaction.payment_instrument_type}_details")
           {
             card_type: payment_method.card_type,
