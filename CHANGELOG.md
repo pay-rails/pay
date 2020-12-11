@@ -1,8 +1,12 @@
 ### Unreleased
 
-* `Pay.model_parent_class` defaults to `ApplicationRecord` - @excid3
+### 2.3.0
+
 * Add `data` json column to Charge and Subscription models - @excid3
+* Add Paddle initial support - @nm
+* `Pay.model_parent_class` defaults to `ApplicationRecord` - @excid3
 * Test suite now runs against sqlite, mysql, and postgresql - @excid3
+* [FIX] Lookup billable on invoice.payment_action_required events - @excid3
 
 ### 2.2.2
 
