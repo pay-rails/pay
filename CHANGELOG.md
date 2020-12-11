@@ -3,6 +3,13 @@
 ### 2.3.0
 
 * Add `data` json column to Charge and Subscription models - @excid3
+
+To add the new migrations to your app, run:
+
+```
+rails pay:install:migrations
+```
+
 * Add Paddle initial support - @nm
 * `Pay.model_parent_class` defaults to `ApplicationRecord` - @excid3
 * Test suite now runs against sqlite, mysql, and postgresql - @excid3
