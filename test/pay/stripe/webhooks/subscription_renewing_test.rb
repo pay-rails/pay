@@ -9,8 +9,8 @@ class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
   end
 
   test "an email is sent to the user when subscription is renewing" do
-    subscription = create_subscription(processor_id: @event.data.object.subscription)
-    date = Time.zone.at(@event.data.object.next_payment_attempt)
+    create_subscription(processor_id: @event.data.object.subscription)
+    # Time.zone.at(@event.data.object.next_payment_attempt)
 
     Pay::Stripe::Webhooks::SubscriptionRenewing.new.call(@event)
     assert_enqueued_emails 1
