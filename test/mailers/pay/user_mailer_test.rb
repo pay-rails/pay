@@ -45,9 +45,10 @@ class UserMailerTest < ActionMailer::TestCase
   end
 
   test "payment_action_required" do
-    email = Pay::UserMailer.with(billable: @user, payment_intent_id: Pay::Payment.new(nil), subscription: Pay::Subscription.new).payment_action_required
+    email = Pay::UserMailer.with(billable: @user, payment_intent_id: "x", subscription: Pay::Subscription.new).payment_action_required
 
     assert_equal [@user.email], email.to
     assert_equal I18n.t("pay.user_mailer.payment_action_required.subject"), email.subject
+    assert_includes email.body.decoded, Pay::Engine.instance.routes.url_helpers.payment_path("x")
   end
 end

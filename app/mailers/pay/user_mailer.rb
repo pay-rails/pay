@@ -17,7 +17,6 @@ module Pay
     end
 
     def payment_action_required
-      @payment = payment_intent
       mail to: to
     end
 
@@ -28,15 +27,6 @@ module Pay
         "#{params[:billable].customer_name} <#{params[:billable].email}>"
       else
         params[:billable].email
-      end
-    end
-
-    def payment_intent
-      case params[:payment_intent_id]
-      when String
-        Payment.from_id(params[:payment_intent_id])
-      else
-        params[:payment_intent_id]
       end
     end
   end
