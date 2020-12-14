@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.4.0
+
+* [BREAKING] Use locales for email subjects and remove configuration - @excid3
+
 ### 2.3.0
 
 * Add `data` json column to Charge and Subscription models - @excid3
