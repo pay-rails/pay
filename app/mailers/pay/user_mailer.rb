@@ -37,7 +37,7 @@ module Pay
 
       mail(
         to: to(user),
-        subject: Pay.payment_action_required_subject
+        subject: Pay.email_action_required_subject
       )
     end
 
