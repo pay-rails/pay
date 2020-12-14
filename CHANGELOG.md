@@ -4,6 +4,10 @@
 
 * [BREAKING] Use locales for email subjects and remove configuration - @excid3
 
+### 2.3.1
+
+* [FIX] Subject for payment action required emails referenced an invalid config - @excid3
+
 ### 2.3.0
 
 * Add `data` json column to Charge and Subscription models - @excid3
