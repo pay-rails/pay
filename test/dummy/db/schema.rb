@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_13_230148) do
+ActiveRecord::Schema.define(version: 2020_12_17_084605) do
 
   create_table "pay_charges", force: :cascade do |t|
     t.string "owner_type"
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 2020_11_13_230148) do
     t.datetime "updated_at"
     t.string "status"
     t.text "data"
+    t.datetime "paused_from"
   end
 
   create_table "teams", force: :cascade do |t|

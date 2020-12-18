@@ -35,7 +35,7 @@ class Pay::Stripe::Webhooks::SubscriptionDeletedTest < ActiveSupport::TestCase
       processor_id: @event.data.object.id,
       name: "default",
       processor_plan: "some-plan",
-      ends_at: Time.now,
+      ends_at: Time.zone.now,
       status: "active"
     )
 

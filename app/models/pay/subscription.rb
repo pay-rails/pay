@@ -50,7 +50,7 @@ module Pay
     end
 
     def on_grace_period?
-      canceled? && Time.zone.now < ends_at
+      canceled? && Time.zone.now < ends_at || paused? && Time.zone.now < paused_from
     end
 
     def active?
@@ -70,7 +70,7 @@ module Pay
     end
 
     def paused?
-      status == "paused"
+      paused_from?
     end
 
     def pause
