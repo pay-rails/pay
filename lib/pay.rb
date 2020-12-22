@@ -105,41 +105,45 @@ module Pay
   class Error < StandardError
   end
 
-  class BraintreeError < Error
-    attr_reader :result
-
-    def initialize(result = nil)
-      @result = result
-    end
-  end
-
-  class BraintreeAuthorizationError < BraintreeError
-    def message
-      "Either the data you submitted is malformed and does not match the API or the API key you used may not be authorized to perform this action."
-    end
-  end
-
-  class InvalidPaymentMethod < Error
+  class PaymentError < StandardError
     attr_reader :payment
 
     def initialize(payment)
       @payment = payment
     end
+  end
 
+  class ActionRequired < PaymentError
+    def message
+      "This payment attempt failed because additional action is required before it can be completed."
+    end
+  end
+
+  class InvalidPaymentMethod < PaymentError
     def message
       "This payment attempt failed because of an invalid payment method."
     end
   end
 
-  class ActionRequired < Error
-    attr_reader :payment
+  module Braintree
+    class Error < StandardError
+      attr_reader :result
 
-    def initialize(payment)
-      @payment = payment
+      def initialize(result = nil)
+        @result = result
+      end
     end
 
-    def message
-      "This payment attempt failed because additional action is required before it can be completed."
+    class AuthorizationError < Braintree::Error
+      def message
+        "Either the data you submitted is malformed and does not match the API or the API key you used may not be authorized to perform this action."
+      end
     end
+  end
+
+  class BraintreeAuthorizationError < Braintree::AuthorizationError
+  end
+
+  class BraintreeError < Braintree::Error
   end
 end

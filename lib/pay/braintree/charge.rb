@@ -13,7 +13,7 @@ module Pay
 
       def braintree_charge
         Pay.braintree_gateway.transaction.find(processor_id)
-      rescue ::Braintree::BraintreeError => e
+      rescue ::Braintree::Braintree::Error => e
         raise Error, e.message
       end
 
