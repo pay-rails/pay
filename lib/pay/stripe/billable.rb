@@ -17,7 +17,7 @@ module Pay
           create_stripe_customer
         end
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       def create_setup_intent
@@ -47,7 +47,7 @@ module Pay
         # Create a new charge object
         Stripe::Webhooks::ChargeSucceeded.new.create_charge(self, payment_intent.charges.first)
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       # Handles Billable#subscribe
@@ -80,7 +80,7 @@ module Pay
 
         subscription
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       # Handles Billable#update_card
@@ -97,7 +97,7 @@ module Pay
         update_stripe_card_on_file(payment_method.card)
         true
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       def update_stripe_email!

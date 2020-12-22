@@ -14,7 +14,7 @@ module Pay
       def braintree_charge
         Pay.braintree_gateway.transaction.find(processor_id)
       rescue ::Braintree::Braintree::Error => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       def braintree_refund!(amount_to_refund)
@@ -22,7 +22,7 @@ module Pay
 
         update(amount_refunded: amount_to_refund)
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
     end
   end

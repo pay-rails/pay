@@ -19,7 +19,7 @@ module Pay
         charges = payments.select { |p| p[:id].to_s == processor_id }
         charges.try(:first)
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
 
       def paddle_refund!(amount_to_refund)
@@ -32,7 +32,7 @@ module Pay
           raise Error, "Payment not found"
         end
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
     end
   end

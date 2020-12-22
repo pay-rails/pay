@@ -103,6 +103,11 @@ module Pay
   end
 
   class Error < StandardError
+    attr_reader :result
+
+    def initialize(result = nil)
+      @result = result
+    end
   end
 
   class PaymentError < StandardError
@@ -115,35 +120,51 @@ module Pay
 
   class ActionRequired < PaymentError
     def message
-      "This payment attempt failed because additional action is required before it can be completed."
+      I18n.t("errors.action_required")
     end
   end
 
   class InvalidPaymentMethod < PaymentError
     def message
-      "This payment attempt failed because of an invalid payment method."
+      I18n.t("errors.invalid_payment")
     end
   end
 
   module Braintree
-    class Error < StandardError
-      attr_reader :result
-
-      def initialize(result = nil)
-        @result = result
+    class Error < Error
+      def message
+        I18n.t("errors.braintree.#{result.code}", default: result.message)
       end
     end
 
     class AuthorizationError < Braintree::Error
       def message
-        "Either the data you submitted is malformed and does not match the API or the API key you used may not be authorized to perform this action."
+        I18n.t("errors.braintree.authorization")
+      end
+    end
+  end
+
+  module Stripe
+    class Error < Error
+      def message
+        I18n.t("errors.stripe.#{result.type}", default: result.message)
+      end
+    end
+  end
+
+  module Paddle
+    class Error < Error
+      def message
+        I18n.t("errors.paddle.#{result.code}", default: result.message)
       end
     end
   end
 
   class BraintreeAuthorizationError < Braintree::AuthorizationError
+    ActiveSupport::Deprecation.warn("Pay::BraintreeAuthorizationError is deprecated. Instead, use `Pay::Braintree::AuthorizationError`.")
   end
 
   class BraintreeError < Braintree::Error
+    ActiveSupport::Deprecation.warn("Pay::BraintreeError is deprecated. Instead, use `Pay::Braintree::Error`.")
   end
 end

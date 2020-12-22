@@ -23,14 +23,14 @@ module Pay
           update(status: :canceled, ends_at: DateTime.parse(subscription.next_payment[:date]))
         end
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
 
       def paddle_cancel_now!
         PaddlePay::Subscription::User.cancel(processor_id)
         update(status: :canceled, ends_at: Time.zone.now)
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
 
       def paddle_pause
@@ -44,7 +44,7 @@ module Pay
         PaddlePay::Subscription::User.update(processor_id, attributes)
         update(status: :active, ends_at: nil)
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
 
       def paddle_swap(plan)
@@ -52,7 +52,7 @@ module Pay
         attributes[:quantity] = quantity if quantity?
         PaddlePay::Subscription::User.update(processor_id, attributes)
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
     end
   end

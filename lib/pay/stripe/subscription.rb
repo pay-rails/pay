@@ -19,14 +19,14 @@ module Pay
         new_ends_at = on_trial? ? trial_ends_at : Time.at(subscription.current_period_end)
         update(ends_at: new_ends_at)
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       def stripe_cancel_now!
         processor_subscription.delete
         update(ends_at: Time.zone.now, status: :canceled)
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       def stripe_resume
@@ -36,7 +36,7 @@ module Pay
         subscription.cancel_at_period_end = false
         subscription.save
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       def stripe_swap(plan)
@@ -48,7 +48,7 @@ module Pay
         subscription.quantity = quantity if quantity?
         subscription.save
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
     end
   end
