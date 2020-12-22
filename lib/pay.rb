@@ -133,7 +133,7 @@ module Pay
   module Braintree
     class Error < Error
       def message
-        I18n.t("errors.braintree.#{result.code}", default: result.message)
+        result.message
       end
     end
 
@@ -147,7 +147,7 @@ module Pay
   module Stripe
     class Error < Error
       def message
-        I18n.t("errors.stripe.#{result.type}", default: result.message)
+        I18n.t("errors.stripe.#{result.code}", default: result.message)
       end
     end
   end
@@ -161,10 +161,16 @@ module Pay
   end
 
   class BraintreeAuthorizationError < Braintree::AuthorizationError
-    ActiveSupport::Deprecation.warn("Pay::BraintreeAuthorizationError is deprecated. Instead, use `Pay::Braintree::AuthorizationError`.")
+    def message
+      ActiveSupport::Deprecation.warn("Pay::BraintreeAuthorizationError is deprecated. Instead, use `Pay::Braintree::AuthorizationError`.")
+      super
+    end
   end
 
   class BraintreeError < Braintree::Error
-    ActiveSupport::Deprecation.warn("Pay::BraintreeError is deprecated. Instead, use `Pay::Braintree::Error`.")
+    def message
+      ActiveSupport::Deprecation.warn("Pay::BraintreeError is deprecated. Instead, use `Pay::Braintree::Error`.")
+      super
+    end
   end
 end
