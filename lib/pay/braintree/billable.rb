@@ -31,7 +31,7 @@ module Pay
           result.customer
         end
       rescue ::Braintree::AuthorizationError
-        raise Pay::Braintree::AuthorizationError
+        raise BraintreeAuthorizationError
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
