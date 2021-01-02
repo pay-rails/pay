@@ -52,7 +52,7 @@ module Pay
       send("create_#{processor}_charge", amount_in_cents, options)
     end
 
-    def subscribe(name: Pay.default_product_name, plan: "default", **options)
+    def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
       check_for_processor
       send("create_#{processor}_subscription", name, plan, options)
     end

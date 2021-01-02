@@ -103,6 +103,9 @@ Pay.setup do |config|
 
   config.send_emails = true
 
+  config.default_product_name = "default"
+  config.default_plan_name = "default"
+
   config.automount_routes = true
   config.routes_path = "/pay" # Only when automount_routes is true
 end
@@ -260,7 +263,7 @@ A `card_token` must be provided as an attribute.
 The subscribe method has three optional arguments with default values.
 
 ```ruby
-def subscribe(name: Pay.default_product_name, plan: 'default', **options)
+def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
   ...
 end
 ```
@@ -269,7 +272,7 @@ For example, you can pass the `quantity` option to subscribe to a plan with for 
 
 ```ruby
 
-user.subscribe(name: "default", plan: "default", quantity: 3)
+user.subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, quantity: 3)
 ```
 
 ###### Name
