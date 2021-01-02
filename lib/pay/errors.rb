@@ -57,17 +57,17 @@ module Pay
     end
   end
 
-  class BraintreeAuthorizationError < Braintree::AuthorizationError
-    def message
-      ActiveSupport::Deprecation.warn("Pay::BraintreeAuthorizationError is deprecated. Instead, use `Pay::Braintree::AuthorizationError`.")
-      super
-    end
-  end
-
   class BraintreeError < Braintree::Error
     def message
       ActiveSupport::Deprecation.warn("Pay::BraintreeError is deprecated. Instead, use `Pay::Braintree::Error`.")
       super
+    end
+  end
+
+  class BraintreeAuthorizationError < BraintreeError
+    def message
+      ActiveSupport::Deprecation.warn("Pay::BraintreeAuthorizationError is deprecated. Instead, use `Pay::Braintree::AuthorizationError`.")
+      I18n.t("errors.braintree.authorization")
     end
   end
 end
