@@ -47,6 +47,9 @@ module Pay
   mattr_accessor :automount_routes
   @@automount_routes = true
 
+  mattr_accessor :default_product_name
+  @@default_product_name = "default"
+
   mattr_accessor :routes_path
   @@routes_path = "/pay"
 

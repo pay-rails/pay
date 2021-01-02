@@ -52,7 +52,7 @@ module Pay
       send("create_#{processor}_charge", amount_in_cents, options)
     end
 
-    def subscribe(name: "default", plan: "default", **options)
+    def subscribe(name: Pay.default_product_name, plan: "default", **options)
       check_for_processor
       send("create_#{processor}_subscription", name, plan, options)
     end
@@ -63,7 +63,7 @@ module Pay
       send("update_#{processor}_card", token)
     end
 
-    def on_trial?(name: "default", plan: nil)
+    def on_trial?(name: Pay.default_product_name, plan: nil)
       return true if default_generic_trial?(name, plan)
 
       sub = subscription(name: name)
@@ -81,7 +81,7 @@ module Pay
       send("#{processor}_subscription", subscription_id, options)
     end
 
-    def subscribed?(name: "default", processor_plan: nil)
+    def subscribed?(name: Pay.default_product_name, processor_plan: nil)
       subscription = subscription(name: name)
 
       return false if subscription.nil?
@@ -90,12 +90,12 @@ module Pay
       subscription.active? && subscription.processor_plan == processor_plan
     end
 
-    def on_trial_or_subscribed?(name: "default", processor_plan: nil)
+    def on_trial_or_subscribed?(name: Pay.default_product_name, processor_plan: nil)
       on_trial?(name: name, plan: processor_plan) ||
         subscribed?(name: name, processor_plan: processor_plan)
     end
 
-    def subscription(name: "default")
+    def subscription(name: Pay.default_product_name)
       subscriptions.for_name(name).last
     end
 
@@ -123,7 +123,7 @@ module Pay
       processor == "paddle"
     end
 
-    def has_incomplete_payment?(name: "default")
+    def has_incomplete_payment?(name: Pay.default_product_name)
       subscription(name: name)&.has_incomplete_payment?
     end
 

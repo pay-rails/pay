@@ -260,7 +260,7 @@ A `card_token` must be provided as an attribute.
 The subscribe method has three optional arguments with default values.
 
 ```ruby
-def subscribe(name: 'default', plan: 'default', **options)
+def subscribe(name: Pay.default_product_name, plan: 'default', **options)
   ...
 end
 ```

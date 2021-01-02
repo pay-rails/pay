@@ -40,4 +40,9 @@ class Pay::Test < ActiveSupport::TestCase
     assert Pay.respond_to?(:support_email)
     assert Pay.respond_to?(:support_email=)
   end
+
+  test "can set default product name" do
+    assert Pay.respond_to?(:default_product_name)
+    assert Pay.respond_to?(:default_product_name=)
+  end
 end

@@ -22,7 +22,7 @@ module Pay
               return
             end
 
-            subscription = Pay.subscription_model.new(owner: owner, name: "default", processor: "paddle", processor_id: data["subscription_id"], status: :active)
+            subscription = Pay.subscription_model.new(owner: owner, name: Pay.default_product_name, processor: "paddle", processor_id: data["subscription_id"], status: :active)
           end
 
           subscription.quantity = data["quantity"]
