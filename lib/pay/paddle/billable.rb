@@ -35,7 +35,7 @@ module Pay
       end
 
       def update_paddle_card(token)
-        # pass
+        sync_payment_information_from_paddle
       end
 
       def update_paddle_email!
@@ -60,6 +60,35 @@ module Pay
 
       def paddle_upcoming_invoice
         # pass
+      end
+
+      def sync_payment_information_from_paddle
+        payment_information = paddle_payment_information(subscription.processor_id)
+        update!(payment_information) unless payment_information.empty?
+      rescue ::PaddlePay::PaddlePayError => e
+        raise Error, e.message
+      end
+
+      def paddle_payment_information(subscription_id)
+        subscription_user = PaddlePay::Subscription::User.list({subscription_id: subscription_id}).try(:first)
+        payment_information = subscription_user ? subscription_user[:payment_information] : nil
+        return {} if payment_information.nil?
+
+        case payment_information[:payment_method]
+        when "card"
+          {
+            card_type: payment_information[:card_type],
+            card_last4: payment_information[:last_four_digits],
+            card_exp_month: payment_information[:expiry_date].split("/").first,
+            card_exp_year: payment_information[:expiry_date].split("/").last
+          }
+        when "paypal"
+          {
+            card_type: "PayPal"
+          }
+        else
+          {}
+        end
       end
     end
   end
