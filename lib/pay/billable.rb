@@ -96,7 +96,7 @@ module Pay
     end
 
     def subscription(name: Pay.default_product_name)
-      subscriptions.for_name(name).last
+      subscriptions.loaded? ? subscriptions.reverse.detect { |s| s.name == name } : subscriptions.for_name(name).last
     end
 
     def invoice!(options = {})
