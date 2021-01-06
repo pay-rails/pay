@@ -8,6 +8,7 @@ module Pay
 
         store_accessor :data, :paddle_update_url
         store_accessor :data, :paddle_cancel_url
+        store_accessor :data, :paddle_paused_from
       end
 
       def paddle?
@@ -33,10 +34,18 @@ module Pay
         raise Error, e.message
       end
 
+      def paddle_on_grace_period?
+        canceled? && Time.zone.now < ends_at || paused? && Time.zone.now < paddle_paused_from
+      end
+
+      def paddle_paused?
+        paddle_paused_from.present?
+      end
+
       def paddle_pause
         attributes = {pause: true}
         response = PaddlePay::Subscription::User.update(processor_id, attributes)
-        update(paused_from: Time.zone.parse(response[:next_payment][:date]))
+        update(paddle_paused_from: Time.zone.parse(response[:next_payment][:date]))
       rescue ::PaddlePay::PaddlePayError => e
         raise Error, e.message
       end
@@ -44,7 +53,7 @@ module Pay
       def paddle_resume
         attributes = {pause: false}
         PaddlePay::Subscription::User.update(processor_id, attributes)
-        update(status: :active, paused_from: nil)
+        update(status: :active, paddle_paused_from: nil)
       rescue ::PaddlePay::PaddlePayError => e
         raise Error, e.message
       end

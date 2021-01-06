@@ -16,7 +16,7 @@ module Pay
             subscription.trial_ends_at = Time.zone.parse(data["next_bill_date"])
           when "active"
             subscription.status = "active"
-            subscription.paused_from = Time.zone.parse(data["paused_from"]) if data["paused_from"].present?
+            subscription.paddle_paused_from = Time.zone.parse(data["paused_from"]) if data["paused_from"].present?
           else
             subscription.status = data["status"]
           end

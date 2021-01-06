@@ -58,7 +58,7 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
     next_payment_date = Time.zone.parse(@subscription.processor_subscription.next_payment[:date])
     @subscription.pause
     assert @subscription.paused?
-    assert_equal next_payment_date, @subscription.paused_from
+    assert_equal next_payment_date, @subscription.paddle_paused_from
   end
 
   test "paddle pause grace period" do
@@ -68,7 +68,7 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       name: "default",
       processor_plan: "some-plan",
       status: "active",
-      paused_from: Time.zone.now + 1.week
+      paddle_paused_from: Time.zone.now + 1.week
     )
     @subscription = @billable.subscription
     assert @subscription.paused?
@@ -112,10 +112,10 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       @subscription = @billable.subscription
       next_payment_date = Time.zone.parse(@subscription.processor_subscription.next_payment[:date])
       @subscription.pause
-      assert_equal @subscription.paused_from, next_payment_date
+      assert_equal @subscription.paddle_paused_from, next_payment_date
 
       @subscription.resume
-      assert_nil @subscription.paused_from
+      assert_nil @subscription.paddle_paused_from
       assert_equal "active", @subscription.status
     end
   end

@@ -50,7 +50,8 @@ module Pay
     end
 
     def on_grace_period?
-      canceled? && Time.zone.now < ends_at || paused? && Time.zone.now < paused_from
+      return unless processor?
+      send("#{processor}_on_grace_period?")
     end
 
     def active?
@@ -70,7 +71,8 @@ module Pay
     end
 
     def paused?
-      paused_from?
+      return unless paddle?
+      send("#{processor}_paused?")
     end
 
     def pause
