@@ -28,14 +28,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency "stripe_event", "~> 2.3"
   s.add_development_dependency "paddle_pay", "~> 0.0.1"
 
-  s.add_development_dependency "byebug"
-  s.add_development_dependency "minitest-rails", "~> 6"
+  s.add_development_dependency "minitest-rails", ">= 6", "< 7.0"
   s.add_development_dependency "mocha"
-  s.add_development_dependency "pry"
   s.add_development_dependency "standardrb"
-  s.add_development_dependency "sqlite3", "~> 1.4"
-  s.add_development_dependency "mysql2"
-  s.add_development_dependency "pg"
   s.add_development_dependency "vcr"
   s.add_development_dependency "webmock"
 end
