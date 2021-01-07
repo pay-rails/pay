@@ -36,7 +36,7 @@ class Pay::Paddle::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
 
     Pay::Paddle::Webhooks::SubscriptionUpdated.new(@data)
 
-    assert_equal DateTime.parse(@data["next_bill_date"]), subscription.reload.trial_ends_at
+    assert_equal Time.zone.parse(@data["next_bill_date"]), subscription.reload.trial_ends_at
     assert_nil subscription.reload.ends_at
   end
 
@@ -48,7 +48,7 @@ class Pay::Paddle::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
 
     Pay::Paddle::Webhooks::SubscriptionUpdated.new(@data)
 
-    assert_equal DateTime.parse(@data["next_bill_date"]), subscription.reload.ends_at
+    assert_equal Time.zone.parse(@data["next_bill_date"]), subscription.reload.ends_at
   end
 
   test "subscription is updated with subscription status = paused and on_trial? = true" do

@@ -5,13 +5,13 @@ Questions? Please reply to this email.<br/>
 ------------------------------------<br/>
 RECEIPT - SUBSCRIPTION<br/>
 <br/>
-Amount: USD <%= ActionController::Base.helpers.number_to_currency(@charge.amount / 100.0) %><br/>
+Amount: USD <%= ActionController::Base.helpers.number_to_currency(params[:charge].amount / 100.0) %><br/>
 <br/>
-Charged to: <%= @charge.charged_to %><br/>
-Transaction ID: <%= @charge.id %><br/>
-Date: <%= @charge.created_at %><br/>
-<% if @charge.owner.extra_billing_info? %>
-<%= @charge.owner.extra_billing_info %><br/>
+Charged to: <%= params[:charge].charged_to %><br/>
+Transaction ID: <%= params[:charge].id %><br/>
+Date: <%= params[:charge].created_at %><br/>
+<% if params[:charge].owner.extra_billing_info? %>
+<%= params[:charge].owner.extra_billing_info %><br/>
 <% end %>
 <br/>
 <br/>

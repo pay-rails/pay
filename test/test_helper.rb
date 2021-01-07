@@ -29,6 +29,7 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
 end
 
 class ActiveSupport::TestCase
+  include ActionMailer::TestHelper
   include ActiveJob::TestHelper
 end
 

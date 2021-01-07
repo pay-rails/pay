@@ -34,6 +34,10 @@ module Pay
         raise Pay::Braintree::Error, e
       end
 
+      def braintree_on_grace_period?
+        canceled? && Time.zone.now < ends_at
+      end
+
       def braintree_resume
         if canceled? && on_trial?
           duration = trial_ends_at.to_date - Date.today

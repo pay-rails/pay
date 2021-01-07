@@ -21,8 +21,8 @@ module Pay
             amount: Integer(data["sale_gross"].to_f * 100),
             card_type: data["payment_method"],
             paddle_receipt_url: data["receipt_url"],
-            created_at: DateTime.parse(data["event_time"])
-          }.merge
+            created_at: Time.zone.parse(data["event_time"])
+          }
 
           payment_information = user.paddle_payment_information(data["subscription_id"])
 
@@ -32,9 +32,9 @@ module Pay
           charge
         end
 
-        def notify_user(user, charge)
+        def notify_user(billable, charge)
           if Pay.send_emails && charge.respond_to?(:receipt)
-            Pay::UserMailer.receipt(user, charge).deliver_later
+            Pay::UserMailer.with(billable: billable, charge: charge).receipt.deliver_later
           end
         end
       end

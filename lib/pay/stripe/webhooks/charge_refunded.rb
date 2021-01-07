@@ -12,9 +12,9 @@ module Pay
           notify_user(charge.owner, charge)
         end
 
-        def notify_user(user, charge)
+        def notify_user(billable, charge)
           if Pay.send_emails
-            Pay::UserMailer.refund(user, charge).deliver_later
+            Pay::UserMailer.with(billable: billable, charge: charge).refund.deliver_later
           end
         end
       end

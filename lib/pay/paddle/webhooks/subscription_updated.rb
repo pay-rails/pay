@@ -7,24 +7,27 @@ module Pay
 
           return if subscription.nil?
 
-          subscription.status = data["status"] == "deleted" ? "canceled" : data["status"]
+          case data["status"]
+          when "deleted"
+            subscription.status = "canceled"
+            subscription.ends_at = Time.zone.parse(data["next_bill_date"]) || Time.zone.now if subscription.ends_at.blank?
+          when "trialing"
+            subscription.status = "trialing"
+            subscription.trial_ends_at = Time.zone.parse(data["next_bill_date"])
+          when "active"
+            subscription.status = "active"
+            subscription.paddle_paused_from = Time.zone.parse(data["paused_from"]) if data["paused_from"].present?
+          else
+            subscription.status = data["status"]
+          end
+
           subscription.quantity = data["new_quantity"]
           subscription.processor_plan = data["subscription_plan_id"]
           subscription.paddle_update_url = data["update_url"]
           subscription.paddle_cancel_url = data["cancel_url"]
 
-          subscription.trial_ends_at = DateTime.parse(data["next_bill_date"]) if data["status"] == "trialing"
-
           # If user was on trial, their subscription ends at the end of the trial
-          subscription.ends_at = if ["paused", "deleted"].include?(data["status"]) && subscription.on_trial?
-            subscription.trial_ends_at
-
-          # User wasn't on trial, so subscription ends at period end
-          elsif ["paused", "deleted"].include?(data["status"])
-            DateTime.parse(data["next_bill_date"])
-
-            # Subscription isn't marked to cancel at period end
-          end
+          subscription.ends_at = subscription.trial_ends_at if subscription.on_trial?
 
           subscription.save!
         end

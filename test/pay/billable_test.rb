@@ -129,6 +129,25 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert_equal subscription, @billable.subscription
   end
 
+  test "getting a subscription by default name with subscriptions eager loaded" do
+    user = User.new(email: "john@smith.com")
+    subscription = Pay.subscription_model.create!(
+      name: "default",
+      owner: user,
+      processor: "stripe",
+      processor_id: "1",
+      processor_plan: "default",
+      status: "active",
+      quantity: "1"
+    )
+
+    Pay.subscription_model.expects(:for_name).with("default").never
+
+    user_with_subscriptions_loaded = User.includes(:subscriptions).find(user.id)
+
+    assert_equal subscription, user_with_subscriptions_loaded.subscription
+  end
+
   test "getting a stripe subscription" do
     @billable.processor = "stripe"
     ::Stripe::Subscription.expects(:retrieve).with(id: "123").returns(:subscription)
