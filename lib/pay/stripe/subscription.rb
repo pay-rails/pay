@@ -29,6 +29,10 @@ module Pay
         raise Error, e.message
       end
 
+      def stripe_on_grace_period?
+        canceled? && Time.zone.now < ends_at
+      end
+
       def stripe_resume
         subscription = processor_subscription
         subscription.plan = processor_plan

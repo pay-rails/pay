@@ -19,7 +19,7 @@ class Pay::Paddle::Webhooks::SubscriptionCancelledTest < ActiveSupport::TestCase
       status: "active"
     )
 
-    Pay.subscription_model.any_instance.expects(:update!).with(ends_at: DateTime.parse(@data["cancellation_effective_date"]))
+    Pay.subscription_model.any_instance.expects(:update!).with(ends_at: Time.zone.parse(@data["cancellation_effective_date"]))
     Pay::Paddle::Webhooks::SubscriptionCancelled.new(@data)
   end
 
@@ -34,11 +34,11 @@ class Pay::Paddle::Webhooks::SubscriptionCancelledTest < ActiveSupport::TestCase
       processor_id: @data["subscription_id"],
       name: "default",
       processor_plan: "some-plan",
-      ends_at: Time.now,
+      ends_at: Time.zone.now,
       status: "active"
     )
 
-    Pay.subscription_model.any_instance.expects(:update!).with(ends_at: DateTime.parse(@data["cancellation_effective_date"])).never
+    Pay.subscription_model.any_instance.expects(:update!).with(ends_at: Time.zone.parse(@data["cancellation_effective_date"])).never
     Pay::Paddle::Webhooks::SubscriptionCancelled.new(@data)
   end
 
@@ -56,7 +56,7 @@ class Pay::Paddle::Webhooks::SubscriptionCancelledTest < ActiveSupport::TestCase
       status: "active"
     )
 
-    Pay.subscription_model.any_instance.expects(:update!).with(ends_at: DateTime.parse(@data["cancellation_effective_date"])).never
+    Pay.subscription_model.any_instance.expects(:update!).with(ends_at: Time.zone.parse(@data["cancellation_effective_date"])).never
     Pay::Paddle::Webhooks::SubscriptionCancelled.new(@data)
   end
 end

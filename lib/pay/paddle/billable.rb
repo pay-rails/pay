@@ -23,7 +23,7 @@ module Pay
           amount: Integer(response[:amount].to_f * 100),
           card_type: subscription.processor_subscription.payment_information[:payment_method],
           paddle_receipt_url: response[:receipt_url],
-          created_at: DateTime.parse(response[:payment_date])
+          created_at: Time.zone.parse(response[:payment_date])
         )
         charge
       rescue ::PaddlePay::PaddlePayError => e
@@ -44,7 +44,7 @@ module Pay
 
       def paddle_trial_end_date(subscription)
         return unless subscription.state == "trialing"
-        DateTime.parse(subscription.next_payment[:date]).end_of_day
+        Time.zone.parse(subscription.next_payment[:date]).end_of_day
       end
 
       def paddle_subscription(subscription_id, options = {})

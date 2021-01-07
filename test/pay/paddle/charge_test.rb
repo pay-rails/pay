@@ -19,7 +19,7 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
       amount: 119,
       card_type: "card",
       paddle_receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
-      created_at: DateTime.now
+      created_at: Time.zone.now
     )
     paddle_charge = charge.paddle_charge
     assert_equal charge.processor_id, paddle_charge[:id].to_s
@@ -32,7 +32,7 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
       amount: 119,
       card_type: "card",
       paddle_receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
-      created_at: DateTime.now
+      created_at: Time.zone.now
     )
 
     charge.refund!
@@ -46,7 +46,7 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
       amount: 119,
       card_type: "card",
       paddle_receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
-      created_at: DateTime.now
+      created_at: Time.zone.now
     )
 
     assert_raises(Pay::Error) { charge.refund! }

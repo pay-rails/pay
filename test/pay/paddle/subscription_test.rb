@@ -14,7 +14,7 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       status: "active"
     )
     @subscription = @billable.subscription
-    next_payment_date = DateTime.parse(@subscription.processor_subscription.next_payment[:date])
+    next_payment_date = Time.zone.parse(@subscription.processor_subscription.next_payment[:date])
     @subscription.cancel
     assert_equal @subscription.ends_at, next_payment_date
     assert_equal "canceled", @subscription.status
@@ -55,10 +55,48 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       status: "active"
     )
     @subscription = @billable.subscription
-    next_payment_date = DateTime.parse(@subscription.processor_subscription.next_payment[:date])
+    next_payment_date = Time.zone.parse(@subscription.processor_subscription.next_payment[:date])
     @subscription.pause
-    assert_equal next_payment_date, @subscription.ends_at
-    assert_equal "paused", @subscription.status
+    assert @subscription.paused?
+    assert_equal next_payment_date, @subscription.paddle_paused_from
+  end
+
+  test "paddle pause grace period" do
+    @billable.subscriptions.create!(
+      processor: :paddle,
+      processor_id: "3576390",
+      name: "default",
+      processor_plan: "some-plan",
+      status: "active",
+      paddle_paused_from: Time.zone.now + 1.week
+    )
+    @subscription = @billable.subscription
+    assert @subscription.paused?
+    assert @subscription.on_grace_period?
+  end
+
+  test "paddle paused subscription is not active" do
+    @billable.subscriptions.create!(
+      processor: :paddle,
+      processor_id: "3576390",
+      name: "default",
+      processor_plan: "some-plan",
+      status: "paused"
+    )
+    @subscription = @billable.subscription
+    assert_not @subscription.active?
+  end
+
+  test "paddle paused subscription is not canceled" do
+    @billable.subscriptions.create!(
+      processor: :paddle,
+      processor_id: "3576390",
+      name: "default",
+      processor_plan: "some-plan",
+      status: "paused"
+    )
+    @subscription = @billable.subscription
+    assert_not @subscription.canceled?
   end
 
   test "paddle resume on paused state" do
@@ -72,12 +110,12 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
         trial_ends_at: (Date.today + 3).to_datetime
       )
       @subscription = @billable.subscription
-      next_payment_date = DateTime.parse(@subscription.processor_subscription.next_payment[:date])
+      next_payment_date = Time.zone.parse(@subscription.processor_subscription.next_payment[:date])
       @subscription.pause
-      assert_equal @subscription.ends_at, next_payment_date
+      assert_equal @subscription.paddle_paused_from, next_payment_date
 
       @subscription.resume
-      assert_nil @subscription.ends_at
+      assert_nil @subscription.paddle_paused_from
       assert_equal "active", @subscription.status
     end
   end
