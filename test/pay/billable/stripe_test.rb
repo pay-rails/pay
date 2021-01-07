@@ -36,7 +36,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
   test "handles stripe card declined" do
     @billable.card_token = "pm_card_chargeDeclined"
-    assert_raises(Pay::Error) { @billable.charge(2900) }
+    assert_raises(Pay::Stripe::Error) { @billable.charge(2900) }
   end
 
   test "raises action required error when SCA required" do
@@ -66,7 +66,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   end
 
   test "fails when subscribing with no payment method" do
-    exception = assert_raises(Pay::Error) {
+    exception = assert_raises(Pay::Stripe::Error) {
       @billable.subscribe(name: "default", plan: "small-monthly")
     }
     assert_equal "This customer has no attached payment source or default payment method.", exception.message
@@ -149,22 +149,22 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
   test "handles exception when creating a customer" do
     @billable.card_token = "invalid"
-    exception = assert_raises(Pay::Error) { @billable.stripe_customer }
+    exception = assert_raises(Pay::Stripe::Error) { @billable.stripe_customer }
     assert_equal "No such PaymentMethod: 'invalid'", exception.message
   end
 
   test "handles exception when creating a charge" do
-    exception = assert_raises(Pay::Error) { @billable.charge(0) }
+    exception = assert_raises(Pay::Stripe::Error) { @billable.charge(0) }
     assert_equal "This value must be greater than or equal to 1.", exception.message
   end
 
   test "handles exception when creating a subscription" do
-    exception = assert_raises(Pay::Error) { @billable.subscribe plan: "invalid" }
+    exception = assert_raises(Pay::Stripe::Error) { @billable.subscribe plan: "invalid" }
     assert_equal "No such plan: 'invalid'", exception.message
   end
 
   test "handles exception when updating a card" do
-    exception = assert_raises(Pay::Error) { @billable.update_card("abcd") }
+    exception = assert_raises(Pay::Stripe::Error) { @billable.update_card("abcd") }
     assert_equal "No such PaymentMethod: 'abcd'", exception.message
   end
 

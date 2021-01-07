@@ -24,14 +24,14 @@ module Pay
           update(status: :canceled, ends_at: subscription.billing_period_end_date.to_date)
         end
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       def braintree_cancel_now!
         gateway.subscription.cancel(processor_subscription.id)
         update(status: :canceled, ends_at: Time.zone.now)
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       def braintree_on_grace_period?
@@ -61,7 +61,7 @@ module Pay
 
         update(status: :active)
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       def braintree_swap(plan)
@@ -100,7 +100,7 @@ module Pay
           raise Error, "Braintree failed to swap plans: #{result.message}"
         end
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       private

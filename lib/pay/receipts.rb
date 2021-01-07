@@ -28,13 +28,13 @@ module Pay
 
     def line_items
       line_items = [
-        ["Date", created_at.to_s],
-        ["Account Billed", "#{owner.name} (#{owner.email})"],
-        ["Product", product],
-        ["Amount", ActionController::Base.helpers.number_to_currency(amount / 100.0)],
-        ["Charged to", charged_to]
+        [I18n.t("receipt.date"), created_at.to_s],
+        [I18n.t("receipt.account_billed"), "#{owner.name} (#{owner.email})"],
+        [I18n.t("receipt.product"), product],
+        [I18n.t("receipt.amount"), ActionController::Base.helpers.number_to_currency(amount / 100.0)],
+        [I18n.t("receipt.charged_to"), charged_to]
       ]
-      line_items << ["Additional Info", owner.extra_billing_info] if owner.extra_billing_info?
+      line_items << [I18n.t("receipt.additional_info"), owner.extra_billing_info] if owner.extra_billing_info?
       line_items
     end
   end

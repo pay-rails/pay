@@ -20,7 +20,7 @@ module Pay
             last_name: try(:last_name),
             payment_method_nonce: card_token
           )
-          raise BraintreeError.new(result), result.message unless result.success?
+          raise Pay::Braintree::Error, result unless result.success?
 
           update(processor: "braintree", processor_id: result.customer.id)
 
@@ -33,7 +33,7 @@ module Pay
       rescue ::Braintree::AuthorizationError
         raise BraintreeAuthorizationError
       rescue ::Braintree::BraintreeError => e
-        raise BraintreeError, e.message
+        raise Pay::Braintree::Error, e
       end
 
       # Handles Billable#charge
@@ -47,13 +47,13 @@ module Pay
         }.merge(options)
 
         result = gateway.transaction.sale(args)
-        raise BraintreeError.new(result), result.message unless result.success?
+        raise Pay::Braintree::Error, result unless result.success?
 
         save_braintree_transaction(result.transaction)
       rescue ::Braintree::AuthorizationError
-        raise BraintreeAuthorizationError
+        raise Pay::Braintree::AuthorizationError
       rescue ::Braintree::BraintreeError => e
-        raise BraintreeError, e.message
+        raise Pay::Braintree::Error, e
       end
 
       # Handles Billable#subscribe
@@ -74,13 +74,13 @@ module Pay
         )
 
         result = gateway.subscription.create(subscription_options)
-        raise BraintreeError.new(result), result.message unless result.success?
+        raise Pay::Braintree::Error, result unless result.success?
 
         create_subscription(result.subscription, "braintree", name, plan, status: :active)
       rescue ::Braintree::AuthorizationError
-        raise BraintreeAuthorizationError
+        raise Pay::Braintree::AuthorizationError
       rescue ::Braintree::BraintreeError => e
-        raise BraintreeError, e.message
+        raise Pay::Braintree::Error, e
       end
 
       # Handles Billable#update_card
@@ -95,15 +95,15 @@ module Pay
             verify_card: true
           }
         )
-        raise BraintreeError.new(result), result.message unless result.success?
+        raise Pay::Braintree::Error, result unless result.success?
 
         update_braintree_card_on_file result.payment_method
         update_subscriptions_to_payment_method(result.payment_method.token)
         true
       rescue ::Braintree::AuthorizationError
-        raise BraintreeAuthorizationError
+        raise Pay::Braintree::AuthorizationError
       rescue ::Braintree::BraintreeError => e
-        raise BraintreeError, e.message
+        raise Pay::Braintree::Error, e
       end
 
       def update_braintree_email!

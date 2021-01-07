@@ -2,6 +2,7 @@ require "pay/engine"
 require "pay/billable"
 require "pay/receipts"
 require "pay/payment"
+require "pay/errors"
 
 module Pay
   # Define who owns the subscription
@@ -105,46 +106,5 @@ module Pay
       business_name &&
       business_address &&
       support_email
-  end
-
-  class Error < StandardError
-  end
-
-  class BraintreeError < Error
-    attr_reader :result
-
-    def initialize(result = nil)
-      @result = result
-    end
-  end
-
-  class BraintreeAuthorizationError < BraintreeError
-    def message
-      "Either the data you submitted is malformed and does not match the API or the API key you used may not be authorized to perform this action."
-    end
-  end
-
-  class InvalidPaymentMethod < Error
-    attr_reader :payment
-
-    def initialize(payment)
-      @payment = payment
-    end
-
-    def message
-      "This payment attempt failed because of an invalid payment method."
-    end
-  end
-
-  class ActionRequired < Error
-    attr_reader :payment
-
-    def initialize(payment)
-      @payment = payment
-    end
-
-    def message
-      "This payment attempt failed because additional action is required before it can be completed."
-    end
   end
 end

@@ -24,7 +24,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   test "fails with invalid cards" do
     # This requires Card Verification to be enabled in the Braintree account
     @billable.card_token = "fake-processor-declined-visa-nonce"
-    err = assert_raises(Pay::BraintreeError) { @billable.customer }
+    err = assert_raises(Pay::Braintree::Error) { @billable.customer }
     assert_equal "Do Not Honor", err.message
   end
 
@@ -58,13 +58,13 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   test "handles charge failures" do
     @billable.card_token = "fake-valid-visa-nonce"
     @billable.customer
-    assert_raises(Pay::Error) { @billable.charge(2000_00) }
+    assert_raises(Pay::Braintree::Error) { @billable.charge(2000_00) }
   end
 
   test "fails with paypal processor declined" do
     @billable.card_token = "fake-paypal-billing-agreement-nonce	"
     @billable.customer
-    assert_raises(Pay::Error) { @billable.charge(5001_01) }
+    assert_raises(Pay::Braintree::Error) { @billable.charge(5001_01) }
   end
 
   test "can create a braintree subscription" do
@@ -96,19 +96,19 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   test "fails charges with invalid cards" do
     # This requires Card Verification to be enabled in the Braintree account
     @billable.card_token = "fake-processor-declined-visa-nonce"
-    err = assert_raises(Pay::BraintreeError) { @billable.charge(10_00) }
+    err = assert_raises(Pay::Braintree::Error) { @billable.charge(10_00) }
     assert_equal "Do Not Honor", err.message
   end
 
   test "fails subscribing with invalid cards" do
     # This requires Card Verification to be enabled in the Braintree account
     @billable.card_token = "fake-processor-declined-visa-nonce"
-    err = assert_raises(Pay::BraintreeError) { @billable.subscribe }
+    err = assert_raises(Pay::Braintree::Error) { @billable.subscribe }
     assert_equal "Do Not Honor", err.message
   end
 
   test "handles invalid parameters" do
-    err = assert_raises(Pay::BraintreeAuthorizationError) { @billable.charge(10_00, metadata: {}) }
+    err = assert_raises(Pay::Braintree::AuthorizationError) { @billable.charge(10_00, metadata: {}) }
     assert_equal "Either the data you submitted is malformed and does not match the API or the API key you used may not be authorized to perform this action.", err.message
   end
 end

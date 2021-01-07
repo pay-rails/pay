@@ -27,7 +27,7 @@ module Pay
         )
         charge
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
 
       def create_paddle_subscription(name, plan, options = {})
@@ -51,7 +51,7 @@ module Pay
         hash = PaddlePay::Subscription::User.list({subscription_id: subscription_id}, options).try(:first)
         OpenStruct.new(hash)
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
 
       def paddle_invoice!(options = {})
@@ -66,7 +66,7 @@ module Pay
         payment_information = paddle_payment_information(subscription.processor_id)
         update!(payment_information) unless payment_information.empty?
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
 
       def paddle_payment_information(subscription_id)

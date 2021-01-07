@@ -36,7 +36,7 @@ module Pay
 
     def customer
       check_for_processor
-      raise Pay::Error, "Email is required to create a customer" if email.nil?
+      raise Pay::Error, I18n.t("errors.email_required") if email.nil?
 
       customer = send("#{processor}_customer")
       update_card(card_token) if card_token.present?
@@ -130,7 +130,7 @@ module Pay
     private
 
     def check_for_processor
-      raise StandardError, "No payment processor selected. Make sure to set the #{self.class.name}'s `processor` attribute to either 'stripe' or 'braintree'." unless processor
+      raise StandardError, I18n.t("errors.no_processor", class_name: self.class.name) unless processor
     end
 
     # Used for creating a Pay::Subscription in the database
