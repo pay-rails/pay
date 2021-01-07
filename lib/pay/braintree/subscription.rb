@@ -178,7 +178,7 @@ module Pay
 
         cancel_now!
 
-        owner.subscribe(options.merge(name: name, plan: plan.id))
+        owner.subscribe(**options.merge(name: name, plan: plan.id))
       end
     end
   end
