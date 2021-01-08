@@ -47,7 +47,7 @@ module Pay
         response = PaddlePay::Subscription::User.update(processor_id, attributes)
         update(paddle_paused_from: Time.zone.parse(response[:next_payment][:date]))
       rescue ::PaddlePay::PaddlePayError => e
-        raise Error, e.message
+        raise Pay::Paddle::Error, e
       end
 
       def paddle_resume
