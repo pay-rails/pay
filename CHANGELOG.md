@@ -1,5 +1,7 @@
 ### Unreleased
 
+### 2.4.0
+
 * [BREAKING] Use locales for email subjects and remove configuration - @excid3
 
 ### 2.3.1
