@@ -13,6 +13,30 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_equal Team, @subscription.owner.class
   end
 
+  test "braintree?" do
+    assert @subscription.respond_to?(:braintree?)
+  end
+
+  test "stripe?" do
+    assert @subscription.respond_to?(:stripe?)
+  end
+
+  test "paddle?" do
+    assert @subscription.respond_to?(:paddle?)
+  end
+
+  test "braintree scope" do
+    assert Pay.subscription_model.braintree.is_a?(ActiveRecord::Relation)
+  end
+
+  test "stripe scope" do
+    assert Pay.subscription_model.stripe.is_a?(ActiveRecord::Relation)
+  end
+
+  test "paddle scope" do
+    assert Pay.subscription_model.paddle.is_a?(ActiveRecord::Relation)
+  end
+
   test ".for_name(name) scope" do
     subscription1 = create_subscription(name: "default")
     subscription2 = create_subscription(name: "superior")

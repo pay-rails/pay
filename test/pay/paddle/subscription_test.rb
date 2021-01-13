@@ -13,11 +13,11 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       processor_plan: "some-plan",
       status: "active"
     )
-    @subscription = @billable.subscription
-    next_payment_date = Time.zone.parse(@subscription.processor_subscription.next_payment[:date])
-    @subscription.cancel
-    assert_equal @subscription.ends_at, next_payment_date
-    assert_equal "canceled", @subscription.status
+    subscription = @billable.subscription
+    next_payment_date = Time.zone.parse(subscription.processor_subscription.next_payment[:date])
+    subscription.cancel
+    assert_equal subscription.ends_at, next_payment_date
+    assert_equal "canceled", subscription.status
   end
 
   test "paddle cancel_now!" do
@@ -28,10 +28,10 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       processor_plan: "some-plan",
       status: "active"
     )
-    @subscription = @billable.subscription
-    @subscription.cancel_now!
-    assert @subscription.ends_at <= Time.zone.now
-    assert_equal "canceled", @subscription.status
+    subscription = @billable.subscription
+    subscription.cancel_now!
+    assert subscription.ends_at <= Time.zone.now
+    assert_equal "canceled", subscription.status
   end
 
   test "paddle processor subscription" do
@@ -54,11 +54,11 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       processor_plan: "some-plan",
       status: "active"
     )
-    @subscription = @billable.subscription
-    next_payment_date = Time.zone.parse(@subscription.processor_subscription.next_payment[:date])
-    @subscription.pause
-    assert @subscription.paused?
-    assert_equal next_payment_date, @subscription.paddle_paused_from
+    subscription = @billable.subscription
+    next_payment_date = Time.zone.parse(subscription.processor_subscription.next_payment[:date])
+    subscription.pause
+    assert subscription.paused?
+    assert_equal next_payment_date, subscription.paddle_paused_from
   end
 
   test "paddle pause grace period" do
@@ -70,9 +70,9 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       status: "active",
       paddle_paused_from: Time.zone.now + 1.week
     )
-    @subscription = @billable.subscription
-    assert @subscription.paused?
-    assert @subscription.on_grace_period?
+    subscription = @billable.subscription
+    assert subscription.paused?
+    assert subscription.on_grace_period?
   end
 
   test "paddle paused subscription is not active" do
@@ -83,8 +83,7 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       processor_plan: "some-plan",
       status: "paused"
     )
-    @subscription = @billable.subscription
-    assert_not @subscription.active?
+    assert_not @billable.subscription.active?
   end
 
   test "paddle paused subscription is not canceled" do
@@ -95,8 +94,7 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
       processor_plan: "some-plan",
       status: "paused"
     )
-    @subscription = @billable.subscription
-    assert_not @subscription.canceled?
+    assert_not @billable.subscription.canceled?
   end
 
   test "paddle resume on paused state" do
@@ -109,14 +107,14 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
         status: "trialing",
         trial_ends_at: (Date.today + 3).to_datetime
       )
-      @subscription = @billable.subscription
-      next_payment_date = Time.zone.parse(@subscription.processor_subscription.next_payment[:date])
-      @subscription.pause
-      assert_equal @subscription.paddle_paused_from, next_payment_date
+      subscription = @billable.subscription
+      next_payment_date = Time.zone.parse(subscription.processor_subscription.next_payment[:date])
+      subscription.pause
+      assert_equal subscription.paddle_paused_from, next_payment_date
 
-      @subscription.resume
-      assert_nil @subscription.paddle_paused_from
-      assert_equal "active", @subscription.status
+      subscription.resume
+      assert_nil subscription.paddle_paused_from
+      assert_equal "active", subscription.status
     end
   end
 
