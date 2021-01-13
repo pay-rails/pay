@@ -4,15 +4,9 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        scope :paddle, -> { where(processor: :paddle) }
-
         store_accessor :data, :paddle_update_url
         store_accessor :data, :paddle_cancel_url
         store_accessor :data, :paddle_paused_from
-      end
-
-      def paddle?
-        processor == "paddle"
       end
 
       def paddle_cancel
@@ -43,6 +37,10 @@ module Pay
       end
 
       def paddle_pause
+        unless paused?
+          raise StandardError, "You can only resume paused subscriptions."
+        end
+
         attributes = {pause: true}
         response = PaddlePay::Subscription::User.update(processor_id, attributes)
         update(paddle_paused_from: Time.zone.parse(response[:next_payment][:date]))

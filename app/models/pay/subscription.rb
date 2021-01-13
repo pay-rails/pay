@@ -29,6 +29,15 @@ module Pay
 
     attribute :prorate, :boolean, default: true
 
+    # Helpers for payment processors
+    %w{ braintree stripe paddle }.each do |processor_name|
+      define_method "#{processor_name}?" do
+        processor == processor_name
+      end
+
+      scope processor_name, ->{ where(processor: processor_name) }
+    end
+
     def no_prorate
       self.prorate = false
     end
@@ -71,12 +80,10 @@ module Pay
     end
 
     def paused?
-      return unless paddle?
       send("#{processor}_paused?")
     end
 
     def pause
-      return unless paddle?
       send("#{processor}_pause")
     end
 
@@ -89,22 +96,7 @@ module Pay
     end
 
     def resume
-      unless on_grace_period?
-        unless paddle?
-          raise StandardError,
-            "You can only resume subscriptions within their grace period."
-        end
-      end
-
-      unless paused?
-        if paddle?
-          raise StandardError,
-            "You can only resume paused subscriptions."
-        end
-      end
-
       send("#{processor}_resume")
-
       update(ends_at: nil, status: "active")
       self
     end

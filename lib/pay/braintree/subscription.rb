@@ -3,14 +3,6 @@ module Pay
     module Subscription
       extend ActiveSupport::Concern
 
-      included do
-        scope :braintree, -> { where(processor: :braintree) }
-      end
-
-      def braintree?
-        processor == "braintree"
-      end
-
       def braintree_cancel
         subscription = processor_subscription
 
@@ -38,7 +30,19 @@ module Pay
         canceled? && Time.zone.now < ends_at
       end
 
+      def braintree_paused?
+        false
+      end
+
+      def braintree_pause
+        raise NotImplementedError, "Braintree does not support pausing subscriptions"
+      end
+
       def braintree_resume
+        unless on_grace_period?
+          raise StandardError, "You can only resume subscriptions within their grace period."
+        end
+
         if canceled? && on_trial?
           duration = trial_ends_at.to_date - Date.today
 
