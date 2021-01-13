@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.4.1
+
+* [FIX] Move Paddle logic into paddle methods - @excid3
+
 ### 2.4.0
 
 * [BREAKING] Use locales for email subjects and remove configuration - @excid3
