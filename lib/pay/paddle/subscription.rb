@@ -37,10 +37,6 @@ module Pay
       end
 
       def paddle_pause
-        unless paused?
-          raise StandardError, "You can only resume paused subscriptions."
-        end
-
         attributes = {pause: true}
         response = PaddlePay::Subscription::User.update(processor_id, attributes)
         update(paddle_paused_from: Time.zone.parse(response[:next_payment][:date]))
@@ -49,6 +45,10 @@ module Pay
       end
 
       def paddle_resume
+        unless paused?
+          raise StandardError, "You can only resume paused subscriptions."
+        end
+
         attributes = {pause: false}
         PaddlePay::Subscription::User.update(processor_id, attributes)
         update(status: :active, paddle_paused_from: nil)
