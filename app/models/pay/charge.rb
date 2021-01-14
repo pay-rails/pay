@@ -2,8 +2,11 @@ module Pay
   class Charge < ApplicationRecord
     self.table_name = Pay.chargeable_table
 
+    # Only serialize for non-json columns
+    serialize :data unless json_column?("data")
+
     # Associations
-    belongs_to :owner, class_name: Pay.billable_class, foreign_key: :owner_id
+    belongs_to :owner, polymorphic: true
 
     # Scopes
     scope :sorted, -> { order(created_at: :desc) }
@@ -38,6 +41,10 @@ module Pay
 
     def paypal?
       braintree? && card_type == "PayPal"
+    end
+
+    def paddle?
+      processor == "paddle"
     end
   end
 end

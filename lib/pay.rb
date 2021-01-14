@@ -2,6 +2,7 @@ require "pay/engine"
 require "pay/billable"
 require "pay/receipts"
 require "pay/payment"
+require "pay/errors"
 
 module Pay
   # Define who owns the subscription
@@ -11,6 +12,9 @@ module Pay
 
   @@billable_class = "User"
   @@billable_table = @@billable_class.tableize
+
+  mattr_accessor :model_parent_class
+  @@model_parent_class = "ApplicationRecord"
 
   mattr_accessor :chargeable_class
   mattr_accessor :chargeable_table
@@ -44,6 +48,11 @@ module Pay
   mattr_accessor :automount_routes
   @@automount_routes = true
 
+  mattr_accessor :default_product_name
+  @@default_product_name = "default"
+  mattr_accessor :default_plan_name
+  @@default_plan_name = "default"
+
   mattr_accessor :routes_path
   @@routes_path = "/pay"
 
@@ -51,7 +60,23 @@ module Pay
     yield self
   end
 
+  def self.billable_models
+    Pay::Billable.includers
+  end
+
+  def self.find_billable(processor:, processor_id:)
+    billable_models.each do |model|
+      if (record = model.find_by(processor: processor, processor_id: processor_id))
+        return record
+      end
+    end
+
+    nil
+  end
+
   def self.user_model
+    ActiveSupport::Deprecation.warn("Pay.user_model is deprecated and will be removed in v3. Instead, use `Pay.billable_models` now to support more than one billable model.")
+
     if Rails.application.config.cache_classes
       @@user_model ||= billable_class.constantize
     else
@@ -81,32 +106,5 @@ module Pay
       business_name &&
       business_address &&
       support_email
-  end
-
-  class Error < StandardError
-  end
-
-  class InvalidPaymentMethod < Error
-    attr_reader :payment
-
-    def initialize(payment)
-      @payment = payment
-    end
-
-    def message
-      "This payment attempt failed beacuse of an invalid payment method."
-    end
-  end
-
-  class ActionRequired < Error
-    attr_reader :payment
-
-    def initialize(payment)
-      @payment = payment
-    end
-
-    def message
-      "This payment attempt failed because additional action is required before it can be completed."
-    end
   end
 end

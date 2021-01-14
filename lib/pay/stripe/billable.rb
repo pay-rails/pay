@@ -1,6 +1,12 @@
 module Pay
   module Stripe
     module Billable
+      extend ActiveSupport::Concern
+
+      included do
+        scope :stripe, -> { where(processor: :stripe) }
+      end
+
       # Handles Billable#customer
       #
       # Returns Stripe::Customer
@@ -11,13 +17,13 @@ module Pay
           create_stripe_customer
         end
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       def create_setup_intent
         ::Stripe::SetupIntent.create(
           customer: processor_id,
-          usage: :off_session,
+          usage: :off_session
         )
       end
 
@@ -32,7 +38,7 @@ module Pay
           confirmation_method: :automatic,
           currency: "usd",
           customer: customer.id,
-          payment_method: customer.invoice_settings.default_payment_method,
+          payment_method: customer.invoice_settings.default_payment_method
         }.merge(options)
 
         payment_intent = ::Stripe::PaymentIntent.create(args)
@@ -41,24 +47,27 @@ module Pay
         # Create a new charge object
         Stripe::Webhooks::ChargeSucceeded.new.create_charge(self, payment_intent.charges.first)
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       # Handles Billable#subscribe
       #
       # Returns Pay::Subscription
       def create_stripe_subscription(name, plan, options = {})
+        quantity = options.delete(:quantity) || 1
         opts = {
           expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
-          items: [plan: plan],
-          off_session: true,
+          items: [plan: plan, quantity: quantity],
+          off_session: true
         }.merge(options)
 
         # Inherit trial from plan unless trial override was specified
         opts[:trial_from_plan] = true unless opts[:trial_period_days]
 
-        stripe_sub = customer.subscriptions.create(opts)
-        subscription = create_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status)
+        opts[:customer] = stripe_customer.id
+
+        stripe_sub = ::Stripe::Subscription.create(opts)
+        subscription = create_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity)
 
         # No trial, card requires SCA
         if subscription.incomplete?
@@ -71,7 +80,7 @@ module Pay
 
         subscription
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       # Handles Billable#update_card
@@ -88,13 +97,13 @@ module Pay
         update_stripe_card_on_file(payment_method.card)
         true
       rescue ::Stripe::StripeError => e
-        raise Error, e.message
+        raise Pay::Stripe::Error, e
       end
 
       def update_stripe_email!
         customer = stripe_customer
         customer.email = email
-        customer.description = customer_name
+        customer.name = customer_name
         customer.save
       end
 
@@ -134,13 +143,13 @@ module Pay
       private
 
       def create_stripe_customer
-        customer = ::Stripe::Customer.create(email: email, description: customer_name)
+        customer = ::Stripe::Customer.create(email: email, name: customer_name)
         update(processor: "stripe", processor_id: customer.id)
 
         # Update the user's card on file if a token was passed in
         if card_token.present?
-          ::Stripe::PaymentMethod.attach(card_token, {customer: customer.id})
-          customer.invoice_settings.default_payment_method = card_token
+          payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: customer.id})
+          customer.invoice_settings.default_payment_method = payment_method.id
           customer.save
 
           update_stripe_card_on_file ::Stripe::PaymentMethod.retrieve(card_token).card

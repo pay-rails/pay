@@ -10,3 +10,18 @@ gemspec
 # your gemspec. These might include edge Rails or gems from your path or
 # Git. Remember to move these dependencies to your gemspec before releasing
 # your gem to rubygems.org.
+
+gem "byebug"
+gem "appraisal", github: "excid3/appraisal", branch: "fix-bundle-env"
+
+# Test against different databases
+gem "sqlite3", "~> 1.4"
+gem "mysql2"
+gem "pg"
+
+# Used for the dummy Rails app integration
+gem "puma"
+gem "standard"
+gem "turbolinks"
+gem "web-console", group: :development
+gem "webpacker"

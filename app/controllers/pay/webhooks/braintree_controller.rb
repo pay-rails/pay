@@ -16,7 +16,7 @@ module Pay
         end
 
         render json: {success: true}, status: :ok
-      rescue ::Braintree::InvalidSignature => e
+      rescue ::Braintree::InvalidSignature
         head :ok
       end
 
@@ -29,11 +29,11 @@ module Pay
         pay_subscription = Pay.subscription_model.find_by(processor: :braintree, processor_id: subscription.id)
         return unless pay_subscription.present?
 
-        user = pay_subscription.owner
-        charge = user.save_braintree_transaction(subscription.transactions.first)
+        billable = pay_subscription.owner
+        charge = billable.save_braintree_transaction(subscription.transactions.first)
 
         if Pay.send_emails
-          Pay::UserMailer.receipt(user, charge).deliver_later
+          Pay::UserMailer.with(billable: billable, charge: charge).receipt.deliver_later
         end
       end
 
@@ -41,11 +41,14 @@ module Pay
         subscription = event.subscription
         return if subscription.nil?
 
-        user = Pay.user_model.find_by(processor: :braintree, processor_id: subscription.id)
-        return unless user.present?
+        pay_subscription = Pay.subscription_model.find_by(processor: :braintree, processor_id: subscription.id)
+        return unless pay_subscription.present?
+
+        billable = pay_subscription.owner
+        return if billable.nil?
 
         # User canceled or failed to make payments
-        user.update(braintree_subscription_id: nil)
+        billable.update(braintree_subscription_id: nil)
       end
 
       def subscription_trial_ended(event)

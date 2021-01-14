@@ -16,8 +16,12 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert_equal "Gob Bluth", User.new(first_name: "Gob", last_name: "Bluth").customer_name
   end
 
+  test "has charges" do
+    assert_equal Pay::Charge.none, @billable.charges
+  end
+
   test "has subscriptions" do
-    assert @billable.respond_to?(:subscriptions)
+    assert_equal Pay::Subscription.none, @billable.subscriptions
   end
 
   test "customer with stripe processor" do
@@ -125,6 +129,25 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert_equal subscription, @billable.subscription
   end
 
+  test "getting a subscription by default name with subscriptions eager loaded" do
+    user = User.new(email: "john@smith.com")
+    subscription = Pay.subscription_model.create!(
+      name: "default",
+      owner: user,
+      processor: "stripe",
+      processor_id: "1",
+      processor_plan: "default",
+      status: "active",
+      quantity: "1"
+    )
+
+    Pay.subscription_model.expects(:for_name).with("default").never
+
+    user_with_subscriptions_loaded = User.includes(:subscriptions).find(user.id)
+
+    assert_equal subscription, user_with_subscriptions_loaded.subscription
+  end
+
   test "getting a stripe subscription" do
     @billable.processor = "stripe"
     ::Stripe::Subscription.expects(:retrieve).with(id: "123").returns(:subscription)
@@ -148,10 +171,6 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     @billable.processor = "stripe"
     @billable.expects(:stripe_upcoming_invoice).returns(:invoice)
     assert_equal :invoice, @billable.upcoming_invoice
-  end
-
-  test "has charges" do
-    assert @billable.respond_to?(:charges)
   end
 
   test "on_trial? with no plan" do
@@ -251,6 +270,19 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     @billable.processor_id = 1
 
     @billable.processor = "braintree"
-    assert_equal nil, @billable.processor_id
+    assert_nil @billable.processor_id
+  end
+
+  test "finds polymorphic subscription" do
+    user_billable = User.create! email: "test@example.com", id: 1001
+    team_billable = Team.create! id: 1001, owner: user_billable
+
+    subscription = Pay.subscription_model.create!(
+      owner: team_billable, name: "default", processor: "stripe", processor_id: "1",
+      processor_plan: "default", quantity: "1", status: "active"
+    )
+
+    assert_nil user_billable.subscription
+    assert_equal subscription, team_billable.subscription
   end
 end

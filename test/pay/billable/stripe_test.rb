@@ -34,6 +34,11 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     assert_equal 2900, charge.amount
   end
 
+  test "handles stripe card declined" do
+    @billable.card_token = "pm_card_chargeDeclined"
+    assert_raises(Pay::Stripe::Error) { @billable.charge(2900) }
+  end
+
   test "raises action required error when SCA required" do
     exception = assert_raises(Pay::ActionRequired) {
       @billable.card_token = sca_payment_method.id
@@ -61,10 +66,10 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   end
 
   test "fails when subscribing with no payment method" do
-    exception = assert_raises(Pay::Error) {
+    exception = assert_raises(Pay::Stripe::Error) {
       @billable.subscribe(name: "default", plan: "small-monthly")
     }
-    assert_equal "This customer has no attached payment source", exception.message
+    assert_equal "This customer has no attached payment source or default payment method.", exception.message
   end
 
   test "fails when subscribing with SCA card" do
@@ -138,29 +143,29 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
   test "email changed" do
     # Must already have a processor ID
     @billable.customer # Sets customer ID
-    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id)
+    Pay::EmailSyncJob.expects(:perform_later).with(@billable.id, @billable.class.name)
     @billable.update(email: "mynewemail@example.org")
   end
 
   test "handles exception when creating a customer" do
     @billable.card_token = "invalid"
-    exception = assert_raises(Pay::Error) { @billable.stripe_customer }
-    assert_equal "No such payment_method: invalid", exception.message
+    exception = assert_raises(Pay::Stripe::Error) { @billable.stripe_customer }
+    assert_equal "No such PaymentMethod: 'invalid'", exception.message
   end
 
   test "handles exception when creating a charge" do
-    exception = assert_raises(Pay::Error) { @billable.charge(0) }
-    assert_equal "Invalid positive integer", exception.message
+    exception = assert_raises(Pay::Stripe::Error) { @billable.charge(0) }
+    assert_equal "This value must be greater than or equal to 1.", exception.message
   end
 
   test "handles exception when creating a subscription" do
-    exception = assert_raises(Pay::Error) { @billable.subscribe plan: "invalid" }
-    assert_equal "No such plan: invalid", exception.message
+    exception = assert_raises(Pay::Stripe::Error) { @billable.subscribe plan: "invalid" }
+    assert_equal "No such plan: 'invalid'", exception.message
   end
 
   test "handles exception when updating a card" do
-    exception = assert_raises(Pay::Error) { @billable.update_card("abcd") }
-    assert_equal "No such payment_method: abcd", exception.message
+    exception = assert_raises(Pay::Stripe::Error) { @billable.update_card("abcd") }
+    assert_equal "No such PaymentMethod: 'abcd'", exception.message
   end
 
   test "handles coupons" do
@@ -177,6 +182,33 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
       assert_not_nil subscription.trial_ends_at
       assert subscription.trial_ends_at > 14.days.from_now
     end
+  end
+
+  test "can create setup intent" do
+    assert_nothing_raised do
+      @billable.create_setup_intent
+    end
+  end
+
+  test "can pass shipping information to charge" do
+    @billable.card_token = payment_method.id
+    charge = @billable.charge(25_00, shipping: {
+      name: "Recipient",
+      address: {
+        line1: "One Infinite Loop",
+        city: "Cupertino",
+        state: "CA"
+      }
+    })
+
+    assert_equal "Cupertino", charge.processor_charge.shipping.address.city
+  end
+
+  test "allows subscription quantities" do
+    @billable.card_token = payment_method.id
+    subscription = @billable.subscribe(plan: "small-monthly", quantity: 10)
+    assert_equal 10, subscription.processor_subscription.quantity
+    assert_equal 10, subscription.quantity
   end
 
   private
@@ -197,8 +229,8 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
         number: "4242 4242 4242 4242",
         exp_month: 9,
         exp_year: Time.now.year + 5,
-        cvc: 123,
-      },
+        cvc: 123
+      }
     }
 
     ::Stripe::PaymentMethod.create(defaults.deep_merge(options))

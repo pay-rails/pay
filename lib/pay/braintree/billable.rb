@@ -1,6 +1,12 @@
 module Pay
   module Braintree
     module Billable
+      extend ActiveSupport::Concern
+
+      included do
+        scope :braintree, -> { where(processor: :braintree) }
+      end
+
       # Handles Billable#customer
       #
       # Returns Braintree::Customer
@@ -12,9 +18,9 @@ module Pay
             email: email,
             first_name: try(:first_name),
             last_name: try(:last_name),
-            payment_method_nonce: card_token,
+            payment_method_nonce: card_token
           )
-          raise Pay::Error.new(result.message) unless result.success?
+          raise Pay::Braintree::Error, result unless result.success?
 
           update(processor: "braintree", processor_id: result.customer.id)
 
@@ -24,8 +30,10 @@ module Pay
 
           result.customer
         end
+      rescue ::Braintree::AuthorizationError
+        raise BraintreeAuthorizationError
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       # Handles Billable#charge
@@ -33,15 +41,19 @@ module Pay
       # Returns a Pay::Charge
       def create_braintree_charge(amount, options = {})
         args = {
-          amount: amount / 100.0,
+          amount: amount.to_i / 100.0,
           customer_id: customer.id,
-          options: {submit_for_settlement: true},
+          options: {submit_for_settlement: true}
         }.merge(options)
 
         result = gateway.transaction.sale(args)
-        save_braintree_transaction(result.transaction) if result.success?
-      rescue ::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, result unless result.success?
+
+        save_braintree_transaction(result.transaction)
+      rescue ::Braintree::AuthorizationError
+        raise Pay::Braintree::AuthorizationError
+      rescue ::Braintree::BraintreeError => e
+        raise Pay::Braintree::Error, e
       end
 
       # Handles Billable#subscribe
@@ -62,11 +74,13 @@ module Pay
         )
 
         result = gateway.subscription.create(subscription_options)
-        raise Pay::Error.new(result.message) unless result.success?
+        raise Pay::Braintree::Error, result unless result.success?
 
         create_subscription(result.subscription, "braintree", name, plan, status: :active)
+      rescue ::Braintree::AuthorizationError
+        raise Pay::Braintree::AuthorizationError
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       # Handles Billable#update_card
@@ -78,34 +92,36 @@ module Pay
           payment_method_nonce: token,
           options: {
             make_default: true,
-            verify_card: true,
+            verify_card: true
           }
         )
-        raise Pay::Error.new(result.message) unless result.success?
+        raise Pay::Braintree::Error, result unless result.success?
 
         update_braintree_card_on_file result.payment_method
         update_subscriptions_to_payment_method(result.payment_method.token)
         true
+      rescue ::Braintree::AuthorizationError
+        raise Pay::Braintree::AuthorizationError
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       def update_braintree_email!
         braintree_customer.update(
           email: email,
           first_name: try(:first_name),
-          last_name: try(:last_name),
+          last_name: try(:last_name)
         )
       end
 
       def braintree_trial_end_date(subscription)
         return unless subscription.trial_period
         # Braintree returns dates without time zones, so we'll assume they're UTC
-        Time.parse(subscription.first_billing_date).end_of_day
+        subscription.first_billing_date.end_of_day
       end
 
       def update_subscriptions_to_payment_method(token)
-        subscriptions.each do |subscription|
+        subscriptions.braintree.each do |subscription|
           if subscription.active?
             gateway.subscription.update(subscription.processor_id, {payment_method_token: token})
           end
@@ -165,13 +181,13 @@ module Pay
 
       def card_details_for_braintree_transaction(transaction)
         case transaction.payment_instrument_type
-        when "credit_card", "samsung_pay_card", "masterpass_card", "samsung_pay_card", "visa_checkout_card"
+        when "credit_card", "samsung_pay_card", "masterpass_card", "visa_checkout_card"
           payment_method = transaction.send("#{transaction.payment_instrument_type}_details")
           {
             card_type: payment_method.card_type,
             card_last4: payment_method.last_4,
             card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year,
+            card_exp_year: payment_method.expiration_year
           }
 
         when "paypal_account"
@@ -179,7 +195,7 @@ module Pay
             card_type: "PayPal",
             card_last4: transaction.paypal_details.payer_email,
             card_exp_month: nil,
-            card_exp_year: nil,
+            card_exp_year: nil
           }
 
         when "android_pay_card"
@@ -188,7 +204,7 @@ module Pay
             card_type: payment_method.source_card_type,
             card_last4: payment_method.source_card_last_4,
             card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year,
+            card_exp_year: payment_method.expiration_year
           }
 
         when "venmo_account"
@@ -196,7 +212,7 @@ module Pay
             card_type: "Venmo",
             card_last4: transaction.venmo_account_details.username,
             card_exp_month: nil,
-            card_exp_year: nil,
+            card_exp_year: nil
           }
 
         when "apple_pay_card"
@@ -205,7 +221,7 @@ module Pay
             card_type: payment_method.card_type,
             card_last4: payment_method.last_4,
             card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year,
+            card_exp_year: payment_method.expiration_year
           }
 
         else

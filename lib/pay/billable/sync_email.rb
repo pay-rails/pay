@@ -32,7 +32,7 @@ module Pay
         # Only update if the processor id is the same
         # This prevents duplicate API hits if this is their first time
         if processor_id? && !saved_change_to_processor_id? && saved_change_to_email?
-          EmailSyncJob.perform_later(id)
+          EmailSyncJob.perform_later(id, self.class.name)
         end
       end
     end

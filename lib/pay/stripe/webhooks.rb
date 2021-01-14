@@ -1,5 +1,5 @@
 require "stripe_event"
-Dir[File.join(__dir__, "webhooks", "**", "*.rb")].each { |file| require file }
+Dir[File.join(__dir__, "webhooks", "**", "*.rb")].sort.each { |file| require file }
 
 StripeEvent.configure do |events|
   # Listen to the charge event to make sure we get non-subscription

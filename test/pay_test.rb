@@ -5,14 +5,6 @@ class Pay::Test < ActiveSupport::TestCase
     assert_kind_of Module, Pay
   end
 
-  test "default billable class is user" do
-    assert Pay.billable_class, "User"
-  end
-
-  test "default billable table is users" do
-    assert Pay.billable_table, "users"
-  end
-
   test "default chargeable class is Charge" do
     assert Pay.chargeable_class, "Pay::Charge"
   end
@@ -47,5 +39,15 @@ class Pay::Test < ActiveSupport::TestCase
   test "can set support email" do
     assert Pay.respond_to?(:support_email)
     assert Pay.respond_to?(:support_email=)
+  end
+
+  test "can set default product name" do
+    assert Pay.respond_to?(:default_product_name)
+    assert Pay.respond_to?(:default_product_name=)
+  end
+
+  test "can set default plan name" do
+    assert Pay.respond_to?(:default_plan_name)
+    assert Pay.respond_to?(:default_plan_name=)
   end
 end

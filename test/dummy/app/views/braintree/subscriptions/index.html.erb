@@ -1,0 +1,12 @@
+<div class="d-flex justify-content-between">
+  <h1>Braintree Subscriptions</h1>
+  <div>
+    <%= link_to "New Braintree Subscription", new_braintree_subscription_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% @subscriptions.each do |subscription| %>
+  <div>
+    <%= link_to "Pay::Subscription #{subscription.id}", braintree_subscription_path(subscription) %>
+  </div>
+<% end %>

@@ -6,9 +6,35 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     @subscription = Pay.subscription_model.new processor: "stripe", status: "active"
   end
 
-  test "belongs to the owner" do
-    klass = Pay.subscription_model.reflections["owner"].options[:class_name]
-    assert klass, "User"
+  test "belongs to a polymorphic owner" do
+    @subscription.owner = @owner
+    assert_equal User, @subscription.owner.class
+    @subscription.owner = Team.new
+    assert_equal Team, @subscription.owner.class
+  end
+
+  test "braintree?" do
+    assert @subscription.respond_to?(:braintree?)
+  end
+
+  test "stripe?" do
+    assert @subscription.respond_to?(:stripe?)
+  end
+
+  test "paddle?" do
+    assert @subscription.respond_to?(:paddle?)
+  end
+
+  test "braintree scope" do
+    assert Pay.subscription_model.braintree.is_a?(ActiveRecord::Relation)
+  end
+
+  test "stripe scope" do
+    assert Pay.subscription_model.stripe.is_a?(ActiveRecord::Relation)
+  end
+
+  test "paddle scope" do
+    assert Pay.subscription_model.paddle.is_a?(ActiveRecord::Relation)
   end
 
   test ".for_name(name) scope" do
@@ -191,7 +217,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     stripe_sub = mock("stripe_subscription")
     stripe_sub.expects(:cancel_at_period_end=)
     stripe_sub.expects(:plan=).returns("yearly")
-    stripe_sub.expects(:prorate=)
+    stripe_sub.expects(:proration_behavior=)
     stripe_sub.expects(:trial_end=)
     stripe_sub.expects(:quantity=)
     stripe_sub.expects(:save)
@@ -209,7 +235,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       assert @subscription.active?
     end
 
-    %w[incomplete incomplete_expired past_due canceled unpaid].each do |state|
+    %w[incomplete incomplete_expired past_due canceled unpaid paused].each do |state|
       @subscription.status = state
       assert_not @subscription.active?
     end
@@ -232,7 +258,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       processor_id: "1",
       processor_plan: "default",
       quantity: "1",
-      status: "active",
+      status: "active"
     }
 
     Pay.subscription_model.create! defaults.merge(options)

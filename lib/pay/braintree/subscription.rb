@@ -1,9 +1,7 @@
 module Pay
   module Braintree
     module Subscription
-      def braintree?
-        processor == "braintree"
-      end
+      extend ActiveSupport::Concern
 
       def braintree_cancel
         subscription = processor_subscription
@@ -13,22 +11,38 @@ module Pay
           update(status: :canceled, ends_at: trial_ends_at)
         else
           gateway.subscription.update(subscription.id, {
-            number_of_billing_cycles: subscription.current_billing_cycle,
+            number_of_billing_cycles: subscription.current_billing_cycle
           })
           update(status: :canceled, ends_at: subscription.billing_period_end_date.to_date)
         end
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       def braintree_cancel_now!
         gateway.subscription.cancel(processor_subscription.id)
         update(status: :canceled, ends_at: Time.zone.now)
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
+      end
+
+      def braintree_on_grace_period?
+        canceled? && Time.zone.now < ends_at
+      end
+
+      def braintree_paused?
+        false
+      end
+
+      def braintree_pause
+        raise NotImplementedError, "Braintree does not support pausing subscriptions"
       end
 
       def braintree_resume
+        unless on_grace_period?
+          raise StandardError, "You can only resume subscriptions within their grace period."
+        end
+
         if canceled? && on_trial?
           duration = trial_ends_at.to_date - Date.today
 
@@ -45,13 +59,13 @@ module Pay
 
           gateway.subscription.update(subscription.id, {
             never_expires: true,
-            number_of_billing_cycles: nil,
+            number_of_billing_cycles: nil
           })
         end
 
         update(status: :active)
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       def braintree_swap(plan)
@@ -80,8 +94,8 @@ module Pay
           never_expires: true,
           number_of_billing_cycles: nil,
           options: {
-            prorate_charges: prorate?,
-          },
+            prorate_charges: prorate?
+          }
         })
 
         if result.success?
@@ -90,7 +104,7 @@ module Pay
           raise Error, "Braintree failed to swap plans: #{result.message}"
         end
       rescue ::Braintree::BraintreeError => e
-        raise Error, e.message
+        raise Pay::Braintree::Error, e
       end
 
       private
@@ -159,16 +173,16 @@ module Pay
                 {
                   inherited_from_id: "plan-credit",
                   amount: discount.amount,
-                  number_of_billing_cycles: discount.number_of_billing_cycles,
-                },
-              ],
-            },
+                  number_of_billing_cycles: discount.number_of_billing_cycles
+                }
+              ]
+            }
           }
         end
 
         cancel_now!
 
-        owner.subscribe(options.merge(name: name, plan: plan.id))
+        owner.subscribe(**options.merge(name: name, plan: plan.id))
       end
     end
   end

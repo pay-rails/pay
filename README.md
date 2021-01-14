@@ -1,26 +1,33 @@
-<p align="center"><img src="logo.png"></p>
+<p align="center"><img src="docs/logo.svg" height="50px"></p>
 
-## Pay
+## Pay - Payments engine for Ruby on Rails
 
-### Payments engine for Ruby on Rails
-
-[![Build Status](https://github.com/excid3/pay/workflows/Tests/badge.svg)](https://github.com/excid3/pay/actions)
+[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay)
 
 Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
 **Current Payment Providers**
 
-- Stripe ([supports SCA](https://stripe.com/docs/strong-customer-authentication), API version [2019-03-14](https://stripe.com/docs/upgrades#2019-03-14) or higher required)
+- Stripe ([supports SCA](https://stripe.com/docs/strong-customer-authentication) using API version `2020-08-27`)
 - Braintree
+- Paddle
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
+
+**Check the CHANGELOG for any required migrations or changes needed if you're upgrading from a previous version of Pay.**
+
+## Tutorial
+
+Want to see how Pay works? Check out our video getting started guide.
+
+<a href="https://www.youtube.com/watch?v=hYlOmqyJIgc" target="_blank"><img width="50%" src="http://i3.ytimg.com/vi/hYlOmqyJIgc/maxresdefault.jpg"></a>
 
 ## Installation
 
 Add these lines to your application's Gemfile:
 
 ```ruby
-gem 'pay'
+gem 'pay', '~> 2.0'
 
 # To use Stripe, also include:
 gem 'stripe', '< 6.0', '>= 2.8'
@@ -29,8 +36,11 @@ gem 'stripe_event', '~> 2.3'
 # To use Braintree + PayPal, also include:
 gem 'braintree', '< 3.0', '>= 2.92.0'
 
+# To use Paddle, also include:
+gem 'paddle_pay', '~> 0.0.1'
+
 # To use Receipts
-gem 'receipts', '~> 0.2.2'
+gem 'receipts', '~> 1.0.0'
 ```
 
 And then execute:
@@ -39,52 +49,21 @@ And then execute:
 bundle
 ```
 
-Or install it yourself as:
-
-```bash
-gem install pay
-```
-
-## Setup
-
-### Migrations
-
-This engine will create a subscription model and the neccessary migrations for the model you want to make "billable." The most common use case for the billable model is a User.
+#### Migrations
 
 To add the migrations to your application, run the following migration:
 
-`$ bin/rails pay:install:migrations`
+`bin/rails pay:install:migrations`
 
-This will install four migrations:
+We also need to run migrations to add Pay to the User, Account, Team, etc models that we want to make payments in our app.
 
-- db/migrate/create_subscriptions.pay.rb
-- db/migrate/add_fields_to_users.pay.rb
-- db/migrate/create_charges.pay.rb
-- db/migrate/add_status_to_subscriptions.pay.rb
+`bin/rails g pay User`
 
-### The Billable Module
+This will generate a migration to add Pay fields to our User model and automatically includes the `Pay::Billable` module in our `User` model. Repeat this for all the models you want to make payments in your app.
 
-To enable payments for a model, you simply include the `Pay::Billable`
-module in it. By default, we assume this is `User`.
+Finally, run the migrations
 
-If you'd like to use a different model, you can configure it in an
-initializer:
-
-```ruby
-Pay.setup do |config|
-  # Make the billable class the same name as your ActiveRecord model
-  config.billable_class = "Team"
-
-  # Make the billable table the same name as your ActiveRecord table name for the model
-  # This is optional.
-  # Once you update the billable class, the table name will use the ActiveRecord inflected table name
-  config.billable_table = "teams"
-end
-```
-
-#### Run the Migrations
-
-Finally, run the migrations with `$ rake db:migrate`
+`rake db:migrate`
 
 ####  Getting NoMethodError?
 
@@ -92,63 +71,9 @@ Finally, run the migrations with `$ rake db:migrate`
 
 Fully restart your Rails application `bin/spring stop && rails s`
 
-## Payment Providers
-
-We support both Stripe and Braintree and make our best attempt to
-standardize the two. They function differently so keep that in mind if
-you plan on doing more complex payments. It would be best to stick with
-a single payment provider in that case so you don't run into
-discrepancies.
-
-#### Stripe
-
-You'll need to add your private Stripe API key to your Rails secrets `config/secrets.yml`, credentials `rails credentials:edit`
-
-```yaml
-development:
-  stripe:
-    private_key: xxxx
-    public_key: yyyy
-    signing_secret: zzzz
-```
-
-You can also use the `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
-
-**To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
-
-##### Strong Customer Authentication (SCA)
-
-Our Stripe integration **requires** the use of Payment Method objects to correctly support Strong Customer Authentication with Stripe. If you've previously been using card tokens, you'll need to upgrade your Javascript integration.
-
-Subscriptions that require SCA are marked as `incomplete` by default.
-Once payment is authenticated, Stripe will send a webhook updating the
-status of the subscription. You'll need to use the [Stripe CLI](https://github.com/stripe/stripe-cli) to forward
-webhooks to your application to make sure your subscriptions work
-correctly for SCA payments.
-
-```bash
-stripe listen --forward-to localhost:3000/pay/webhooks/stripe
-```
-
-You should use `stripe.handleCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.handleCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
-
-**Payment Confirmations**
-
-Sometimes you'll have a payment that requires extra authentication. In this case, Pay provides a webhook and action for handling these payments. It will automatically email the customer and provide a link with the PaymentIntent ID in the url where the customer will be asked to fill out their name and card number to confirm the payment. Once done, they'll be redirected back to your application.
-
-If you'd like to change the views of the payment confirmation page, you can install the views using the generator and modify the template.
-
-[<img src="https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png?X-CloudApp-Visitor-Id=51470" alt="Stripe SCA Payment Confirmation" style="zoom: 25%;" />](https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png)
-
-#### Background jobs
-
-If a user's email is updated and they have a `processor_id` set, Pay will enqueue a background job (EmailSyncJob) to sync the email with the payment processor.
-
-It's important you set a queue_adapter for this to happen. If you don't, the code will be executed immediately upon user update. [More information here](https://guides.rubyonrails.org/v4.2/active_job_basics.html#backends)
-
 ## Usage
 
-Include the `Pay::Billable` module in the model you want to know about subscriptions.
+The `Pay::Billable` module should be included in the models you want to make payments and subscriptions.
 
 ```ruby
 # app/models/user.rb
@@ -156,6 +81,8 @@ class User < ActiveRecord::Base
   include Pay::Billable
 end
 ```
+
+An `email` attribute or method on your `Billable` model is required.
 
 To sync over customer names, your `Billable` model should respond to the `first_name` and `last_name` methods. Pay will sync these over to your Customer objects in Stripe and Braintree.
 
@@ -165,9 +92,6 @@ Need to make some changes to how Pay is used? You can create an initializer `con
 
 ```ruby
 Pay.setup do |config|
-  config.billable_class = 'User'
-  config.billable_table = 'users'
-
   config.chargeable_class = 'Pay::Charge'
   config.chargeable_table = 'pay_charges'
 
@@ -178,6 +102,9 @@ Pay.setup do |config|
   config.support_email = "helpme@example.com"
 
   config.send_emails = true
+
+  config.default_product_name = "default"
+  config.default_plan_name = "default"
 
   config.automount_routes = true
   config.routes_path = "/pay" # Only when automount_routes is true
@@ -211,9 +138,17 @@ development:
   braintree:
     private_key: xxxx
     public_key: yyyy
+    merchant_id: aaaa
+    environment: sandbox
+  paddle:
+    vendor_id: xxxx
+    vendor_auth_code: yyyy
+    public_key_base64: MII...==
 ```
 
-You can also use the `STRIPE_PUBLIC_KEY`, `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
+For Stripe, you can also use the `STRIPE_PUBLIC_KEY`, `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
+For Braintree, you can also use `BRAINTREE_MERCHANT_ID`, `BRAINTREE_PUBLIC_KEY`, `BRAINTREE_PRIVATE_KEY`, and `BRAINTREE_ENVIRONMENT` environment variables.
+For Paddle, you can also use `PADDLE_VENDOR_ID`, `PADDLE_VENDOR_AUTH_CODE` and `PADDLE_PUBLIC_KEY_BASE64` environment variables.
 
 ### Generators
 
@@ -236,6 +171,7 @@ Emails can be enabled/disabled using the `send_emails` configuration option (ena
 - When a charge succeeded
 - When a charge was refunded
 - When a subscription is about to renew
+
 
 ## Billable API
 
@@ -272,6 +208,8 @@ user.on_generic_trial? #=> true
 
 #### Creating a Charge
 
+##### Stripe and Braintree
+
 ```ruby
 user = User.find_by(email: 'michael@bluthcompany.co')
 
@@ -292,7 +230,25 @@ You may pass optional arguments that will be directly passed on to
 either Stripe or Braintree. You can use these options to charge
 different currencies, etc.
 
+On failure, a `Pay::Error` will be raised with details about the payment
+failure.
+
+##### Paddle
+It is only possible to create immediate one-time charges on top of an existing subscription.
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.co')
+
+user.processor = 'paddle'
+user.charge(1500, {charge_name: "Test"}) # $15.00 USD
+
+```
+
+An existing subscription and a charge name are required.
+
 #### Creating a Subscription
+
+##### Stripe and Braintree
 
 ```ruby
 user = User.find_by(email: 'michael@bluthcompany.co')
@@ -307,24 +263,64 @@ A `card_token` must be provided as an attribute.
 The subscribe method has three optional arguments with default values.
 
 ```ruby
-def subscribe(name: 'default', plan: 'default', **options)
+def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
   ...
 end
 ```
 
-##### Name
+For example, you can pass the `quantity` option to subscribe to a plan with for per-seat pricing.
+
+```ruby
+
+user.subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, quantity: 3)
+```
+
+###### Name
 
 Name is an internally used name for the subscription.
 
-##### Plan
+###### Plan
 
-Plan is the plan ID from the payment processor.
+Plan is the plan ID or price ID from the payment processor. For example: `plan_xxxxx` or `price_xxxxx`
 
-##### Options
+###### Options
 
 By default, the trial specified on the subscription will be used.
 
 `trial_period_days: 30` can be set to override and a trial to the subscription. This works the same for Braintree and Stripe.
+
+##### Paddle
+It is currently not possible to create a subscription through the API. Instead the subscription in Pay is created by the Paddle Subscription Webhook. In order to be able to assign the subcription to the correct owner, the Paddle [passthrough parameter](https://developer.paddle.com/guides/how-tos/checkout/pass-parameters) has to be used for checkout.
+
+To ensure that the owner cannot be tampered with, Pay uses a Signed Global ID with a purpose. The purpose string consists of "paddle_" and the subscription plan id (or product id respectively).
+
+Javascript Checkout:
+```javascript
+Paddle.Checkout.open({
+	product: 12345,
+	passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
+});
+```
+
+Paddle Button Checkout:
+```html
+<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= Pay::Paddle.passthrough(owner: current_user) %>"
+```
+
+###### Passthrough
+
+Pay providers a helper method for generating the passthrough JSON object to associate the purchase with the correct Rails model.
+
+```ruby
+Pay::Paddle.passthrough(owner: current_user, foo: :bar)
+#=> { owner_sgid: "xxxxxxxx", foo: "bar" }
+
+# To generate manually without the helper
+#=> { owner_sgid: current_user.to_sgid.to_s, foo: "bar" }.to_json
+```
+
+Pay parses the passthrough JSON string and verifies the `owner_sgid` hash to match the webhook with the correct billable record.
+The passthrough parameter `owner_sgid` is only required for creating a subscription.
 
 #### Retrieving a Subscription from the Database
 
@@ -382,13 +378,21 @@ Plan is the plan ID from the payment processor.
 
 #### Retrieving a Payment Processor Account
 
+##### Stripe and Braintree
+
 ```ruby
 user = User.find_by(email: 'george.michael@bluthcompany.co')
 
 user.customer #> Stripe or Braintree customer account
 ```
 
+##### Paddle
+
+It is currently not possible to retrieve a payment processor account through the API.
+
 #### Updating a Customer's Credit Card
+
+##### Stripe and Braintree
 
 ```ruby
 user = User.find_by(email: 'tobias@bluthcompany.co')
@@ -396,12 +400,23 @@ user = User.find_by(email: 'tobias@bluthcompany.co')
 user.update_card('payment_method_id')
 ```
 
+##### Paddle
+
+Paddle provides a unique [Update URL](https://developer.paddle.com/guides/how-tos/subscriptions/update-payment-details) for each user, which allows them to update the payment method.
+```ruby
+user = User.find_by(email: 'tobias@bluthcompany.co')
+
+user.subscription.paddle_update_url
+```
+
+
+
 #### Retrieving a Customer's Subscription from the Processor
 
 ```ruby
 user = User.find_by(email: 'lucille@bluthcompany.co')
 
-user.processor_subscription(subscription_id) #=> Stripe or Braintree Subscription
+user.processor_subscription(subscription_id) #=> Stripe, Braintree or Paddle Subscription
 ```
 
 ## Subscription API
@@ -438,12 +453,29 @@ user = User.find_by(email: 'carl.weathers@bluthcompany.co')
 user.subscription.active? #=> true or false
 ```
 
+#### Checking to See If a Subscription Is Paused
+
+```ruby
+user = User.find_by(email: 'carl.weathers@bluthcompany.co')
+
+user.subscription.paused? #=> true or false
+```
+
 #### Cancel a Subscription (At End of Billing Cycle)
+
+##### Stripe, Braintree and Paddle
 
 ```ruby
 user = User.find_by(email: 'oscar@bluthcompany.co')
 
 user.subscription.cancel
+```
+
+##### Paddle
+In addition to the API, Paddle provides a subscription [Cancel URL](https://developer.paddle.com/guides/how-tos/subscriptions/cancel-and-pause) that you can redirect customers to cancel their subscription.
+
+```ruby
+user.subscription.paddle_cancel_url
 ```
 
 #### Cancel a Subscription Immediately
@@ -454,6 +486,16 @@ user = User.find_by(email: 'annyong@bluthcompany.co')
 user.subscription.cancel_now!
 ```
 
+#### Pause a Subscription
+
+##### Paddle
+
+```ruby
+user = User.find_by(email: 'oscar@bluthcompany.co')
+
+user.subscription.pause
+```
+
 #### Swap a Subscription to another Plan
 
 ```ruby
@@ -462,7 +504,17 @@ user = User.find_by(email: 'steve.holt@bluthcompany.co')
 user.subscription.swap("yearly")
 ```
 
-#### Resume a Subscription on a Grace Period
+#### Resume a Subscription
+
+##### Stripe or Braintree Subscription (on Grace Period)
+
+```ruby
+user = User.find_by(email: 'steve.holt@bluthcompany.co')
+
+user.subscription.resume
+```
+
+##### Paddle (Paused)
 
 ```ruby
 user = User.find_by(email: 'steve.holt@bluthcompany.co')
@@ -537,6 +589,103 @@ If you just want to modify where the engine mounts it's routes then you can chan
 config.routes_path = '/secret-webhook-path'
 ```
 
+## Payment Providers
+
+We support Stripe, Braintree and Paddle and make our best attempt to
+standardize the three. They function differently so keep that in mind if
+you plan on doing more complex payments. It would be best to stick with
+a single payment provider in that case so you don't run into
+discrepancies.
+
+#### Braintree
+
+```yaml
+development:
+  braintree:
+    private_key: xxxx
+    public_key: yyyy
+    merchant_id: zzzz
+    environment: sandbox
+```
+#### Paddle
+
+```yaml
+  paddle:
+    vendor_id: xxxx
+    vendor_auth_code: yyyy
+    public_key_base64: MII...==
+```
+
+Paddle receipts can be retrieved by a charge receipt URL.
+```ruby
+user = User.find_by(email: 'annyong@bluthcompany.co')
+
+charge = user.charges.first
+charge.paddle_receipt_url
+```
+#### Stripe
+
+You'll need to add your private Stripe API key to your Rails secrets `config/secrets.yml`, credentials `rails credentials:edit`
+
+```yaml
+development:
+  stripe:
+    private_key: xxxx
+    public_key: yyyy
+    signing_secret: zzzz
+```
+
+You can also use the `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
+
+**To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
+
+You need the following event types to trigger the webhook:
+
+```
+customer.subscription.updated
+customer.subscription.deleted
+customer.subscription.created
+payment_method.updated
+invoice.payment_action_required
+customer.updated
+customer.deleted
+charge.succeeded
+charge.refunded
+```
+
+##### Strong Customer Authentication (SCA)
+
+Our Stripe integration **requires** the use of Payment Method objects to correctly support Strong Customer Authentication with Stripe. If you've previously been using card tokens, you'll need to upgrade your Javascript integration.
+
+Subscriptions that require SCA are marked as `incomplete` by default.
+Once payment is authenticated, Stripe will send a webhook updating the
+status of the subscription. You'll need to use the [Stripe CLI](https://github.com/stripe/stripe-cli) to forward
+webhooks to your application to make sure your subscriptions work
+correctly for SCA payments.
+
+```bash
+stripe listen --forward-to localhost:3000/pay/webhooks/stripe
+```
+
+You should use `stripe.confirmCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.confirmCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
+
+The Javascript also needs to have a PaymentIntent or SetupIntent created server-side and the ID passed into the Javascript to do this. That way it knows how to safely handle the card tokenization if it meets the SCA requirements.
+
+**Payment Confirmations**
+
+Sometimes you'll have a payment that requires extra authentication. In this case, Pay provides a webhook and action for handling these payments. It will automatically email the customer and provide a link with the PaymentIntent ID in the url where the customer will be asked to fill out their name and card number to confirm the payment. Once done, they'll be redirected back to your application.
+
+If you'd like to change the views of the payment confirmation page, you can install the views using the generator and modify the template.
+
+[<img src="https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png?X-CloudApp-Visitor-Id=51470" alt="Stripe SCA Payment Confirmation" style="zoom: 25%;" />](https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png)
+
+#### Background jobs
+
+If a user's email is updated and they have a `processor_id` set, Pay will enqueue a background job (EmailSyncJob) to sync the email with the payment processor.
+
+It's important you set a queue_adapter for this to happen. If you don't, the code will be executed immediately upon user update. [More information here](https://guides.rubyonrails.org/v4.2/active_job_basics.html#backends)
+
+
 ## Contributors
 
 - [Jason Charnes](https://twitter.com/jmcharnes)
@@ -550,7 +699,10 @@ If you have an issue you'd like to submit, please do so using the issue tracker 
 
 If you'd like to open a PR please make sure the following things pass:
 
-- `rake test`
+```ruby
+bin/rails db:test:prepare
+bin/rails test
+```
 
 ## License
 

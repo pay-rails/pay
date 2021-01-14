@@ -4,9 +4,8 @@ ENV["RAILS_ENV"] = "test"
 # Disable warnings locally
 $VERBOSE = ENV["CI"]
 
-require File.expand_path("../../test/dummy/config/environment.rb", __FILE__)
-ActiveRecord::Migrator.migrations_paths = [File.expand_path("../../test/dummy/db/migrate", __FILE__)]
-ActiveRecord::Migrator.migrations_paths << File.expand_path("../../db/migrate", __FILE__)
+require File.expand_path("dummy/config/environment.rb", __dir__)
+ActiveRecord::Migrator.migrations_paths = [File.expand_path("dummy/db/migrate", __dir__), File.expand_path("../db/migrate", __dir__)]
 require "rails/test_help"
 require "minitest/rails"
 require "byebug"
@@ -15,6 +14,7 @@ require "byebug"
 require "braintree"
 require "stripe"
 require "stripe_event"
+require "paddle_pay"
 
 # Filter out Minitest backtrace while allowing backtrace from other libraries
 # to be shown.
@@ -28,27 +28,49 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActiveSupport::TestCase.fixtures :all
 end
 
+class ActiveSupport::TestCase
+  include ActionMailer::TestHelper
+  include ActiveJob::TestHelper
+end
+
 require "minitest/mock"
 require "mocha/minitest"
 
 # Uncomment to view the stacktrace for debugging tests
 Rails.backtrace_cleaner.remove_silencers!
 
-require "webmock/minitest"
-require "vcr"
+unless ENV["SKIP_VCR"]
+  require "webmock/minitest"
+  require "vcr"
 
-VCR.configure do |c|
-  c.cassette_library_dir = "test/vcr_cassettes"
-  c.hook_into :webmock
-  c.allow_http_connections_when_no_cassette = true
+  VCR.configure do |c|
+    c.cassette_library_dir = "test/vcr_cassettes"
+    c.hook_into :webmock
+    c.allow_http_connections_when_no_cassette = true
+    c.filter_sensitive_data("<VENDOR_ID>") { ENV["PADDLE_VENDOR_ID"] }
+    c.filter_sensitive_data("<VENDOR_AUTH_CODE>") { ENV["PADDLE_VENDOR_AUTH_CODE"] }
+  end
+
+  class ActiveSupport::TestCase
+    setup do
+      VCR.insert_cassette name
+    end
+
+    teardown do
+      VCR.eject_cassette name
+    end
+  end
 end
 
 Pay.braintree_gateway = Braintree::Gateway.new(
   environment: :sandbox,
   merchant_id: "zyfwpztymjqdcc5g",
   public_key: "5r59rrxhn89npc9n",
-  private_key: "00f0df79303e1270881e5feda7788927",
+  private_key: "00f0df79303e1270881e5feda7788927"
 )
+
+paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle/verification/paddle_public_key.pem"))
+ENV["PADDLE_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
 
 logger = Logger.new("/dev/null")
 logger.level = Logger::INFO
@@ -59,15 +81,5 @@ module Braintree
     def self.gateway
       Pay.braintree_gateway
     end
-  end
-end
-
-class ActiveSupport::TestCase
-  setup do
-    VCR.insert_cassette name
-  end
-
-  teardown do
-    VCR.eject_cassette name
   end
 end
