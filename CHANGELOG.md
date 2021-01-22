@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.4.2
+
+* [FIX] Update migration to check for symobl keys on ActiveRecord adapter with Rails 6.1 - @excid3
+
 ### 2.4.1
 
 * [FIX] Move Paddle logic into paddle methods - @excid3
