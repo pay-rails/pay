@@ -15,6 +15,9 @@ module Pay
       ::Stripe.api_version = "2020-08-27"
       ::StripeEvent.signing_secret = signing_secret
 
+      # Used by Stripe to identify Pay for support
+      ::Stripe.set_app_info('PayRails', partner_id: 'pp_partner_IqhY0UExnJYLxg', version: Pay::VERSION, url: 'https://github.com/pay-rails/pay')
+
       Pay.charge_model.include Pay::Stripe::Charge
       Pay.subscription_model.include Pay::Stripe::Subscription
     end
