@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.4.3
+
+* Add Stripe app info and join the Stripe Partner program for better support for Pay! - @excid3
+
 ### 2.4.2
 
 * [FIX] Update migration to check for symobl keys on ActiveRecord adapter with Rails 6.1 - @excid3
