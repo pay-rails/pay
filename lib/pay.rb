@@ -1,3 +1,4 @@
+require "pay/version"
 require "pay/engine"
 require "pay/billable"
 require "pay/receipts"
