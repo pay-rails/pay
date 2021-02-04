@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.4.4
+
+* [Fix] Fixed missing require for version file - @excid3
+
 ### 2.4.3
 
 * Add Stripe app info and join the Stripe Partner program for better support for Pay! - @excid3
