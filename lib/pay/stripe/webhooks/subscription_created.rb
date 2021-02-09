@@ -22,6 +22,7 @@ module Pay
           end
 
           subscription.quantity = object.quantity
+          subscription.status = object.status
           subscription.processor_plan = object.plan.id
           subscription.trial_ends_at = Time.at(object.trial_end) if object.trial_end.present?
 
