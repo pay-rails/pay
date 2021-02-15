@@ -12,7 +12,7 @@ class Pay::Braintree::Webhooks::SubscriptionChargedSuccessfullyTest < ActiveSupp
       processor_id: @event.subscription.transactions.first.customer_details.id
     )
 
-    subscription = user.subscriptions.create!(
+    user.subscriptions.create!(
       processor: :braintree,
       processor_id: @event.subscription.id,
       name: "default",
@@ -20,7 +20,6 @@ class Pay::Braintree::Webhooks::SubscriptionChargedSuccessfullyTest < ActiveSupp
       status: "active"
     )
 
-    binding.irb
     assert_difference "user.charges.count" do
       Pay::Braintree::Webhooks::SubscriptionChargedSuccessfully.new.call(@event)
     end

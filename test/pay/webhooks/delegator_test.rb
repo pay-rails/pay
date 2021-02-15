@@ -1,6 +1,14 @@
 require "test_helper"
 
 class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
+  class TestEventProcessor
+    attr_accessor :success
+
+    def call(event)
+      @success = true
+    end
+  end
+
   setup do
     @delegator = Pay::Webhooks::Delegator.new
   end
@@ -26,14 +34,6 @@ class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
   end
 
   test "can subscribe with class" do
-    class TestEventProcessor
-      attr_accessor :success
-
-      def call(event)
-        @success = true
-      end
-    end
-
     processor = TestEventProcessor.new
     delegator.subscribe "stripe.test_event", processor
     delegator.instrument event: {}, type: "stripe.test_event"
@@ -49,7 +49,5 @@ class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
 
   private
 
-  def delegator
-    @delegator
-  end
+  attr_reader :delegator
 end

@@ -9,7 +9,7 @@ module Pay
 
       # Configure DSL
       def configure(&block)
-        raise ArgumentError, "must provide a block" unless block_given?
+        raise ArgumentError, "must provide a block" unless block
         block.arity.zero? ? instance_eval(&block) : yield(self)
       end
 
