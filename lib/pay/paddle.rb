@@ -1,9 +1,3 @@
-require "pay/env"
-require "pay/paddle/billable"
-require "pay/paddle/charge"
-require "pay/paddle/subscription"
-require "pay/paddle/webhooks"
-
 module Pay
   module Paddle
     include Env
@@ -17,6 +11,8 @@ module Pay
       Pay.charge_model.include Pay::Paddle::Charge
       Pay.subscription_model.include Pay::Paddle::Subscription
       Pay.billable_models.each { |model| model.include Pay::Paddle::Billable }
+
+      configure_webhooks
     end
 
     def vendor_id
@@ -33,6 +29,16 @@ module Pay
 
     def passthrough(owner:, **options)
       options.merge(owner_sgid: owner.to_sgid.to_s).to_json
+    end
+
+    def configure_webhooks
+      Pay::Webhooks.configure do |events|
+        events.subscribe "paddle.subscription_created", Pay::Paddle::Webhooks::SubscriptionCreated.new
+        events.subscribe "paddle.subscription_updated", Pay::Paddle::Webhooks::SubscriptionUpdated.new
+        events.subscribe "paddle.subscription_cancelled", Pay::Paddle::Webhooks::SubscriptionCancelled.new
+        events.subscribe "paddle.subscription_payment_succeeded", Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new
+        events.subscribe "paddle.subscription_payment_refunded", Pay::Paddle::Webhooks::SubscriptionPaymentRefunded.new
+      end
     end
   end
 end

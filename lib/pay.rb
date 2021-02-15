@@ -1,11 +1,13 @@
 require "pay/version"
 require "pay/engine"
-require "pay/billable"
-require "pay/receipts"
-require "pay/payment"
 require "pay/errors"
 
 module Pay
+  autoload :Billable, "pay/billable"
+  autoload :Env, "pay/env"
+  autoload :Payment, "pay/payment"
+  autoload :Receipts, "pay/receipts"
+
   module Webhooks
     autoload :Delegator, "pay/webhooks/delegator"
 
