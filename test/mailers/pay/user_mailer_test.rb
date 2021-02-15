@@ -10,7 +10,7 @@ class UserMailerTest < ActionMailer::TestCase
     email = Pay::UserMailer.with(billable: @user, charge: @charge).receipt
 
     assert_equal [@user.email], email.to
-    assert_equal Pay.email_receipt_subject, email.subject
+    assert_equal I18n.t("pay.user_mailer.receipt.subject"), email.subject
   end
 
   test "attaches refunds to receipt" do
