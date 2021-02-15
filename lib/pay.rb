@@ -49,15 +49,6 @@ module Pay
   mattr_accessor :send_emails
   @@send_emails = true
 
-  mattr_accessor :email_receipt_subject
-  @@email_receipt_subject = "Payment receipt"
-  mattr_accessor :email_refund_subject
-  @@email_refund_subject = "Payment refunded"
-  mattr_accessor :email_renewing_subject
-  @@email_renewing_subject = "Your upcoming subscription renewal"
-  mattr_accessor :email_action_required_subject
-  @@email_action_required_subject = "Confirm your payment"
-
   mattr_accessor :automount_routes
   @@automount_routes = true
 

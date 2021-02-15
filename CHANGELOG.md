@@ -2,6 +2,7 @@
 
 * [BREAKING] Webhooks that can't be verified respond with 400 instead of 200 - @excid3
 * [BREAKING] Remove StripeEvent dependency - excid3
+* [BREAKING] Remove old configuration for mailer subjects in favor of locales - @excid3
 * [NEW] Add `Pay::Webhook.delegator` for subscribing to webhooks - @excid3
 
 ### 2.4.4
