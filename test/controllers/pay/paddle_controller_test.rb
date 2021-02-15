@@ -10,7 +10,7 @@ module Pay
 
     test "should handle post requests" do
       post webhooks_paddle_path
-      assert_response :success
+      assert_response :bad_request
     end
 
     test "should parse a paddle webhook" do

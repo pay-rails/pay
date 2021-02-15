@@ -6,6 +6,18 @@ require "pay/payment"
 require "pay/errors"
 
 module Pay
+  module Webhooks
+    autoload :Delegator, "pay/webhooks/delegator"
+
+    class << self
+      delegate :configure, :instrument, to: :delegator
+
+      def delegator
+        @delegator ||= Delegator.new
+      end
+    end
+  end
+
   # Define who owns the subscription
   mattr_accessor :billable_class
   mattr_accessor :billable_table

@@ -2,6 +2,7 @@ require "pay/env"
 require "pay/braintree/billable"
 require "pay/braintree/charge"
 require "pay/braintree/subscription"
+require "pay/braintree/webhooks"
 
 module Pay
   module Braintree

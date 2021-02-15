@@ -6,27 +6,28 @@ module Pay
       end
 
       def create
-        verifier = Pay::Paddle::Webhooks::SignatureVerifier.new(check_params.as_json)
-        if verifier.verify
-          case params["alert_name"]
-          when "subscription_created"
-            Pay::Paddle::Webhooks::SubscriptionCreated.new(check_params.as_json)
-          when "subscription_updated"
-            Pay::Paddle::Webhooks::SubscriptionUpdated.new(check_params.as_json)
-          when "subscription_cancelled"
-            Pay::Paddle::Webhooks::SubscriptionCancelled.new(check_params.as_json)
-          when "subscription_payment_succeeded"
-            Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new(check_params.as_json)
-          when "subscription_payment_refunded"
-            Pay::Paddle::Webhooks::SubscriptionPaymentRefunded.new(check_params.as_json)
-          end
-          render json: {success: true}, status: :ok
-        else
-          head :ok
-        end
+        delegate_event(verified_event)
+        head :ok
+      rescue Pay::Paddle::Error
+        head :bad_request
       end
 
       private
+
+      def delegate_event(event)
+        Pay::Webhooks.instrument type: "paddle.#{type}", event: event
+      end
+
+      def type
+        params[:alert_name]
+      end
+
+      def verified_event
+        event = check_params.as_json
+        verifier = Pay::Paddle::Webhooks::SignatureVerifier.new(event)
+        return event if verifier.verify
+        raise Pay::Paddle::Error, "Unable to verify Paddle webhook event"
+      end
 
       def check_params
         params.except(:action, :controller).permit!

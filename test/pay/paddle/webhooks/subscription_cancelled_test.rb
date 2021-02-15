@@ -20,7 +20,7 @@ class Pay::Paddle::Webhooks::SubscriptionCancelledTest < ActiveSupport::TestCase
     )
 
     Pay.subscription_model.any_instance.expects(:update!).with(ends_at: Time.zone.parse(@data["cancellation_effective_date"]))
-    Pay::Paddle::Webhooks::SubscriptionCancelled.new(@data)
+    Pay::Paddle::Webhooks::SubscriptionCancelled.new.call(@data)
   end
 
   test "it doesn't set ends_at on the subscription if it's already set" do
@@ -39,7 +39,7 @@ class Pay::Paddle::Webhooks::SubscriptionCancelledTest < ActiveSupport::TestCase
     )
 
     Pay.subscription_model.any_instance.expects(:update!).with(ends_at: Time.zone.parse(@data["cancellation_effective_date"])).never
-    Pay::Paddle::Webhooks::SubscriptionCancelled.new(@data)
+    Pay::Paddle::Webhooks::SubscriptionCancelled.new.call(@data)
   end
 
   test "it doesn't set ends_at on the subscription if it can't find the subscription" do
@@ -57,6 +57,6 @@ class Pay::Paddle::Webhooks::SubscriptionCancelledTest < ActiveSupport::TestCase
     )
 
     Pay.subscription_model.any_instance.expects(:update!).with(ends_at: Time.zone.parse(@data["cancellation_effective_date"])).never
-    Pay::Paddle::Webhooks::SubscriptionCancelled.new(@data)
+    Pay::Paddle::Webhooks::SubscriptionCancelled.new.call(@data)
   end
 end

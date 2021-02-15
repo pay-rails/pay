@@ -2,29 +2,29 @@ module Pay
   module Paddle
     module Webhooks
       class SubscriptionPaymentSucceeded
-        def initialize(data)
-          billable = Pay.find_billable(processor: :paddle, processor_id: data["user_id"])
+        def call(event)
+          billable = Pay.find_billable(processor: :paddle, processor_id: event["user_id"])
           return unless billable.present?
-          return if billable.charges.where(processor_id: data["subscription_payment_id"]).any?
+          return if billable.charges.where(processor_id: event["subscription_payment_id"]).any?
 
-          charge = create_charge(billable, data)
+          charge = create_charge(billable, event)
           notify_user(billable, charge)
         end
 
-        def create_charge(user, data)
+        def create_charge(user, event)
           charge = user.charges.find_or_initialize_by(
             processor: :paddle,
-            processor_id: data["subscription_payment_id"]
+            processor_id: event["subscription_payment_id"]
           )
 
           params = {
-            amount: Integer(data["sale_gross"].to_f * 100),
-            card_type: data["payment_method"],
-            paddle_receipt_url: data["receipt_url"],
-            created_at: Time.zone.parse(data["event_time"])
+            amount: Integer(event["sale_gross"].to_f * 100),
+            card_type: event["payment_method"],
+            paddle_receipt_url: event["receipt_url"],
+            created_at: Time.zone.parse(event["event_time"])
           }
 
-          payment_information = user.paddle_payment_information(data["subscription_id"])
+          payment_information = user.paddle_payment_information(event["subscription_id"])
 
           charge.update(params.merge(payment_information))
           user.update(payment_information)

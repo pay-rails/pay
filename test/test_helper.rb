@@ -13,7 +13,6 @@ require "byebug"
 # Processors for testing
 require "braintree"
 require "stripe"
-require "stripe_event"
 require "paddle_pay"
 
 # Filter out Minitest backtrace while allowing backtrace from other libraries
@@ -31,6 +30,15 @@ end
 class ActiveSupport::TestCase
   include ActionMailer::TestHelper
   include ActiveJob::TestHelper
+
+  def fake_event(name, format: :json)
+    JSON.parse File.read("test/support/fixtures/#{name}.#{format}")
+  end
+
+  def braintree_event(name, format: :json)
+    raw = fake_event name, format: format
+    Pay.braintree_gateway.webhook_notification.parse(raw["bt_signature"], raw["bt_payload"])
+  end
 end
 
 require "minitest/mock"
@@ -62,15 +70,21 @@ unless ENV["SKIP_VCR"]
   end
 end
 
+# Configure all the payment providers for testing
+require "pay/stripe"
+require "pay/braintree"
+require "pay/paddle"
+Pay::Stripe.setup
+Pay::Braintree.setup
+Pay::Paddle.setup
+
+# Braintree configuration
 Pay.braintree_gateway = Braintree::Gateway.new(
   environment: :sandbox,
   merchant_id: "zyfwpztymjqdcc5g",
   public_key: "5r59rrxhn89npc9n",
   private_key: "00f0df79303e1270881e5feda7788927"
 )
-
-paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle/verification/paddle_public_key.pem"))
-ENV["PADDLE_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
 
 logger = Logger.new("/dev/null")
 logger.level = Logger::INFO
@@ -83,3 +97,8 @@ module Braintree
     end
   end
 end
+
+# Paddle configuration
+paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle/verification/paddle_public_key.pem"))
+ENV["PADDLE_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
+

@@ -9,7 +9,7 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentRefundedTest < ActiveSupport::Te
     @user = User.create!(email: "gob@bluth.com", processor: :paddle, processor_id: @data["user_id"])
     charge = @user.charges.create!(processor: :paddle, processor_id: @data["subscription_payment_id"], amount: 16, card_type: "card")
 
-    Pay::Paddle::Webhooks::SubscriptionPaymentRefunded.new(@data)
+    Pay::Paddle::Webhooks::SubscriptionPaymentRefunded.new.call(@data)
 
     assert_equal Integer(@data["gross_refund"].to_f * 100), charge.reload.amount_refunded
   end
