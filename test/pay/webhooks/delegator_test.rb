@@ -40,6 +40,13 @@ class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
     assert processor.success
   end
 
+  test "can unsubscribe" do
+    delegator.subscribe "stripe.test_event", ->(event) {}
+    assert delegator.backend.notifier.listening?("pay.stripe.test_event")
+    delegator.unsubscribe "stripe.test_event"
+    assert delegator.backend.notifier.listening?("pay.stripe.test_event")
+  end
+
   private
 
   def delegator

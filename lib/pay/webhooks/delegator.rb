@@ -25,6 +25,11 @@ module Pay
         subscribe nil, callable
       end
 
+      # Unsubscribe
+      def unsubscribe(name)
+        backend.unsubscribe name
+      end
+
       # Called to process an event
       def instrument(event:, type:)
         backend.instrument name_with_namespace(type), event
