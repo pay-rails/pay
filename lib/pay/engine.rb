@@ -8,7 +8,6 @@ end
 
 begin
   require "stripe"
-  require "stripe_event"
 rescue LoadError
 end
 
