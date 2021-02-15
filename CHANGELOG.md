@@ -1,5 +1,7 @@
 ### Unreleased
 
+### 2.5.0
+
 * [BREAKING] Webhooks that can't be verified respond with 400 instead of 200 - @excid3
 * [BREAKING] Remove StripeEvent dependency - excid3
 * [BREAKING] Remove old configuration for mailer subjects in favor of locales - @excid3
