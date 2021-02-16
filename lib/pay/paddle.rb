@@ -8,10 +8,6 @@ module Pay
       ::PaddlePay.config.vendor_id = vendor_id
       ::PaddlePay.config.vendor_auth_code = vendor_auth_code
 
-      Pay.charge_model.include Pay::Paddle::Charge
-      Pay.subscription_model.include Pay::Paddle::Subscription
-      Pay.billable_models.each { |model| model.include Pay::Paddle::Billable }
-
       configure_webhooks
     end
 

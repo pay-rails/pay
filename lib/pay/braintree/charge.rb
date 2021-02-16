@@ -1,26 +1,24 @@
 module Pay
   module Braintree
-    module Charge
-      extend ActiveSupport::Concern
+    class Charge
+      attr_reader :pay_charge
 
-      included do
-        scope :braintree, -> { where(processor: :braintree) }
+      delegate :processor_id, to: :pay_charge
+
+      def initialize(pay_charge)
+        @pay_charge = pay_charge
       end
 
-      def braintree?
-        processor == "braintree"
-      end
-
-      def braintree_charge
+      def charge
         Pay.braintree_gateway.transaction.find(processor_id)
       rescue ::Braintree::Braintree::Error => e
         raise Pay::Braintree::Error, e
       end
 
-      def braintree_refund!(amount_to_refund)
+      def refund!(amount_to_refund)
         Pay.braintree_gateway.transaction.refund(processor_id, amount_to_refund / 100.0)
 
-        update(amount_refunded: amount_to_refund)
+        pay_charge.update(amount_refunded: amount_to_refund)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end

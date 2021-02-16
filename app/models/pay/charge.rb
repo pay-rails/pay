@@ -1,5 +1,5 @@
 module Pay
-  class Charge < ApplicationRecord
+  class Charge < Pay::ApplicationRecord
     self.table_name = Pay.chargeable_table
 
     # Only serialize for non-json columns
@@ -18,13 +18,32 @@ module Pay
     validates :processor_id, presence: true
     validates :card_type, presence: true
 
+    store_accessor :data, :paddle_receipt_url
+
+    # Helpers for payment processors
+    %w[braintree stripe paddle].each do |processor_name|
+      define_method "#{processor_name}?" do
+        processor == processor_name
+      end
+
+      scope processor_name, -> { where(processor: processor_name) }
+    end
+
+    def payment_processor
+      @payment_processor ||= payment_processor_for(processor).new(self)
+    end
+
+    def payment_processor_for(name)
+      "Pay::#{name.to_s.classify}::Charge".constantize
+    end
+
     def processor_charge
-      send("#{processor}_charge")
+      payment_processor.charge
     end
 
     def refund!(refund_amount = nil)
       refund_amount ||= amount
-      send("#{processor}_refund!", refund_amount)
+      payment_processor.refund!(refund_amount)
     end
 
     def charged_to

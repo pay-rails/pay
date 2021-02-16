@@ -26,14 +26,14 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test "customer with stripe processor" do
     @billable.processor = "stripe"
-    @billable.expects(:stripe_customer).returns(:user)
+    Pay::Stripe::Billable.any_instance.expects(:customer).returns(:user)
     assert_equal :user, @billable.customer
   end
 
   test "customer with undefined processor" do
     @billable.processor = "pants"
 
-    assert_raises NoMethodError do
+    assert_raises NameError do
       @billable.customer
     end
   end
@@ -46,10 +46,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test "subscribing a stripe customer" do
     @billable.processor = "stripe"
-    @billable.expects(:create_stripe_subscription)
-      .with("default", "default", {})
-      .returns(:user)
-
+    Pay::Stripe::Billable.any_instance.expects(:subscribe).returns(:user)
     assert_equal :user, @billable.subscribe
     assert @billable.processor = "stripe"
   end
@@ -57,8 +54,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
   test "updating a stripe card" do
     @billable.processor = "stripe"
     @billable.processor_id = 1
-    @billable.expects(:update_stripe_card).with("a1b2c3").returns(:card)
-
+    Pay::Stripe::Billable.any_instance.expects(:update_card).with("a1b2c3").returns(:card)
     assert_equal :card, @billable.update_card("a1b2c3")
   end
 
@@ -163,13 +159,13 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test "pay invoice" do
     @billable.processor = "stripe"
-    @billable.expects(:stripe_invoice!).returns(:invoice)
+    Pay::Stripe::Billable.any_instance.expects(:invoice!).returns(:invoice)
     assert_equal :invoice, @billable.invoice!
   end
 
   test "get upcoming invoice" do
     @billable.processor = "stripe"
-    @billable.expects(:stripe_upcoming_invoice).returns(:invoice)
+    Pay::Stripe::Billable.any_instance.expects(:upcoming_invoice).returns(:invoice)
     assert_equal :invoice, @billable.upcoming_invoice
   end
 

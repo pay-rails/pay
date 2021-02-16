@@ -1,5 +1,5 @@
 module Pay
-  class Subscription < ApplicationRecord
+  class Subscription < Pay::ApplicationRecord
     self.table_name = Pay.subscription_table
 
     STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid paused]
@@ -27,6 +27,11 @@ module Pay
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
 
+    # TODO: Include these with a module
+    store_accessor :data, :paddle_update_url
+    store_accessor :data, :paddle_cancel_url
+    store_accessor :data, :paddle_paused_from
+
     attribute :prorate, :boolean, default: true
 
     # Helpers for payment processors
@@ -37,6 +42,21 @@ module Pay
 
       scope processor_name, -> { where(processor: processor_name) }
     end
+
+    def payment_processor
+      @payment_processor ||= payment_processor_for(processor).new(self)
+    end
+
+    def payment_processor_for(name)
+      "Pay::#{name.to_s.classify}::Subscription".constantize
+    end
+
+    delegate :on_grace_period?,
+      :paused?,
+      :pause,
+      :cancel,
+      :cancel_now!,
+      to: :payment_processor
 
     def no_prorate
       self.prorate = false
@@ -58,11 +78,6 @@ module Pay
       canceled?
     end
 
-    def on_grace_period?
-      return unless processor?
-      send("#{processor}_on_grace_period?")
-    end
-
     def active?
       ["trialing", "active"].include?(status) && (ends_at.nil? || on_grace_period? || on_trial?)
     end
@@ -79,30 +94,14 @@ module Pay
       past_due? || incomplete?
     end
 
-    def paused?
-      send("#{processor}_paused?")
-    end
-
-    def pause
-      send("#{processor}_pause")
-    end
-
-    def cancel
-      send("#{processor}_cancel")
-    end
-
-    def cancel_now!
-      send("#{processor}_cancel_now!")
-    end
-
     def resume
-      send("#{processor}_resume")
+      payment_processor.resume
       update(ends_at: nil, status: "active")
       self
     end
 
     def swap(plan)
-      send("#{processor}_swap", plan)
+      payment_processor.swap(plan)
       update(processor_plan: plan, ends_at: nil)
     end
 

@@ -24,7 +24,7 @@ class Pay::Paddle::Billable::Test < ActiveSupport::TestCase
 
   test "retriving a paddle subscription" do
     subscription = ::PaddlePay::Subscription::User.list({subscription_id: "3576390"}, {}).try(:first)
-    assert_equal @billable.paddle_subscription("3576390").subscription_id, subscription[:subscription_id]
+    assert_equal @billable.processor_subscription("3576390").subscription_id, subscription[:subscription_id]
   end
 
   test "paddle can sync payment information" do
@@ -44,7 +44,7 @@ class Pay::Paddle::Billable::Test < ActiveSupport::TestCase
     }
     PaddlePay::Subscription::User.stubs(:list).returns([subscription_user])
 
-    @billable.sync_payment_information_from_paddle
+    @billable.payment_processor.sync_payment_information
 
     assert_equal "visa", @billable.card_type
     assert_equal "0020", @billable.card_last4

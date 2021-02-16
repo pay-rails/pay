@@ -1,44 +1,64 @@
 module Pay
   module Braintree
-    module Subscription
-      extend ActiveSupport::Concern
+    class Subscription
+      attr_reader :pay_subscription
 
-      def braintree_cancel
+      delegate :active?,
+        :canceled?,
+        :ends_at,
+        :name,
+        :on_trial?,
+        :owner,
+        :processor_subscription,
+        :processor_id,
+        :prorate,
+        :prorate?,
+        :processor_plan,
+        :quantity?,
+        :quantity,
+        :trial_ends_at,
+        to: :pay_subscription
+
+      def initialize(pay_subscription)
+        @pay_subscription = pay_subscription
+      end
+
+      def cancel
         subscription = processor_subscription
 
         if on_trial?
           gateway.subscription.cancel(processor_subscription.id)
-          update(status: :canceled, ends_at: trial_ends_at)
+          pay_subscription.update(status: :canceled, ends_at: trial_ends_at)
         else
           gateway.subscription.update(subscription.id, {
             number_of_billing_cycles: subscription.current_billing_cycle
           })
-          update(status: :canceled, ends_at: subscription.billing_period_end_date.to_date)
+          pay_subscription.update(status: :canceled, ends_at: subscription.billing_period_end_date.to_date)
         end
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
 
-      def braintree_cancel_now!
+      def cancel_now!
         gateway.subscription.cancel(processor_subscription.id)
-        update(status: :canceled, ends_at: Time.zone.now)
+        pay_subscription.update(status: :canceled, ends_at: Time.zone.now)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
 
-      def braintree_on_grace_period?
+      def on_grace_period?
         canceled? && Time.zone.now < ends_at
       end
 
-      def braintree_paused?
+      def paused?
         false
       end
 
-      def braintree_pause
+      def pause
         raise NotImplementedError, "Braintree does not support pausing subscriptions"
       end
 
-      def braintree_resume
+      def resume
         unless on_grace_period?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end
@@ -63,12 +83,12 @@ module Pay
           })
         end
 
-        update(status: :active)
+        pay_subscription.update(status: :active)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
 
-      def braintree_swap(plan)
+      def swap(plan)
         if on_grace_period? && processor_plan == plan
           resume
           return
@@ -99,7 +119,7 @@ module Pay
         })
 
         if result.success?
-          update(status: :active, processor_plan: braintree_plan.id, ends_at: nil)
+          pay_subscription.update(status: :active, processor_plan: braintree_plan.id, ends_at: nil)
         else
           raise Error, "Braintree failed to swap plans: #{result.message}"
         end
