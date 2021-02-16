@@ -237,7 +237,7 @@ module Pay
       def billing_portal(**options)
         args = {
           customer: processor_id,
-          return_url: options[:return_url] || root_url,
+          return_url: options[:return_url] || root_url
         }
         ::Stripe::BillingPortal::Session.create(args.merge(options))
       end
