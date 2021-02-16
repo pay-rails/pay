@@ -1,7 +1,7 @@
 module Pay
   module Braintree
     class Billable
-       attr_reader :billable
+      attr_reader :billable
 
       delegate :processor_id,
         :processor_id?,

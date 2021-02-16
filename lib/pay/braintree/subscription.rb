@@ -73,7 +73,6 @@ module Pay
             trial_duration: duration.to_i,
             trial_duration_unit: :day
           )
-
         else
           subscription = processor_subscription
 

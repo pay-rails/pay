@@ -113,7 +113,7 @@ module Pay
       end
 
       def update_email!
-        ::Stripe::Customer.update(processor_id, { email: email, name: customer_name })
+        ::Stripe::Customer.update(processor_id, {email: email, name: customer_name})
       end
 
       def processor_subscription(subscription_id, options = {})

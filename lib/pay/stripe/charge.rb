@@ -16,7 +16,7 @@ module Pay
       end
 
       def refund!(amount_to_refund)
-        ::Stripe::Refund.create( charge: processor_id, amount: amount_to_refund)
+        ::Stripe::Refund.create(charge: processor_id, amount: amount_to_refund)
         pay_charge.update(amount_refunded: amount_to_refund)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e

@@ -120,7 +120,7 @@ module Pay
     end
 
     def paypal?
-      braintree? && card_type == "PayPal"
+      card_type == "PayPal"
     end
 
     def paddle?
