@@ -194,22 +194,22 @@ module Pay
       #
       def checkout(**options)
         args = {
-          payment_method_types: ['card'],
-          mode: 'payment',
+          payment_method_types: ["card"],
+          mode: "payment",
           # These placeholder URLs will be replaced in a following step.
           success_url: root_url,
-          cancel_url: root_url,
+          cancel_url: root_url
         }
 
         # Line items are optional
         if (line_items = options.delete(:line_items))
-          args[:line_items] = Array.wrap(line_items).map do |item|
+          args[:line_items] = Array.wrap(line_items).map { |item|
             if item.is_a? Hash
               item
             else
-              { price: item, quantity: options.fetch(:quantity, 1) }
+              {price: item, quantity: options.fetch(:quantity, 1)}
             end
-          end
+          }
         end
 
         ::Stripe::Checkout::Session.create(args.merge(options))
@@ -223,9 +223,9 @@ module Pay
         checkout(
           line_items: {
             price_data: {
-              currency: options[:currency] || 'usd',
-              product_data: { name: name },
-              unit_amount: amount,
+              currency: options[:currency] || "usd",
+              product_data: {name: name},
+              unit_amount: amount
             },
             quantity: quantity
           },
