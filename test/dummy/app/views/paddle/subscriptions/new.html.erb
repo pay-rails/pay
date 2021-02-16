@@ -1,11 +1,16 @@
 <div class="row">
   <div class="col-sm-6">
-    <a
-      href="#!"
-      class="paddle_button"
-      data-product="614997"
-      data-email="<%= current_user.email %>"
-      data-passthrough="<%= { owner_sgid: current_user.to_sgid(for: 'paddle_614997').to_s }.to_json %>"
-      >Checkout</a>
+    <a href="#!" id="buy">Subscribe</a>
+
+    <script type="text/javascript">
+      function openCheckout(event) {
+        event.preventDefault()
+        Paddle.Checkout.open({
+                product: 7736,
+                passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
+              });
+      }
+      document.getElementById('buy').addEventListener('click', openCheckout, false);
+    </script>
   </div>
 </div>
