@@ -9,7 +9,7 @@ module Pay
           return unless billable.present?
           return if billable.charges.where(processor_id: object.id).any?
 
-          charge = billable.payment_processor.save_pay_charge(object)
+          charge = Pay::Stripe::Billable.new(billable).save_pay_charge(object)
           notify_user(billable, charge)
         end
 
