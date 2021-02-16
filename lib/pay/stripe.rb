@@ -1,10 +1,26 @@
 module Pay
   module Stripe
-    include Env
+    autoload :Billable, "pay/stripe/billable"
+    autoload :Charge, "pay/stripe/charge"
+    autoload :Subscription, "pay/stripe/subscription"
+    autoload :Error, "pay/stripe/error"
 
-    extend self
+    module Webhooks
+      autoload :ChargeRefunded, "pay/stripe/webhooks/charge_refunded"
+      autoload :ChargeSucceeded, "pay/stripe/webhooks/charge_succeeded"
+      autoload :CustomerDeleted, "pay/stripe/webhooks/customer_deleted"
+      autoload :CustomerUpdated, "pay/stripe/webhooks/customer_updated"
+      autoload :PaymentActionRequired, "pay/stripe/webhooks/payment_action_required"
+      autoload :PaymentMethodUpdated, "pay/stripe/webhooks/payment_method_updated"
+      autoload :SubscriptionCreated, "pay/stripe/webhooks/subscription_created"
+      autoload :SubscriptionDeleted, "pay/stripe/webhooks/subscription_deleted"
+      autoload :SubscriptionRenewing, "pay/stripe/webhooks/subscription_renewing"
+      autoload :SubscriptionUpdated, "pay/stripe/webhooks/subscription_updated"
+    end
 
-    def setup
+    extend Env
+
+    def self.setup
       ::Stripe.api_key = private_key
       ::Stripe.api_version = "2020-08-27"
 
@@ -14,19 +30,19 @@ module Pay
       configure_webhooks
     end
 
-    def public_key
+    def self.public_key
       find_value_by_name(:stripe, :public_key)
     end
 
-    def private_key
+    def self.private_key
       find_value_by_name(:stripe, :private_key)
     end
 
-    def signing_secret
+    def self.signing_secret
       find_value_by_name(:stripe, :signing_secret)
     end
 
-    def configure_webhooks
+    def self.configure_webhooks
       Pay::Webhooks.configure do |events|
         # Listen to the charge event to make sure we get non-subscription
         # purchases as well. Invoice is only for subscriptions and manual creation

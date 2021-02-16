@@ -8,17 +8,12 @@ module Pay
   autoload :Payment, "pay/payment"
   autoload :Receipts, "pay/receipts"
 
-  module Webhooks
-    autoload :Delegator, "pay/webhooks/delegator"
+  # Payment processors
+  autoload :Braintree, "pay/braintree"
+  autoload :Paddle, "pay/paddle"
+  autoload :Stripe, "pay/stripe"
 
-    class << self
-      delegate :configure, :instrument, to: :delegator
-
-      def delegator
-        @delegator ||= Delegator.new
-      end
-    end
-  end
+  autoload :Webhooks, "pay/webhooks"
 
   # Define who owns the subscription
   mattr_accessor :billable_class
