@@ -3,6 +3,7 @@
 ### 2.6.1
 
 * [NEW] Add Stripe Customer Billing Portal - @excid3
+* Include `customer` on Stripe Checkout sessions - @excid3
 
 ### 2.6.0
 
