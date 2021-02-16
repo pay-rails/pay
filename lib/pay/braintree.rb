@@ -12,10 +12,6 @@ module Pay
         private_key: private_key
       )
 
-      Pay.charge_model.include Pay::Braintree::Charge
-      Pay.subscription_model.include Pay::Braintree::Subscription
-      Pay.billable_models.each { |model| model.include Pay::Braintree::Billable }
-
       configure_webhooks
     end
 

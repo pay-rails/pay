@@ -9,27 +9,8 @@ module Pay
           return unless billable.present?
           return if billable.charges.where(processor_id: object.id).any?
 
-          create_charge(billable, object)
-        end
-
-        def create_charge(billable, object)
-          charge = billable.charges.find_or_initialize_by(
-            processor: :stripe,
-            processor_id: object.id
-          )
-
-          charge.update(
-            amount: object.amount,
-            card_last4: object.payment_method_details.card.last4,
-            card_type: object.payment_method_details.card.brand,
-            card_exp_month: object.payment_method_details.card.exp_month,
-            card_exp_year: object.payment_method_details.card.exp_year,
-            created_at: Time.zone.at(object.created)
-          )
-
+          charge = Pay::Stripe::Billable.new(billable).save_pay_charge(object)
           notify_user(billable, charge)
-
-          charge
         end
 
         def notify_user(billable, charge)

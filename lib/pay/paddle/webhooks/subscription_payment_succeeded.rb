@@ -24,7 +24,7 @@ module Pay
             created_at: Time.zone.parse(event["event_time"])
           }
 
-          payment_information = user.paddle_payment_information(event["subscription_id"])
+          payment_information = Pay::Paddle::Billable.new(user).payment_information(event["subscription_id"])
 
           charge.update(params.merge(payment_information))
           user.update(payment_information)

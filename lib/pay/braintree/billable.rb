@@ -1,16 +1,23 @@
 module Pay
   module Braintree
-    module Billable
-      extend ActiveSupport::Concern
+    class Billable
+      attr_reader :billable
 
-      included do
-        scope :braintree, -> { where(processor: :braintree) }
+      delegate :processor_id,
+        :processor_id?,
+        :email,
+        :customer_name,
+        :card_token,
+        to: :billable
+
+      def initialize(billable)
+        @billable = billable
       end
 
       # Handles Billable#customer
       #
       # Returns Braintree::Customer
-      def braintree_customer
+      def customer
         if processor_id?
           gateway.customer.find(processor_id)
         else
@@ -22,10 +29,10 @@ module Pay
           )
           raise Pay::Braintree::Error, result unless result.success?
 
-          update(processor: "braintree", processor_id: result.customer.id)
+          billable.update(processor: "braintree", processor_id: result.customer.id)
 
           if card_token.present?
-            update_braintree_card_on_file result.customer.payment_methods.last
+            update_card_on_file result.customer.payment_methods.last
           end
 
           result.customer
@@ -39,7 +46,7 @@ module Pay
       # Handles Billable#charge
       #
       # Returns a Pay::Charge
-      def create_braintree_charge(amount, options = {})
+      def charge(amount, options = {})
         args = {
           amount: amount.to_i / 100.0,
           customer_id: customer.id,
@@ -49,7 +56,7 @@ module Pay
         result = gateway.transaction.sale(args)
         raise Pay::Braintree::Error, result unless result.success?
 
-        save_braintree_transaction(result.transaction)
+        save_transaction(result.transaction)
       rescue ::Braintree::AuthorizationError
         raise Pay::Braintree::AuthorizationError
       rescue ::Braintree::BraintreeError => e
@@ -59,7 +66,7 @@ module Pay
       # Handles Billable#subscribe
       #
       # Returns Pay::Subscription
-      def create_braintree_subscription(name, plan, options = {})
+      def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         token = customer.payment_methods.find(&:default?).try(:token)
         raise Pay::Error, "Customer has no default payment method" if token.nil?
 
@@ -76,7 +83,7 @@ module Pay
         result = gateway.subscription.create(subscription_options)
         raise Pay::Braintree::Error, result unless result.success?
 
-        create_subscription(result.subscription, "braintree", name, plan, status: :active)
+        billable.create_pay_subscription(result.subscription, "braintree", name, plan, status: :active)
       rescue ::Braintree::AuthorizationError
         raise Pay::Braintree::AuthorizationError
       rescue ::Braintree::BraintreeError => e
@@ -86,7 +93,7 @@ module Pay
       # Handles Billable#update_card
       #
       # Returns true if successful
-      def update_braintree_card(token)
+      def update_card(token)
         result = gateway.payment_method.create(
           customer_id: processor_id,
           payment_method_nonce: token,
@@ -97,7 +104,7 @@ module Pay
         )
         raise Pay::Braintree::Error, result unless result.success?
 
-        update_braintree_card_on_file result.payment_method
+        update_card_on_file result.payment_method
         update_subscriptions_to_payment_method(result.payment_method.token)
         true
       rescue ::Braintree::AuthorizationError
@@ -106,29 +113,25 @@ module Pay
         raise Pay::Braintree::Error, e
       end
 
-      def update_braintree_email!
-        braintree_customer.update(
-          email: email,
-          first_name: try(:first_name),
-          last_name: try(:last_name)
-        )
+      def update_email!
+        gateway.customer.update(processor_id, email: email, first_name: try(:first_name), last_name: try(:last_name))
       end
 
-      def braintree_trial_end_date(subscription)
+      def trial_end_date(subscription)
         return unless subscription.trial_period
         # Braintree returns dates without time zones, so we'll assume they're UTC
         subscription.first_billing_date.end_of_day
       end
 
       def update_subscriptions_to_payment_method(token)
-        subscriptions.braintree.each do |subscription|
+        billable.subscriptions.braintree.each do |subscription|
           if subscription.active?
             gateway.subscription.update(subscription.processor_id, {payment_method_token: token})
           end
         end
       end
 
-      def braintree_subscription(subscription_id, options = {})
+      def processor_subscription(subscription_id, options = {})
         gateway.subscription.find(subscription_id)
       end
 
@@ -140,11 +143,11 @@ module Pay
         # pass
       end
 
-      def save_braintree_transaction(transaction)
+      def save_transaction(transaction)
         attrs = card_details_for_braintree_transaction(transaction)
         attrs[:amount] = transaction.amount.to_f * 100
 
-        charge = charges.find_or_initialize_by(
+        charge = billable.charges.find_or_initialize_by(
           processor: :braintree,
           processor_id: transaction.id
         )
@@ -158,10 +161,10 @@ module Pay
         Pay.braintree_gateway
       end
 
-      def update_braintree_card_on_file(payment_method)
+      def update_card_on_file(payment_method)
         case payment_method
         when ::Braintree::CreditCard
-          update!(
+          billable.update!(
             card_type: payment_method.card_type,
             card_last4: payment_method.last_4,
             card_exp_month: payment_method.expiration_month,
@@ -169,14 +172,14 @@ module Pay
           )
 
         when ::Braintree::PayPalAccount
-          update!(
+          billable.update!(
             card_type: "PayPal",
             card_last4: payment_method.email
           )
         end
 
         # Clear the card token so we don't accidentally update twice
-        self.card_token = nil
+        billable.card_token = nil
       end
 
       def card_details_for_braintree_transaction(transaction)

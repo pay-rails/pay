@@ -1,51 +1,63 @@
 module Pay
   module Stripe
-    module Billable
-      extend ActiveSupport::Concern
+    class Billable
+      attr_reader :billable
 
-      included do
-        scope :stripe, -> { where(processor: :stripe) }
+      delegate :processor_id,
+        :processor_id?,
+        :email,
+        :customer_name,
+        :card_token,
+        to: :billable
+
+      def initialize(billable)
+        @billable = billable
       end
 
       # Handles Billable#customer
       #
       # Returns Stripe::Customer
-      def stripe_customer
+      def customer
         if processor_id?
           ::Stripe::Customer.retrieve(processor_id)
         else
-          create_stripe_customer
+          stripe_customer = ::Stripe::Customer.create(email: email, name: customer_name)
+          billable.update(processor: :stripe, processor_id: stripe_customer.id)
+
+          # Update the user's card on file if a token was passed in
+          if card_token.present?
+            payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: stripe_customer.id})
+            stripe_customer.invoice_settings.default_payment_method = payment_method.id
+            stripe_customer.save
+
+            update_card_on_file ::Stripe::PaymentMethod.retrieve(card_token).card
+          end
+
+          stripe_customer
         end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
-      def create_setup_intent
-        ::Stripe::SetupIntent.create(
-          customer: processor_id,
-          usage: :off_session
-        )
-      end
-
       # Handles Billable#charge
       #
       # Returns Pay::Charge
-      def create_stripe_charge(amount, options = {})
-        customer = stripe_customer
+      def charge(amount, options = {})
+        stripe_customer = customer
         args = {
           amount: amount,
           confirm: true,
           confirmation_method: :automatic,
           currency: "usd",
-          customer: customer.id,
-          payment_method: customer.invoice_settings.default_payment_method
+          customer: stripe_customer.id,
+          payment_method: stripe_customer.invoice_settings.default_payment_method
         }.merge(options)
 
         payment_intent = ::Stripe::PaymentIntent.create(args)
         Pay::Payment.new(payment_intent).validate
 
         # Create a new charge object
-        Stripe::Webhooks::ChargeSucceeded.new.create_charge(self, payment_intent.charges.first)
+        save_pay_charge(payment_intent.charges.first)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -53,7 +65,7 @@ module Pay
       # Handles Billable#subscribe
       #
       # Returns Pay::Subscription
-      def create_stripe_subscription(name, plan, options = {})
+      def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         quantity = options.delete(:quantity) || 1
         opts = {
           expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
@@ -64,10 +76,10 @@ module Pay
         # Inherit trial from plan unless trial override was specified
         opts[:trial_from_plan] = true unless opts[:trial_period_days]
 
-        opts[:customer] = stripe_customer.id
+        opts[:customer] = customer.id
 
         stripe_sub = ::Stripe::Subscription.create(opts)
-        subscription = create_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity)
+        subscription = billable.create_pay_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity)
 
         # No trial, card requires SCA
         if subscription.incomplete?
@@ -86,93 +98,80 @@ module Pay
       # Handles Billable#update_card
       #
       # Returns true if successful
-      def update_stripe_card(payment_method_id)
-        customer = stripe_customer
+      def update_card(payment_method_id)
+        stripe_customer = customer
 
-        return true if payment_method_id == customer.invoice_settings.default_payment_method
+        return true if payment_method_id == stripe_customer.invoice_settings.default_payment_method
 
-        payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, customer: customer.id)
-        ::Stripe::Customer.update(customer.id, invoice_settings: {default_payment_method: payment_method.id})
+        payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, customer: stripe_customer.id)
+        ::Stripe::Customer.update(stripe_customer.id, invoice_settings: {default_payment_method: payment_method.id})
 
-        update_stripe_card_on_file(payment_method.card)
+        update_card_on_file(payment_method.card)
         true
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
-      def update_stripe_email!
-        customer = stripe_customer
-        customer.email = email
-        customer.name = customer_name
-        customer.save
+      def update_email!
+        ::Stripe::Customer.update(processor_id, {email: email, name: customer_name})
       end
 
-      def stripe_subscription(subscription_id, options = {})
+      def processor_subscription(subscription_id, options = {})
         ::Stripe::Subscription.retrieve(options.merge(id: subscription_id))
       end
 
-      def stripe_invoice!(options = {})
+      def invoice!(options = {})
         return unless processor_id?
         ::Stripe::Invoice.create(options.merge(customer: processor_id)).pay
       end
 
-      def stripe_upcoming_invoice
+      def upcoming_invoice
         ::Stripe::Invoice.upcoming(customer: processor_id)
       end
 
       # Used by webhooks when the customer or source changes
       def sync_card_from_stripe
-        stripe_cust = stripe_customer
-        default_payment_method_id = stripe_cust.invoice_settings.default_payment_method
-
-        if default_payment_method_id.present?
-          payment_method = ::Stripe::PaymentMethod.retrieve(default_payment_method_id)
-          update(
-            card_type: payment_method.card.brand,
-            card_last4: payment_method.card.last4,
-            card_exp_month: payment_method.card.exp_month,
-            card_exp_year: payment_method.card.exp_year
-          )
-
-        # Customer has no default payment method
+        if (payment_method_id = customer.invoice_settings.default_payment_method)
+          update_card_on_file ::Stripe::PaymentMethod.retrieve(payment_method_id).card
         else
-          update(card_type: nil, card_last4: nil)
+          billable.update(card_type: nil, card_last4: nil)
         end
       end
 
-      private
-
-      def create_stripe_customer
-        customer = ::Stripe::Customer.create(email: email, name: customer_name)
-        update(processor: "stripe", processor_id: customer.id)
-
-        # Update the user's card on file if a token was passed in
-        if card_token.present?
-          payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: customer.id})
-          customer.invoice_settings.default_payment_method = payment_method.id
-          customer.save
-
-          update_stripe_card_on_file ::Stripe::PaymentMethod.retrieve(card_token).card
-        end
-
-        customer
+      def create_setup_intent
+        ::Stripe::SetupIntent.create(customer: processor_id, usage: :off_session)
       end
 
-      def stripe_trial_end_date(stripe_sub)
+      def trial_end_date(stripe_sub)
         # Times in Stripe are returned in UTC
         stripe_sub.trial_end.present? ? Time.at(stripe_sub.trial_end) : nil
       end
 
       # Save the card to the database as the user's current card
-      def update_stripe_card_on_file(card)
-        update!(
+      def update_card_on_file(card)
+        billable.update!(
           card_type: card.brand.capitalize,
           card_last4: card.last4,
           card_exp_month: card.exp_month,
           card_exp_year: card.exp_year
         )
 
-        self.card_token = nil
+        billable.card_token = nil
+      end
+
+      def save_pay_charge(object)
+        charge = billable.charges.find_or_initialize_by(processor: :stripe, processor_id: object.id)
+
+        charge.update(
+          amount: object.amount,
+          card_last4: object.payment_method_details.card.last4,
+          card_type: object.payment_method_details.card.brand,
+          card_exp_month: object.payment_method_details.card.exp_month,
+          card_exp_year: object.payment_method_details.card.exp_year,
+          created_at: Time.zone.at(object.created)
+        )
+
+        charge
       end
     end
   end
