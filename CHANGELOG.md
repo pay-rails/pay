@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.6.1
+
+* [NEW] Add Stripe Customer Billing Portal - @excid3
+
 ### 2.6.0
 
 * [NEW] Stripe Checkout support - @excid3

@@ -35,3 +35,21 @@ current_user.processor = :stripe
 ```erb
 <%= render partial: "pay/stripe/checkout_button", locals: { session: @checkout_session, title: "Checkout" } %>
 ```
+
+3. Link to the Customer Billing Portal
+
+Customers will want to update their payment method, subscription, etc. This can be done with the Customer Billing Portal. It works the same as the other Stripe Checkout pages.
+
+First, create a session in your controller:
+
+```ruby
+@portal_session = current_user.payment_processor.billing_portal
+```
+
+Then link to it in your view
+
+```erb
+<%= link_to "Billing Portal", @portal_session.url %>
+```
+
+That's it!

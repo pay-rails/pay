@@ -194,6 +194,8 @@ module Pay
       #
       def checkout(**options)
         args = {
+          customer: processor_id,
+          customer_email: email,
           payment_method_types: ["card"],
           mode: "payment",
           # These placeholder URLs will be replaced in a following step.
@@ -231,6 +233,14 @@ module Pay
           },
           **options
         )
+      end
+
+      def billing_portal(**options)
+        args = {
+          customer: processor_id,
+          return_url: options[:return_url] || root_url,
+        }
+        ::Stripe::BillingPortal::Session.create(args.merge(options))
       end
     end
   end
