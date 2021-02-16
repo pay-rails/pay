@@ -15,7 +15,7 @@ module Pay
 
     test "should parse a paddle webhook" do
       user = User.create!
-      params = JSON.parse(File.read("test/support/fixtures/paddle/subscription_created.json"))
+      params = fake_event "paddle/subscription_created"
 
       GlobalID::Locator.expects(:locate_signed).returns(user)
       assert_difference("Pay.subscription_model.count") do

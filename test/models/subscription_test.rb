@@ -244,8 +244,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   test "correctly handles v1 subscriptions without statuses" do
     # Subscriptions in Pay v1.x didn't have a status column, so we've set all their statuses to active
     # We just want to make sure those old, ended subscriptions are still correct
-    assert_not Pay::Subscription.new(status: :active, ends_at: 1.day.ago).active?
-    assert Pay::Subscription.new(status: :active, ends_at: 1.day.ago).canceled?
+    assert_not Pay::Subscription.new(processor: :stripe, status: :active, ends_at: 1.day.ago).active?
+    assert Pay::Subscription.new(processor: :stripe, status: :active, ends_at: 1.day.ago).canceled?
   end
 
   private

@@ -12,14 +12,14 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
   test "getting a stripe customer with a processor id" do
     @billable.processor_id = @customer.id
-    assert_equal @billable.stripe_customer, @customer
+    assert_equal @billable.customer, @customer
   end
 
   test "getting a stripe customer without a processor id" do
     assert_nil @billable.processor_id
 
     @billable.card_token = payment_method.id
-    @billable.stripe_customer
+    @billable.customer
 
     assert_not_nil @billable.processor_id
     assert @billable.card_type == "Visa"
@@ -99,7 +99,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
     @billable.processor_id = @customer.id
     @billable.update_card(payment_method.id)
     subscription = ::Stripe::Subscription.create(plan: "small-monthly", customer: @customer.id)
-    assert_equal @billable.stripe_subscription(subscription.id), subscription
+    assert_equal @billable.processor_subscription(subscription.id), subscription
   end
 
   test "can create an invoice" do
@@ -149,7 +149,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
   test "handles exception when creating a customer" do
     @billable.card_token = "invalid"
-    exception = assert_raises(Pay::Stripe::Error) { @billable.stripe_customer }
+    exception = assert_raises(Pay::Stripe::Error) { @billable.customer }
     assert_equal "No such PaymentMethod: 'invalid'", exception.message
   end
 

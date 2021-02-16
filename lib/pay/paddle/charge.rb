@@ -1,19 +1,15 @@
 module Pay
   module Paddle
-    module Charge
-      extend ActiveSupport::Concern
+    class Charge
+      attr_reader :pay_charge
 
-      included do
-        scope :paddle, -> { where(processor: :paddle) }
+      delegate :processor_id, :owner, to: :pay_charge
 
-        store_accessor :data, :paddle_receipt_url
+      def initialize(pay_charge)
+        @pay_charge = pay_charge
       end
 
-      def paddle?
-        processor == "paddle"
-      end
-
-      def paddle_charge
+      def charge
         return unless owner.subscription
         payments = PaddlePay::Subscription::Payment.list({subscription_id: owner.subscription.processor_id})
         charges = payments.select { |p| p[:id].to_s == processor_id }
@@ -22,12 +18,12 @@ module Pay
         raise Pay::Paddle::Error, e
       end
 
-      def paddle_refund!(amount_to_refund)
+      def refund!(amount_to_refund)
         return unless owner.subscription
         payments = PaddlePay::Subscription::Payment.list({subscription_id: owner.subscription.processor_id, is_paid: 1})
         if payments.count > 0
           PaddlePay::Subscription::Payment.refund(payments.last[:id], {amount: amount_to_refund})
-          update(amount_refunded: amount_to_refund)
+          pay_charge.update(amount_refunded: amount_to_refund)
         else
           raise Error, "Payment not found"
         end

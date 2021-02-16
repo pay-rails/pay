@@ -1,39 +1,55 @@
 module Pay
   module Stripe
-    module Subscription
-      extend ActiveSupport::Concern
+    class Subscription
+      attr_reader :pay_subscription
 
-      def stripe_cancel
+      delegate :canceled?,
+        :ends_at,
+        :on_trial?,
+        :owner,
+        :processor_subscription,
+        :processor_id,
+        :prorate,
+        :processor_plan,
+        :quantity?,
+        :quantity,
+        to: :pay_subscription
+
+      def initialize(pay_subscription)
+        @pay_subscription = pay_subscription
+      end
+
+      def cancel
         subscription = processor_subscription
         subscription.cancel_at_period_end = true
         subscription.save
 
         new_ends_at = on_trial? ? trial_ends_at : Time.at(subscription.current_period_end)
-        update(ends_at: new_ends_at)
+        pay_subscription.update(ends_at: new_ends_at)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
-      def stripe_cancel_now!
+      def cancel_now!
         processor_subscription.delete
-        update(ends_at: Time.zone.now, status: :canceled)
+        pay_subscription.update(ends_at: Time.zone.now, status: :canceled)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
-      def stripe_on_grace_period?
+      def on_grace_period?
         canceled? && Time.zone.now < ends_at
       end
 
-      def stripe_paused?
+      def paused?
         false
       end
 
-      def stripe_pause
+      def pause
         raise NotImplementedError, "Stripe does not support pausing subscriptions"
       end
 
-      def stripe_resume
+      def resume
         unless on_grace_period?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end
@@ -47,7 +63,7 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
-      def stripe_swap(plan)
+      def swap(plan)
         subscription = processor_subscription
         subscription.cancel_at_period_end = false
         subscription.plan = plan
