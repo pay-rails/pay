@@ -1,5 +1,7 @@
 ### Unreleased
 
+* [NEW] Stripe Checkout support - @excid3
+
 ### 2.5.0
 
 * [BREAKING] Webhooks that can't be verified respond with 400 instead of 200 - @excid3
