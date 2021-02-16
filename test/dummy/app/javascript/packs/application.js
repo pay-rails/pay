@@ -10,6 +10,7 @@
 window.Rails = require("@rails/ujs")
 require("turbolinks").start()
 require("processors/stripe")
+require("processors/paddle")
 
 Rails.start()
 

@@ -49,6 +49,7 @@ Rails.application.routes.draw do
     namespace :charges do
       resource :import
     end
+    resource :checkout, namespace: :stripe
   end
 
   root to: "main#show"

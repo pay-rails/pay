@@ -1,6 +1,8 @@
 module Pay
   module Stripe
     class Billable
+      include Rails.application.routes.url_helpers
+
       attr_reader :billable
 
       delegate :processor_id,
@@ -9,6 +11,12 @@ module Pay
         :customer_name,
         :card_token,
         to: :billable
+
+      class << self
+        def default_url_options
+          Rails.application.config.action_mailer.default_url_options
+        end
+      end
 
       def initialize(billable)
         @billable = billable
@@ -172,6 +180,57 @@ module Pay
         )
 
         charge
+      end
+
+      # https://stripe.com/docs/api/checkout/sessions/create
+      #
+      # checkout(mode: "payment")
+      # checkout(mode: "setup")
+      # checkout(mode: "subscription")
+      #
+      # checkout(line_items: "price_12345", quantity: 2)
+      # checkout(line_items [{ price: "price_123" }, { price: "price_456" }])
+      # checkout(line_items, "price_12345", allow_promotion_codes: true)
+      #
+      def checkout(**options)
+        args = {
+          payment_method_types: ['card'],
+          mode: 'payment',
+          # These placeholder URLs will be replaced in a following step.
+          success_url: root_url,
+          cancel_url: root_url,
+        }
+
+        # Line items are optional
+        if (line_items = options.delete(:line_items))
+          args[:line_items] = Array.wrap(line_items).map do |item|
+            if item.is_a? Hash
+              item
+            else
+              { price: item, quantity: options.fetch(:quantity, 1) }
+            end
+          end
+        end
+
+        ::Stripe::Checkout::Session.create(args.merge(options))
+      end
+
+      # https://stripe.com/docs/api/checkout/sessions/create
+      #
+      # checkout_charge(amount: 15_00, name: "T-shirt", quantity: 2)
+      #
+      def checkout_charge(amount:, name:, quantity: 1, **options)
+        checkout(
+          line_items: {
+            price_data: {
+              currency: options[:currency] || 'usd',
+              product_data: { name: name },
+              unit_amount: amount,
+            },
+            quantity: quantity
+          },
+          **options
+        )
       end
     end
   end
