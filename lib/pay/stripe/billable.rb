@@ -195,7 +195,6 @@ module Pay
       def checkout(**options)
         args = {
           customer: processor_id,
-          customer_email: email,
           payment_method_types: ["card"],
           mode: "payment",
           # These placeholder URLs will be replaced in a following step.
