@@ -42,4 +42,3 @@ class Pay::Stripe::Webhooks::PaymentMethodUpdatedtest < ActiveSupport::TestCase
     Pay::Stripe::Webhooks::PaymentMethodUpdated.new.call(@event)
   end
 end
-
