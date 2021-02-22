@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.6.2
+
+* [FIX] Correctly handle updating payment method in Stripe
+
 ### 2.6.1
 
 * [NEW] Add Stripe Customer Billing Portal - @excid3
