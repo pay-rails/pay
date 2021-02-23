@@ -281,4 +281,21 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert_nil user_billable.subscription
     assert_equal subscription, team_billable.subscription
   end
+
+  test "processor" do
+    user = User.new
+
+    assert_nothing_raised do
+      user.processor
+    end
+
+    user.processor = "stripe"
+    assert user.processor.stripe?
+
+    user.processor = "braintree"
+    assert user.processor.braintree?
+
+    user.processor = "paddle"
+    assert user.processor.paddle?
+  end
 end

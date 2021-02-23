@@ -42,7 +42,7 @@ module Pay
     end
 
     def processor
-      super.inquiry
+      super&.inquiry
     end
 
     delegate :charge, to: :payment_processor
@@ -112,10 +112,12 @@ module Pay
     end
 
     def stripe?
+      ActiveSupport::Deprecation.warn("This will be removed in the next release. Use `@billable.processor.stripe?` instead.")
       processor == "stripe"
     end
 
     def braintree?
+      ActiveSupport::Deprecation.warn("This will be removed in the next release. Use `@billable.processor.braintree?` instead.")
       processor == "braintree"
     end
 
@@ -124,6 +126,7 @@ module Pay
     end
 
     def paddle?
+      ActiveSupport::Deprecation.warn("This will be removed in the next release. Use `@billable.processor.paddle?` instead.")
       processor == "paddle"
     end
 

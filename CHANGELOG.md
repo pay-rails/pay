@@ -1,5 +1,7 @@
 ### Unreleased
 
+* [FIX] Fix inquiry when processor is nil
+
 ### 2.6.2
 
 * [FIX] Correctly handle updating payment method in Stripe
