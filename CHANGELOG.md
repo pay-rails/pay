@@ -1,5 +1,8 @@
 ### Unreleased
 
+# 2.6.3
+
+* [FIX] Default to empty hash when default_url_options is nil so proper error is raised
 * [FIX] Fix inquiry when processor is nil
 
 ### 2.6.2
