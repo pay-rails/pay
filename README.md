@@ -48,6 +48,13 @@ And then execute:
 bundle
 ```
 
+Make sure you've configured your ActionMailer default_url_options so Pay can generate links to for features like Stripe Checkout.
+
+```ruby
+# config/application.rb
+config.action_mailer.default_url_options = { host: "example.com" }
+```
+
 #### Migrations
 
 To add the migrations to your application, run the following migration:
