@@ -13,7 +13,7 @@ class Pay::FakeProcessor::Subscription::Test < ActiveSupport::TestCase
   test "fake processor cancel" do
     freeze_time do
       @subscription.cancel
-      assert_equal Time.current.end_of_month, @subscription.ends_at
+      assert_equal Time.current.end_of_month.to_date, @subscription.ends_at.to_date
     end
   end
 
