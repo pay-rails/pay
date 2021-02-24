@@ -20,7 +20,7 @@ module Pay
       end
 
       def cancel
-        pay_subscription.update(ends_at: Time.current.end_of_month)
+        pay_subscription.update(ends_at: Time.current.end_of_month.end_of_day)
       end
 
       def cancel_now!
