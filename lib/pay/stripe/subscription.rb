@@ -6,6 +6,7 @@ module Pay
       delegate :canceled?,
         :ends_at,
         :on_trial?,
+        :trial_ends_at,
         :owner,
         :processor_subscription,
         :processor_id,
