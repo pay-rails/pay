@@ -1,5 +1,7 @@
 ### Unreleased
 
+* [FIX] Delegate trial_ends_at for subscriptions - @archonic
+
 # 2.6.3
 
 * [FIX] Default to empty hash when default_url_options is nil so proper error is raised
