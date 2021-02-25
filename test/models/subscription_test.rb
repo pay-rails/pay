@@ -175,7 +175,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     @subscription.stubs(:on_trial?).returns(true)
     @subscription.stubs(:trial_ends_at).returns(trial_end)
     @subscription.cancel
-    
+
     assert_in_delta @subscription.ends_at, trial_end, 1.second
   end
 
