@@ -1,5 +1,7 @@
 ### Unreleased
 
+* [NEW] Fake payment processor for testing and giving users free access to your application
+
 # 2.6.3
 
 * [FIX] Default to empty hash when default_url_options is nil so proper error is raised

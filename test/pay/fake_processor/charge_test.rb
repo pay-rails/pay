@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::FakeProcessor::Charge::Test < ActiveSupport::TestCase
   setup do
-    @billable = User.create!(email: "gob@bluth.com", processor: :fake_processor, processor_id: "17368056")
+    @billable = User.create!(email: "gob@bluth.com", processor: :fake_processor, processor_id: "17368056", pay_fake_processor_allowed: true)
     @charge = @billable.charge(10_00)
   end
 
