@@ -3,6 +3,7 @@ require "test_helper"
 class Pay::FakeProcessor::Billable::Test < ActiveSupport::TestCase
   setup do
     @billable = User.create!(email: "gob@bluth.com", processor: :fake_processor, processor_id: "17368056", pay_fake_processor_allowed: true)
+    @billable.reload
   end
 
   test "doesn't allow fake processor by default" do
@@ -11,6 +12,15 @@ class Pay::FakeProcessor::Billable::Test < ActiveSupport::TestCase
 
   test "allows fake processor if enabled" do
     assert User.new(email: "gob@bluth.com", processor: :fake_processor, processor_id: "17368056", pay_fake_processor_allowed: true).valid?
+  end
+
+  test "doesn't validate fake processor if processor didn't change" do
+    assert @billable.update(email: "michael@bluth.com")
+  end
+
+  test "validates fake processor if processor changed" do
+    @billable.update(processor: :stripe)
+    assert_not @billable.update(processor: :fake_processor, processor_id: 12345)
   end
 
   test "fake processor customer" do

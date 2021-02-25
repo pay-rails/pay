@@ -26,7 +26,7 @@ module Pay
       attribute :card_token, :string
       attribute :pay_fake_processor_allowed, :boolean, default: false
 
-      validate :pay_fake_processor_is_allowed
+      validate :pay_fake_processor_is_allowed, if: :processor_changed?
     end
 
     def payment_processor
