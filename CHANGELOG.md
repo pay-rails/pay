@@ -1,5 +1,6 @@
 ### Unreleased
 
+* [NEW] Fake payment processor for testing and giving users free access to your application
 * [FIX] Delegate trial_ends_at for subscriptions - @archonic
 
 # 2.6.3

@@ -24,6 +24,9 @@ module Pay
       attribute :plan, :string
       attribute :quantity, :integer
       attribute :card_token, :string
+      attribute :pay_fake_processor_allowed, :boolean, default: false
+
+      validate :pay_fake_processor_is_allowed, if: :processor_changed?
     end
 
     def payment_processor
@@ -154,6 +157,11 @@ module Pay
     def default_generic_trial?(name, plan)
       # Generic trials don't have plans or custom names
       plan.nil? && name == "default" && on_generic_trial?
+    end
+
+    def pay_fake_processor_is_allowed
+      return unless processor == "fake_processor"
+      errors.add(:processor, "must be a valid payment processor") unless pay_fake_processor_allowed?
     end
   end
 end
