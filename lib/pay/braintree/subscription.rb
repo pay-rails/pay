@@ -9,13 +9,13 @@ module Pay
         :name,
         :on_trial?,
         :owner,
-        :processor_subscription,
         :processor_id,
+        :processor_plan,
+        :processor_subscription,
         :prorate,
         :prorate?,
-        :processor_plan,
-        :quantity?,
         :quantity,
+        :quantity?,
         :trial_ends_at,
         to: :pay_subscription
 

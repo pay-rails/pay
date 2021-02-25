@@ -164,6 +164,21 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_in_delta @subscription.ends_at, expiration, 1.second
   end
 
+  test "cancel trialing" do
+    trial_end = 2.weeks.from_now
+
+    stripe_sub = mock("stripe_subscription")
+    stripe_sub.expects(:cancel_at_period_end=).with(true)
+    stripe_sub.expects(:save)
+
+    @subscription.stubs(:processor_subscription).returns(stripe_sub)
+    @subscription.stubs(:on_trial?).returns(true)
+    @subscription.stubs(:trial_ends_at).returns(trial_end)
+    @subscription.cancel
+
+    assert_in_delta @subscription.ends_at, trial_end, 1.second
+  end
+
   test "cancel_now!" do
     cancelled_stripe = mock("cancelled_stripe_subscription")
 
