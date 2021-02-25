@@ -3,8 +3,10 @@ module Pay
     class Subscription
       attr_reader :pay_subscription
 
-      delegate :canceled?,
+      delegate :active?,
+        :canceled?,
         :ends_at,
+        :name,
         :on_trial?,
         :owner,
         :paddle_paused_from,
@@ -12,8 +14,10 @@ module Pay
         :processor_plan,
         :processor_subscription,
         :prorate,
+        :prorate?,
         :quantity,
         :quantity?,
+        :trial_ends_at,
         to: :pay_subscription
 
       def initialize(pay_subscription)
