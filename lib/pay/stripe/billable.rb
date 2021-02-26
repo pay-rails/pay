@@ -88,6 +88,10 @@ module Pay
         opts[:customer] = customer.id
 
         stripe_sub = ::Stripe::Subscription.create(opts, { idempotency_key: idempotency_key })
+        existing_subscription = Pay.subscription_model.find_by(processor: :stripe, processor_id: stripe_sub.id)
+        # if this subscription already exists, return it instead of creating it
+        return existing_subscription unless existing_subscription.nil?
+
         subscription = billable.create_pay_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity)
 
         # No trial, card requires SCA
