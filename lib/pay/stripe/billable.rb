@@ -62,7 +62,7 @@ module Pay
           payment_method: stripe_customer.invoice_settings.default_payment_method
         }.merge(options)
 
-        payment_intent = ::Stripe::PaymentIntent.create(args, { idempotency_key: idempotency_key })
+        payment_intent = ::Stripe::PaymentIntent.create(args, {idempotency_key: idempotency_key})
         Pay::Payment.new(payment_intent).validate
 
         # Create a new charge object
@@ -87,7 +87,7 @@ module Pay
         opts[:trial_from_plan] = true unless opts[:trial_period_days]
         opts[:customer] = customer.id
 
-        stripe_sub = ::Stripe::Subscription.create(opts, { idempotency_key: idempotency_key })
+        stripe_sub = ::Stripe::Subscription.create(opts, {idempotency_key: idempotency_key})
         existing_subscription = Pay.subscription_model.find_by(processor: :stripe, processor_id: stripe_sub.id)
         # if this subscription already exists, return it instead of creating it
         return existing_subscription unless existing_subscription.nil?
