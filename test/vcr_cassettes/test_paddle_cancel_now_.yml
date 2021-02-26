@@ -1,0 +1,121 @@
+---
+  http_interactions:
+  - request:
+      method: post
+      uri: https://vendors.paddle.com/api/2.0/subscription/users
+      body:
+        encoding: UTF-8
+        string: subscription_id=3484448&vendor_auth_code=d4fa0981f2c51335215bfbf31cddfbf1af76951baa11427910&vendor_id=123456
+      headers:
+        User-Agent:
+        - Faraday v1.0.1
+        Content-Type:
+        - application/x-www-form-urlencoded
+        Accept-Encoding:
+        - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+        Accept:
+        - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Date:
+        - Thu, 04 Jun 2020 08:52:07 GMT
+        Content-Type:
+        - application/json
+        Transfer-Encoding:
+        - chunked
+        Connection:
+        - keep-alive
+        Set-Cookie:
+        - __cfduid=da2ada0fca6d1f6768399a9b6dfd1dd011591260727; expires=Sat, 04-Jul-20
+          08:52:07 GMT; path=/; domain=.paddle.com; HttpOnly; SameSite=Lax
+        - paddle_session_vendor=eyJpdiI6IlplalRKSlUyNXFOeTVWVGpjcHNwTHNSbzN6YmJLK2xiSnV2aGVcLzFRSXlNPSIsInZhbHVlIjoiTjErbkhQME5WeUVaRVlcL05uWTlNeDF2ek1hcVNkYVlIY3lpTWpaR1pkck40MXRjVGZzZXpDVEV0MFlhMm1SaGlnUHk0bXUwaGMyN29jczNWM0lPZFJ3PT0iLCJtYWMiOiIxYjA4MWI5OGJkZWU3ZjZiMDU1OGRmMWVmOTVlYWYwZjg3MjU0YmJlYTk1OWE1MTVkOWZkMzAyYzVkMDk2MmU3In0%3D;
+          expires=Thu, 04-Jun-2020 10:52:07 GMT; Max-Age=7200; path=/; domain=vendors.paddle.com;
+          secure; HttpOnly;SameSite=none;Secure
+        X-Powered-By:
+        - PHP/7.2.31
+        Cache-Control:
+        - no-cache
+        X-Frame-Options:
+        - sameorigin
+        P3p:
+        - CP="CAO CUR ADMa DEVa TAIa OUR DELa STP ONL NAV STA PUR"
+        Cf-Cache-Status:
+        - DYNAMIC
+        Cf-Request-Id:
+        - 032020e1e30000bdaf113be200000001
+        Expect-Ct:
+        - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+        Server:
+        - cloudflare
+        Cf-Ray:
+        - 59e06a7c9fa9bdaf-AMS
+      body:
+        encoding: ASCII-8BIT
+        string: '{"success":true,"response":[{"subscription_id":3484448,"plan_id":594469,"user_id":17368056,"user_email":"test@example.com","marketing_consent":false,"update_url":"https:\/\/checkout.paddle.com\/subscription\/update?user=17368056&subscription=3484448&hash=07e2aacdc9b440d075775cdd147964de23eb5f9ea754282c2206971ad0ecd9f8","cancel_url":"https:\/\/checkout.paddle.com\/subscription\/cancel?user=17368056&subscription=3484448&hash=13918e10c8bedf7b26c13568b3bdb17fa7927c90cd74c2e7a2ac9f7bd196c251","state":"active","signup_date":"2020-05-23
+          08:47:54","last_payment":{"amount":0,"currency":"USD","date":"2020-05-23"},"linked_subscriptions":[],"payment_information":{"payment_method":"paypal"},"next_payment":{"amount":0,"currency":"USD","date":"2020-12-31"}}]}'
+      http_version: null
+    recorded_at: Thu, 04 Jun 2020 08:52:07 GMT
+  - request:
+      method: post
+      uri: https://vendors.paddle.com/api/2.0/subscription/users_cancel
+      body:
+        encoding: UTF-8
+        string: subscription_id=3484448&vendor_auth_code=d4fa0981f2c51335215bfbf31cddfbf1af76951baa11427910&vendor_id=123456
+      headers:
+        User-Agent:
+        - Faraday v1.0.1
+        Content-Type:
+        - application/x-www-form-urlencoded
+        Accept-Encoding:
+        - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+        Accept:
+        - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Date:
+        - Thu, 04 Jun 2020 08:52:08 GMT
+        Content-Type:
+        - application/json
+        Content-Length:
+        - '32'
+        Connection:
+        - keep-alive
+        Set-Cookie:
+        - __cfduid=df49a2f85b85956e4d5d80e1fcaf315b51591260728; expires=Sat, 04-Jul-20
+          08:52:08 GMT; path=/; domain=.paddle.com; HttpOnly; SameSite=Lax
+        - paddle_session_vendor=eyJpdiI6Ilh1VjNXYUkxUGU4anR1RW5WbkhYRWhNZXJranZkQ2hPVENuTnRPc2Ryazg9IiwidmFsdWUiOiJlM1FCTGR3aUdHa0Q4emxcL0ZyT2p1c3c1OEJLcEE3UkdTMkpYRjU5WHJENEpLaVhOVUJ3RlFlZGNFelB0TmUrcEJcLzR3Wlg0aUNUOVRweXZPNUJxRFVRPT0iLCJtYWMiOiI4YmU4ODMzYmViNDYzYzcxMjg1ODVjOTcxZjRhZjYwMzkxZDdlMzQ3NTNkZWFmZmYyOTU5NjRjOTA1MjAyMGEwIn0%3D;
+          expires=Thu, 04-Jun-2020 10:52:08 GMT; Max-Age=7200; path=/; domain=vendors.paddle.com;
+          secure; HttpOnly;SameSite=none;Secure
+        X-Powered-By:
+        - PHP/7.2.31
+        Cache-Control:
+        - no-cache
+        X-Frame-Options:
+        - sameorigin
+        P3p:
+        - CP="CAO CUR ADMa DEVa TAIa OUR DELa STP ONL NAV STA PUR"
+        Accept-Ranges:
+        - bytes
+        Cf-Cache-Status:
+        - DYNAMIC
+        Cf-Request-Id:
+        - 032020e3770000fa78bc8c0200000001
+        Expect-Ct:
+        - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+        Server:
+        - cloudflare
+        Cf-Ray:
+        - 59e06a7f2a18fa78-AMS
+      body:
+        encoding: UTF-8
+        string: '{"success":true,"response":null}'
+      http_version: null
+    recorded_at: Thu, 04 Jun 2020 08:52:08 GMT
+  recorded_with: VCR 5.1.0
+  

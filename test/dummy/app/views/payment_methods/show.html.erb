@@ -1,0 +1,24 @@
+<h1>Payment Method</h1>
+
+<div class="mt-4">
+<h6 class="mb-1">Processor</h6>
+<%= current_user.processor&.titleize || "None"%>
+
+<div class="mt-4">
+  <h6 class="mb-1">Payment Method Details</h6>
+  <% if current_user.card_last4? && current_user.paypal? %>
+    <div><%= current_user.card_type.titleize %> (<%= current_user.card_last4 %>)</div>
+  <% elsif current_user.card_last4? %>
+    <div><%= current_user.card_type.titleize %> ending in <%= current_user.card_last4 %></div>
+    <div>Expires <%= current_user.card_exp_month %> / <%= current_user.card_exp_year %></div>
+  <% else %>
+    No card on file.
+  <% end %>
+</div>
+
+<div class="mt-4">
+  <h6 class="mb-1">Update Payment Method</h6>
+  <%= link_to "Stripe", edit_stripe_payment_method_path, class: "d-block" %>
+  <%= link_to "Braintree", edit_braintree_payment_method_path, class: "d-block" %>
+  <%= link_to "Paddle", edit_paddle_payment_method_path, class: "d-block" %>
+</diV>

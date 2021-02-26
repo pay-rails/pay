@@ -3,7 +3,7 @@ require "test_helper"
 class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
   setup do
     @event = OpenStruct.new
-    @event.data = JSON.parse(File.read("test/support/fixtures/customer_deleted_event.json"), object_class: OpenStruct)
+    @event.data = JSON.parse(File.read("test/support/fixtures/stripe/customer_deleted_event.json"), object_class: OpenStruct)
   end
 
   test "a customers subscription information is nulled out upon deletion" do

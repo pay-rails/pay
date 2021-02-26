@@ -1,0 +1,16 @@
+<div class="row">
+  <div class="col-sm-6">
+    <a href="#!" id="buy">Subscribe</a>
+
+    <script type="text/javascript">
+      function openCheckout(event) {
+        event.preventDefault()
+        Paddle.Checkout.open({
+                product: 7736,
+                passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
+              });
+      }
+      document.getElementById('buy').addEventListener('click', openCheckout, false);
+    </script>
+  </div>
+</div>

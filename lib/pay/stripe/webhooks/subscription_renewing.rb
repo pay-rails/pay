@@ -9,12 +9,13 @@ module Pay
             processor: :stripe,
             processor_id: event.data.object.subscription
           )
-          notify_user(subscription.owner, subscription) if subscription.present?
+          date = Time.zone.at(event.data.object.next_payment_attempt)
+          notify_user(subscription.owner, subscription, date) if subscription.present?
         end
 
-        def notify_user(user, subscription)
+        def notify_user(billable, subscription, date)
           if Pay.send_emails
-            Pay::UserMailer.subscription_renewing(user, subscription).deliver_later
+            Pay::UserMailer.with(billable: billable, subscription: subscription, date: date).subscription_renewing.deliver_later
           end
         end
       end

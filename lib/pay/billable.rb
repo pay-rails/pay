@@ -17,28 +17,46 @@ module Pay
 
     included do |base|
       include Pay::Billable::SyncEmail
-      include Pay::Stripe::Billable if defined? ::Stripe
-      include Pay::Braintree::Billable if defined? ::Braintree
 
-      has_many :charges, class_name: Pay.chargeable_class, foreign_key: :owner_id, inverse_of: :owner
-      has_many :subscriptions, class_name: Pay.subscription_class, foreign_key: :owner_id, inverse_of: :owner
+      has_many :charges, class_name: Pay.chargeable_class, foreign_key: :owner_id, inverse_of: :owner, as: :owner
+      has_many :subscriptions, class_name: Pay.subscription_class, foreign_key: :owner_id, inverse_of: :owner, as: :owner
 
       attribute :plan, :string
       attribute :quantity, :integer
       attribute :card_token, :string
+      attribute :pay_fake_processor_allowed, :boolean, default: false
+
+      validate :pay_fake_processor_is_allowed, if: :processor_changed?
     end
 
+    def payment_processor
+      @payment_processor ||= payment_processor_for(processor).new(self)
+    end
+
+    def payment_processor_for(name)
+      "Pay::#{name.to_s.classify}::Billable".constantize
+    end
+
+    # Reset the payment processor when it changes
     def processor=(value)
       super(value)
       self.processor_id = nil if processor_changed?
+      @payment_processor = nil
     end
 
-    def customer
-      check_for_processor
-      raise Pay::Error, "Email is required to create a customer" if email.nil?
+    def processor
+      super&.inquiry
+    end
 
-      customer = send("#{processor}_customer")
-      update_card(card_token) if card_token.present?
+    delegate :charge, to: :payment_processor
+    delegate :subscribe, to: :payment_processor
+    delegate :update_card, to: :payment_processor
+
+    def customer
+      raise Pay::Error, I18n.t("errors.email_required") if email.nil?
+
+      customer = payment_processor.customer
+      payment_processor.update_card(card_token) if card_token.present?
       customer
     end
 
@@ -46,23 +64,12 @@ module Pay
       [try(:first_name), try(:last_name)].compact.join(" ")
     end
 
-    def charge(amount_in_cents, options = {})
-      check_for_processor
-      send("create_#{processor}_charge", amount_in_cents, options)
+    def create_setup_intent
+      ActiveSupport::Deprecation.warn("This method will be removed in the next release. Use `@billable.payment_processor.create_setup_intent` instead.")
+      payment_processor.create_setup_intent
     end
 
-    def subscribe(name: "default", plan: "default", **options)
-      check_for_processor
-      send("create_#{processor}_subscription", name, plan, options)
-    end
-
-    def update_card(token)
-      check_for_processor
-      customer if processor_id.nil?
-      send("update_#{processor}_card", token)
-    end
-
-    def on_trial?(name: "default", plan: nil)
+    def on_trial?(name: Pay.default_product_name, plan: nil)
       return true if default_generic_trial?(name, plan)
 
       sub = subscription(name: name)
@@ -76,11 +83,10 @@ module Pay
     end
 
     def processor_subscription(subscription_id, options = {})
-      check_for_processor
-      send("#{processor}_subscription", subscription_id, options)
+      payment_processor.processor_subscription(subscription_id, options)
     end
 
-    def subscribed?(name: "default", processor_plan: nil)
+    def subscribed?(name: Pay.default_product_name, processor_plan: nil)
       subscription = subscription(name: name)
 
       return false if subscription.nil?
@@ -89,47 +95,50 @@ module Pay
       subscription.active? && subscription.processor_plan == processor_plan
     end
 
-    def on_trial_or_subscribed?(name: "default", processor_plan: nil)
+    def on_trial_or_subscribed?(name: Pay.default_product_name, processor_plan: nil)
       on_trial?(name: name, plan: processor_plan) ||
         subscribed?(name: name, processor_plan: processor_plan)
     end
 
-    def subscription(name: "default")
-      subscriptions.for_name(name).last
+    def subscription(name: Pay.default_product_name)
+      subscriptions.loaded? ? subscriptions.reverse.detect { |s| s.name == name } : subscriptions.for_name(name).last
     end
 
     def invoice!(options = {})
-      send("#{processor}_invoice!", options)
+      ActiveSupport::Deprecation.warn("This will be removed in the next release. Use `@billable.payment_processor.invoice!` instead.")
+      payment_processor.invoice!(options)
     end
 
     def upcoming_invoice
-      send("#{processor}_upcoming_invoice")
+      ActiveSupport::Deprecation.warn("This will be removed in the next release. Use `@billable.payment_processor.upcoming_invoice` instead.")
+      payment_processor.upcoming_invoice
     end
 
     def stripe?
+      ActiveSupport::Deprecation.warn("This will be removed in the next release. Use `@billable.processor.stripe?` instead.")
       processor == "stripe"
     end
 
     def braintree?
+      ActiveSupport::Deprecation.warn("This will be removed in the next release. Use `@billable.processor.braintree?` instead.")
       processor == "braintree"
     end
 
     def paypal?
-      braintree? && card_type == "PayPal"
+      card_type == "PayPal"
     end
 
-    def has_incomplete_payment?(name: "default")
+    def paddle?
+      ActiveSupport::Deprecation.warn("This will be removed in the next release. Use `@billable.processor.paddle?` instead.")
+      processor == "paddle"
+    end
+
+    def has_incomplete_payment?(name: Pay.default_product_name)
       subscription(name: name)&.has_incomplete_payment?
     end
 
-    private
-
-    def check_for_processor
-      raise StandardError, "No payment processor selected. Make sure to set the #{self.class.name}'s `processor` attribute to either 'stripe' or 'braintree'." unless processor
-    end
-
     # Used for creating a Pay::Subscription in the database
-    def create_subscription(subscription, processor, name, plan, options = {})
+    def create_pay_subscription(subscription, processor, name, plan, options = {})
       options[:quantity] ||= 1
 
       options.merge!(
@@ -137,15 +146,22 @@ module Pay
         processor: processor,
         processor_id: subscription.id,
         processor_plan: plan,
-        trial_ends_at: send("#{processor}_trial_end_date", subscription),
+        trial_ends_at: payment_processor.trial_end_date(subscription),
         ends_at: nil
       )
       subscriptions.create!(options)
     end
 
+    private
+
     def default_generic_trial?(name, plan)
       # Generic trials don't have plans or custom names
       plan.nil? && name == "default" && on_generic_trial?
+    end
+
+    def pay_fake_processor_is_allowed
+      return unless processor == "fake_processor"
+      errors.add(:processor, "must be a valid payment processor") unless pay_fake_processor_allowed?
     end
   end
 end

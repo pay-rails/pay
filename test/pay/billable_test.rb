@@ -26,14 +26,14 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test "customer with stripe processor" do
     @billable.processor = "stripe"
-    @billable.expects(:stripe_customer).returns(:user)
+    Pay::Stripe::Billable.any_instance.expects(:customer).returns(:user)
     assert_equal :user, @billable.customer
   end
 
   test "customer with undefined processor" do
     @billable.processor = "pants"
 
-    assert_raises NoMethodError do
+    assert_raises NameError do
       @billable.customer
     end
   end
@@ -46,10 +46,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test "subscribing a stripe customer" do
     @billable.processor = "stripe"
-    @billable.expects(:create_stripe_subscription)
-      .with("default", "default", {})
-      .returns(:user)
-
+    Pay::Stripe::Billable.any_instance.expects(:subscribe).returns(:user)
     assert_equal :user, @billable.subscribe
     assert @billable.processor = "stripe"
   end
@@ -57,8 +54,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
   test "updating a stripe card" do
     @billable.processor = "stripe"
     @billable.processor_id = 1
-    @billable.expects(:update_stripe_card).with("a1b2c3").returns(:card)
-
+    Pay::Stripe::Billable.any_instance.expects(:update_card).with("a1b2c3").returns(:card)
     assert_equal :card, @billable.update_card("a1b2c3")
   end
 
@@ -129,6 +125,25 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert_equal subscription, @billable.subscription
   end
 
+  test "getting a subscription by default name with subscriptions eager loaded" do
+    user = User.new(email: "john@smith.com")
+    subscription = Pay.subscription_model.create!(
+      name: "default",
+      owner: user,
+      processor: "stripe",
+      processor_id: "1",
+      processor_plan: "default",
+      status: "active",
+      quantity: "1"
+    )
+
+    Pay.subscription_model.expects(:for_name).with("default").never
+
+    user_with_subscriptions_loaded = User.includes(:subscriptions).find(user.id)
+
+    assert_equal subscription, user_with_subscriptions_loaded.subscription
+  end
+
   test "getting a stripe subscription" do
     @billable.processor = "stripe"
     ::Stripe::Subscription.expects(:retrieve).with(id: "123").returns(:subscription)
@@ -144,13 +159,13 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test "pay invoice" do
     @billable.processor = "stripe"
-    @billable.expects(:stripe_invoice!).returns(:invoice)
+    Pay::Stripe::Billable.any_instance.expects(:invoice!).returns(:invoice)
     assert_equal :invoice, @billable.invoice!
   end
 
   test "get upcoming invoice" do
     @billable.processor = "stripe"
-    @billable.expects(:stripe_upcoming_invoice).returns(:invoice)
+    Pay::Stripe::Billable.any_instance.expects(:upcoming_invoice).returns(:invoice)
     assert_equal :invoice, @billable.upcoming_invoice
   end
 
@@ -251,6 +266,36 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     @billable.processor_id = 1
 
     @billable.processor = "braintree"
-    assert_equal nil, @billable.processor_id
+    assert_nil @billable.processor_id
+  end
+
+  test "finds polymorphic subscription" do
+    user_billable = User.create! email: "test@example.com", id: 1001
+    team_billable = Team.create! id: 1001, owner: user_billable
+
+    subscription = Pay.subscription_model.create!(
+      owner: team_billable, name: "default", processor: "stripe", processor_id: "1",
+      processor_plan: "default", quantity: "1", status: "active"
+    )
+
+    assert_nil user_billable.subscription
+    assert_equal subscription, team_billable.subscription
+  end
+
+  test "processor" do
+    user = User.new
+
+    assert_nothing_raised do
+      user.processor
+    end
+
+    user.processor = "stripe"
+    assert user.processor.stripe?
+
+    user.processor = "braintree"
+    assert user.processor.braintree?
+
+    user.processor = "paddle"
+    assert user.processor.paddle?
   end
 end

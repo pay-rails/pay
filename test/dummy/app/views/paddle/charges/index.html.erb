@@ -1,0 +1,13 @@
+<div class="d-flex justify-content-between">
+  <h1>Paddle Charges</h1>
+
+  <div>
+    <%= link_to "New Paddle Charge", new_paddle_charge_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% @charges.each do |charge| %>
+  <div>
+    <%= link_to "Pay::Charge #{charge.id}", paddle_charge_path(charge) %>
+  </div>
+<% end %>

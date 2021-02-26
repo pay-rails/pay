@@ -3,7 +3,7 @@ require "test_helper"
 class Pay::Stripe::Webhooks::ChargeSucceededTest < ActiveSupport::TestCase
   setup do
     @event = OpenStruct.new
-    @event.data = JSON.parse(File.read("test/support/fixtures/charge_succeeded_event.json"), object_class: OpenStruct)
+    @event.data = JSON.parse(File.read("test/support/fixtures/stripe/charge_succeeded_event.json"), object_class: OpenStruct)
   end
 
   test "a charge is created" do

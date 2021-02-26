@@ -7,10 +7,10 @@ class UserMailerTest < ActionMailer::TestCase
   end
 
   test "receipt" do
-    email = Pay::UserMailer.receipt(@user, @charge)
+    email = Pay::UserMailer.with(billable: @user, charge: @charge).receipt
 
     assert_equal [@user.email], email.to
-    assert_equal Pay.email_receipt_subject, email.subject
+    assert_equal I18n.t("pay.user_mailer.receipt.subject"), email.subject
   end
 
   test "attaches refunds to receipt" do
@@ -23,22 +23,32 @@ class UserMailerTest < ActionMailer::TestCase
     @charge.stubs(:filename).returns(filename)
     @charge.stubs(:receipt).returns(receipt)
 
-    email = Pay::UserMailer.receipt(@user, @charge)
+    email = Pay::UserMailer.with(billable: @user, charge: @charge).receipt
 
     assert_equal filename, email.attachments.first.filename
   end
 
   test "refund" do
-    email = Pay::UserMailer.refund(@user, @charge)
+    email = Pay::UserMailer.with(billable: @user, charge: @charge).refund
 
     assert_equal [@user.email], email.to
-    assert_equal Pay.email_refund_subject, email.subject
+    assert_equal I18n.t("pay.user_mailer.refund.subject"), email.subject
   end
 
-  test "renewal" do
-    email = Pay::UserMailer.subscription_renewing(@user, @charge)
+  test "subscription_renewing" do
+    time = Time.current
+    email = Pay::UserMailer.with(billable: @user, subscription: Pay::Subscription.new, date: time).subscription_renewing
 
     assert_equal [@user.email], email.to
-    assert_equal Pay.email_renewing_subject, email.subject
+    assert_equal I18n.t("pay.user_mailer.subscription_renewing.subject"), email.subject
+    assert_includes email.body.decoded, I18n.l(time.to_date, format: :long)
+  end
+
+  test "payment_action_required" do
+    email = Pay::UserMailer.with(billable: @user, payment_intent_id: "x", subscription: Pay::Subscription.new).payment_action_required
+
+    assert_equal [@user.email], email.to
+    assert_equal I18n.t("pay.user_mailer.payment_action_required.subject"), email.subject
+    assert_includes email.body.decoded, Pay::Engine.instance.routes.url_helpers.payment_path("x")
   end
 end

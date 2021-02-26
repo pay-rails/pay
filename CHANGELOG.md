@@ -1,5 +1,90 @@
 ### Unreleased
 
+# 2.6.4
+
+* [NEW] Fake payment processor for testing and giving users free access to your application
+* [FIX] Delegate trial_ends_at for subscriptions - @archonic
+
+# 2.6.3
+
+* [FIX] Default to empty hash when default_url_options is nil so proper error is raised
+* [FIX] Fix inquiry when processor is nil
+
+### 2.6.2
+
+* [FIX] Correctly handle updating payment method in Stripe
+
+### 2.6.1
+
+* [NEW] Add Stripe Customer Billing Portal - @excid3
+* Include `customer` on Stripe Checkout sessions - @excid3
+
+### 2.6.0
+
+* [NEW] Stripe Checkout support - @excid3
+
+### 2.5.0
+
+* [BREAKING] Webhooks that can't be verified respond with 400 instead of 200 - @excid3
+* [BREAKING] Remove StripeEvent dependency - excid3
+* [BREAKING] Remove old configuration for mailer subjects in favor of locales - @excid3
+* [NEW] Add `Pay::Webhook.delegator` for subscribing to webhooks - @excid3
+
+### 2.4.4
+
+* [Fix] Fixed missing require for version file - @excid3
+
+### 2.4.3
+
+* Add Stripe app info and join the Stripe Partner program for better support for Pay! - @excid3
+
+### 2.4.2
+
+* [FIX] Update migration to check for symobl keys on ActiveRecord adapter with Rails 6.1 - @excid3
+
+### 2.4.1
+
+* [FIX] Move Paddle logic into paddle methods - @excid3
+
+### 2.4.0
+
+* [BREAKING] Use locales for email subjects and remove configuration - @excid3
+
+### 2.3.1
+
+* [FIX] Subject for payment action required emails referenced an invalid config - @excid3
+
+### 2.3.0
+
+* Add `data` json column to Charge and Subscription models - @excid3
+
+To add the new migrations to your app, run:
+
+```
+rails pay:install:migrations
+```
+
+* Add Paddle initial support - @nm
+* `Pay.model_parent_class` defaults to `ApplicationRecord` - @excid3
+* Test suite now runs against sqlite, mysql, and postgresql - @excid3
+* [FIX] Lookup billable on invoice.payment_action_required events - @excid3
+
+### 2.2.2
+
+* Bugfixes
+
+### 2.2.1
+
+* [NEW] Allow passing `?back=/path/to/item` for customizing the back link for SCA payments page
+
+### 2.2.0
+
+Stripe API 2020-08-27 changes:
+
+* Use `proration_behavior` instead of `prorate` for Stripe subscription changes
+* Switch to `::Stripe::Subscription.create` instead of `customer.subscriptions` as Stripe no longer includes this by default for performance
+* Set Stripe API version for easier gem management
+
 ### 2.1.3
 
 * Add support for `quantity` option on `subscribe` for subscription quantities

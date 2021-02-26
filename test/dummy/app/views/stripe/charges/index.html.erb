@@ -1,0 +1,14 @@
+<div class="d-flex justify-content-between">
+  <h1>Stripe Charges</h1>
+
+  <div>
+    <%= link_to "New Stripe Charge", new_stripe_charge_path, class: "btn btn-primary" %>
+    <%= link_to "Import Stripe Charge", new_stripe_charges_import_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% @charges.each do |charge| %>
+  <div>
+    <%= link_to "Pay::Charge #{charge.id}", stripe_charge_path(charge) %>
+  </div>
+<% end %>

@@ -1,0 +1,197 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/customers
+    body:
+      encoding: UTF-8
+      string: email=gob%40bluth.com&name=
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/5.29.1 PayRails/2.6.1 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_13CZX6RqGpEL1K","request_duration_ms":619}}'
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.6.1"},"bindings_version":"5.29.1","lang":"ruby","lang_version":"3.0.0
+        p0 (2020-12-25)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 20.3.0 Darwin Kernel Version 20.3.0: Thu Jan 21 00:07:06
+        PST 2021; root:xnu-7195.81.3~1/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 16 Feb 2021 21:36:42 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '580'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Request-Id:
+      - req_pCYAvhEW5J7J0R
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-C-Cost:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "cus_IxWGJz8x06q0Bp",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": 1613511402,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "gob@bluth.com",
+          "invoice_prefix": "9A676FD3",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": null,
+            "footer": null
+          },
+          "livemode": false,
+          "metadata": {
+          },
+          "name": null,
+          "next_invoice_sequence": 1,
+          "phone": null,
+          "preferred_locales": [
+
+          ],
+          "shipping": null,
+          "tax_exempt": "none"
+        }
+  recorded_at: Tue, 16 Feb 2021 21:36:42 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/checkout/sessions
+    body:
+      encoding: UTF-8
+      string: customer=cus_IxWGJz8x06q0Bp&payment_method_types[0]=card&mode=payment&success_url=http%3A%2F%2Flocalhost%3A3000%2F&cancel_url=http%3A%2F%2Flocalhost%3A3000%2F&line_items[0][price]=price_1ILVZaKXBGcbgpbZQ26kgXWG&line_items[0][quantity]=1
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/5.29.1 PayRails/2.6.1 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_pCYAvhEW5J7J0R","request_duration_ms":452}}'
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.6.1"},"bindings_version":"5.29.1","lang":"ruby","lang_version":"3.0.0
+        p0 (2020-12-25)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 20.3.0 Darwin Kernel Version 20.3.0: Thu Jan 21 00:07:06
+        PST 2021; root:xnu-7195.81.3~1/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 16 Feb 2021 21:36:43 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '870'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Request-Id:
+      - req_oCSLI7sBHks7Ll
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-C-Cost:
+      - '1'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "cs_test_a1j9vFEKzRQSCZjX9jzVQ76Zlx0oo7Fy2sHZhGK78Lepd4XARMeCdOdxLx",
+          "object": "checkout.session",
+          "allow_promotion_codes": null,
+          "amount_subtotal": 1500,
+          "amount_total": 1500,
+          "billing_address_collection": null,
+          "cancel_url": "http://localhost:3000/",
+          "client_reference_id": null,
+          "currency": "usd",
+          "customer": "cus_IxWGJz8x06q0Bp",
+          "customer_details": null,
+          "customer_email": null,
+          "livemode": false,
+          "locale": null,
+          "metadata": {
+          },
+          "mode": "payment",
+          "payment_intent": "pi_1ILbDrKXBGcbgpbZe4nB9SMd",
+          "payment_method_types": [
+            "card"
+          ],
+          "payment_status": "unpaid",
+          "setup_intent": null,
+          "shipping": null,
+          "shipping_address_collection": null,
+          "submit_type": null,
+          "subscription": null,
+          "success_url": "http://localhost:3000/",
+          "total_details": {
+            "amount_discount": 0,
+            "amount_tax": 0
+          }
+        }
+  recorded_at: Tue, 16 Feb 2021 21:36:43 GMT
+recorded_with: VCR 6.0.0

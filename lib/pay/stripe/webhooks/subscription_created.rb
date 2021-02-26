@@ -18,10 +18,11 @@ module Pay
               return
             end
 
-            subscription = Pay.subscription_model.new(owner: owner)
+            subscription = Pay.subscription_model.new(name: Pay.default_product_name, owner: owner, processor: :stripe, processor_id: object.id)
           end
 
           subscription.quantity = object.quantity
+          subscription.status = object.status
           subscription.processor_plan = object.plan.id
           subscription.trial_ends_at = Time.at(object.trial_end) if object.trial_end.present?
 

@@ -1,8 +1,11 @@
 module Pay
-  class Subscription < ApplicationRecord
+  class Subscription < Pay::ApplicationRecord
     self.table_name = Pay.subscription_table
 
-    STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid]
+    STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid paused]
+
+    # Only serialize for non-json columns
+    serialize :data unless json_column?("data")
 
     # Associations
     belongs_to :owner, polymorphic: true
@@ -24,7 +27,36 @@ module Pay
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
 
+    # TODO: Include these with a module
+    store_accessor :data, :paddle_update_url
+    store_accessor :data, :paddle_cancel_url
+    store_accessor :data, :paddle_paused_from
+
     attribute :prorate, :boolean, default: true
+
+    # Helpers for payment processors
+    %w[braintree stripe paddle].each do |processor_name|
+      define_method "#{processor_name}?" do
+        processor == processor_name
+      end
+
+      scope processor_name, -> { where(processor: processor_name) }
+    end
+
+    def payment_processor
+      @payment_processor ||= payment_processor_for(processor).new(self)
+    end
+
+    def payment_processor_for(name)
+      "Pay::#{name.to_s.classify}::Subscription".constantize
+    end
+
+    delegate :on_grace_period?,
+      :paused?,
+      :pause,
+      :cancel,
+      :cancel_now!,
+      to: :payment_processor
 
     def no_prorate
       self.prorate = false
@@ -46,10 +78,6 @@ module Pay
       canceled?
     end
 
-    def on_grace_period?
-      canceled? && Time.zone.now < ends_at
-    end
-
     def active?
       ["trialing", "active"].include?(status) && (ends_at.nil? || on_grace_period? || on_trial?)
     end
@@ -66,28 +94,14 @@ module Pay
       past_due? || incomplete?
     end
 
-    def cancel
-      send("#{processor}_cancel")
-    end
-
-    def cancel_now!
-      send("#{processor}_cancel_now!")
-    end
-
     def resume
-      unless on_grace_period?
-        raise StandardError,
-          "You can only resume subscriptions within their grace period."
-      end
-
-      send("#{processor}_resume")
-
+      payment_processor.resume
       update(ends_at: nil, status: "active")
       self
     end
 
     def swap(plan)
-      send("#{processor}_swap", plan)
+      payment_processor.swap(plan)
       update(processor_plan: plan, ends_at: nil)
     end
 

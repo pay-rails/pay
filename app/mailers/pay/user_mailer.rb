@@ -1,53 +1,32 @@
 module Pay
   class UserMailer < ApplicationMailer
-    def receipt(user, charge)
-      @user, @charge = user, charge
-
-      if charge.respond_to? :receipt
-        attachments[charge.filename] = charge.receipt
+    def receipt
+      if params[:charge].respond_to? :receipt
+        attachments[params[:charge].filename] = params[:charge].receipt
       end
 
-      mail(
-        to: to(user),
-        subject: Pay.email_receipt_subject
-      )
+      mail to: to
     end
 
-    def refund(user, charge)
-      @user, @charge = user, charge
-
-      mail(
-        to: to(user),
-        subject: Pay.email_refund_subject
-      )
+    def refund
+      mail to: to
     end
 
-    def subscription_renewing(user, subscription)
-      @user, @subscription = user, subscription
-
-      mail(
-        to: to(user),
-        subject: Pay.email_renewing_subject
-      )
+    def subscription_renewing
+      mail to: to
     end
 
-    def payment_action_required(user, payment_intent_id, subscription)
-      payment = Payment.from_id(payment_intent_id)
-      @user, @payment, @subscription = user, payment, subscription
-
-      mail(
-        to: to(user),
-        subject: Pay.payment_action_required_subject
-      )
+    def payment_action_required
+      mail to: to
     end
 
     private
 
-    def to(user)
-      if user.respond_to?(:customer_name)
-        "#{user.customer_name} <#{user.email}>"
+    def to
+      if params[:billable].respond_to?(:customer_name)
+        "#{params[:billable].customer_name} <#{params[:billable].email}>"
       else
-        user.email
+        params[:billable].email
       end
     end
   end

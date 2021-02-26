@@ -1,0 +1,17 @@
+<h1>Stripe Checkout</h1>
+
+<div class="mb-4">
+  <%= render partial: "pay/stripe/checkout_button", locals: { session: @payment, title: "Payment" } %>
+</div>
+
+<div class="mb-4">
+  <%= render partial: "pay/stripe/checkout_button", locals: { session: @subscription, title: "Subscription" } %>
+</div>
+
+<div class="mb-4">
+  <%= render partial: "pay/stripe/checkout_button", locals: { session: @setup, title: "Setup" } %>
+</div>
+
+<div class="mb-4">
+  <%= link_to "Customer Billing Portal", @portal.url %>
+</div>

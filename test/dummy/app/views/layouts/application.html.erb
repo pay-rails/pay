@@ -4,11 +4,102 @@
     <title>Dummy</title>
     <%= csrf_meta_tags %>
 
+    <%# Bootstrap %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      document.addEventListener("turbolinks:load", function() {
+        $('[data-toggle="tooltip"]').tooltip()
+        $('[data-toggle="popover"]').popover()
+      })
+    </script>
+
+    <%# Stripe dependencies %>
+    <%= tag.meta name: "stripe-key", content: Pay::Stripe.public_key %>
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <%# Paddle dependencies %>
+    <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+    <script type="text/javascript">
+      Paddle.Environment.set('sandbox');
+      Paddle.Setup({ vendor: <%= Pay::Paddle.vendor_id %> });
+    </script>
+
+    <%# Braintree dependencies %>
+    <%= javascript_include_tag 'https://js.braintreegateway.com/web/dropin/1.25.0/js/dropin.min.js' %>
+
+    <!-- Load PayPal's checkout.js Library. -->
+    <script src="https://www.paypalobjects.com/api/checkout.js" data-version-4 log-level="warn"></script>
+
+    <!-- Load the client component. -->
+    <script src="https://js.braintreegateway.com/web/3.53.0/js/client.min.js"></script>
+
+    <!-- Load the PayPal Checkout component. -->
+    <script src="https://js.braintreegateway.com/web/3.53.0/js/paypal-checkout.min.js"></script>
+
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
-    <%= yield %>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <%= link_to "Pay Examples", root_path, class: "navbar-brand" %>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Braintree
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <%= link_to "Charges", braintree_charges_path, class: "dropdown-item" %>
+              <%= link_to "Subscriptions", braintree_subscriptions_path, class: "dropdown-item" %>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Paddle
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <%= link_to "Charges", paddle_charges_path, class: "dropdown-item" %>
+              <%= link_to "Subscriptions", paddle_subscriptions_path, class: "dropdown-item" %>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Stripe
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <%= link_to "Charges", stripe_charges_path, class: "dropdown-item" %>
+              <%= link_to "Subscriptions", stripe_subscriptions_path, class: "dropdown-item" %>
+              <%= link_to "Checkout", stripe_checkout_path, class: "dropdown-item" %>
+            </div>
+          </li>
+
+          <li class="nav-item">
+            <%= link_to "Payment Method", payment_method_path, class: "nav-link" %>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container mx-auto">
+      <% if notice %>
+        <div class="alert alert-notice"><%= notice %></div>
+      <% end %>
+
+      <% if alert %>
+        <div class="alert alert-warning"><%= alert %></div>
+      <% end %>
+
+      <%= yield %>
+    </div>
   </body>
 </html>

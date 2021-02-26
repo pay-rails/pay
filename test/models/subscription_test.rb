@@ -13,6 +13,30 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_equal Team, @subscription.owner.class
   end
 
+  test "braintree?" do
+    assert @subscription.respond_to?(:braintree?)
+  end
+
+  test "stripe?" do
+    assert @subscription.respond_to?(:stripe?)
+  end
+
+  test "paddle?" do
+    assert @subscription.respond_to?(:paddle?)
+  end
+
+  test "braintree scope" do
+    assert Pay.subscription_model.braintree.is_a?(ActiveRecord::Relation)
+  end
+
+  test "stripe scope" do
+    assert Pay.subscription_model.stripe.is_a?(ActiveRecord::Relation)
+  end
+
+  test "paddle scope" do
+    assert Pay.subscription_model.paddle.is_a?(ActiveRecord::Relation)
+  end
+
   test ".for_name(name) scope" do
     subscription1 = create_subscription(name: "default")
     subscription2 = create_subscription(name: "superior")
@@ -140,6 +164,21 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_in_delta @subscription.ends_at, expiration, 1.second
   end
 
+  test "cancel trialing" do
+    trial_end = 2.weeks.from_now
+
+    stripe_sub = mock("stripe_subscription")
+    stripe_sub.expects(:cancel_at_period_end=).with(true)
+    stripe_sub.expects(:save)
+
+    @subscription.stubs(:processor_subscription).returns(stripe_sub)
+    @subscription.stubs(:on_trial?).returns(true)
+    @subscription.stubs(:trial_ends_at).returns(trial_end)
+    @subscription.cancel
+
+    assert_in_delta @subscription.ends_at, trial_end, 1.second
+  end
+
   test "cancel_now!" do
     cancelled_stripe = mock("cancelled_stripe_subscription")
 
@@ -193,7 +232,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     stripe_sub = mock("stripe_subscription")
     stripe_sub.expects(:cancel_at_period_end=)
     stripe_sub.expects(:plan=).returns("yearly")
-    stripe_sub.expects(:prorate=)
+    stripe_sub.expects(:proration_behavior=)
     stripe_sub.expects(:trial_end=)
     stripe_sub.expects(:quantity=)
     stripe_sub.expects(:save)
@@ -211,7 +250,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       assert @subscription.active?
     end
 
-    %w[incomplete incomplete_expired past_due canceled unpaid].each do |state|
+    %w[incomplete incomplete_expired past_due canceled unpaid paused].each do |state|
       @subscription.status = state
       assert_not @subscription.active?
     end
@@ -220,8 +259,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   test "correctly handles v1 subscriptions without statuses" do
     # Subscriptions in Pay v1.x didn't have a status column, so we've set all their statuses to active
     # We just want to make sure those old, ended subscriptions are still correct
-    assert_not Pay::Subscription.new(status: :active, ends_at: 1.day.ago).active?
-    assert Pay::Subscription.new(status: :active, ends_at: 1.day.ago).canceled?
+    assert_not Pay::Subscription.new(processor: :stripe, status: :active, ends_at: 1.day.ago).active?
+    assert Pay::Subscription.new(processor: :stripe, status: :active, ends_at: 1.day.ago).canceled?
   end
 
   private

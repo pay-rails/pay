@@ -8,8 +8,10 @@ Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
 **Current Payment Providers**
 
-- Stripe ([supports SCA](https://stripe.com/docs/strong-customer-authentication), API version [2019-03-14](https://stripe.com/docs/upgrades#2019-03-14) or higher required)
-- Braintree
+- Stripe ([SCA Compatible](https://stripe.com/docs/strong-customer-authentication) using API version `2020-08-27`)
+- Paddle (SCA Compatible & supports PayPal)
+- Braintree (supports PayPal)
+- [Fake Processor](docs/fake_processor.md)
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
 
@@ -30,10 +32,12 @@ gem 'pay', '~> 2.0'
 
 # To use Stripe, also include:
 gem 'stripe', '< 6.0', '>= 2.8'
-gem 'stripe_event', '~> 2.3'
 
 # To use Braintree + PayPal, also include:
 gem 'braintree', '< 3.0', '>= 2.92.0'
+
+# To use Paddle, also include:
+gem 'paddle_pay', '~> 0.0.1'
 
 # To use Receipts
 gem 'receipts', '~> 1.0.0'
@@ -43,6 +47,13 @@ And then execute:
 
 ```bash
 bundle
+```
+
+Make sure you've configured your ActionMailer default_url_options so Pay can generate links to for features like Stripe Checkout.
+
+```ruby
+# config/application.rb
+config.action_mailer.default_url_options = { host: "example.com" }
 ```
 
 #### Migrations
@@ -99,6 +110,9 @@ Pay.setup do |config|
 
   config.send_emails = true
 
+  config.default_product_name = "default"
+  config.default_plan_name = "default"
+
   config.automount_routes = true
   config.routes_path = "/pay" # Only when automount_routes is true
 end
@@ -133,10 +147,15 @@ development:
     public_key: yyyy
     merchant_id: aaaa
     environment: sandbox
+  paddle:
+    vendor_id: xxxx
+    vendor_auth_code: yyyy
+    public_key_base64: MII...==
 ```
 
 For Stripe, you can also use the `STRIPE_PUBLIC_KEY`, `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
 For Braintree, you can also use `BRAINTREE_MERCHANT_ID`, `BRAINTREE_PUBLIC_KEY`, `BRAINTREE_PRIVATE_KEY`, and `BRAINTREE_ENVIRONMENT` environment variables.
+For Paddle, you can also use `PADDLE_VENDOR_ID`, `PADDLE_VENDOR_AUTH_CODE` and `PADDLE_PUBLIC_KEY_BASE64` environment variables.
 
 ### Generators
 
@@ -196,6 +215,8 @@ user.on_generic_trial? #=> true
 
 #### Creating a Charge
 
+##### Stripe and Braintree
+
 ```ruby
 user = User.find_by(email: 'michael@bluthcompany.co')
 
@@ -219,7 +240,22 @@ different currencies, etc.
 On failure, a `Pay::Error` will be raised with details about the payment
 failure.
 
+##### Paddle
+It is only possible to create immediate one-time charges on top of an existing subscription.
+
+```ruby
+user = User.find_by(email: 'michael@bluthcompany.co')
+
+user.processor = 'paddle'
+user.charge(1500, {charge_name: "Test"}) # $15.00 USD
+
+```
+
+An existing subscription and a charge name are required.
+
 #### Creating a Subscription
+
+##### Stripe and Braintree
 
 ```ruby
 user = User.find_by(email: 'michael@bluthcompany.co')
@@ -234,7 +270,7 @@ A `card_token` must be provided as an attribute.
 The subscribe method has three optional arguments with default values.
 
 ```ruby
-def subscribe(name: 'default', plan: 'default', **options)
+def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
   ...
 end
 ```
@@ -243,22 +279,55 @@ For example, you can pass the `quantity` option to subscribe to a plan with for 
 
 ```ruby
 
-user.subscribe(name: "default", plan: "default", quantity: 3)
+user.subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, quantity: 3)
 ```
 
-##### Name
+###### Name
 
 Name is an internally used name for the subscription.
 
-##### Plan
+###### Plan
 
 Plan is the plan ID or price ID from the payment processor. For example: `plan_xxxxx` or `price_xxxxx`
 
-##### Options
+###### Options
 
 By default, the trial specified on the subscription will be used.
 
 `trial_period_days: 30` can be set to override and a trial to the subscription. This works the same for Braintree and Stripe.
+
+##### Paddle
+It is currently not possible to create a subscription through the API. Instead the subscription in Pay is created by the Paddle Subscription Webhook. In order to be able to assign the subcription to the correct owner, the Paddle [passthrough parameter](https://developer.paddle.com/guides/how-tos/checkout/pass-parameters) has to be used for checkout.
+
+To ensure that the owner cannot be tampered with, Pay uses a Signed Global ID with a purpose. The purpose string consists of "paddle_" and the subscription plan id (or product id respectively).
+
+Javascript Checkout:
+```javascript
+Paddle.Checkout.open({
+	product: 12345,
+	passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
+});
+```
+
+Paddle Button Checkout:
+```html
+<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= Pay::Paddle.passthrough(owner: current_user) %>"
+```
+
+###### Passthrough
+
+Pay providers a helper method for generating the passthrough JSON object to associate the purchase with the correct Rails model.
+
+```ruby
+Pay::Paddle.passthrough(owner: current_user, foo: :bar)
+#=> { owner_sgid: "xxxxxxxx", foo: "bar" }
+
+# To generate manually without the helper
+#=> { owner_sgid: current_user.to_sgid.to_s, foo: "bar" }.to_json
+```
+
+Pay parses the passthrough JSON string and verifies the `owner_sgid` hash to match the webhook with the correct billable record.
+The passthrough parameter `owner_sgid` is only required for creating a subscription.
 
 #### Retrieving a Subscription from the Database
 
@@ -316,13 +385,21 @@ Plan is the plan ID from the payment processor.
 
 #### Retrieving a Payment Processor Account
 
+##### Stripe and Braintree
+
 ```ruby
 user = User.find_by(email: 'george.michael@bluthcompany.co')
 
 user.customer #> Stripe or Braintree customer account
 ```
 
+##### Paddle
+
+It is currently not possible to retrieve a payment processor account through the API.
+
 #### Updating a Customer's Credit Card
+
+##### Stripe and Braintree
 
 ```ruby
 user = User.find_by(email: 'tobias@bluthcompany.co')
@@ -330,12 +407,23 @@ user = User.find_by(email: 'tobias@bluthcompany.co')
 user.update_card('payment_method_id')
 ```
 
+##### Paddle
+
+Paddle provides a unique [Update URL](https://developer.paddle.com/guides/how-tos/subscriptions/update-payment-details) for each user, which allows them to update the payment method.
+```ruby
+user = User.find_by(email: 'tobias@bluthcompany.co')
+
+user.subscription.paddle_update_url
+```
+
+
+
 #### Retrieving a Customer's Subscription from the Processor
 
 ```ruby
 user = User.find_by(email: 'lucille@bluthcompany.co')
 
-user.processor_subscription(subscription_id) #=> Stripe or Braintree Subscription
+user.processor_subscription(subscription_id) #=> Stripe, Braintree or Paddle Subscription
 ```
 
 ## Subscription API
@@ -372,12 +460,29 @@ user = User.find_by(email: 'carl.weathers@bluthcompany.co')
 user.subscription.active? #=> true or false
 ```
 
+#### Checking to See If a Subscription Is Paused
+
+```ruby
+user = User.find_by(email: 'carl.weathers@bluthcompany.co')
+
+user.subscription.paused? #=> true or false
+```
+
 #### Cancel a Subscription (At End of Billing Cycle)
+
+##### Stripe, Braintree and Paddle
 
 ```ruby
 user = User.find_by(email: 'oscar@bluthcompany.co')
 
 user.subscription.cancel
+```
+
+##### Paddle
+In addition to the API, Paddle provides a subscription [Cancel URL](https://developer.paddle.com/guides/how-tos/subscriptions/cancel-and-pause) that you can redirect customers to cancel their subscription.
+
+```ruby
+user.subscription.paddle_cancel_url
 ```
 
 #### Cancel a Subscription Immediately
@@ -388,6 +493,16 @@ user = User.find_by(email: 'annyong@bluthcompany.co')
 user.subscription.cancel_now!
 ```
 
+#### Pause a Subscription
+
+##### Paddle
+
+```ruby
+user = User.find_by(email: 'oscar@bluthcompany.co')
+
+user.subscription.pause
+```
+
 #### Swap a Subscription to another Plan
 
 ```ruby
@@ -396,7 +511,17 @@ user = User.find_by(email: 'steve.holt@bluthcompany.co')
 user.subscription.swap("yearly")
 ```
 
-#### Resume a Subscription on a Grace Period
+#### Resume a Subscription
+
+##### Stripe or Braintree Subscription (on Grace Period)
+
+```ruby
+user = User.find_by(email: 'steve.holt@bluthcompany.co')
+
+user.subscription.resume
+```
+
+##### Paddle (Paused)
 
 ```ruby
 user = User.find_by(email: 'steve.holt@bluthcompany.co')
@@ -473,8 +598,8 @@ config.routes_path = '/secret-webhook-path'
 
 ## Payment Providers
 
-We support both Stripe and Braintree and make our best attempt to
-standardize the two. They function differently so keep that in mind if
+We support Stripe, Braintree and Paddle and make our best attempt to
+standardize the three. They function differently so keep that in mind if
 you plan on doing more complex payments. It would be best to stick with
 a single payment provider in that case so you don't run into
 discrepancies.
@@ -489,7 +614,22 @@ development:
     merchant_id: zzzz
     environment: sandbox
 ```
+#### Paddle
 
+```yaml
+  paddle:
+    vendor_id: xxxx
+    vendor_auth_code: yyyy
+    public_key_base64: MII...==
+```
+
+Paddle receipts can be retrieved by a charge receipt URL.
+```ruby
+user = User.find_by(email: 'annyong@bluthcompany.co')
+
+charge = user.charges.first
+charge.paddle_receipt_url
+```
 #### Stripe
 
 You'll need to add your private Stripe API key to your Rails secrets `config/secrets.yml`, credentials `rails credentials:edit`
@@ -505,6 +645,20 @@ development:
 You can also use the `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
 
 **To see how to use Stripe Elements JS & Devise, [click here](https://github.com/jasoncharnes/pay/wiki/Using-Stripe-Elements-and-Devise).**
+
+You need the following event types to trigger the webhook:
+
+```
+customer.subscription.updated
+customer.subscription.deleted
+customer.subscription.created
+payment_method.updated
+invoice.payment_action_required
+customer.updated
+customer.deleted
+charge.succeeded
+charge.refunded
+```
 
 ##### Strong Customer Authentication (SCA)
 
@@ -552,7 +706,10 @@ If you have an issue you'd like to submit, please do so using the issue tracker 
 
 If you'd like to open a PR please make sure the following things pass:
 
-- `rake test`
+```ruby
+bin/rails db:test:prepare
+bin/rails test
+```
 
 ## License
 

@@ -11,4 +11,21 @@ gemspec
 # Git. Remember to move these dependencies to your gemspec before releasing
 # your gem to rubygems.org.
 
+gem "byebug"
+gem "appraisal", github: "excid3/appraisal", branch: "fix-bundle-env"
+
+gem "braintree", ">= 2.92.0", "< 4.0"
+gem "stripe", ">= 2.8"
+gem "paddle_pay", "~> 0.0.1"
+
+# Test against different databases
+gem "sqlite3", "~> 1.4"
+gem "mysql2"
+gem "pg"
+
+# Used for the dummy Rails app integration
+gem "puma"
 gem "standard"
+gem "turbolinks"
+gem "web-console", group: :development
+gem "webpacker"

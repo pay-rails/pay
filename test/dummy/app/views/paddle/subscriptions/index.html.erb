@@ -1,0 +1,12 @@
+<div class="d-flex justify-content-between">
+  <h1>Paddle Subscriptions</h1>
+  <div>
+    <%= link_to "New Paddle Subscription", new_paddle_subscription_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% @subscriptions.each do |subscription| %>
+  <div>
+    <%= link_to "Pay::Subscription #{subscription.id}", paddle_subscription_path(subscription) %>
+  </div>
+<% end %>
