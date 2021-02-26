@@ -2,7 +2,7 @@
 
 ## Pay - Payments engine for Ruby on Rails
 
-[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay) [![Stripe Verified Partner](docs/images/stripe_partner_badge.svg)](https://stripe.com/partners/pay-rails)
+[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay) <img src="docs/images/stripe_partner_badge.svg" height="22px">
 
 Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
@@ -12,8 +12,6 @@ Pay is a payments engine for Ruby on Rails 4.2 and higher.
 - Paddle (SCA Compatible & supports PayPal)
 - Braintree (supports PayPal)
 - [Fake Processor](docs/fake_processor.md)
-
-
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
 
