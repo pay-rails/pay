@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/logo.svg" height="50px"></p>
+<p align="center"><img src="docs/images/logo.svg" height="50px"></p>
 
 ## Pay - Payments engine for Ruby on Rails
 
@@ -8,10 +8,12 @@ Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
 **Current Payment Providers**
 
-- Stripe ([SCA Compatible](https://stripe.com/docs/strong-customer-authentication) using API version `2020-08-27`)
+- Stripe ([SCA Compatible](https://stripe.com/docs/strong-customer-authentication) using API version `2020-08-27`) <img src="docs/images/stripe_partner_badge.svg" height="24px">
 - Paddle (SCA Compatible & supports PayPal)
 - Braintree (supports PayPal)
 - [Fake Processor](docs/fake_processor.md)
+
+
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
 
