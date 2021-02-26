@@ -62,12 +62,7 @@ module Pay
           payment_method: stripe_customer.invoice_settings.default_payment_method
         }.merge(options)
 
-        # Add idempotency key as a second hash
-        args = [args, {
-          idempotency_key: idempotency_key
-        }]
-
-        payment_intent = ::Stripe::PaymentIntent.create(args)
+        payment_intent = ::Stripe::PaymentIntent.create(args, { idempotency_key: idempotency_key })
         Pay::Payment.new(payment_intent).validate
 
         # Create a new charge object
@@ -92,12 +87,7 @@ module Pay
         opts[:trial_from_plan] = true unless opts[:trial_period_days]
         opts[:customer] = customer.id
 
-        # Add idempotency key as a second hash
-        opts = [opts, {
-          idempotency_key: idempotency_key
-        }]
-
-        stripe_sub = ::Stripe::Subscription.create(opts)
+        stripe_sub = ::Stripe::Subscription.create(opts, { idempotency_key: idempotency_key })
         subscription = billable.create_pay_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity)
 
         # No trial, card requires SCA
