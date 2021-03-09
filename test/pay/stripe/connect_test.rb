@@ -46,7 +46,7 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
   end
 
   test "connect transfer" do
-    pay_charge = @user.charge(10_00, transfer_group: "12345")
+    @user.charge(10_00, transfer_group: "12345")
     transfer = Pay::Stripe.transfer(7_00, destination: "acct_1IStbKQOsIOBQfn0", transfer_group: "12345")
     assert_equal 7_00, transfer.amount
     assert_equal "acct_1IStbKQOsIOBQfn0", transfer.destination
