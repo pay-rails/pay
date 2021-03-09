@@ -11,7 +11,7 @@ class AddDataToPayModels < ActiveRecord::Migration[4.2]
     adapter = default_hash.dig(:adapter) || default_hash.dig("adapter")
 
     case adapter
-    when "mysql2"
+    when "mysql2", "sqlite3"
       :json
     when "postgresql"
       :jsonb
