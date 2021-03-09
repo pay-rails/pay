@@ -81,6 +81,11 @@ module Pay
       end
     end
 
+    # Stripe Checkout functionality
+    def self.account(account_id)
+      ::Stripe::Account.retrieve(account_id)
+    end
+
     def self.transfer(amount, **options)
       ::Stripe::Transfer.create({ amount: amount, currency: 'usd' }.merge(options))
     end
