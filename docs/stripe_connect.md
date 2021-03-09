@@ -29,12 +29,8 @@ Stripe provides multiple ways of handling payments
 * The connected account’s balance will be debited for the cost of Stripe fees, refunds, and chargebacks.
 
 ```ruby
-payment_intent = Stripe::PaymentIntent.create({
-  payment_method_types: ['card'],
-  amount: 1000,
-  currency: 'usd',
-  application_fee_amount: 123,
-}, stripe_account: '{{CONNECTED_STRIPE_ACCOUNT_ID}}')
+@user.stripe_account = "acct_123l5jadsgfas3"
+@user.charge(10_00, application_fee_amount: 1_23)
 ```
 
 ```javascript
@@ -51,15 +47,13 @@ var stripe = Stripe('<%= @sample_credentials.test_publishable_key %>', {
 * Your account balance will be debited for the cost of the Stripe fees, refunds, and chargebacks.
 
 ```ruby
-payment_intent = Stripe::PaymentIntent.create({
-  payment_method_types: ['card'],
-  amount: 1000,
-  currency: 'usd',
-  application_fee_amount: 123,
-  transfer_data: {
-    destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
-  },
-})
+@user.charge(
+  10_00, 
+  application_fee_amount: 1_23, 
+  transfer_data: { 
+    destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}'  
+  }
+)
 ```
 
 
@@ -74,27 +68,20 @@ payment_intent = Stripe::PaymentIntent.create({
 * Your account balance will be debited for the cost of the Stripe fees, refunds, and chargebacks.
 
 ```ruby
-payment_intent = Stripe::PaymentIntent.create({
-  amount: 10000,
-  currency: 'usd',
-  payment_method_types: ['card'],
-  transfer_group: '{ORDER10}',
-})
+pay_charge = @user.charge(100_00, transfer_group: '{ORDER10}')
 
 # Create a Transfer to a connected account (later):
-transfer = Stripe::Transfer.create({
-  amount: 7000,
-  currency: 'usd',
+Pay::Stripe.transfer(
+  70_00,
   destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
   transfer_group: '{ORDER10}',
-})
+)
 
 # Create a second Transfer to another connected account (later):
-transfer = Stripe::Transfer.create({
-  amount: 2000,
-  currency: 'usd',
-  destination: '{{OTHER_CONNECTED_STRIPE_ACCOUNT_ID}}',
+Pay::Stripe.transfer(
+  20_00,
+  destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
   transfer_group: '{ORDER10}',
-})
+)
 ```
 

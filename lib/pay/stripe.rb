@@ -80,5 +80,9 @@ module Pay
         events.subscribe "stripe.payment_method.detached", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
       end
     end
+
+    def self.transfer(amount, **options)
+      ::Stripe::Transfer.create({ amount: amount, currency: 'usd' }.merge(options))
+    end
   end
 end
