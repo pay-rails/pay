@@ -31,6 +31,7 @@ module Pay
     store_accessor :data, :paddle_update_url
     store_accessor :data, :paddle_cancel_url
     store_accessor :data, :paddle_paused_from
+    store_accessor :data, :stripe_account
 
     attribute :prorate, :boolean, default: true
 

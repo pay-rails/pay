@@ -19,6 +19,7 @@ module Pay
     validates :card_type, presence: true
 
     store_accessor :data, :paddle_receipt_url
+    store_accessor :data, :stripe_account
 
     # Helpers for payment processors
     %w[braintree stripe paddle].each do |processor_name|

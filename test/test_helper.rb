@@ -39,6 +39,12 @@ class ActiveSupport::TestCase
     raw = fake_event name, format: format
     Pay.braintree_gateway.webhook_notification.parse(raw["bt_signature"], raw["bt_payload"])
   end
+
+  def travel_to_cassette
+    travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
+      yield
+    end
+  end
 end
 
 require "minitest/mock"
