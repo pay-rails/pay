@@ -30,7 +30,7 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
     pay_charge = @user.charge(
       10_00,
       application_fee_amount: 1_23,
-      transfer_data: { destination: @stripe_account_id }
+      transfer_data: {destination: @stripe_account_id}
     )
 
     assert_equal @stripe_account_id, pay_charge.processor_charge.destination
@@ -47,6 +47,8 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
 
   test "connect transfer" do
     pay_charge = @user.charge(10_00, transfer_group: "12345")
-    Pay::Stripe.transfer(7_00, destination: "acct_1IStbKQOsIOBQfn0", transfer_group: "12345")
+    transfer = Pay::Stripe.transfer(7_00, destination: "acct_1IStbKQOsIOBQfn0", transfer_group: "12345")
+    assert_equal 7_00, transfer.amount
+    assert_equal "acct_1IStbKQOsIOBQfn0", transfer.destination
   end
 end

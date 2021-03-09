@@ -87,7 +87,7 @@ module Pay
     end
 
     def self.transfer(amount, **options)
-      ::Stripe::Transfer.create({ amount: amount, currency: 'usd' }.merge(options))
+      ::Stripe::Transfer.create({amount: amount, currency: "usd"}.merge(options))
     end
   end
 end
