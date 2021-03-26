@@ -1,5 +1,7 @@
 ### Unreleased
 
+* [FIX] Pay::Error now uses the correct message in to_s
+
 # 2.6.4
 
 * [NEW] Fake payment processor for testing and giving users free access to your application
