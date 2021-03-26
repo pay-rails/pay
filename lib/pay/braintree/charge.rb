@@ -17,7 +17,6 @@ module Pay
 
       def refund!(amount_to_refund)
         Pay.braintree_gateway.transaction.refund(processor_id, amount_to_refund / 100.0)
-
         pay_charge.update(amount_refunded: amount_to_refund)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e

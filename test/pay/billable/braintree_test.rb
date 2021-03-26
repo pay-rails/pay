@@ -105,6 +105,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
     @billable.card_token = "fake-processor-declined-visa-nonce"
     err = assert_raises(Pay::Braintree::Error) { @billable.subscribe }
     assert_equal "Do Not Honor", err.message
+    assert_equal Braintree::ErrorResult, err.cause.class
   end
 
   test "handles invalid parameters" do

@@ -37,8 +37,8 @@ module Pay
 
           result.customer
         end
-      rescue ::Braintree::AuthorizationError
-        raise Pay::Braintree::AuthorizationError
+      rescue ::Braintree::AuthorizationError => e
+        raise Pay::Braintree::AuthorizationError, e
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
@@ -57,8 +57,8 @@ module Pay
         raise Pay::Braintree::Error, result unless result.success?
 
         save_transaction(result.transaction)
-      rescue ::Braintree::AuthorizationError
-        raise Pay::Braintree::AuthorizationError
+      rescue ::Braintree::AuthorizationError => e
+        raise Pay::Braintree::AuthorizationError, e
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
@@ -84,8 +84,8 @@ module Pay
         raise Pay::Braintree::Error, result unless result.success?
 
         billable.create_pay_subscription(result.subscription, "braintree", name, plan, status: :active)
-      rescue ::Braintree::AuthorizationError
-        raise Pay::Braintree::AuthorizationError
+      rescue ::Braintree::AuthorizationError => e
+        raise Pay::Braintree::AuthorizationError, e
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
@@ -107,8 +107,8 @@ module Pay
         update_card_on_file result.payment_method
         update_subscriptions_to_payment_method(result.payment_method.token)
         true
-      rescue ::Braintree::AuthorizationError
-        raise Pay::Braintree::AuthorizationError
+      rescue ::Braintree::AuthorizationError => e
+        raise Pay::Braintree::AuthorizationError, e
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
