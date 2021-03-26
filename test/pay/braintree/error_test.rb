@@ -23,4 +23,3 @@ class Pay::Braintree::ErrorTest < ActiveSupport::TestCase
     assert_equal ::Braintree::AuthorizationError, exception.cause.class
   end
 end
-
