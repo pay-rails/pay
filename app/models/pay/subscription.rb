@@ -35,7 +35,7 @@ module Pay
     attribute :prorate, :boolean, default: true
 
     # Helpers for payment processors
-    %w[braintree stripe paddle].each do |processor_name|
+    %w[braintree stripe paddle fake_processor].each do |processor_name|
       define_method "#{processor_name}?" do
         processor == processor_name
       end

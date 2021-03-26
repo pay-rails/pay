@@ -21,7 +21,7 @@ module Pay
     store_accessor :data, :paddle_receipt_url
 
     # Helpers for payment processors
-    %w[braintree stripe paddle].each do |processor_name|
+    %w[braintree stripe paddle fake_processor].each do |processor_name|
       define_method "#{processor_name}?" do
         processor == processor_name
       end
@@ -50,20 +50,8 @@ module Pay
       "#{card_type} (**** **** **** #{card_last4})"
     end
 
-    def stripe?
-      processor == "stripe"
-    end
-
-    def braintree?
-      processor == "braintree"
-    end
-
     def paypal?
       braintree? && card_type == "PayPal"
-    end
-
-    def paddle?
-      processor == "paddle"
     end
   end
 end
