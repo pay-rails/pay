@@ -19,6 +19,7 @@ module Pay
     def self.setup
       ::PaddlePay.config.vendor_id = vendor_id
       ::PaddlePay.config.vendor_auth_code = vendor_auth_code
+      ::PaddlePay.config.environment = environment
 
       configure_webhooks
     end
@@ -29,6 +30,10 @@ module Pay
 
     def self.vendor_auth_code
       find_value_by_name(:paddle, :vendor_auth_code)
+    end
+
+    def self.environment
+      find_value_by_name(:paddle, :environment) || "production"
     end
 
     def self.public_key_base64
