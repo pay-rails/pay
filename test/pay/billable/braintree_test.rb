@@ -29,7 +29,6 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   end
 
   test "can update card" do
-    @billable.customer # Make sure we have a customer object
     @billable.update_card("fake-valid-discover-nonce")
     assert_equal "Discover", @billable.card_type
     assert_nil @billable.card_token

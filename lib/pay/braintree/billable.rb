@@ -94,6 +94,8 @@ module Pay
       #
       # Returns true if successful
       def update_card(token)
+        customer unless processor_id?
+
         result = gateway.payment_method.create(
           customer_id: processor_id,
           payment_method_nonce: token,

@@ -1,6 +1,10 @@
 ### Unreleased
 
+* 2.6.5
+
+* [NEW] Raise error if payment processor name is nil
 * [FIX] Pay::Error now uses the correct message in to_s
+* Create braintree customer on update_card if needed
 
 # 2.6.4
 
