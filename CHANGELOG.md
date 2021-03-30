@@ -1,6 +1,10 @@
 ### Unreleased
 
-* 2.6.5
+### 2.6.6
+
+* Improve error wrappers to delegate message to original cause
+
+### 2.6.5
 
 * [NEW] Raise error if payment processor name is nil
 * [FIX] Pay::Error now uses the correct message in to_s
