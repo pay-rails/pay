@@ -6,11 +6,10 @@ class Pay::Paddle::ErrorTest < ActiveSupport::TestCase
   end
 
   test "re-raised paddle exceptions keep the same message" do
-
     exception = assert_raises {
       begin
         raise ::PaddlePay::ConnectionError, "The connection failed"
-      rescue => e
+      rescue
         raise ::Pay::Paddle::Error
       end
     }
