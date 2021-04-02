@@ -1,10 +1,6 @@
 module Pay
+  # https://avdi.codes/exception-causes-in-ruby-2-1/
   class Error < StandardError
-    attr_reader :result
-
-    def initialize(result = nil)
-      @result = result
-    end
   end
 
   class PaymentError < StandardError
