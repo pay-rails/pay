@@ -1,8 +1,10 @@
-<p align="center"><img src="docs/logo.svg" height="50px"></p>
+<p align="center"><img src="docs/images/logo.svg" height="50px"></p>
 
 ## Pay - Payments engine for Ruby on Rails
 
-[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay)
+[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay) 
+
+<img src="docs/images/stripe_partner_badge.svg" height="26px">
 
 Pay is a payments engine for Ruby on Rails 4.2 and higher.
 
@@ -11,6 +13,7 @@ Pay is a payments engine for Ruby on Rails 4.2 and higher.
 - Stripe ([SCA Compatible](https://stripe.com/docs/strong-customer-authentication) using API version `2020-08-27`)
 - Paddle (SCA Compatible & supports PayPal)
 - Braintree (supports PayPal)
+- [Fake Processor](docs/fake_processor.md)
 
 Want to add a new payment provider? Contributions are welcome and the instructions [are here](https://github.com/jasoncharnes/pay/wiki/New-Payment-Provider).
 
@@ -36,7 +39,7 @@ gem 'stripe', '< 6.0', '>= 2.8'
 gem 'braintree', '< 3.0', '>= 2.92.0'
 
 # To use Paddle, also include:
-gem 'paddle_pay', '~> 0.0.1'
+gem 'paddle_pay', '~> 0.1'
 
 # To use Receipts
 gem 'receipts', '~> 1.0.0'
@@ -150,11 +153,12 @@ development:
     vendor_id: xxxx
     vendor_auth_code: yyyy
     public_key_base64: MII...==
+    environment: sandbox
 ```
 
 For Stripe, you can also use the `STRIPE_PUBLIC_KEY`, `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
 For Braintree, you can also use `BRAINTREE_MERCHANT_ID`, `BRAINTREE_PUBLIC_KEY`, `BRAINTREE_PRIVATE_KEY`, and `BRAINTREE_ENVIRONMENT` environment variables.
-For Paddle, you can also use `PADDLE_VENDOR_ID`, `PADDLE_VENDOR_AUTH_CODE` and `PADDLE_PUBLIC_KEY_BASE64` environment variables.
+For Paddle, you can also use `PADDLE_VENDOR_ID`, `PADDLE_VENDOR_AUTH_CODE`, `PADDLE_PUBLIC_KEY_BASE64` and `PADDLE_ENVIRONMENT` environment variables.
 
 ### Generators
 
@@ -620,6 +624,7 @@ development:
     vendor_id: xxxx
     vendor_auth_code: yyyy
     public_key_base64: MII...==
+    environment: sandbox
 ```
 
 Paddle receipts can be retrieved by a charge receipt URL.
@@ -684,6 +689,12 @@ Sometimes you'll have a payment that requires extra authentication. In this case
 If you'd like to change the views of the payment confirmation page, you can install the views using the generator and modify the template.
 
 [<img src="https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png?X-CloudApp-Visitor-Id=51470" alt="Stripe SCA Payment Confirmation" style="zoom: 25%;" />](https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png)
+
+If you use the default views for payment confirmations, and also have a Content Security Policy in place for your application, make sure to add the following domains to their respective configurations in your `content_security_policy.rb` (otherwise these views won't load properly):
+
+* `style_src`: `https://unpkg.com`
+* `script_src`: `https://cdn.jsdelivr.net` and `https://js.stripe.com`
+* `frame_src`: `https://js.stripe.com`
 
 #### Background jobs
 

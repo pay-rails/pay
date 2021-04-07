@@ -24,6 +24,9 @@ module Pay
       attribute :plan, :string
       attribute :quantity, :integer
       attribute :card_token, :string
+      attribute :pay_fake_processor_allowed, :boolean, default: false
+
+      validate :pay_fake_processor_is_allowed, if: :processor_changed?
     end
 
     def payment_processor
@@ -31,6 +34,7 @@ module Pay
     end
 
     def payment_processor_for(name)
+      raise Error, "No payment processor set. Assign a payment processor with 'object.processor = :stripe' or any supported processor." if name.blank?
       "Pay::#{name.to_s.classify}::Billable".constantize
     end
 
@@ -154,6 +158,11 @@ module Pay
     def default_generic_trial?(name, plan)
       # Generic trials don't have plans or custom names
       plan.nil? && name == "default" && on_generic_trial?
+    end
+
+    def pay_fake_processor_is_allowed
+      return unless processor == "fake_processor"
+      errors.add(:processor, "must be a valid payment processor") unless pay_fake_processor_allowed?
     end
   end
 end

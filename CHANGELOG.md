@@ -1,5 +1,18 @@
 ### Unreleased
 
+### 2.6.6
+
+* Improve error wrappers to delegate message to original cause
+
+### 2.6.5
+
+* [NEW] Raise error if payment processor name is nil
+* [FIX] Pay::Error now uses the correct message in to_s
+* Create braintree customer on update_card if needed
+
+# 2.6.4
+
+* [NEW] Fake payment processor for testing and giving users free access to your application
 * [FIX] Delegate trial_ends_at for subscriptions - @archonic
 
 # 2.6.3

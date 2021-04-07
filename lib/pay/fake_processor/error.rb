@@ -1,7 +1,6 @@
 module Pay
-  module Stripe
+  module FakeProcessor
     class Error < Pay::Error
-      delegate :message, to: :cause
     end
   end
 end
