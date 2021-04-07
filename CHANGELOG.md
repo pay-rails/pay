@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.6.7
+
+* Add Stripe `payment_intent.succeeded` webhook listener
+
 ### 2.6.6
 
 * Improve error wrappers to delegate message to original cause
