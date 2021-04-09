@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.6.8
+
+* Add passthrough fallback for paddle payment succeeded webhook #302 - @nm
+
 ### 2.6.7
 
 * Add Stripe `payment_intent.succeeded` webhook listener
