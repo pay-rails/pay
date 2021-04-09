@@ -5,6 +5,7 @@ require "pay/errors"
 module Pay
   autoload :Billable, "pay/billable"
   autoload :Env, "pay/env"
+  autoload :Merchant, "pay/merchant"
   autoload :Payment, "pay/payment"
   autoload :Receipts, "pay/receipts"
 

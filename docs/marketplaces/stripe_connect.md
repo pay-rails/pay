@@ -9,9 +9,23 @@ There are two main marketplace payment types:
 
 Not sure what account types to use? Read the Stripe docs: https://stripe.com/docs/connect/accounts
 
+```ruby
+class User
+  include Pay::Merchant
+end
+
+user = User.last
+user.merchant.create_account
+#=> Stripe::Account
+
+user.merchant.account_link
+user.merchant.login_link
+user.merchant.transfer(amount: 25_00)
+```
+
 ## Charge Types
 
-Stripe provides multiple ways of handling payments 
+Stripe provides multiple ways of handling payments
 
 | Charge Type | Use When |
 | ------------- | ------------- |
@@ -48,15 +62,13 @@ var stripe = Stripe('<%= @sample_credentials.test_publishable_key %>', {
 
 ```ruby
 @user.charge(
-  10_00, 
-  application_fee_amount: 1_23, 
-  transfer_data: { 
-    destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}'  
+  10_00,
+  application_fee_amount: 1_23,
+  transfer_data: {
+    destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}'
   }
 )
 ```
-
-
 
 ### Separate Charges and Transfers
 
@@ -71,17 +83,14 @@ var stripe = Stripe('<%= @sample_credentials.test_publishable_key %>', {
 pay_charge = @user.charge(100_00, transfer_group: '{ORDER10}')
 
 # Create a Transfer to a connected account (later):
-Pay::Stripe.transfer(
-  70_00,
-  destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
+@other_user.merchant.transfer(
+  amount: 70_00,
   transfer_group: '{ORDER10}',
 )
 
 # Create a second Transfer to another connected account (later):
-Pay::Stripe.transfer(
-  20_00,
-  destination: '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
+@another_user.merchant.transfer(
+  amount: 20_00,
   transfer_group: '{ORDER10}',
 )
 ```
-

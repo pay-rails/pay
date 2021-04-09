@@ -1,4 +1,4 @@
-class AddDataToPayBillable < ActiveRecord::Migration[6.1]
+class AddDataToPayBillable < ActiveRecord::Migration[4.2]
   def change
     # Load all the billable models
     Rails.application.eager_load!

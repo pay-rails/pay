@@ -4,6 +4,7 @@ module Pay
     autoload :Charge, "pay/stripe/charge"
     autoload :Subscription, "pay/stripe/subscription"
     autoload :Error, "pay/stripe/error"
+    autoload :Merchant, "pay/stripe/merchant"
 
     module Webhooks
       autoload :ChargeRefunded, "pay/stripe/webhooks/charge_refunded"
@@ -79,15 +80,6 @@ module Pay
         events.subscribe "stripe.payment_method.card_automatically_updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
         events.subscribe "stripe.payment_method.detached", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
       end
-    end
-
-    # Stripe Checkout functionality
-    def self.account(account_id)
-      ::Stripe::Account.retrieve(account_id)
-    end
-
-    def self.transfer(amount, **options)
-      ::Stripe::Transfer.create({amount: amount, currency: "usd"}.merge(options))
     end
   end
 end

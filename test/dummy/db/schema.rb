@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_09_004259) do
+ActiveRecord::Schema.define(version: 2021_04_06_215506) do
+
+  create_table "accounts", force: :cascade do |t|
+    t.string "email"
+    t.string "merchant_processor"
+    t.json "pay_data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "pay_charges", force: :cascade do |t|
     t.string "owner_type"
@@ -26,6 +34,8 @@ ActiveRecord::Schema.define(version: 2021_03_09_004259) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text "data"
+    t.string "currency"
+    t.integer "application_fee_amount"
   end
 
   create_table "pay_subscriptions", force: :cascade do |t|
@@ -42,6 +52,7 @@ ActiveRecord::Schema.define(version: 2021_03_09_004259) do
     t.datetime "updated_at"
     t.string "status"
     t.text "data"
+    t.decimal "application_fee_percent", precision: 8, scale: 2
   end
 
   create_table "teams", force: :cascade do |t|
@@ -58,6 +69,8 @@ ActiveRecord::Schema.define(version: 2021_03_09_004259) do
     t.string "card_exp_year"
     t.text "extra_billing_info"
     t.json "pay_data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.index ["owner_type", "owner_id"], name: "index_teams_on_owner_type_and_owner_id"
   end
 
@@ -74,6 +87,8 @@ ActiveRecord::Schema.define(version: 2021_03_09_004259) do
     t.string "card_exp_year"
     t.text "extra_billing_info"
     t.json "pay_data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end
