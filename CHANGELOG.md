@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 2.6.9
+
+* Update Stripe & Braintree default card automatically when the customer is accessed (ie. on charge, subscribe, etc) #300 - @excid3
+
 ### 2.6.8
 
 * Add passthrough fallback for paddle payment succeeded webhook #302 - @nm
