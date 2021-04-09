@@ -26,23 +26,22 @@ module Pay
       #
       # Returns Stripe::Customer
       def customer
-        if processor_id?
+        stripe_customer = if processor_id?
           ::Stripe::Customer.retrieve(processor_id)
         else
-          stripe_customer = ::Stripe::Customer.create(email: email, name: customer_name)
-          billable.update(processor: :stripe, processor_id: stripe_customer.id)
-
-          # Update the user's card on file if a token was passed in
-          if card_token.present?
-            payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: stripe_customer.id})
-            stripe_customer.invoice_settings.default_payment_method = payment_method.id
-            stripe_customer.save
-
-            update_card_on_file ::Stripe::PaymentMethod.retrieve(card_token).card
-          end
-
-          stripe_customer
+          sc = ::Stripe::Customer.create(email: email, name: customer_name)
+          billable.update(processor: :stripe, processor_id: sc.id)
+          sc
         end
+
+        # Update the user's card on file if a token was passed in
+        if card_token.present?
+          payment_method = ::Stripe::PaymentMethod.attach(card_token, customer: stripe_customer.id)
+          stripe_customer = ::Stripe::Customer.update(stripe_customer.id, invoice_settings: {default_payment_method: payment_method.id})
+          update_card_on_file(payment_method.card)
+        end
+
+        stripe_customer
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -84,6 +83,7 @@ module Pay
         # Inherit trial from plan unless trial override was specified
         opts[:trial_from_plan] = true unless opts[:trial_period_days]
 
+        # Load the Stripe customer to verify it exists and update card if needed
         opts[:customer] = customer.id
 
         stripe_sub = ::Stripe::Subscription.create(opts)
