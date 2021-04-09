@@ -5,7 +5,6 @@ module Pay
     included do
       store_accessor :pay_data, :stripe_connect_account_id
       store_accessor :pay_data, :onboarding_complete
-      store_accessor :pay_data, :marketplace_capable
     end
 
     def merchant
@@ -14,6 +13,14 @@ module Pay
 
     def merchant_processor_for(name)
       "Pay::#{name.to_s.classify}::Merchant".constantize
+    end
+
+    def stripe_connect_account_id?
+      !!stripe_connect_account_id
+    end
+
+    def onboarding_complete?
+      !!onboarding_complete
     end
   end
 end
