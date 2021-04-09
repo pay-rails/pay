@@ -13,7 +13,7 @@ module Pay
             owner = Pay.find_billable(processor: :paddle, processor_id: event["user_id"])
 
             if owner.nil?
-              owner = owner_by_passtrough(event["passthrough"], event["subscription_plan_id"])
+              owner = Pay::Paddle.owner_from_passthrough(event["passthrough"])
               owner&.update!(processor: "paddle", processor_id: event["user_id"])
             end
 
@@ -43,15 +43,6 @@ module Pay
           end
 
           subscription.save!
-        end
-
-        private
-
-        def owner_by_passtrough(passthrough, product_id)
-          passthrough_json = JSON.parse(passthrough)
-          GlobalID::Locator.locate_signed(passthrough_json["owner_sgid"])
-        rescue JSON::ParserError
-          nil
         end
       end
     end

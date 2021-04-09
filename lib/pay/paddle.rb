@@ -44,6 +44,13 @@ module Pay
       options.merge(owner_sgid: owner.to_sgid.to_s).to_json
     end
 
+    def self.owner_from_passthrough(passthrough)
+      passthrough_json = JSON.parse(passthrough)
+      GlobalID::Locator.locate_signed(passthrough_json["owner_sgid"])
+    rescue JSON::ParserError
+      nil
+    end
+
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
         events.subscribe "paddle.subscription_created", Pay::Paddle::Webhooks::SubscriptionCreated.new
