@@ -1,5 +1,5 @@
 module Pay
   def self.table_name_prefix
-    'pay_'
+    "pay_"
   end
 end
