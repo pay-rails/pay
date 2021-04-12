@@ -51,12 +51,12 @@ module Pay
       end
 
       # Transfer money from the platform to this connected account
-      def transfer(amount:, currency: "usd", transfer_group: nil, **options)
+      # https://stripe.com/docs/connect/charges-transfers#transfer-availability
+      def transfer(amount:, currency: "usd", **options)
         ::Stripe::Transfer.create({
           amount: amount,
           currency: currency,
           destination: stripe_connect_account_id,
-          transfer_group: transfer_group
         }.merge(options))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
