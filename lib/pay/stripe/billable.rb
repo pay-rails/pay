@@ -38,7 +38,7 @@ module Pay
         # Update the user's card on file if a token was passed in
         if card_token.present?
           payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: stripe_customer.id}, {stripe_account: stripe_account})
-          stripe_customer = ::Stripe::Customer.update(stripe_customer.id, invoice_settings: {default_payment_method: payment_method.id}, {stripe_account: stripe_account})
+          stripe_customer = ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, {stripe_account: stripe_account})
           update_card_on_file(payment_method.card)
         end
 

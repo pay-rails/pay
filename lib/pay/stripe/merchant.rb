@@ -56,7 +56,7 @@ module Pay
         ::Stripe::Transfer.create({
           amount: amount,
           currency: currency,
-          destination: stripe_connect_account_id,
+          destination: stripe_connect_account_id
         }.merge(options))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
