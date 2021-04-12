@@ -75,7 +75,6 @@ var stripe = Stripe('<%= @sample_credentials.test_publishable_key %>', {
 ![chart](https://stripe.com/img/docs/connect/charges_transfers.svg)
 
 * You create a charge on your platform’s account and also transfer funds to your user’s account. The payment appears as a charge on your account and there’s also a transfer to a connected account (amount determined by you), which is withdrawn from your account balance.
-
 * You can transfer funds to multiple connected accounts.
 * Your account balance will be debited for the cost of the Stripe fees, refunds, and chargebacks.
 
@@ -92,5 +91,16 @@ pay_charge = @user.charge(100_00, transfer_group: '{ORDER10}')
 @another_user.merchant.transfer(
   amount: 20_00,
   transfer_group: '{ORDER10}',
+)
+```
+
+Alternatively, the `source_transaction` parameter allows you to transfer only once a charge's funds are available. This helps to make sure the funds are available in your Stripe account before transferring.
+
+See: https://stripe.com/docs/connect/charges-transfers#transfer-availability
+
+```ruby
+@other_user.merchant.transfer(
+  amount: 70_00,
+  source_transaction: pay_charge.processor_id
 )
 ```
