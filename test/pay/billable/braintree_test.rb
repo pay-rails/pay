@@ -111,4 +111,13 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
     err = assert_raises(Pay::Braintree::AuthorizationError) { @billable.charge(10_00, metadata: {}) }
     assert_equal "Either the data you submitted is malformed and does not match the API or the API key you used may not be authorized to perform this action.", err.message
   end
+
+  test "braintree card is automatically updated on subscribe" do
+    assert_nil @billable.card_type
+    @billable.update_card "fake-valid-discover-nonce"
+    assert_equal "Discover", @billable.card_type
+    @billable.card_token = "fake-valid-visa-nonce"
+    @billable.subscribe
+    assert_equal "Visa", @billable.card_type
+  end
 end

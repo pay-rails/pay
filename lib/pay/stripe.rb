@@ -12,6 +12,7 @@ module Pay
       autoload :CustomerDeleted, "pay/stripe/webhooks/customer_deleted"
       autoload :CustomerUpdated, "pay/stripe/webhooks/customer_updated"
       autoload :PaymentActionRequired, "pay/stripe/webhooks/payment_action_required"
+      autoload :PaymentIntentSucceeded, "pay/stripe/webhooks/payment_intent_succeeded"
       autoload :PaymentMethodUpdated, "pay/stripe/webhooks/payment_method_updated"
       autoload :SubscriptionCreated, "pay/stripe/webhooks/subscription_created"
       autoload :SubscriptionDeleted, "pay/stripe/webhooks/subscription_deleted"
@@ -50,6 +51,8 @@ module Pay
         # so it does not include individual charges.
         events.subscribe "stripe.charge.succeeded", Pay::Stripe::Webhooks::ChargeSucceeded.new
         events.subscribe "stripe.charge.refunded", Pay::Stripe::Webhooks::ChargeRefunded.new
+
+        events.subscribe "stripe.payment_intent.succeeded", Pay::Stripe::Webhooks::PaymentIntentSucceeded.new
 
         # Warn user of upcoming charges for their subscription. This is handy for
         # notifying annual users their subscription will renew shortly.

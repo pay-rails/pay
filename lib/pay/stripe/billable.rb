@@ -27,23 +27,22 @@ module Pay
       #
       # Returns Stripe::Customer
       def customer
-        if processor_id?
+        stripe_customer = if processor_id?
           ::Stripe::Customer.retrieve(processor_id, {stripe_account: stripe_account})
         else
-          stripe_customer = ::Stripe::Customer.create({email: email, name: customer_name}, {stripe_account: stripe_account})
-          billable.update(processor: :stripe, processor_id: stripe_customer.id, stripe_account: stripe_account)
-
-          # Update the user's card on file if a token was passed in
-          if card_token.present?
-            payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: stripe_customer.id}, {stripe_account: stripe_account})
-            stripe_customer.invoice_settings.default_payment_method = payment_method.id
-            stripe_customer.save
-
-            update_card_on_file ::Stripe::PaymentMethod.retrieve(card_token, {stripe_account: stripe_account}).card
-          end
-
-          stripe_customer
+          sc = ::Stripe::Customer.create({email: email, name: customer_name}, {stripe_account: stripe_account})
+          billable.update(processor: :stripe, processor_id: sc.id, stripe_account: stripe_account)
+          sc
         end
+
+        # Update the user's card on file if a token was passed in
+        if card_token.present?
+          payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: stripe_customer.id}, {stripe_account: stripe_account})
+          stripe_customer = ::Stripe::Customer.update(stripe_customer.id, invoice_settings: {default_payment_method: payment_method.id}, {stripe_account: stripe_account})
+          update_card_on_file(payment_method.card)
+        end
+
+        stripe_customer
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -85,6 +84,7 @@ module Pay
         # Inherit trial from plan unless trial override was specified
         opts[:trial_from_plan] = true unless opts[:trial_period_days]
 
+        # Load the Stripe customer to verify it exists and update card if needed
         opts[:customer] = customer.id
 
         stripe_sub = ::Stripe::Subscription.create(opts, {stripe_account: stripe_account})

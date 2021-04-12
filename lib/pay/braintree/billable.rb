@@ -19,7 +19,9 @@ module Pay
       # Returns Braintree::Customer
       def customer
         if processor_id?
-          gateway.customer.find(processor_id)
+          customer = gateway.customer.find(processor_id)
+          update_card card_token if card_token.present?
+          customer
         else
           result = gateway.customer.create(
             email: email,

@@ -95,6 +95,11 @@ module Pay
       past_due? || incomplete?
     end
 
+    def change_quantity(quantity)
+      payment_processor.change_quantity(quantity)
+      update(quantity: quantity)
+    end
+
     def resume
       payment_processor.resume
       update(ends_at: nil, status: "active")

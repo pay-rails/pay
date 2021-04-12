@@ -4,7 +4,17 @@ module Pay
       class SubscriptionPaymentSucceeded
         def call(event)
           billable = Pay.find_billable(processor: :paddle, processor_id: event["user_id"])
-          return unless billable.present?
+
+          if billable.nil?
+            billable = Pay::Paddle.owner_from_passthrough(event["passthrough"])
+            billable&.update!(processor: "paddle", processor_id: event["user_id"])
+          end
+
+          if billable.nil?
+            Rails.logger.error("[Pay] Unable to find Pay::Billable with owner: '#{event["passthrough"]}'. Searched these models: #{Pay.billable_models.join(", ")}")
+            return
+          end
+
           return if billable.charges.where(processor_id: event["subscription_payment_id"]).any?
 
           charge = create_charge(billable, event)

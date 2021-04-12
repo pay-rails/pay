@@ -38,6 +38,12 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
+      def change_quantity(quantity)
+        ::Stripe::Subscription.update(processor_id, quantity: quantity)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
+      end
+
       def on_grace_period?
         canceled? && Time.zone.now < ends_at
       end
