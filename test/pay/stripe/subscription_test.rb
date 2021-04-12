@@ -8,7 +8,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     @user.customer
   end
 
-  test "stripe subscription and one time charge" do
+  test "change stripe subscription quantity" do
     @user.update_card("pm_card_visa")
     subscription = @user.subscribe(name: "default", plan: "default")
     subscription.change_quantity(5)
