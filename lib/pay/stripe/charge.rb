@@ -10,7 +10,7 @@ module Pay
       end
 
       def charge
-        ::Stripe::Charge.retrieve(processor_id, { expand: ["customer", "invoice.subscription"], stripe_account: stripe_account })
+        ::Stripe::Charge.retrieve({id: processor_id, expand: ["customer", "invoice.subscription"]}, {stripe_account: stripe_account})
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
