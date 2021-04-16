@@ -221,10 +221,11 @@ module Pay
       # checkout_charge(amount: 15_00, name: "T-shirt", quantity: 2)
       #
       def checkout_charge(amount:, name:, quantity: 1, **options)
+        currency = options.delete(:currency) || "usd"
         checkout(
           line_items: {
             price_data: {
-              currency: options[:currency] || "usd",
+              currency: currency,
               product_data: {name: name},
               unit_amount: amount
             },
