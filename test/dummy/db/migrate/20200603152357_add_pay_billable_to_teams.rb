@@ -2,7 +2,7 @@
 
 class AddPayBillableToTeams < ActiveRecord::Migration[6.0]
   def change
-    change_table :teams do |t|
+    change_table :teams, bulk: true do |t|
       t.string :processor
       t.string :processor_id
       t.datetime :trial_ends_at
