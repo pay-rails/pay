@@ -1,5 +1,10 @@
 ### Unreleased
 
+### 2.6.10
+
+* Improve the Stripe Checkout URLs so your Rails app doesn't need a `root_url` #309 - @excid3
+* Fix `currency` with Stripe Checkout #308 - @excid3
+
 ### 2.6.9
 
 * Update Stripe & Braintree default card automatically when the customer is accessed (ie. on charge, subscribe, etc) #300 - @excid3
