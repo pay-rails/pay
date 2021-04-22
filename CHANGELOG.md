@@ -1,5 +1,32 @@
 ### Unreleased
 
+### 2.6.10
+
+* Improve the Stripe Checkout URLs so your Rails app doesn't need a `root_url` #309 - @excid3
+* Fix `currency` with Stripe Checkout #308 - @excid3
+
+### 2.6.9
+
+* Update Stripe & Braintree default card automatically when the customer is accessed (ie. on charge, subscribe, etc) #300 - @excid3
+
+### 2.6.8
+
+* Add passthrough fallback for paddle payment succeeded webhook #302 - @nm
+
+### 2.6.7
+
+* Add Stripe `payment_intent.succeeded` webhook listener
+
+### 2.6.6
+
+* Improve error wrappers to delegate message to original cause
+
+### 2.6.5
+
+* [NEW] Raise error if payment processor name is nil
+* [FIX] Pay::Error now uses the correct message in to_s
+* Create braintree customer on update_card if needed
+
 # 2.6.4
 
 * [NEW] Fake payment processor for testing and giving users free access to your application

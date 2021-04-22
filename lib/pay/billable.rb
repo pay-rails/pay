@@ -34,6 +34,7 @@ module Pay
     end
 
     def payment_processor_for(name)
+      raise Error, "No payment processor set. Assign a payment processor with 'object.processor = :stripe' or any supported processor." if name.blank?
       "Pay::#{name.to_s.classify}::Billable".constantize
     end
 

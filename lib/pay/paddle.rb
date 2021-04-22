@@ -19,6 +19,7 @@ module Pay
     def self.setup
       ::PaddlePay.config.vendor_id = vendor_id
       ::PaddlePay.config.vendor_auth_code = vendor_auth_code
+      ::PaddlePay.config.environment = environment
 
       configure_webhooks
     end
@@ -31,12 +32,23 @@ module Pay
       find_value_by_name(:paddle, :vendor_auth_code)
     end
 
+    def self.environment
+      find_value_by_name(:paddle, :environment) || "production"
+    end
+
     def self.public_key_base64
       find_value_by_name(:paddle, :public_key_base64)
     end
 
     def self.passthrough(owner:, **options)
       options.merge(owner_sgid: owner.to_sgid.to_s).to_json
+    end
+
+    def self.owner_from_passthrough(passthrough)
+      passthrough_json = JSON.parse(passthrough)
+      GlobalID::Locator.locate_signed(passthrough_json["owner_sgid"])
+    rescue JSON::ParserError
+      nil
     end
 
     def self.configure_webhooks

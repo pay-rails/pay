@@ -8,19 +8,18 @@ http_interactions:
       string: email=johnny%40appleseed.com
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.24.0
+      - Stripe/v1 RubyBindings/5.30.0 PayRails/2.6.8 (https://github.com/pay-rails/pay)
       Authorization:
       - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
-      X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_DxZwUCpzoJ2l6k","request_duration_ms":278}}'
       Stripe-Version:
       - '2020-08-27'
       X-Stripe-Client-User-Agent:
-      - '{"bindings_version":"5.24.0","lang":"ruby","lang_version":"2.7.1 p83 (2020-03-31)","platform":"x86_64-darwin19","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 19.6.0 Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10
-        PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.6.8"},"bindings_version":"5.30.0","lang":"ruby","lang_version":"3.0.0
+        p0 (2020-12-25)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 20.3.0 Darwin Kernel Version 20.3.0: Thu Jan 21 00:07:06
+        PST 2021; root:xnu-7195.81.3~1/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -33,7 +32,7 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 01 Sep 2020 00:50:23 GMT
+      - Fri, 09 Apr 2021 16:04:37 GMT
       Content-Type:
       - application/json
       Content-Length:
@@ -53,27 +52,29 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Request-Id:
-      - req_cRLJabPxs1NsKh
+      - req_S3170VMJz9cLie
       Stripe-Version:
       - '2020-08-27'
+      X-Stripe-C-Cost:
+      - '0'
       Strict-Transport-Security:
       - max-age=31556926; includeSubDomains; preload
     body:
       encoding: UTF-8
       string: |
         {
-          "id": "cus_HwGEQyUdg4X5ZN",
+          "id": "cus_JGuevFiGAazUFK",
           "object": "customer",
           "address": null,
           "balance": 0,
-          "created": 1598921423,
+          "created": 1617984277,
           "currency": null,
           "default_source": null,
           "delinquent": false,
           "description": null,
           "discount": null,
           "email": "johnny@appleseed.com",
-          "invoice_prefix": "606A76BA",
+          "invoice_prefix": "CE791BC2",
           "invoice_settings": {
             "custom_fields": null,
             "default_payment_method": null,
@@ -91,222 +92,29 @@ http_interactions:
           "shipping": null,
           "tax_exempt": "none"
         }
-  recorded_at: Tue, 01 Sep 2020 00:50:23 GMT
-- request:
-    method: get
-    uri: https://api.stripe.com/v1/plans/small-monthly
-    body:
-      encoding: US-ASCII
-      string: ''
-    headers:
-      User-Agent:
-      - Stripe/v1 RubyBindings/5.24.0
-      Authorization:
-      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
-      Content-Type:
-      - application/x-www-form-urlencoded
-      X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_cRLJabPxs1NsKh","request_duration_ms":336}}'
-      Stripe-Version:
-      - '2020-08-27'
-      X-Stripe-Client-User-Agent:
-      - '{"bindings_version":"5.24.0","lang":"ruby","lang_version":"2.7.1 p83 (2020-03-31)","platform":"x86_64-darwin19","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 19.6.0 Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10
-        PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - nginx
-      Date:
-      - Tue, 01 Sep 2020 00:50:23 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '478'
-      Connection:
-      - keep-alive
-      Access-Control-Allow-Credentials:
-      - 'true'
-      Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
-      Access-Control-Allow-Origin:
-      - "*"
-      Access-Control-Expose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
-      Access-Control-Max-Age:
-      - '300'
-      Cache-Control:
-      - no-cache, no-store
-      Request-Id:
-      - req_1145jf40elLqsr
-      Stripe-Version:
-      - '2020-08-27'
-      Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
-    body:
-      encoding: UTF-8
-      string: |
-        {
-          "id": "small-monthly",
-          "object": "plan",
-          "active": true,
-          "aggregate_usage": null,
-          "amount": 2500,
-          "amount_decimal": "2500",
-          "billing_scheme": "per_unit",
-          "created": 1571425570,
-          "currency": "usd",
-          "interval": "month",
-          "interval_count": 1,
-          "livemode": false,
-          "metadata": {
-          },
-          "nickname": "Small Monthly",
-          "product": "prod_EYTX7RYhRjcwKD",
-          "tiers_mode": null,
-          "transform_usage": null,
-          "trial_period_days": null,
-          "usage_type": "licensed"
-        }
-  recorded_at: Tue, 01 Sep 2020 00:50:23 GMT
-- request:
-    method: post
-    uri: https://api.stripe.com/v1/payment_methods
-    body:
-      encoding: UTF-8
-      string: type=card&billing_details[name]=Jane+Doe&card[number]=4242+4242+4242+4242&card[exp_month]=9&card[exp_year]=2025&card[cvc]=123
-    headers:
-      User-Agent:
-      - Stripe/v1 RubyBindings/5.24.0
-      Authorization:
-      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
-      Content-Type:
-      - application/x-www-form-urlencoded
-      X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_1145jf40elLqsr","request_duration_ms":247}}'
-      Stripe-Version:
-      - '2020-08-27'
-      X-Stripe-Client-User-Agent:
-      - '{"bindings_version":"5.24.0","lang":"ruby","lang_version":"2.7.1 p83 (2020-03-31)","platform":"x86_64-darwin19","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 19.6.0 Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10
-        PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - nginx
-      Date:
-      - Tue, 01 Sep 2020 00:50:24 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '940'
-      Connection:
-      - keep-alive
-      Access-Control-Allow-Credentials:
-      - 'true'
-      Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
-      Access-Control-Allow-Origin:
-      - "*"
-      Access-Control-Expose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
-      Access-Control-Max-Age:
-      - '300'
-      Cache-Control:
-      - no-cache, no-store
-      Request-Id:
-      - req_Pq4jcOglheelbo
-      Stripe-Version:
-      - '2020-08-27'
-      Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
-    body:
-      encoding: UTF-8
-      string: |
-        {
-          "id": "pm_1HMNhbKXBGcbgpbZ97bWr7ay",
-          "object": "payment_method",
-          "billing_details": {
-            "address": {
-              "city": null,
-              "country": null,
-              "line1": null,
-              "line2": null,
-              "postal_code": null,
-              "state": null
-            },
-            "email": null,
-            "name": "Jane Doe",
-            "phone": null
-          },
-          "card": {
-            "brand": "visa",
-            "checks": {
-              "address_line1_check": null,
-              "address_postal_code_check": null,
-              "cvc_check": "unchecked"
-            },
-            "country": "US",
-            "exp_month": 9,
-            "exp_year": 2025,
-            "fingerprint": "w4XDzQOFakih5EZM",
-            "funding": "credit",
-            "generated_from": null,
-            "last4": "4242",
-            "networks": {
-              "available": [
-                "visa"
-              ],
-              "preferred": null
-            },
-            "three_d_secure_usage": {
-              "supported": true
-            },
-            "wallet": null
-          },
-          "created": 1598921424,
-          "customer": null,
-          "livemode": false,
-          "metadata": {
-          },
-          "type": "card"
-        }
-  recorded_at: Tue, 01 Sep 2020 00:50:24 GMT
+  recorded_at: Fri, 09 Apr 2021 16:04:37 GMT
 - request:
     method: post
     uri: https://api.stripe.com/v1/customers
     body:
       encoding: UTF-8
-      string: email=johnny%40appleseed.com&description=
+      string: email=johnny%40appleseed.com&name=
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.24.0
+      - Stripe/v1 RubyBindings/5.30.0 PayRails/2.6.8 (https://github.com/pay-rails/pay)
       Authorization:
       - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_Pq4jcOglheelbo","request_duration_ms":501}}'
+      - '{"last_request_metrics":{"request_id":"req_S3170VMJz9cLie","request_duration_ms":527}}'
       Stripe-Version:
       - '2020-08-27'
       X-Stripe-Client-User-Agent:
-      - '{"bindings_version":"5.24.0","lang":"ruby","lang_version":"2.7.1 p83 (2020-03-31)","platform":"x86_64-darwin19","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 19.6.0 Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10
-        PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.6.8"},"bindings_version":"5.30.0","lang":"ruby","lang_version":"3.0.0
+        p0 (2020-12-25)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 20.3.0 Darwin Kernel Version 20.3.0: Thu Jan 21 00:07:06
+        PST 2021; root:xnu-7195.81.3~1/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -319,7 +127,7 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 01 Sep 2020 00:50:24 GMT
+      - Fri, 09 Apr 2021 16:04:38 GMT
       Content-Type:
       - application/json
       Content-Length:
@@ -339,27 +147,29 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Request-Id:
-      - req_8MfUWHGXFILpJ7
+      - req_VtPFY7kuFtYa7c
       Stripe-Version:
       - '2020-08-27'
+      X-Stripe-C-Cost:
+      - '0'
       Strict-Transport-Security:
       - max-age=31556926; includeSubDomains; preload
     body:
       encoding: UTF-8
       string: |
         {
-          "id": "cus_HwGEN2slXkGM1a",
+          "id": "cus_JGueWda6EAcrdH",
           "object": "customer",
           "address": null,
           "balance": 0,
-          "created": 1598921424,
+          "created": 1617984278,
           "currency": null,
           "default_source": null,
           "delinquent": false,
           "description": null,
           "discount": null,
           "email": "johnny@appleseed.com",
-          "invoice_prefix": "0BA041E4",
+          "invoice_prefix": "7BA02A45",
           "invoice_settings": {
             "custom_fields": null,
             "default_payment_method": null,
@@ -377,28 +187,29 @@ http_interactions:
           "shipping": null,
           "tax_exempt": "none"
         }
-  recorded_at: Tue, 01 Sep 2020 00:50:24 GMT
+  recorded_at: Fri, 09 Apr 2021 16:04:38 GMT
 - request:
     method: post
-    uri: https://api.stripe.com/v1/payment_methods/pm_1HMNhbKXBGcbgpbZ97bWr7ay/attach
+    uri: https://api.stripe.com/v1/payment_methods/pm_card_visa/attach
     body:
       encoding: UTF-8
-      string: customer=cus_HwGEN2slXkGM1a
+      string: customer=cus_JGueWda6EAcrdH
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.24.0
+      - Stripe/v1 RubyBindings/5.30.0 PayRails/2.6.8 (https://github.com/pay-rails/pay)
       Authorization:
       - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_8MfUWHGXFILpJ7","request_duration_ms":373}}'
+      - '{"last_request_metrics":{"request_id":"req_VtPFY7kuFtYa7c","request_duration_ms":407}}'
       Stripe-Version:
       - '2020-08-27'
       X-Stripe-Client-User-Agent:
-      - '{"bindings_version":"5.24.0","lang":"ruby","lang_version":"2.7.1 p83 (2020-03-31)","platform":"x86_64-darwin19","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 19.6.0 Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10
-        PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.6.8"},"bindings_version":"5.30.0","lang":"ruby","lang_version":"3.0.0
+        p0 (2020-12-25)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 20.3.0 Darwin Kernel Version 20.3.0: Thu Jan 21 00:07:06
+        PST 2021; root:xnu-7195.81.3~1/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -411,11 +222,11 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 01 Sep 2020 00:50:25 GMT
+      - Fri, 09 Apr 2021 16:04:39 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '951'
+      - '943'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
@@ -431,16 +242,18 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Request-Id:
-      - req_wOu2DuY774Euie
+      - req_8uMOcVsf5w85oS
       Stripe-Version:
       - '2020-08-27'
+      X-Stripe-C-Cost:
+      - '2'
       Strict-Transport-Security:
       - max-age=31556926; includeSubDomains; preload
     body:
       encoding: UTF-8
       string: |
         {
-          "id": "pm_1HMNhbKXBGcbgpbZ97bWr7ay",
+          "id": "pm_1IeMp0KXBGcbgpbZQdEgKaF8",
           "object": "payment_method",
           "billing_details": {
             "address": {
@@ -452,7 +265,7 @@ http_interactions:
               "state": null
             },
             "email": null,
-            "name": "Jane Doe",
+            "name": null,
             "phone": null
           },
           "card": {
@@ -460,11 +273,11 @@ http_interactions:
             "checks": {
               "address_line1_check": null,
               "address_postal_code_check": null,
-              "cvc_check": "pass"
+              "cvc_check": null
             },
             "country": "US",
-            "exp_month": 9,
-            "exp_year": 2025,
+            "exp_month": 4,
+            "exp_year": 2022,
             "fingerprint": "w4XDzQOFakih5EZM",
             "funding": "credit",
             "generated_from": null,
@@ -480,35 +293,36 @@ http_interactions:
             },
             "wallet": null
           },
-          "created": 1598921424,
-          "customer": "cus_HwGEN2slXkGM1a",
+          "created": 1617984278,
+          "customer": "cus_JGueWda6EAcrdH",
           "livemode": false,
           "metadata": {
           },
           "type": "card"
         }
-  recorded_at: Tue, 01 Sep 2020 00:50:25 GMT
+  recorded_at: Fri, 09 Apr 2021 16:04:39 GMT
 - request:
     method: post
-    uri: https://api.stripe.com/v1/customers/cus_HwGEN2slXkGM1a
+    uri: https://api.stripe.com/v1/customers/cus_JGueWda6EAcrdH
     body:
       encoding: UTF-8
-      string: invoice_settings[default_payment_method]=pm_1HMNhbKXBGcbgpbZ97bWr7ay
+      string: invoice_settings[default_payment_method]=pm_1IeMp0KXBGcbgpbZQdEgKaF8
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.24.0
+      - Stripe/v1 RubyBindings/5.30.0 PayRails/2.6.8 (https://github.com/pay-rails/pay)
       Authorization:
       - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_wOu2DuY774Euie","request_duration_ms":553}}'
+      - '{"last_request_metrics":{"request_id":"req_8uMOcVsf5w85oS","request_duration_ms":888}}'
       Stripe-Version:
       - '2020-08-27'
       X-Stripe-Client-User-Agent:
-      - '{"bindings_version":"5.24.0","lang":"ruby","lang_version":"2.7.1 p83 (2020-03-31)","platform":"x86_64-darwin19","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 19.6.0 Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10
-        PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.6.8"},"bindings_version":"5.30.0","lang":"ruby","lang_version":"3.0.0
+        p0 (2020-12-25)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 20.3.0 Darwin Kernel Version 20.3.0: Thu Jan 21 00:07:06
+        PST 2021; root:xnu-7195.81.3~1/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -521,7 +335,7 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 01 Sep 2020 00:50:25 GMT
+      - Fri, 09 Apr 2021 16:04:39 GMT
       Content-Type:
       - application/json
       Content-Length:
@@ -541,30 +355,32 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Request-Id:
-      - req_OrCAFGO0BAyyTL
+      - req_nK4j6WIpzPawSf
       Stripe-Version:
       - '2020-08-27'
+      X-Stripe-C-Cost:
+      - '0'
       Strict-Transport-Security:
       - max-age=31556926; includeSubDomains; preload
     body:
       encoding: UTF-8
       string: |
         {
-          "id": "cus_HwGEN2slXkGM1a",
+          "id": "cus_JGueWda6EAcrdH",
           "object": "customer",
           "address": null,
           "balance": 0,
-          "created": 1598921424,
+          "created": 1617984278,
           "currency": null,
           "default_source": null,
           "delinquent": false,
           "description": null,
           "discount": null,
           "email": "johnny@appleseed.com",
-          "invoice_prefix": "0BA041E4",
+          "invoice_prefix": "7BA02A45",
           "invoice_settings": {
             "custom_fields": null,
-            "default_payment_method": "pm_1HMNhbKXBGcbgpbZ97bWr7ay",
+            "default_payment_method": "pm_1IeMp0KXBGcbgpbZQdEgKaF8",
             "footer": null
           },
           "livemode": false,
@@ -579,115 +395,5 @@ http_interactions:
           "shipping": null,
           "tax_exempt": "none"
         }
-  recorded_at: Tue, 01 Sep 2020 00:50:25 GMT
-- request:
-    method: get
-    uri: https://api.stripe.com/v1/payment_methods/pm_1HMNhbKXBGcbgpbZ97bWr7ay
-    body:
-      encoding: US-ASCII
-      string: ''
-    headers:
-      User-Agent:
-      - Stripe/v1 RubyBindings/5.24.0
-      Authorization:
-      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
-      Content-Type:
-      - application/x-www-form-urlencoded
-      X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_OrCAFGO0BAyyTL","request_duration_ms":695}}'
-      Stripe-Version:
-      - '2020-08-27'
-      X-Stripe-Client-User-Agent:
-      - '{"bindings_version":"5.24.0","lang":"ruby","lang_version":"2.7.1 p83 (2020-03-31)","platform":"x86_64-darwin19","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 19.6.0 Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10
-        PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - nginx
-      Date:
-      - Tue, 01 Sep 2020 00:50:26 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '951'
-      Connection:
-      - keep-alive
-      Access-Control-Allow-Credentials:
-      - 'true'
-      Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
-      Access-Control-Allow-Origin:
-      - "*"
-      Access-Control-Expose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
-      Access-Control-Max-Age:
-      - '300'
-      Cache-Control:
-      - no-cache, no-store
-      Request-Id:
-      - req_lBzbnKhyaFP2rv
-      Stripe-Version:
-      - '2020-08-27'
-      Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
-    body:
-      encoding: UTF-8
-      string: |
-        {
-          "id": "pm_1HMNhbKXBGcbgpbZ97bWr7ay",
-          "object": "payment_method",
-          "billing_details": {
-            "address": {
-              "city": null,
-              "country": null,
-              "line1": null,
-              "line2": null,
-              "postal_code": null,
-              "state": null
-            },
-            "email": null,
-            "name": "Jane Doe",
-            "phone": null
-          },
-          "card": {
-            "brand": "visa",
-            "checks": {
-              "address_line1_check": null,
-              "address_postal_code_check": null,
-              "cvc_check": "pass"
-            },
-            "country": "US",
-            "exp_month": 9,
-            "exp_year": 2025,
-            "fingerprint": "w4XDzQOFakih5EZM",
-            "funding": "credit",
-            "generated_from": null,
-            "last4": "4242",
-            "networks": {
-              "available": [
-                "visa"
-              ],
-              "preferred": null
-            },
-            "three_d_secure_usage": {
-              "supported": true
-            },
-            "wallet": null
-          },
-          "created": 1598921424,
-          "customer": "cus_HwGEN2slXkGM1a",
-          "livemode": false,
-          "metadata": {
-          },
-          "type": "card"
-        }
-  recorded_at: Tue, 01 Sep 2020 00:50:26 GMT
+  recorded_at: Fri, 09 Apr 2021 16:04:39 GMT
 recorded_with: VCR 6.0.0
