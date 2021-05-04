@@ -220,11 +220,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "processor subscription" do
-    user = mock("user")
-    user.expects(:processor_subscription).returns(:result)
-
-    @subscription.stubs(:owner).returns(user)
-
+    @subscription.payment_processor.stubs(:subscription).returns(:result)
     assert_equal :result, @subscription.processor_subscription
   end
 
