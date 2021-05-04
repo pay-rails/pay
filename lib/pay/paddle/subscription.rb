@@ -24,6 +24,13 @@ module Pay
         @pay_subscription = pay_subscription
       end
 
+      def subscription(**options)
+        hash = PaddlePay::Subscription::User.list({subscription_id: processor_id}, options).try(:first)
+        OpenStruct.new(hash)
+      rescue ::PaddlePay::PaddlePayError => e
+        raise Pay::Paddle::Error, e
+      end
+
       def cancel
         subscription = processor_subscription
         PaddlePay::Subscription::User.cancel(processor_id)

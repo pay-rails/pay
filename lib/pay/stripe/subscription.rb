@@ -23,6 +23,10 @@ module Pay
         @pay_subscription = pay_subscription
       end
 
+      def subscription(**options)
+        ::Stripe::Subscription.retrieve(options.merge(id: processor_id))
+      end
+
       def cancel
         subscription = processor_subscription
         subscription.cancel_at_period_end = true
