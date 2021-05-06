@@ -23,6 +23,10 @@ module Pay
         @pay_subscription = pay_subscription
       end
 
+      def subscription(**options)
+        gateway.subscription.find(processor_id)
+      end
+
       def cancel
         subscription = processor_subscription
 

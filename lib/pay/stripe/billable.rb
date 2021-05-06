@@ -201,8 +201,8 @@ module Pay
           payment_method_types: ["card"],
           mode: "payment",
           # These placeholder URLs will be replaced in a following step.
-          success_url: root_url,
-          cancel_url: root_url
+          success_url: options.delete(:success_url) || root_url,
+          cancel_url: options.delete(:cancel_url) || root_url
         }
 
         # Line items are optional
@@ -224,10 +224,11 @@ module Pay
       # checkout_charge(amount: 15_00, name: "T-shirt", quantity: 2)
       #
       def checkout_charge(amount:, name:, quantity: 1, **options)
+        currency = options.delete(:currency) || "usd"
         checkout(
           line_items: {
             price_data: {
-              currency: options[:currency] || "usd",
+              currency: currency,
               product_data: {name: name},
               unit_amount: amount
             },
@@ -240,7 +241,7 @@ module Pay
       def billing_portal(**options)
         args = {
           customer: processor_id,
-          return_url: options[:return_url] || root_url
+          return_url: options.delete(:return_url) || root_url
         }
         ::Stripe::BillingPortal::Session.create(args.merge(options), {stripe_account: stripe_account})
       end

@@ -24,6 +24,10 @@ module Pay
         @pay_subscription = pay_subscription
       end
 
+      def subscription(**options)
+        ::Stripe::Subscription.retrieve(options.merge(id: processor_id))
+      end
+
       def cancel
         stripe_sub = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}, {stripe_account: stripe_account})
         pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(stripe_sub.current_period_end)))

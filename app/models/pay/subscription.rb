@@ -116,8 +116,8 @@ module Pay
       owner.invoice!(subscription_id: processor_id)
     end
 
-    def processor_subscription(options = {})
-      owner.processor_subscription(processor_id, options)
+    def processor_subscription(**options)
+      payment_processor.subscription(**options)
     end
 
     def latest_payment

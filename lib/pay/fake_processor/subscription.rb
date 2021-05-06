@@ -19,6 +19,10 @@ module Pay
         @pay_subscription = pay_subscription
       end
 
+      def subscription(**options)
+        pay_subscription
+      end
+
       def cancel
         pay_subscription.update(ends_at: Time.current.end_of_month)
       end
