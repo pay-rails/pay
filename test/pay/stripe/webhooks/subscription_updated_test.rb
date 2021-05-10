@@ -49,4 +49,17 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
 
     assert_equal 3.days.from_now.beginning_of_day, subscription.reload.ends_at
   end
+
+  test "subscription is created when the subscripiton is missing" do
+    @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: @event.data.object.customer)
+
+    Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
+
+    subscription = @user.subscriptions.first
+    assert_equal 2, subscription.quantity
+    assert_equal "FFBEGINNER_00000000000000", subscription.processor_plan
+    assert_equal Time.at(@event.data.object.trial_end), subscription.trial_ends_at
+    assert_nil subscription.ends_at
+    assert_equal "canceled", subscription.status
+  end
 end

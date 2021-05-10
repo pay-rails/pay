@@ -6,7 +6,18 @@ module Pay
           object = event.data.object
           subscription = Pay.subscription_model.find_by(processor: :stripe, processor_id: object.id)
 
-          return if subscription.nil?
+          # Create the subscription in the database if we don't have it already
+          if subscription.nil?
+            # The customer should already be in the database
+            owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
+
+            if owner.nil?
+              Rails.logger.error("[Pay] Unable to find Pay::Billable with processor: :stripe and processor_id: '#{object.customer}'. Searched these models: #{Pay.billable_models.join(", ")}")
+              return
+            end
+
+            subscription = Pay.subscription_model.new(name: Pay.default_product_name, owner: owner, processor: :stripe, processor_id: object.id)
+          end
 
           # Delete any subscription attempts that have expired
           if object.status == "incomplete_expired"
