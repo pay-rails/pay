@@ -41,7 +41,7 @@ class Pay::Stripe::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
     assert_equal "FFBEGINNER_00000000000000", subscription.processor_plan
     assert_equal Time.at(@event.data.object.trial_end), subscription.trial_ends_at
     assert_nil subscription.ends_at
-    assert_equal "active", subscription.status
+    assert_equal "incomplete", subscription.status
   end
 
   test "subscription is updated with cancel_at_period_end = true and on_trial? = false" do
@@ -66,5 +66,21 @@ class Pay::Stripe::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
     Pay::Stripe::Webhooks::SubscriptionCreated.new.call(@event)
 
     assert_equal 3.days.from_now.beginning_of_day, subscription.reload.ends_at
+  end
+
+  test "subscription attributes are not replaced when they are exists" do
+    @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: @event.data.object.customer)
+    trial_ends_at = 1.day.ago
+    subscription = @user.subscriptions.create!(processor: :stripe, processor_id: @event.data.object.id, name: "default", processor_plan: "FFBEGINNER_00000000000001", status: "incomplete", quantity: 1, trial_ends_at: trial_ends_at)
+
+    Pay::Stripe::Webhooks::SubscriptionCreated.new.call(@event)
+
+    subscription.reload
+
+    assert_equal 1, subscription.quantity
+    assert_equal "FFBEGINNER_00000000000001", subscription.processor_plan
+    assert_equal trial_ends_at, subscription.trial_ends_at
+    assert_nil subscription.ends_at
+    assert_equal "incomplete", subscription.status
   end
 end
