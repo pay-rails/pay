@@ -67,6 +67,18 @@ module Pay
     Pay::Billable.includers
   end
 
+  def self.merchant_models
+    Pay::Merchant.includers
+  end
+
+  def self.find_merchant(merchant_processor, pay_data)
+    merchant_models.each do |model|
+      if (record = model.find_by(merchant_processor: merchant_processor, pay_data: pay_data))
+        return record
+      end
+    end
+  end
+
   def self.find_billable(processor:, processor_id:)
     billable_models.each do |model|
       if (record = model.find_by(processor: processor, processor_id: processor_id))

@@ -2,6 +2,17 @@ module Pay
   module Merchant
     extend ActiveSupport::Concern
 
+    # Keep track of which Billable models we have
+    class << self
+      attr_reader :includers
+    end
+
+    def self.included(base = nil, &block)
+      @includers ||= []
+      @includers << base if base
+      super
+    end
+
     included do
       store_accessor :pay_data, :stripe_connect_account_id
       store_accessor :pay_data, :onboarding_complete

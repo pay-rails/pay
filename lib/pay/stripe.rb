@@ -18,6 +18,7 @@ module Pay
       autoload :SubscriptionDeleted, "pay/stripe/webhooks/subscription_deleted"
       autoload :SubscriptionRenewing, "pay/stripe/webhooks/subscription_renewing"
       autoload :SubscriptionUpdated, "pay/stripe/webhooks/subscription_updated"
+      autoload :AccountUpdated, "pay/stripe/webhooks/account_updated"
     end
 
     extend Env
@@ -82,6 +83,9 @@ module Pay
         events.subscribe "stripe.payment_method.updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
         events.subscribe "stripe.payment_method.card_automatically_updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
         events.subscribe "stripe.payment_method.detached", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
+
+        # If an account is updated in stripe, we should update it as well
+        events.subscribe "stripe.account.updated", Pay::Stripe::Webhooks::AccountUpdated.new
       end
     end
   end
