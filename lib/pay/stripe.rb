@@ -7,6 +7,7 @@ module Pay
     autoload :Merchant, "pay/stripe/merchant"
 
     module Webhooks
+      autoload :AccountUpdated, "pay/stripe/webhooks/account_updated"
       autoload :ChargeRefunded, "pay/stripe/webhooks/charge_refunded"
       autoload :ChargeSucceeded, "pay/stripe/webhooks/charge_succeeded"
       autoload :CustomerDeleted, "pay/stripe/webhooks/customer_deleted"
@@ -18,7 +19,6 @@ module Pay
       autoload :SubscriptionDeleted, "pay/stripe/webhooks/subscription_deleted"
       autoload :SubscriptionRenewing, "pay/stripe/webhooks/subscription_renewing"
       autoload :SubscriptionUpdated, "pay/stripe/webhooks/subscription_updated"
-      autoload :AccountUpdated, "pay/stripe/webhooks/account_updated"
     end
 
     extend Env

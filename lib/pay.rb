@@ -71,12 +71,13 @@ module Pay
     Pay::Merchant.includers
   end
 
-  def self.find_merchant(merchant_processor, pay_data)
+  def self.find_merchant(account_id)
     merchant_models.each do |model|
-      if (record = model.find_by(merchant_processor: merchant_processor, pay_data: pay_data))
+      if (record = model.find_by("pay_data->>'stripe_connect_account_id' = ?", account_id))
         return record
       end
     end
+    nil
   end
 
   def self.find_billable(processor:, processor_id:)
