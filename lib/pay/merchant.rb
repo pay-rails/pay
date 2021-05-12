@@ -2,7 +2,7 @@ module Pay
   module Merchant
     extend ActiveSupport::Concern
 
-    # Keep track of which Billable models we have
+    # Keep track of which Merchant models we have
     class << self
       attr_reader :includers
     end
