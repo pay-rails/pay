@@ -1,6 +1,7 @@
 require "pay/version"
 require "pay/engine"
 require "pay/errors"
+require "pay/adapter"
 
 module Pay
   autoload :Billable, "pay/billable"
@@ -71,10 +72,17 @@ module Pay
     Pay::Merchant.includers
   end
 
-  def self.find_merchant(account_id)
+  def self.find_merchant(account_key, account_value)
     merchant_models.each do |model|
-      if (record = model.find_by("pay_data->>'stripe_connect_account_id' = ?", account_id))
-        return record
+      case Pay::Adapter.current_adapter
+      when "postgresql"
+       return model.find_by('pay_data @> ?', {account_key.to_sym => account_value}.to_json)
+      when "mysql2"
+       return model.find_by("JSON_CONTAINS(pay_data, ?)", {account_key.to_sym => account_value}.to_json)
+      when "sqlite3"
+        return model.find_by("json_extract(pay_data, ?) =?", "$.#{account_key}", account_value)
+      else
+        model.find_by(pay_data: {account_key.to_sym => account_value})
       end
     end
     nil
