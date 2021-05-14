@@ -64,7 +64,7 @@ To add the migrations to your application, run the following migration:
 
 `bin/rails pay:install:migrations`
 
-> if your models rely on non integer ids (uuids for example) you will need to alter the `create_pay_subscriptions` and `create_pay_charges` migrations to ensure the `owner_id` column's type matches the model's id's format.
+>If your models rely on non integer ids (uuids for example) you will need to alter the `create_pay_subscriptions` and `create_pay_charges` migrations to ensure the `owner_id` column's type matches the model's id's format.
 > As commented in the migrations adding a type parameter to the `t.references :owner` line will ensure the `owner_id` column is of the correct type.
 
 We also need to run migrations to add Pay to the User, Account, Team, etc models that we want to make payments in our app.
