@@ -178,6 +178,7 @@ module Pay
           card_exp_month: object.payment_method_details.card.exp_month,
           card_exp_year: object.payment_method_details.card.exp_year,
           created_at: Time.zone.at(object.created),
+          currency: object.currency,
           stripe_account: stripe_account,
           application_fee_amount: object.application_fee_amount
         )

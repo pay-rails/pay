@@ -32,4 +32,10 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
     assert Pay::Charge.new(processor: "braintree").braintree?
     assert Pay::Charge.new(processor: "braintree", card_type: "PayPal").paypal?
   end
+
+  test "braintree saves currency on charge" do
+    @billable.card_token = "fake-valid-visa-nonce"
+    charge = @billable.charge(29_00)
+    assert_equal "USD", charge.currency
+  end
 end

@@ -30,8 +30,9 @@ module Pay
           params = {
             amount: Integer(event["sale_gross"].to_f * 100),
             card_type: event["payment_method"],
-            paddle_receipt_url: event["receipt_url"],
-            created_at: Time.zone.parse(event["event_time"])
+            created_at: Time.zone.parse(event["event_time"]),
+            currency: event["currency"],
+            paddle_receipt_url: event["receipt_url"]
           }
 
           payment_information = Pay::Paddle::Billable.new(user).payment_information(event["subscription_id"])

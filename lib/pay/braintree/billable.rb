@@ -153,7 +153,8 @@ module Pay
 
         charge = billable.charges.find_or_initialize_by(
           processor: :braintree,
-          processor_id: transaction.id
+          processor_id: transaction.id,
+          currency: transaction.currency_iso_code
         )
         charge.update(attrs)
         charge

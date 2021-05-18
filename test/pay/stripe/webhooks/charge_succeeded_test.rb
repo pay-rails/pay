@@ -19,6 +19,7 @@ class Pay::Stripe::Webhooks::ChargeSucceededTest < ActiveSupport::TestCase
     assert_equal "Visa", charge.card_type
     assert_equal "1", charge.card_exp_month
     assert_equal "2019", charge.card_exp_year
+    assert_equal "usd", charge.currency
   end
 
   test "a charge isn't created if no corresponding user can be found" do

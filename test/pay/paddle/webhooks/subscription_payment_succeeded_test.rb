@@ -47,6 +47,7 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
     assert_equal "0020", charge.card_last4
     assert_equal "06", charge.card_exp_month
     assert_equal "2022", charge.card_exp_year
+    assert_equal "USD", charge.currency
   end
 
   test "a charge is created and paypal details are set" do
