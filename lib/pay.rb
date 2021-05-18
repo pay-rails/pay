@@ -76,9 +76,9 @@ module Pay
     merchant_models.each do |model|
       case Pay::Adapter.current_adapter
       when "postgresql"
-       return model.find_by('pay_data @> ?', {account_key.to_sym => account_value}.to_json)
+        return model.find_by("pay_data @> ?", {account_key.to_sym => account_value}.to_json)
       when "mysql2"
-       return model.find_by("JSON_CONTAINS(pay_data, ?)", {account_key.to_sym => account_value}.to_json)
+        return model.find_by("JSON_CONTAINS(pay_data, ?)", {account_key.to_sym => account_value}.to_json)
       when "sqlite3"
         return model.find_by("json_extract(pay_data, ?) =?", "$.#{account_key}", account_value)
       else
