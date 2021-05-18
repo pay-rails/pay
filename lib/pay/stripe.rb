@@ -7,6 +7,7 @@ module Pay
     autoload :Merchant, "pay/stripe/merchant"
 
     module Webhooks
+      autoload :AccountUpdated, "pay/stripe/webhooks/account_updated"
       autoload :ChargeRefunded, "pay/stripe/webhooks/charge_refunded"
       autoload :ChargeSucceeded, "pay/stripe/webhooks/charge_succeeded"
       autoload :CustomerDeleted, "pay/stripe/webhooks/customer_deleted"
@@ -82,6 +83,9 @@ module Pay
         events.subscribe "stripe.payment_method.updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
         events.subscribe "stripe.payment_method.card_automatically_updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
         events.subscribe "stripe.payment_method.detached", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
+
+        # If an account is updated in stripe, we should update it as well
+        events.subscribe "stripe.account.updated", Pay::Stripe::Webhooks::AccountUpdated.new
       end
     end
   end

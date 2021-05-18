@@ -15,7 +15,11 @@ ActiveRecord::Schema.define(version: 2021_04_06_215506) do
   create_table "accounts", force: :cascade do |t|
     t.string "email"
     t.string "merchant_processor"
-    t.json "pay_data"
+    if t.respond_to? :jsonb
+      t.jsonb "pay_data"
+    else
+      t.json "pay_data"
+    end
     t.datetime "created_at"
     t.datetime "updated_at"
   end
