@@ -3,13 +3,10 @@ require "test_helper"
 class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   setup do
     @user = User.create!(email: "gob@bluth.com", processor: :stripe)
-
-    # Create Stripe customer
-    @user.customer
   end
 
   test "stripe subscription and one time charge" do
-    @user.update_card("pm_card_visa")
+    @user.card_token = "pm_card_visa"
     @user.subscribe(
       name: "default",
       plan: "default",
