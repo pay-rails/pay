@@ -9,7 +9,7 @@ class AddDataToPayBillable < ActiveRecord::Migration[4.2]
   end
 
   def data_column_type
-    case ActiveRecord::Base.configurations.configs_for(env_name: Rails.env).first.adapter
+    case Pay::Adapter.current_adapter
     when "postgresql"
       :jsonb
     else
