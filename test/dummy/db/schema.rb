@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 2021_04_06_215506) do
     t.text "data"
     t.string "currency"
     t.integer "application_fee_amount"
+    t.integer "pay_subscription_id"
   end
 
   create_table "pay_subscriptions", force: :cascade do |t|

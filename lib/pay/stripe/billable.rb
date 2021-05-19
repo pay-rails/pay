@@ -88,7 +88,7 @@ module Pay
         opts[:customer] = customer.id
 
         stripe_sub = ::Stripe::Subscription.create(opts, {stripe_account: stripe_account})
-        subscription = billable.create_pay_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity, stripe_account: stripe_account)
+        subscription = billable.create_pay_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity, stripe_account: stripe_account, application_fee_percent: stripe_sub.application_fee_percent)
 
         # No trial, card requires SCA
         if subscription.incomplete?
@@ -171,7 +171,7 @@ module Pay
       def save_pay_charge(object)
         charge = billable.charges.find_or_initialize_by(processor: :stripe, processor_id: object.id)
 
-        charge.update(
+        attrs = {
           amount: object.amount,
           card_last4: object.payment_method_details.card.last4,
           card_type: object.payment_method_details.card.brand,
@@ -181,8 +181,15 @@ module Pay
           currency: object.currency,
           stripe_account: stripe_account,
           application_fee_amount: object.application_fee_amount
-        )
+        }
 
+        # Associate charge with subscription if we can
+        if object.invoice
+          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice))
+          attrs[:subscription] = Pay::Subscription.find_by(processor: :stripe, processor_id: invoice.subscription)
+        end
+
+        charge.update(attrs)
         charge
       end
 

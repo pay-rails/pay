@@ -9,6 +9,7 @@ module Pay
 
     # Associations
     belongs_to :owner, polymorphic: true
+    has_many :charges, class_name: "Pay::Charge", foreign_key: :pay_subscription_id
 
     # Validations
     validates :name, presence: true

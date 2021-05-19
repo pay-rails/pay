@@ -7,6 +7,7 @@ module Pay
 
     # Associations
     belongs_to :owner, polymorphic: true
+    belongs_to :subscription, optional: true, class_name: "Pay::Subscription", foreign_key: :pay_subscription_id
 
     # Scopes
     scope :sorted, -> { order(created_at: :desc) }

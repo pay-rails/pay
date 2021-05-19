@@ -3,11 +3,10 @@ require "test_helper"
 class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::TestCase
   setup do
     @data = JSON.parse(File.read("test/support/fixtures/paddle/subscription_payment_succeeded.json"))
+    @user = User.create!(email: "gob@bluth.com", processor: :paddle, processor_id: @data["user_id"])
   end
 
   test "a charge is created" do
-    @user = User.create!(email: "gob@bluth.com", processor: :paddle, processor_id: @data["user_id"])
-
     assert_difference "Pay.charge_model.count" do
       PaddlePay::Subscription::User.stubs(:list).returns(:nil)
       Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new.call(@data)
@@ -19,9 +18,18 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
     assert_equal @data["receipt_url"], charge.paddle_receipt_url
   end
 
-  test "a charge is created and card details are set" do
-    @user = User.create!(email: "gob@bluth.com", processor: :paddle, processor_id: @data["user_id"])
+  test "paddle charge is associated with subscription" do
+    subscription = @user.subscriptions.create!(name: "default", processor: :paddle, processor_id: @data["subscription_id"], processor_plan: "default", status: "active")
 
+    assert_difference "Pay.charge_model.count" do
+      PaddlePay::Subscription::User.stubs(:list).returns(:nil)
+      Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new.call(@data)
+    end
+
+    assert_equal subscription, Pay.charge_model.last.subscription
+  end
+
+  test "a charge is created and card details are set" do
     subscription_user = {
       subscription_id: 7654321,
       plan_id: 123456,
@@ -51,8 +59,6 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
   end
 
   test "a charge is created and paypal details are set" do
-    @user = User.create!(email: "gob@bluth.com", processor: :paddle, processor_id: @data["user_id"])
-
     subscription_user = {
       subscription_id: 7654321,
       plan_id: 123456,
@@ -81,8 +87,6 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
   end
 
   test "a charge is created and user payment information are updated" do
-    user = User.create!(email: "gob@bluth.com", processor: :paddle, processor_id: @data["user_id"])
-
     subscription_user = {
       subscription_id: 7654321,
       plan_id: 123456,
@@ -110,16 +114,12 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
   end
 
   test "a charge isn't created if no corresponding user can be found" do
-    @user = User.create!(email: "gob@bluth.com", processor: :paddle, processor_id: "does-not-exist")
-
     assert_no_difference "Pay.charge_model.count" do
       Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new.call(@data)
     end
   end
 
   test "a charge isn't created if it already exists" do
-    @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: @data["user_id"])
-
     @user.charges.create!(amount: 100, processor: :paddle, processor_id: @data["subscription_payment_id"], card_type: @data["payment_method"])
 
     assert_no_difference "Pay.charge_model.count" do
