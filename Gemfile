@@ -14,7 +14,7 @@ gemspec
 gem "byebug"
 gem "appraisal", github: "excid3/appraisal", branch: "fix-bundle-env"
 
-gem "braintree", ">= 2.92.0", "< 4.0"
+gem "braintree", ">= 2.92.0"
 gem "stripe", ">= 2.8"
 gem "paddle_pay", "~> 0.1.0"
 
