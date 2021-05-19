@@ -14,9 +14,10 @@ module Pay
             return
           end
 
-          subscription.status = object.status
-          subscription.quantity = object.quantity
+          subscription.application_fee_percent = object.application_fee_percent
           subscription.processor_plan = object.plan.id
+          subscription.quantity = object.quantity
+          subscription.status = object.status
           subscription.trial_ends_at = Time.at(object.trial_end) if object.trial_end.present?
 
           # If user was on trial, their subscription ends at the end of the trial

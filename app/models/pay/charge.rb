@@ -7,6 +7,7 @@ module Pay
 
     # Associations
     belongs_to :owner, polymorphic: true
+    belongs_to :subscription, optional: true, class_name: "Pay::Subscription", foreign_key: :pay_subscription_id
 
     # Scopes
     scope :sorted, -> { order(created_at: :desc) }
@@ -19,6 +20,7 @@ module Pay
     validates :card_type, presence: true
 
     store_accessor :data, :paddle_receipt_url
+    store_accessor :data, :stripe_account
 
     # Helpers for payment processors
     %w[braintree stripe paddle fake_processor].each do |processor_name|

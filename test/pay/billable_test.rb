@@ -146,8 +146,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test "getting a stripe subscription" do
     @billable.processor = "stripe"
-    ::Stripe::Subscription.expects(:retrieve).with(id: "123").returns(:subscription)
-
+    ::Stripe::Subscription.expects(:retrieve).with({id: "123"}, {stripe_account: nil}).returns(:subscription)
     assert_equal :subscription, @billable.processor_subscription("123")
   end
 

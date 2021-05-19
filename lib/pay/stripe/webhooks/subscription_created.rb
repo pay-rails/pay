@@ -21,9 +21,10 @@ module Pay
             subscription = Pay.subscription_model.new(name: Pay.default_product_name, owner: owner, processor: :stripe, processor_id: object.id)
           end
 
+          subscription.application_fee_percent = object.application_fee_percent
+          subscription.processor_plan = object.plan.id
           subscription.quantity = object.quantity
           subscription.status = object.status
-          subscription.processor_plan = object.plan.id
           subscription.trial_ends_at = Time.at(object.trial_end) if object.trial_end.present?
 
           # If user was on trial, their subscription ends at the end of the trial

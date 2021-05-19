@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Subscription::Test < ActiveSupport::TestCase
   setup do
-    @owner = User.create email: "bill@microsoft.com"
+    @owner = User.create email: "bill@microsoft.com", card_token: "pm_card_visa", processor: :stripe
     @subscription = Pay.subscription_model.new processor: "stripe", status: "active"
   end
 
@@ -151,71 +151,51 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "cancel" do
-    expiration = 2.weeks.from_now
-
-    stripe_sub = mock("stripe_subscription")
-    stripe_sub.expects(:cancel_at_period_end=).with(true)
-    stripe_sub.expects(:save)
-    stripe_sub.expects(:current_period_end).returns(expiration)
-
-    @subscription.stubs(:processor_subscription).returns(stripe_sub)
-    @subscription.cancel
-
-    assert_in_delta @subscription.ends_at, expiration, 1.second
+    travel_to_cassette do
+      subscription = @owner.subscribe
+      refute subscription.ends_at?
+      subscription.cancel
+      assert subscription.ends_at?
+      assert subscription.processor_subscription.cancel_at_period_end
+    end
   end
 
   test "cancel trialing" do
-    trial_end = 2.weeks.from_now
-
-    stripe_sub = mock("stripe_subscription")
-    stripe_sub.expects(:cancel_at_period_end=).with(true)
-    stripe_sub.expects(:save)
-
-    @subscription.stubs(:processor_subscription).returns(stripe_sub)
-    @subscription.stubs(:on_trial?).returns(true)
-    @subscription.stubs(:trial_ends_at).returns(trial_end)
-    @subscription.cancel
-
-    assert_in_delta @subscription.ends_at, trial_end, 1.second
+    travel_to_cassette do
+      subscription = @owner.subscribe(trial_period_days: 14)
+      refute subscription.ends_at?
+      subscription.cancel
+      assert_equal subscription.ends_at.to_date, 14.days.from_now.to_date
+      assert subscription.processor_subscription.cancel_at_period_end
+    end
   end
 
   test "cancel_now!" do
-    cancelled_stripe = mock("cancelled_stripe_subscription")
-
-    stripe_sub = mock("stripe_subscription")
-    stripe_sub.expects(:delete).returns(cancelled_stripe)
-
-    @subscription.stubs(:processor_subscription).returns(stripe_sub)
-    @subscription.cancel_now!
-
-    assert @subscription.ends_at <= Time.zone.now
+    travel_to_cassette do
+      subscription = @owner.subscribe
+      refute subscription.ends_at?
+      subscription.cancel_now!
+      assert subscription.ends_at <= Time.current
+    end
   end
 
   test "resume on grace period" do
-    @subscription.ends_at = 2.weeks.from_now
-
-    stripe_sub = mock("stripe_subscription")
-    stripe_sub.expects(:plan=)
-    stripe_sub.expects(:trial_end=)
-    stripe_sub.expects(:cancel_at_period_end=)
-    stripe_sub.expects(:save).returns(true)
-
-    @subscription.processor_plan = "default"
-
-    @subscription.stubs(:on_grace_period?).returns(true)
-    @subscription.stubs(:processor_subscription).returns(stripe_sub)
-    @subscription.stubs(:on_trial?).returns(false)
-
-    @subscription.resume
-
-    assert_nil @subscription.ends_at
+    travel_to_cassette do
+      subscription = @owner.subscribe
+      subscription.cancel
+      subscription.resume
+      refute subscription.ends_at?
+      refute subscription.processor_subscription.cancel_at_period_end
+    end
   end
 
   test "resume off grace period" do
-    @subscription.stubs(:on_grace_period?).returns(false)
-
-    assert_raises StandardError do
-      @subscription.resume
+    travel_to_cassette do
+      subscription = @owner.subscribe
+      subscription.cancel_now!
+      assert_raises StandardError do
+        subscription.resume
+      end
     end
   end
 
@@ -225,19 +205,11 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "can swap plans" do
-    stripe_sub = mock("stripe_subscription")
-    stripe_sub.expects(:cancel_at_period_end=)
-    stripe_sub.expects(:plan=).returns("yearly")
-    stripe_sub.expects(:proration_behavior=)
-    stripe_sub.expects(:trial_end=)
-    stripe_sub.expects(:quantity=)
-    stripe_sub.expects(:save)
-    stripe_sub.expects(:plan).returns("yearly")
-
-    @subscription.stubs(:processor_subscription).returns(stripe_sub)
-    @subscription.swap("yearly")
-
-    assert_equal "yearly", @subscription.processor_subscription.plan
+    travel_to_cassette do
+      subscription = @owner.subscribe
+      subscription.swap("small-annual")
+      assert_equal "small-annual", subscription.processor_subscription.plan.id
+    end
   end
 
   test "statuses affect active state" do

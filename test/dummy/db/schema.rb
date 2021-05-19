@@ -2,15 +2,27 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_16_191926) do
+ActiveRecord::Schema.define(version: 2021_04_06_215506) do
+
+  create_table "accounts", force: :cascade do |t|
+    t.string "email"
+    t.string "merchant_processor"
+    if t.respond_to? :jsonb
+      t.jsonb "pay_data"
+    else
+      t.json "pay_data"
+    end
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "pay_charges", force: :cascade do |t|
     t.string "owner_type"
@@ -26,6 +38,9 @@ ActiveRecord::Schema.define(version: 2020_11_16_191926) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text "data"
+    t.string "currency"
+    t.integer "application_fee_amount"
+    t.integer "pay_subscription_id"
   end
 
   create_table "pay_subscriptions", force: :cascade do |t|
@@ -42,6 +57,7 @@ ActiveRecord::Schema.define(version: 2020_11_16_191926) do
     t.datetime "updated_at"
     t.string "status"
     t.text "data"
+    t.decimal "application_fee_percent", precision: 8, scale: 2
   end
 
   create_table "teams", force: :cascade do |t|
@@ -57,6 +73,9 @@ ActiveRecord::Schema.define(version: 2020_11_16_191926) do
     t.string "card_exp_month"
     t.string "card_exp_year"
     t.text "extra_billing_info"
+    t.json "pay_data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.index ["owner_type", "owner_id"], name: "index_teams_on_owner_type_and_owner_id"
   end
 
@@ -72,6 +91,9 @@ ActiveRecord::Schema.define(version: 2020_11_16_191926) do
     t.string "card_exp_month"
     t.string "card_exp_year"
     t.text "extra_billing_info"
+    t.json "pay_data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end

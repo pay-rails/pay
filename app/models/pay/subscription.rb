@@ -9,6 +9,7 @@ module Pay
 
     # Associations
     belongs_to :owner, polymorphic: true
+    has_many :charges, class_name: "Pay::Charge", foreign_key: :pay_subscription_id
 
     # Validations
     validates :name, presence: true
@@ -31,6 +32,7 @@ module Pay
     store_accessor :data, :paddle_update_url
     store_accessor :data, :paddle_cancel_url
     store_accessor :data, :paddle_paused_from
+    store_accessor :data, :stripe_account
 
     attribute :prorate, :boolean, default: true
 

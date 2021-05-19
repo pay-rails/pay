@@ -16,6 +16,7 @@ module Pay
         :prorate?,
         :quantity,
         :quantity?,
+        :stripe_account,
         :trial_ends_at,
         to: :pay_subscription
 
@@ -28,19 +29,15 @@ module Pay
       end
 
       def cancel
-        subscription = processor_subscription
-        subscription.cancel_at_period_end = true
-        subscription.save
-
-        new_ends_at = on_trial? ? trial_ends_at : Time.at(subscription.current_period_end)
-        pay_subscription.update(ends_at: new_ends_at)
+        stripe_sub = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}, {stripe_account: stripe_account})
+        pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(stripe_sub.current_period_end)))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       def cancel_now!
-        processor_subscription.delete
-        pay_subscription.update(ends_at: Time.zone.now, status: :canceled)
+        ::Stripe::Subscription.delete(processor_id, {stripe_account: stripe_account})
+        pay_subscription.update(ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -68,23 +65,31 @@ module Pay
           raise StandardError, "You can only resume subscriptions within their grace period."
         end
 
-        subscription = processor_subscription
-        subscription.plan = processor_plan
-        subscription.trial_end = on_trial? ? trial_ends_at.to_i : "now"
-        subscription.cancel_at_period_end = false
-        subscription.save
+        ::Stripe::Subscription.update(
+          processor_id,
+          {
+            plan: processor_plan,
+            trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
+            cancel_at_period_end: false
+          },
+          {stripe_account: stripe_account}
+        )
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       def swap(plan)
-        subscription = processor_subscription
-        subscription.cancel_at_period_end = false
-        subscription.plan = plan
-        subscription.proration_behavior = (prorate ? "create_prorations" : "none")
-        subscription.trial_end = on_trial? ? trial_ends_at.to_i : "now"
-        subscription.quantity = quantity if quantity?
-        subscription.save
+        ::Stripe::Subscription.update(
+          processor_id,
+          {
+            cancel_at_period_end: false,
+            plan: plan,
+            proration_behavior: (prorate ? "create_prorations" : "none"),
+            trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
+            quantity: quantity
+          },
+          {stripe_account: stripe_account}
+        )
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end

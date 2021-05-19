@@ -26,6 +26,10 @@ module Pay
       attribute :card_token, :string
       attribute :pay_fake_processor_allowed, :boolean, default: false
 
+      # Account(s) for marketplace payments
+      store_accessor :pay_data, :stripe_account
+      store_accessor :pay_data, :braintree_account
+
       validate :pay_fake_processor_is_allowed, if: :processor_changed?
     end
 

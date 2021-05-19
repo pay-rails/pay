@@ -1,10 +1,12 @@
 require "pay/version"
 require "pay/engine"
 require "pay/errors"
+require "pay/adapter"
 
 module Pay
   autoload :Billable, "pay/billable"
   autoload :Env, "pay/env"
+  autoload :Merchant, "pay/merchant"
   autoload :Payment, "pay/payment"
   autoload :Receipts, "pay/receipts"
 
@@ -64,6 +66,26 @@ module Pay
 
   def self.billable_models
     Pay::Billable.includers
+  end
+
+  def self.merchant_models
+    Pay::Merchant.includers
+  end
+
+  def self.find_merchant(account_key, account_value)
+    merchant_models.each do |model|
+      case Pay::Adapter.current_adapter
+      when "postgresql"
+        return model.find_by("pay_data @> ?", {account_key.to_sym => account_value}.to_json)
+      when "mysql2"
+        return model.find_by("JSON_CONTAINS(pay_data, ?)", {account_key.to_sym => account_value}.to_json)
+      when "sqlite3"
+        return model.find_by("json_extract(pay_data, ?) =?", "$.#{account_key}", account_value)
+      else
+        model.find_by(pay_data: {account_key.to_sym => account_value})
+      end
+    end
+    nil
   end
 
   def self.find_billable(processor:, processor_id:)

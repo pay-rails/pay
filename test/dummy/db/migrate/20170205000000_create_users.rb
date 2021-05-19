@@ -11,5 +11,11 @@ class CreateUsers < ActiveRecord::Migration[5.2]
       t.string :name
       t.references :owner, polymorphic: true
     end
+
+    create_table :accounts do |t|
+      t.string :email
+      t.string :merchant_processor
+      t.string :pay_data
+    end
   end
 end
