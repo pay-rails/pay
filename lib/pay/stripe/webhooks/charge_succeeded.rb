@@ -3,14 +3,8 @@ module Pay
     module Webhooks
       class ChargeSucceeded
         def call(event)
-          object = event.data.object
-          billable = Pay.find_billable(processor: :stripe, processor_id: object.customer)
-
-          return unless billable.present?
-          return if billable.charges.where(processor_id: object.id).any?
-
-          charge = Pay::Stripe::Billable.new(billable).save_pay_charge(object)
-          notify_user(billable, charge)
+          pay_charge = Pay::Stripe::Charge.sync(event.data.object.id)
+          notify_user(pay_charge.owner, pay_charge)
         end
 
         def notify_user(billable, charge)

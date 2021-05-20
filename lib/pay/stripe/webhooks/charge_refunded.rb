@@ -3,13 +3,8 @@ module Pay
     module Webhooks
       class ChargeRefunded
         def call(event)
-          object = event.data.object
-          charge = Pay.charge_model.find_by(processor: :stripe, processor_id: object.id)
-
-          return unless charge.present?
-
-          charge.update(amount_refunded: object.amount_refunded)
-          notify_user(charge.owner, charge)
+          pay_charge = Pay::Stripe::Charge.sync(event.data.object.id)
+          notify_user(pay_charge.owner, pay_charge)
         end
 
         def notify_user(billable, charge)
