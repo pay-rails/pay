@@ -16,7 +16,6 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "sync stripe subscription" do
     Pay::Stripe::Subscription.sync(fake_stripe_subscription)
-
   end
 
   def fake_stripe_subscription(**values)
