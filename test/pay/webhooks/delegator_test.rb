@@ -47,6 +47,21 @@ class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
     assert delegator.backend.notifier.listening?("pay.stripe.test_event")
   end
 
+  test "supports multiple subscriptions for the same event" do
+    results = []
+
+    delegator.subscribe "stripe.test_event" do |event|
+      results << "a"
+    end
+
+    delegator.subscribe "stripe.test_event" do |event|
+      results << "b"
+    end
+
+    delegator.instrument event: {}, type: "stripe.test_event"
+    assert_equal 2, results.length
+  end
+
   private
 
   attr_reader :delegator

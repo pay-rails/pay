@@ -7,6 +7,7 @@ class Pay::Stripe::Webhooks::ChargeSucceededTest < ActiveSupport::TestCase
 
   test "a charge is created" do
     @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: @event.data.object.customer)
+    ::Stripe::Charge.stubs(:retrieve).returns fake_stripe_charge
 
     assert_difference "Pay.charge_model.count" do
       Pay::Stripe::Webhooks::ChargeSucceeded.new.call(@event)
@@ -22,6 +23,7 @@ class Pay::Stripe::Webhooks::ChargeSucceededTest < ActiveSupport::TestCase
   end
 
   test "a charge isn't created if no corresponding user can be found" do
+    ::Stripe::Charge.stubs(:retrieve).returns fake_stripe_charge
     assert_no_difference "Pay.charge_model.count" do
       Pay::Stripe::Webhooks::ChargeSucceeded.new.call(@event)
     end
@@ -30,6 +32,7 @@ class Pay::Stripe::Webhooks::ChargeSucceededTest < ActiveSupport::TestCase
   test "a charge isn't created if it already exists" do
     @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: @event.data.object.customer)
     @user.charges.create!(amount: 100, processor: :stripe, processor_id: "ch_chargeid", card_type: "Visa", card_exp_month: 1, card_exp_year: 2019, card_last4: "4444")
+    ::Stripe::Charge.stubs(:retrieve).returns fake_stripe_charge
 
     assert_no_difference "Pay.charge_model.count" do
       Pay::Stripe::Webhooks::ChargeSucceeded.new.call(@event)
@@ -44,16 +47,23 @@ class Pay::Stripe::Webhooks::ChargeSucceededTest < ActiveSupport::TestCase
       amount: 15_00,
       application_fee_amount: 0,
       created: Time.current.to_i,
+      customer: @event.data.object.customer,
       currency: "usd",
       id: "abcd",
       invoice: "in_abcd",
       payment_method_details: OpenStruct.new(card: OpenStruct.new(last4: "1234", brand: "Visa", exp_month: 1, exp_year: 2021)),
       stripe_account: nil
     )
+    ::Stripe::Charge.stubs(:retrieve).returns charge
 
     ::Stripe::Invoice.stub :retrieve, invoice do
-      charge = @user.payment_processor.save_pay_charge(charge)
-      assert_equal subscription, charge.subscription
+      Pay::Stripe::Webhooks::ChargeSucceeded.new.call(@event)
+      assert_equal subscription, Pay.charge_model.find_by(processor: :stripe, processor_id: "abcd").subscription
     end
+  end
+
+  def fake_stripe_charge(**values)
+    values.reverse_merge!(@event.data.object.to_hash)
+    ::Stripe::Subscription.construct_from(values)
   end
 end

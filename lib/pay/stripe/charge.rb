@@ -5,7 +5,7 @@ module Pay
 
       delegate :processor_id, :owner, :stripe_account, to: :pay_charge
 
-      def sync(charge_id, charge: nil)
+      def self.sync(charge_id, charge: nil)
         object ||= ::Stripe::Charge.retrieve(id: charge_id)
         billable = Pay.find_billable(processor: :stripe, processor_id: object.customer)
         return unless billable
@@ -20,7 +20,7 @@ module Pay
           card_type: object.payment_method_details.card.brand,
           created_at: Time.at(object.created),
           currency: object.currency,
-          stripe_account: stripe_account
+          stripe_account: object.stripe_account
         }
 
         # Associate charge with subscription if we can
