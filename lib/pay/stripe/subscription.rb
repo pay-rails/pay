@@ -25,7 +25,7 @@ module Pay
         object ||= ::Stripe::Subscription.retrieve(id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"])
 
         owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
-        return if owner.nil?
+        return unless owner
 
         attributes = {
           application_fee_percent: object.application_fee_percent,

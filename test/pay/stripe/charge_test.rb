@@ -6,10 +6,16 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
   end
 
   test "sync stripe charge by ID" do
-    ::Stripe::Charge.stubs(:retrieve).returns(fake_stripe_charge)
-
     assert_difference "Pay::Charge.count" do
+      ::Stripe::Charge.stubs(:retrieve).returns(fake_stripe_charge)
       Pay::Stripe::Charge.sync("123")
+    end
+  end
+
+  test "sync stripe charge ignores when customer is missing" do
+    assert_no_difference "Pay::Charge.count" do
+      @user.destroy
+      Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     end
   end
 
