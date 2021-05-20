@@ -7,8 +7,8 @@ module Pay
 
       def self.sync(charge_id, object: nil)
         object ||= ::Stripe::Charge.retrieve(id: charge_id)
-        billable = Pay.find_billable(processor: :stripe, processor_id: object.customer)
-        return unless billable
+        owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
+        return unless owner
 
         attrs = {
           amount: object.amount,
@@ -20,7 +20,7 @@ module Pay
           card_type: object.payment_method_details.card.brand,
           created_at: Time.at(object.created),
           currency: object.currency,
-          stripe_account: object.stripe_account
+          stripe_account: owner.stripe_account
         }
 
         # Associate charge with subscription if we can
@@ -29,7 +29,7 @@ module Pay
           attrs[:subscription] = Pay::Subscription.find_by(processor: :stripe, processor_id: invoice.subscription)
         end
 
-        pay_charge = billable.charges.find_or_initialize_by(processor: :stripe, processor_id: object.id)
+        pay_charge = owner.charges.find_or_initialize_by(processor: :stripe, processor_id: object.id)
         pay_charge.update(attrs)
         pay_charge
       end

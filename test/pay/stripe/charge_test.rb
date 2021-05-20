@@ -45,8 +45,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
           last4: "4242",
           brand: "Visa"
         }
-      },
-      stripe_account: nil
+      }
     )
     ::Stripe::Charge.construct_from(values)
   end

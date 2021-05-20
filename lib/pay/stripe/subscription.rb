@@ -33,6 +33,7 @@ module Pay
           quantity: object.quantity,
           name: name,
           status: object.status,
+          stripe_account: owner.stripe_account,
           trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil)
         }
 
