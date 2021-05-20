@@ -66,7 +66,7 @@ module Pay
 
         # Create a new charge object
         charge = payment_intent.charges.first
-        Pay::Stripe::Charge.sync(charge.id, charge: charge)
+        Pay::Stripe::Charge.sync(charge.id, object: charge)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
