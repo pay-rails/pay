@@ -2,9 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
   setup do
-    @event = OpenStruct.new
-    @event.data = JSON.parse(File.read("test/support/fixtures/stripe/subscription_renewing_event.json"), object_class: OpenStruct)
-
+    @event = stripe_event("test/support/fixtures/stripe/subscription_renewing_event.json")
     @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: @event.data.object.customer)
   end
 

@@ -2,8 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
   setup do
-    @event = OpenStruct.new
-    @event.data = JSON.parse(File.read("test/support/fixtures/stripe/subscription_updated_event.json"), object_class: OpenStruct)
+    @event = stripe_event("test/support/fixtures/stripe/subscription_updated_event.json")
   end
 
   test "nothing happens if a subscription can't be found" do
