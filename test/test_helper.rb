@@ -40,6 +40,10 @@ class ActiveSupport::TestCase
     Pay.braintree_gateway.webhook_notification.parse(raw["bt_signature"], raw["bt_payload"])
   end
 
+  def stripe_event(filename)
+    ::Stripe::Event.construct_from({ data: JSON.parse(File.read(filename)) })
+  end
+
   def travel_to_cassette
     travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
       yield

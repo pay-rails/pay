@@ -2,8 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
   setup do
-    @event = OpenStruct.new
-    @event.data = JSON.parse(File.read("test/support/fixtures/stripe/subscription_created_event.json"), object_class: OpenStruct)
+    @event = stripe_event("test/support/fixtures/stripe/subscription_created_event.json")
   end
 
   test "subscription is created" do
