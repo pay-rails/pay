@@ -103,7 +103,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
       description: "One-time setup fee"
     )
 
-    assert_equal 1000, @billable.invoice!.total
+    assert_equal 1000, @billable.payment_processor.invoice!.total
   end
 
   test "card gets updated automatically when retrieving customer" do
@@ -173,7 +173,7 @@ class Pay::Stripe::Billable::Test < ActiveSupport::TestCase
 
   test "can create setup intent" do
     assert_nothing_raised do
-      @billable.create_setup_intent
+      @billable.payment_processor.create_setup_intent
     end
   end
 
