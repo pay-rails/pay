@@ -20,30 +20,30 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
-      def self.sync(subscription_id, subscription: nil, name: Pay.default_product_name)
+      def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         # Skip loading the latest subscription details from the API if we already have it
-        subscription ||= ::Stripe::Subscription.retrieve(id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"])
+        object ||= ::Stripe::Subscription.retrieve(id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"])
 
-        owner = Pay.find_billable(processor: :stripe, processor_id: subscription.customer)
+        owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
         return if owner.nil?
 
         attributes = {
-          application_fee_percent: subscription.application_fee_percent,
-          processor_plan: subscription.plan.id,
-          quantity: subscription.quantity,
+          application_fee_percent: object.application_fee_percent,
+          processor_plan: object.plan.id,
+          quantity: object.quantity,
           name: name,
-          status: subscription.status,
-          trial_ends_at: (subscription.trial_end ? Time.at(subscription.trial_end) : nil)
+          status: object.status,
+          trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil)
         }
 
         # Subscriptions cancelling in the future
-        attributes[:ends_at] = Time.at(subscription.current_period_end) if subscription.cancel_at_period_end
+        attributes[:ends_at] = Time.at(object.current_period_end) if object.cancel_at_period_end
 
         # Fully cancelled subscription
-        attributes[:ends_at] = Time.at(subscription.ended_at) if subscription.ended_at
+        attributes[:ends_at] = Time.at(object.ended_at) if object.ended_at
 
         # Update or create the subscription
-        pay_subscription = owner.subscriptions.find_or_initialize_by(processor: :stripe, processor_id: subscription.id)
+        pay_subscription = owner.subscriptions.find_or_initialize_by(processor: :stripe, processor_id: object.id)
         pay_subscription.update(attributes)
         pay_subscription
       end

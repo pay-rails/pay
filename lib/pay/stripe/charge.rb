@@ -5,7 +5,7 @@ module Pay
 
       delegate :processor_id, :owner, :stripe_account, to: :pay_charge
 
-      def self.sync(charge_id, charge: nil)
+      def self.sync(charge_id, object: nil)
         object ||= ::Stripe::Charge.retrieve(id: charge_id)
         billable = Pay.find_billable(processor: :stripe, processor_id: object.customer)
         return unless billable

@@ -92,7 +92,7 @@ module Pay
         stripe_sub = ::Stripe::Subscription.create(opts, {stripe_account: stripe_account})
 
         # Save Pay::Subscription
-        subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, subscription: stripe_sub, name: name)
+        subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name)
 
         # No trial, card requires SCA
         if subscription.incomplete?
