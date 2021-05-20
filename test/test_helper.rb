@@ -41,7 +41,7 @@ class ActiveSupport::TestCase
   end
 
   def stripe_event(filename)
-    ::Stripe::Event.construct_from({ data: JSON.parse(File.read(filename)) })
+    ::Stripe::Event.construct_from({data: JSON.parse(File.read(filename))})
   end
 
   def travel_to_cassette
