@@ -23,7 +23,9 @@
     <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
     <script type="text/javascript">
       Paddle.Environment.set('sandbox');
-      Paddle.Setup({ vendor: <%= Pay::Paddle.vendor_id %> });
+      <% if Pay::Paddle.vendor_id %>
+        Paddle.Setup({ vendor: <%= Pay::Paddle.vendor_id %> });
+      <% end %>
     </script>
 
     <%# Braintree dependencies %>
