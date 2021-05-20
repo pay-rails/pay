@@ -52,4 +52,25 @@ Then link to it in your view
 <%= link_to "Billing Portal", @portal_session.url %>
 ```
 
+4. Fulfilling orders after Checkout completed
+
+For one-time payments, you'll need to add a webhook listener for the Checkout `stripe.checkout.session.completed` and `stripe.checkout.session.async_payment_succeeded` events. Some payment methods are delayed so you need to verify the `payment_status == "paid"`. The async payment succeeded event fires when delayed payments are complete.
+
+For subscriptions, Pay will automatically create the `Pay::Subscription` record for you.
+
+```ruby
+Pay::Webhooks.delegator.subscribe "stripe.checkout.session.completed", FulfillCheckout.new
+Pay::Webhooks.delegator.subscribe "stripe.checkout.session.async_payment_succeeded", FulfillCheckout.new
+
+class FulfillCheckout
+  def call(event)
+    object = event.data.object
+
+    if object.payment_status == "paid"
+      # Handle fulfillment
+    end
+  end
+end
+```
+
 That's it!
