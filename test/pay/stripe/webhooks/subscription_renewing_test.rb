@@ -8,16 +8,13 @@ class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
 
   test "an email is sent to the user when subscription is renewing" do
     create_subscription(processor_id: @event.data.object.subscription)
-    # Time.zone.at(@event.data.object.next_payment_attempt)
-
     Pay::Stripe::Webhooks::SubscriptionRenewing.new.call(@event)
     assert_enqueued_emails 1
   end
 
   test "an email is not sent when subscription can't be found" do
-    create_subscription(processor_id: "does-not-exist")
-
     assert_no_enqueued_emails do
+      create_subscription(processor_id: "does-not-exist")
       Pay::Stripe::Webhooks::SubscriptionRenewing.new.call(@event)
     end
   end
