@@ -12,7 +12,7 @@ module Pay
 
         attrs = {
           amount: object.amount,
-          amount_refunded: object.amount_refunded
+          amount_refunded: object.amount_refunded,
           application_fee_amount: object.application_fee_amount,
           card_exp_month: object.payment_method_details.card.exp_month,
           card_exp_year: object.payment_method_details.card.exp_year,
