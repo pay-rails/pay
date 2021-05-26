@@ -10,6 +10,8 @@ module Pay
       autoload :AccountUpdated, "pay/stripe/webhooks/account_updated"
       autoload :ChargeRefunded, "pay/stripe/webhooks/charge_refunded"
       autoload :ChargeSucceeded, "pay/stripe/webhooks/charge_succeeded"
+      autoload :CheckoutSessionCompleted, "pay/stripe/webhooks/checkout_session_completed"
+      autoload :CheckoutSessionAsyncPaymentSucceeded, "pay/stripe/webhooks/checkout_session_async_payment_succeeded"
       autoload :CustomerDeleted, "pay/stripe/webhooks/customer_deleted"
       autoload :CustomerUpdated, "pay/stripe/webhooks/customer_updated"
       autoload :PaymentActionRequired, "pay/stripe/webhooks/payment_action_required"
@@ -86,6 +88,10 @@ module Pay
 
         # If an account is updated in stripe, we should update it as well
         events.subscribe "stripe.account.updated", Pay::Stripe::Webhooks::AccountUpdated.new
+
+        # Handle subscriptions in Stripe Checkout Sessions
+        events.subscribe "stripe.checkout.session.completed", Pay::Stripe::Webhooks::CheckoutSessionCompleted.new
+        events.subscribe "stripe.checkout.session.async_payment_succeeded", Pay::Stripe::Webhooks::CheckoutSessionAsyncPaymentSucceeded.new
       end
     end
   end

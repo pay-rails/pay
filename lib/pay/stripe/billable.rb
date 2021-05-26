@@ -65,7 +65,8 @@ module Pay
         Pay::Payment.new(payment_intent).validate
 
         # Create a new charge object
-        save_pay_charge(payment_intent.charges.first)
+        charge = payment_intent.charges.first
+        Pay::Stripe::Charge.sync(charge.id, object: charge)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -87,8 +88,11 @@ module Pay
         # Load the Stripe customer to verify it exists and update card if needed
         opts[:customer] = customer.id
 
+        # Create subscription on Stripe
         stripe_sub = ::Stripe::Subscription.create(opts, {stripe_account: stripe_account})
-        subscription = billable.create_pay_subscription(stripe_sub, "stripe", name, plan, status: stripe_sub.status, quantity: quantity, stripe_account: stripe_account, application_fee_percent: stripe_sub.application_fee_percent)
+
+        # Save Pay::Subscription
+        subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name)
 
         # No trial, card requires SCA
         if subscription.incomplete?
@@ -166,31 +170,6 @@ module Pay
         )
 
         billable.card_token = nil
-      end
-
-      def save_pay_charge(object)
-        charge = billable.charges.find_or_initialize_by(processor: :stripe, processor_id: object.id)
-
-        attrs = {
-          amount: object.amount,
-          card_last4: object.payment_method_details.card.last4,
-          card_type: object.payment_method_details.card.brand,
-          card_exp_month: object.payment_method_details.card.exp_month,
-          card_exp_year: object.payment_method_details.card.exp_year,
-          created_at: Time.zone.at(object.created),
-          currency: object.currency,
-          stripe_account: stripe_account,
-          application_fee_amount: object.application_fee_amount
-        }
-
-        # Associate charge with subscription if we can
-        if object.invoice
-          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice))
-          attrs[:subscription] = Pay::Subscription.find_by(processor: :stripe, processor_id: invoice.subscription)
-        end
-
-        charge.update(attrs)
-        charge
       end
 
       # https://stripe.com/docs/api/checkout/sessions/create
