@@ -17,7 +17,6 @@ module Pay
         secrets&.dig(env, scope, name) ||
         credentials&.dig(scope, name) ||
         secrets&.dig(scope, name)
-
     rescue ActiveSupport::MessageEncryptor::InvalidMessage
       Rails.logger.error <<~MESSAGE
         Rails was unable to decrypt credentials. Pay checks the Rails credentials to look for API keys for payment processors.
