@@ -17,6 +17,15 @@ module Pay
         secrets&.dig(env, scope, name) ||
         credentials&.dig(scope, name) ||
         secrets&.dig(scope, name)
+
+    rescue ActiveSupport::MessageEncryptor::InvalidMessage
+      Rails.logger.error <<~MESSAGE
+        Rails was unable to decrypt credentials. Pay checks the Rails credentials to look for API keys for payment processors.
+
+        Make sure to set the `RAILS_MASTER_KEY` env variable or in the .key file. To learn more, run "bin/rails credentials:help"
+
+        If you're not using Rails credentials, you can delete `config/credentials.yml.enc` and `config/credentials/`.
+      MESSAGE
     end
 
     def env
