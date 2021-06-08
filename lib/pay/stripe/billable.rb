@@ -209,7 +209,7 @@ module Pay
       def sync_subscriptions
         stripe_customer = customer
 
-        subscriptions = ::Stripe::Subscription.list(customer: stripe_customer)
+        subscriptions = ::Stripe::Subscription.list({customer: stripe_customer}, {stripe_account: stripe_account})
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id)
         end
