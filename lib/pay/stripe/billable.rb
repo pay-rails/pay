@@ -206,6 +206,17 @@ module Pay
         ::Stripe::Checkout::Session.create(args.merge(options), {stripe_account: stripe_account})
       end
 
+      def sync_subscriptions
+        stripe_customer = customer
+
+        subscriptions = ::Stripe::Subscription.list(customer: stripe_customer)
+        subscriptions.map do |subscription|
+          Pay::Stripe::Subscription.sync(subscription.id)
+        end
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
+      end
+
       # https://stripe.com/docs/api/checkout/sessions/create
       #
       # checkout_charge(amount: 15_00, name: "T-shirt", quantity: 2)
