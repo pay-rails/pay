@@ -2,6 +2,15 @@
 
 [Braintree Marketplace Overview](https://developers.braintreepayments.com/guides/braintree-marketplace/overview)
 
+## Usage
+
+To add Merchant functionality to a model, run the generator:
+
+```bash
+rails g pay:merchant User
+rails db:migrate
+```
+
 ### Assigning a merchant to a customer
 
 Payments for the billable will be processed through the sub-merchant account.
