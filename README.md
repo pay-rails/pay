@@ -2,7 +2,7 @@
 
 ## Pay - Payments engine for Ruby on Rails
 
-[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay) 
+[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay)
 
 <img src="docs/images/stripe_partner_badge.svg" height="26px">
 
@@ -51,52 +51,40 @@ And then execute:
 bundle
 ```
 
-Make sure you've configured your ActionMailer default_url_options so Pay can generate links to for features like Stripe Checkout.
+Next, we need to add migrations to your application, run the following migration:
+
+````bash
+bin/rails pay:install:migrations
+````
+
+>If your models rely on non integer ids (uuids for example) you will need to alter the `create_pay_subscriptions` and `create_pay_charges` migrations.
+
+We also need to run migrations to add Pay to the User, Account, Team, etc models that we want to make payments in our app.
+
+```bash
+bin/rails g pay:billable User
+```
+
+This will generate a migration to add Pay fields to our User model and automatically includes the `Pay::Billable` module in our `User` model. Repeat this for all the models you want to make payments in your app.
+
+**Note:** An `email` attribute or method on your `Billable` model is required.
+
+To sync customer names, your `Billable` model should respond to the `first_name` and `last_name` methods. Pay will sync these over to your Customer objects in Stripe and Braintree.
+
+Finally, run the migrations
+
+```bash
+rake db:migrate
+```
+
+> If you run into `NoMethodError (undefined method 'stripe_customer' for #<User:0x00007fbc34b9bf20>)`, fully restart your Rails application `bin/spring stop && rails s`
+
+Lastly, make sure you've configured your ActionMailer default_url_options so Pay can generate links to for features like Stripe Checkout.
 
 ```ruby
 # config/application.rb
 config.action_mailer.default_url_options = { host: "example.com" }
 ```
-
-#### Migrations
-
-To add the migrations to your application, run the following migration:
-
-`bin/rails pay:install:migrations`
-
->If your models rely on non integer ids (uuids for example) you will need to alter the `create_pay_subscriptions` and `create_pay_charges` migrations to ensure the `owner_id` column's type matches the model's id's format.
-> As commented in the migrations adding a type parameter to the `t.references :owner` line will ensure the `owner_id` column is of the correct type.
-
-We also need to run migrations to add Pay to the User, Account, Team, etc models that we want to make payments in our app.
-
-`bin/rails g pay User`
-
-This will generate a migration to add Pay fields to our User model and automatically includes the `Pay::Billable` module in our `User` model. Repeat this for all the models you want to make payments in your app.
-
-Finally, run the migrations
-
-`rake db:migrate`
-
-####  Getting NoMethodError?
-
-`NoMethodError (undefined method 'stripe_customer' for #<User:0x00007fbc34b9bf20>)`
-
-Fully restart your Rails application `bin/spring stop && rails s`
-
-## Usage
-
-The `Pay::Billable` module should be included in the models you want to make payments and subscriptions.
-
-```ruby
-# app/models/user.rb
-class User < ActiveRecord::Base
-  include Pay::Billable
-end
-```
-
-An `email` attribute or method on your `Billable` model is required.
-
-To sync over customer names, your `Billable` model should respond to the `first_name` and `last_name` methods. Pay will sync these over to your Customer objects in Stripe and Braintree.
 
 ## Configuration
 
@@ -104,8 +92,8 @@ Need to make some changes to how Pay is used? You can create an initializer `con
 
 ```ruby
 Pay.setup do |config|
-  config.chargeable_class = 'Pay::Charge'
-  config.chargeable_table = 'pay_charges'
+  # config.chargeable_class = 'Pay::Charge'
+  # config.chargeable_table = 'pay_charges'
 
   # For use in the receipt/refund/renewal mailers
   config.business_name = "Business Name"
@@ -139,29 +127,59 @@ end
 
 ### Credentials
 
-You'll need to add your private Stripe API key to your Rails secrets `config/secrets.yml`, credentials `rails credentials:edit`
+Pay automatically looks up credentials for each payment provider. We recommend storing them in the Rails credentials.
+
+##### Rails Credentials & Secrets
+
+You'll need to add your API keys to your Rails credentials. You can do this by running:
+
+```bash
+rails credentials:edit --environment=development
+```
+
+They should be formatted like the following:
+
+```yaml
+stripe:
+  private_key: xxxx
+  public_key: yyyy
+  signing_secret: zzzz
+braintree:
+  private_key: xxxx
+  public_key: yyyy
+  merchant_id: aaaa
+  environment: sandbox
+paddle:
+  vendor_id: xxxx
+  vendor_auth_code: yyyy
+  public_key_base64: MII...==
+  environment: sandbox
+```
+
+You can also nest these credentials under the Rails environment if using a shared credentials file or secrets.
 
 ```yaml
 development:
   stripe:
     private_key: xxxx
-    public_key: yyyy
-    signing_secret: zzzz
-  braintree:
-    private_key: xxxx
-    public_key: yyyy
-    merchant_id: aaaa
-    environment: sandbox
-  paddle:
-    vendor_id: xxxx
-    vendor_auth_code: yyyy
-    public_key_base64: MII...==
-    environment: sandbox
+# ...
 ```
 
-For Stripe, you can also use the `STRIPE_PUBLIC_KEY`, `STRIPE_PRIVATE_KEY` and `STRIPE_SIGNING_SECRET` environment variables.
-For Braintree, you can also use `BRAINTREE_MERCHANT_ID`, `BRAINTREE_PUBLIC_KEY`, `BRAINTREE_PRIVATE_KEY`, and `BRAINTREE_ENVIRONMENT` environment variables.
-For Paddle, you can also use `PADDLE_VENDOR_ID`, `PADDLE_VENDOR_AUTH_CODE`, `PADDLE_PUBLIC_KEY_BASE64` and `PADDLE_ENVIRONMENT` environment variables.
+##### Environment Variables
+
+Pay will also check environment variables for API keys:
+
+* `STRIPE_PUBLIC_KEY`
+* `STRIPE_PRIVATE_KEY`
+* `STRIPE_SIGNING_SECRET`
+* `BRAINTREE_MERCHANT_ID`
+* `BRAINTREE_PUBLIC_KEY`
+* `BRAINTREE_PRIVATE_KEY`
+* `BRAINTREE_ENVIRONMENT`
+* `PADDLE_VENDOR_ID`
+* `PADDLE_VENDOR_AUTH_CODE`
+* `PADDLE_PUBLIC_KEY_BASE64`
+* `PADDLE_ENVIRONMENT`
 
 ### Generators
 
@@ -179,11 +197,13 @@ bin/rails generate pay:email_views
 
 ### Emails
 
-Emails can be enabled/disabled using the `send_emails` configuration option (enabled per default). When enabled, the following emails will be sent:
+Emails can be enabled/disabled using the `send_emails` configuration option (enabled by default).
 
-- When a charge succeeded
-- When a charge was refunded
-- When a subscription is about to renew
+When enabled, the following emails will be sent when:
+
+- A charge succeeded
+- A charge was refunded
+- A subscription is about to renew
 
 
 ## Billable API
