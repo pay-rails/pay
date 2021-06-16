@@ -3,12 +3,6 @@
 module Pay
   module Generators
     module OrmHelpers
-      def model_contents
-        <<-CONTENT
-  include Pay::Billable
-        CONTENT
-      end
-
       private
 
       def model_exists?
@@ -29,6 +23,16 @@ module Pay
 
       def model_path
         @model_path ||= File.join("app", "models", "#{file_path}.rb")
+      end
+
+      def migration_version
+        if rails5_and_up?
+          "[#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}]"
+        end
+      end
+
+      def rails5_and_up?
+        Rails::VERSION::MAJOR >= 5
       end
     end
   end

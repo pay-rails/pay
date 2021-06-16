@@ -9,6 +9,17 @@ There are two main marketplace payment types:
 
 Not sure what account types to use? Read the Stripe docs: https://stripe.com/docs/connect/accounts
 
+## Usage
+
+To add Merchant functionality to a model, run the generator:
+
+```bash
+rails g pay:merchant User
+rails db:migrate
+```
+
+## Example
+
 ```ruby
 class User
   include Pay::Merchant

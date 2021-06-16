@@ -4,16 +4,7 @@ class AddDataToPayBillable < ActiveRecord::Migration[4.2]
     Rails.application.eager_load!
 
     Pay.billable_models.each do |model|
-      add_column model.table_name, :pay_data, data_column_type
-    end
-  end
-
-  def data_column_type
-    case Pay::Adapter.current_adapter
-    when "postgresql"
-      :jsonb
-    else
-      :json
+      add_column model.table_name, :pay_data, Pay::Adapter.json_column_type
     end
   end
 end

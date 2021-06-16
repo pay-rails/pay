@@ -9,5 +9,14 @@ module Pay
         ActiveRecord::Base.connection_config[:adapter]
       end
     end
+
+    def self.json_column_type
+      case current_adapter
+      when "postgresql"
+        :jsonb
+      else
+        :json
+      end
+    end
   end
 end
