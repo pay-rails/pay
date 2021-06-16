@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Adapter::Test < ActiveSupport::TestCase
   test "current_adapter returns adapter as string" do
-    assert_includes %w(postgresql mysql2 sqlite3), Pay::Adapter.current_adapter
+    assert_includes %w[postgresql mysql2 sqlite3], Pay::Adapter.current_adapter
   end
 
   test "jsonb for postgres" do
