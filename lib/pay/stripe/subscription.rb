@@ -29,7 +29,7 @@ module Pay
 
         attributes = {
           application_fee_percent: object.application_fee_percent,
-          processor_plan: object.plan.id,
+          processor_plan: object.plan&.id,
           quantity: object.quantity,
           name: name,
           status: object.status,
@@ -51,12 +51,15 @@ module Pay
         # Update or create the subscription
         processor_details = {processor: :stripe, processor_id: object.id}
         if (pay_subscription = owner.subscriptions.find_by(processor_details))
+          si_attributes = sync_subscription_items_attributes(pay_subscription, object.items.data)
           pay_subscription.with_lock do
-            pay_subscription.update!(attributes)
+            pay_subscription.update!(attributes.merge(subscription_items_attributes: si_attributes))
           end
           pay_subscription
         else
-          owner.subscriptions.create!(attributes.merge(processor_details))
+          pay_subscription = owner.subscriptions.create!(attributes.merge(processor_details))
+          si_attributes = sync_subscription_items_attributes(pay_subscription, object.items.data)
+          pay_subscription.update(subscription_items_attributes: si_attributes)
         end
       rescue ActiveRecord::RecordInvalid
         try += 1
@@ -65,6 +68,28 @@ module Pay
           retry
         else
           raise
+        end
+      end
+
+      def self.sync_subscription_items_attributes(subscription, items_data)
+        return subscription_items_attributes(items_data) if subscription.subscription_items.empty?
+
+        # Destroy all existing subscription items
+        items_to_destroy = subscription.subscription_items.map do |subscription_item|
+          {id: subscription_item.id, _destroy: true}
+        end
+
+        # Rebuild subscription item records based on new items data
+        subscription_items_attributes(items_data) + items_to_destroy
+      end
+
+      def self.subscription_items_attributes(items_data)
+        items_data.map do |subscription_item|
+          {
+            processor_id: subscription_item.id,
+            processor_price: subscription_item.price.id,
+            quantity: subscription_item.quantity
+          }
         end
       end
 
@@ -91,7 +116,15 @@ module Pay
       end
 
       def change_quantity(quantity)
+<<<<<<< HEAD
         ::Stripe::Subscription.update(processor_id, {quantity: quantity}, stripe_options)
+=======
+        ::Stripe::Subscription.update(
+          processor_id,
+          {quantity: quantity},
+          {stripe_account: stripe_account}
+        )
+>>>>>>> d3604b9 (Connect Subscriptions, Charges Webhooks)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
