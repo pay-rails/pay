@@ -13,6 +13,7 @@ gemspec
 
 gem "byebug"
 gem "appraisal", github: "excid3/appraisal", branch: "fix-bundle-env"
+gem "overcommit"
 
 gem "braintree", ">= 2.92.0"
 gem "stripe", ">= 2.8"
