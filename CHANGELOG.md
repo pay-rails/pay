@@ -3,6 +3,7 @@
 ### 2.7.1
 
 * Refactor Stripe webhooks to always retrieve latest records - @excid3
+* Associate charges with subscriptions if possible - @excid3
 
 ### 2.7.0
 
