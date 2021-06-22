@@ -1,6 +1,11 @@
 ### Unreleased
 
+### 2.7.1
+
 * Refactor Stripe webhooks to always retrieve latest records - @excid3
+
+### 2.7.0
+
 * Add `Pay::Merchant` and Stripe Connect functionality - @excid3
 * Save `currency` on Pay::Charge records - @excid3
 
