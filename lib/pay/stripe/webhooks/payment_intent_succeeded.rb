@@ -6,7 +6,7 @@ module Pay
           object = event.data.object
           object.charges.data.each do |charge|
             pay_charge = Pay::Stripe::Charge.sync(charge.id)
-            notify_user(pay_charge.owner, pay_charge)
+            notify_user(pay_charge.owner, pay_charge) if pay_charge
           end
         end
 
