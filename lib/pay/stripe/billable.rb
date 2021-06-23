@@ -180,8 +180,8 @@ module Pay
         end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
-      end   
-    
+      end
+
       # https://stripe.com/docs/api/checkout/sessions/create
       #
       # checkout(mode: "payment")
