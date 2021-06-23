@@ -172,6 +172,16 @@ module Pay
         billable.card_token = nil
       end
 
+      # Syncs a customer's subscriptions from Stripe to the database
+      def sync_subscriptions
+        subscriptions = ::Stripe::Subscription.list({customer: customer}, {stripe_account: stripe_account})
+        subscriptions.map do |subscription|
+          Pay::Stripe::Subscription.sync(subscription.id)
+        end
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
+      end
+
       # https://stripe.com/docs/api/checkout/sessions/create
       #
       # checkout(mode: "payment")
