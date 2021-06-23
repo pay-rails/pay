@@ -36,12 +36,15 @@ module Pay
           stripe_account: owner.stripe_account,
           trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil)
         }
-
-        # Subscriptions cancelling in the future
-        attributes[:ends_at] = Time.at(object.current_period_end) if object.cancel_at_period_end
-
-        # Fully cancelled subscription
-        attributes[:ends_at] = Time.at(object.ended_at) if object.ended_at
+        if object.ended_at
+          # Fully cancelled subscription
+          attributes[:ends_at] = Time.at(object.ended_at)
+        elsif object.cancel_at_period_end
+          # Subscriptions cancelling in the future
+          attributes[:ends_at] = Time.at(object.current_period_end)
+        elsif object.cancel_at.nil?
+          attributes[:ends_at] = nil
+        end
 
         # Update or create the subscription
         pay_subscription = owner.subscriptions.find_or_initialize_by(processor: :stripe, processor_id: object.id)
