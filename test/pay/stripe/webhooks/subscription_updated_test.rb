@@ -48,7 +48,6 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_equal 3.days.from_now.beginning_of_day, subscription.reload.ends_at
   end
 
-
   test "subscription is updated with ended_at set" do
     build_user
 
