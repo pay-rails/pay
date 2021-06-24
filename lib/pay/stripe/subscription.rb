@@ -37,17 +37,15 @@ module Pay
           trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil)
         }
 
-        if object.ended_at
+        attributes[:ends_at] = if object.ended_at
           # Fully cancelled subscription
-          attributes[:ends_at] = Time.at(object.ended_at)
+          Time.at(object.ended_at)
         elsif object.cancel_at
           # subscription cancelling in the future
-          attributes[:ends_at] = Time.at(object.cancel_at)
+          Time.at(object.cancel_at)
         elsif object.cancel_at_period_end
           # Subscriptions cancelling in the future
-          attributes[:ends_at] = Time.at(object.current_period_end)
-        else
-          attributes[:ends_at] = nil
+          Time.at(object.current_period_end)
         end
 
         # Update or create the subscription
