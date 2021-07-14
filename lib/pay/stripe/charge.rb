@@ -39,7 +39,7 @@ module Pay
       end
 
       def charge
-        ::Stripe::Charge.retrieve({id: processor_id, expand: ["customer", "invoice.subscription"]}, {stripe_account: stripe_account})
+        ::Stripe::Charge.retrieve({id: processor_id, expand: ["customer", "invoice.subscription"]}, stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -50,10 +50,17 @@ module Pay
       # refund!(5_00)
       # refund!(5_00, refund_application_fee: true)
       def refund!(amount_to_refund, **options)
-        ::Stripe::Refund.create(options.merge(charge: processor_id, amount: amount_to_refund), {stripe_account: stripe_account})
+        ::Stripe::Refund.create(options.merge(charge: processor_id, amount: amount_to_refund), stripe_options)
         pay_charge.update(amount_refunded: amount_to_refund)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      private
+
+      # Options for Stripe requests
+      def stripe_options
+        {stripe_account: stripe_account}.compact
       end
     end
   end
