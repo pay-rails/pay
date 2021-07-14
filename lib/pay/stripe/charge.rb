@@ -25,7 +25,7 @@ module Pay
 
         # Associate charge with subscription if we can
         if object.invoice
-          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice))
+          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice, stripe_options))
           attrs[:subscription] = Pay::Subscription.find_by(processor: :stripe, processor_id: invoice.subscription)
         end
 
@@ -39,7 +39,7 @@ module Pay
       end
 
       def charge
-        ::Stripe::Charge.retrieve({id: processor_id, expand: ["customer", "invoice.subscription"]}, {stripe_account: stripe_account})
+        ::Stripe::Charge.retrieve({id: processor_id, expand: ["customer", "invoice.subscription"]}, stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -50,10 +50,17 @@ module Pay
       # refund!(5_00)
       # refund!(5_00, refund_application_fee: true)
       def refund!(amount_to_refund, **options)
-        ::Stripe::Refund.create(options.merge(charge: processor_id, amount: amount_to_refund), {stripe_account: stripe_account})
+        ::Stripe::Refund.create(options.merge(charge: processor_id, amount: amount_to_refund), stripe_options)
         pay_charge.update(amount_refunded: amount_to_refund)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      private
+
+      # Options for Stripe requests
+      def stripe_options
+        {stripe_account: stripe_account}.compact
       end
     end
   end

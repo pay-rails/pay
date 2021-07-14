@@ -22,7 +22,7 @@ module Pay
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         # Skip loading the latest subscription details from the API if we already have it
-        object ||= ::Stripe::Subscription.retrieve(id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"])
+        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"]}, stripe_options)
 
         owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
         return unless owner
@@ -63,21 +63,21 @@ module Pay
       end
 
       def cancel
-        stripe_sub = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}, {stripe_account: stripe_account})
+        stripe_sub = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}, stripe_options)
         pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(stripe_sub.current_period_end)))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       def cancel_now!
-        ::Stripe::Subscription.delete(processor_id, {}, {stripe_account: stripe_account})
+        ::Stripe::Subscription.delete(processor_id, {}, stripe_options)
         pay_subscription.update(ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       def change_quantity(quantity)
-        ::Stripe::Subscription.update(processor_id, {quantity: quantity}, {stripe_account: stripe_account})
+        ::Stripe::Subscription.update(processor_id, {quantity: quantity}, stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -106,7 +106,7 @@ module Pay
             trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             cancel_at_period_end: false
           },
-          {stripe_account: stripe_account}
+          stripe_options
         )
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -122,10 +122,17 @@ module Pay
             trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             quantity: quantity
           },
-          {stripe_account: stripe_account}
+          stripe_options
         )
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      private
+
+      # Options for Stripe requests
+      def stripe_options
+        {stripe_account: stripe_account}.compact
       end
     end
   end
