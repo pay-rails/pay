@@ -245,7 +245,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       name: "default",
       owner: @owner,
       processor: "stripe",
-      processor_id: rand(1..1000),
+      processor_id: rand(1..999_999_999),
       processor_plan: "default",
       quantity: "1",
       status: "active"
