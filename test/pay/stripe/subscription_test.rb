@@ -53,6 +53,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     values.reverse_merge!(
       id: "123",
       application_fee_percent: nil,
+      cancel_at: nil,
       cancel_at_period_end: false,
       created: 1466783124,
       current_period_end: 1488987924,
