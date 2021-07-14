@@ -70,14 +70,14 @@ module Pay
       end
 
       def cancel_now!
-        ::Stripe::Subscription.delete(processor_id, {stripe_account: stripe_account})
+        ::Stripe::Subscription.delete(processor_id, {}, {stripe_account: stripe_account})
         pay_subscription.update(ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       def change_quantity(quantity)
-        ::Stripe::Subscription.update(processor_id, quantity: quantity)
+        ::Stripe::Subscription.update(processor_id, {quantity: quantity}, {stripe_account: stripe_account})
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
