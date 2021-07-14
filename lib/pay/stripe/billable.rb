@@ -28,17 +28,17 @@ module Pay
       # Returns Stripe::Customer
       def customer
         stripe_customer = if processor_id?
-          ::Stripe::Customer.retrieve(processor_id, {stripe_account: stripe_account})
+          ::Stripe::Customer.retrieve(processor_id, stripe_options)
         else
-          sc = ::Stripe::Customer.create({email: email, name: customer_name}, {stripe_account: stripe_account})
+          sc = ::Stripe::Customer.create({email: email, name: customer_name}, stripe_options)
           billable.update(processor: :stripe, processor_id: sc.id, stripe_account: stripe_account)
           sc
         end
 
         # Update the user's card on file if a token was passed in
         if card_token.present?
-          payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: stripe_customer.id}, {stripe_account: stripe_account})
-          stripe_customer = ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, {stripe_account: stripe_account})
+          payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: stripe_customer.id}, stripe_options)
+          stripe_customer = ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, stripe_options)
           update_card_on_file(payment_method.card)
         end
 
@@ -61,7 +61,7 @@ module Pay
           payment_method: stripe_customer.invoice_settings.default_payment_method
         }.merge(options)
 
-        payment_intent = ::Stripe::PaymentIntent.create(args, {stripe_account: stripe_account})
+        payment_intent = ::Stripe::PaymentIntent.create(args, stripe_options)
         Pay::Payment.new(payment_intent).validate
 
         # Create a new charge object
@@ -89,7 +89,7 @@ module Pay
         opts[:customer] = customer.id
 
         # Create subscription on Stripe
-        stripe_sub = ::Stripe::Subscription.create(opts, {stripe_account: stripe_account})
+        stripe_sub = ::Stripe::Subscription.create(opts, stripe_options)
 
         # Save Pay::Subscription
         subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name)
@@ -116,8 +116,8 @@ module Pay
 
         return true if payment_method_id == stripe_customer.invoice_settings.default_payment_method
 
-        payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: stripe_customer.id}, {stripe_account: stripe_account})
-        ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, {stripe_account: stripe_account})
+        payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: stripe_customer.id}, stripe_options)
+        ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, stripe_options)
 
         update_card_on_file(payment_method.card)
         true
@@ -126,33 +126,33 @@ module Pay
       end
 
       def update_email!
-        ::Stripe::Customer.update(processor_id, {email: email, name: customer_name}, {stripe_account: stripe_account})
+        ::Stripe::Customer.update(processor_id, {email: email, name: customer_name}, stripe_options)
       end
 
       def processor_subscription(subscription_id, options = {})
-        ::Stripe::Subscription.retrieve(options.merge(id: subscription_id), {stripe_account: stripe_account})
+        ::Stripe::Subscription.retrieve(options.merge(id: subscription_id), stripe_options)
       end
 
       def invoice!(options = {})
         return unless processor_id?
-        ::Stripe::Invoice.create(options.merge(customer: processor_id), {stripe_account: stripe_account}).pay
+        ::Stripe::Invoice.create(options.merge(customer: processor_id), stripe_options).pay
       end
 
       def upcoming_invoice
-        ::Stripe::Invoice.upcoming({customer: processor_id}, {stripe_account: stripe_account})
+        ::Stripe::Invoice.upcoming({customer: processor_id}, stripe_options)
       end
 
       # Used by webhooks when the customer or source changes
       def sync_card_from_stripe
         if (payment_method_id = customer.invoice_settings.default_payment_method)
-          update_card_on_file ::Stripe::PaymentMethod.retrieve(payment_method_id, {stripe_account: stripe_account}).card
+          update_card_on_file ::Stripe::PaymentMethod.retrieve(payment_method_id, stripe_options).card
         else
           billable.update(card_type: nil, card_last4: nil)
         end
       end
 
       def create_setup_intent
-        ::Stripe::SetupIntent.create({customer: processor_id, usage: :off_session}, {stripe_account: stripe_account})
+        ::Stripe::SetupIntent.create({customer: processor_id, usage: :off_session}, stripe_options)
       end
 
       def trial_end_date(stripe_sub)
@@ -174,7 +174,7 @@ module Pay
 
       # Syncs a customer's subscriptions from Stripe to the database
       def sync_subscriptions
-        subscriptions = ::Stripe::Subscription.list({customer: customer}, {stripe_account: stripe_account})
+        subscriptions = ::Stripe::Subscription.list({customer: customer}, stripe_options)
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id)
         end
@@ -213,7 +213,7 @@ module Pay
           }
         end
 
-        ::Stripe::Checkout::Session.create(args.merge(options), {stripe_account: stripe_account})
+        ::Stripe::Checkout::Session.create(args.merge(options), stripe_options)
       end
 
       # https://stripe.com/docs/api/checkout/sessions/create
@@ -240,7 +240,14 @@ module Pay
           customer: processor_id,
           return_url: options.delete(:return_url) || root_url
         }
-        ::Stripe::BillingPortal::Session.create(args.merge(options), {stripe_account: stripe_account})
+        ::Stripe::BillingPortal::Session.create(args.merge(options), stripe_options)
+      end
+
+      private
+
+      # Options for Stripe requests
+      def stripe_options
+        {stripe_account: stripe_account}.compact
       end
     end
   end
