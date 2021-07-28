@@ -52,7 +52,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     @user.card_token = "pm_card_visa"
 
     plan_hash = {}
-    assert_raise(ArgumentError) { @user.subscribe(name: "default", plan: plan_hash) }
+    assert_raise(Pay::Stripe::Error) { @user.subscribe(name: "default", plan: plan_hash) }
   end
 
   private
