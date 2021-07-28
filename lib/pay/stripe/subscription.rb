@@ -22,7 +22,7 @@ module Pay
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         # Skip loading the latest subscription details from the API if we already have it
-        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ['pending_setup_intent', 'latest_invoice.payment_intent']})
+        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"]})
 
         owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
         return unless owner
@@ -91,19 +91,19 @@ module Pay
       end
 
       def pause
-        raise NotImplementedError, 'Stripe does not support pausing subscriptions'
+        raise NotImplementedError, "Stripe does not support pausing subscriptions"
       end
 
       def resume
         unless on_grace_period?
-          raise StandardError, 'You can only resume subscriptions within their grace period.'
+          raise StandardError, "You can only resume subscriptions within their grace period."
         end
 
         ::Stripe::Subscription.update(
           processor_id,
           {
             plan: processor_plan,
-            trial_end: (on_trial? ? trial_ends_at.to_i : 'now'),
+            trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             cancel_at_period_end: false
           },
           stripe_options
@@ -113,15 +113,15 @@ module Pay
       end
 
       def swap(plan)
-        raise ArgumentError, 'plan must be a string' unless plan.is_a?(String)
+        raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
         ::Stripe::Subscription.update(
           processor_id,
           {
             cancel_at_period_end: false,
             plan: plan,
-            proration_behavior: (prorate ? 'create_prorations' : 'none'),
-            trial_end: (on_trial? ? trial_ends_at.to_i : 'now'),
+            proration_behavior: (prorate ? "create_prorations" : "none"),
+            trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             quantity: quantity
           },
           stripe_options

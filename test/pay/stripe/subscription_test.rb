@@ -47,6 +47,14 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_not_nil pay_subscription.ends_at
   end
 
+  test "it will throw an error if the passed argument is not a string" do
+    @user.processor_id = nil
+    @user.card_token = "pm_card_visa"
+
+    plan_hash = {}
+    assert_raise(ArgumentError) { @user.subscribe(name: "default", plan: plan_hash) }
+  end
+
   private
 
   def fake_stripe_subscription(**values)

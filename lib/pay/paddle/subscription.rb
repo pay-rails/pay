@@ -79,7 +79,7 @@ module Pay
       end
 
       def swap(plan)
-        raise ArgumentError, 'plan must be a string' unless plan.is_a?(String)
+        raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
         attributes = {plan_id: plan, prorate: prorate}
         attributes[:quantity] = quantity if quantity?

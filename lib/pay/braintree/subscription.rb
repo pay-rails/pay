@@ -92,7 +92,7 @@ module Pay
       end
 
       def swap(plan)
-        raise ArgumentError, 'plan must be a string' unless plan.is_a?(String)
+        raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
         if on_grace_period? && processor_plan == plan
           resume

@@ -52,7 +52,7 @@ module Pay
       end
 
       def swap(plan)
-        raise ArgumentError, 'plan must be a string' unless plan.is_a?(String)
+        raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
         pay_subscription.update(processor_plan: plan)
       end
