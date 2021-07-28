@@ -42,7 +42,6 @@ module Pay
     end
 
     def validate
-      binding.pry
       if requires_payment_method?
         raise Pay::InvalidPaymentMethod.new(self)
       elsif requires_action?
