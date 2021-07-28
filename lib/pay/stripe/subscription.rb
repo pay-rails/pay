@@ -20,7 +20,7 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
-      def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
+      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, try: 0, retries: 5)
         # Skip loading the latest subscription details from the API if we already have it
         object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"]})
 
@@ -52,10 +52,18 @@ module Pay
         processor_details = {processor: :stripe, processor_id: object.id}
         if (pay_subscription = owner.subscriptions.find_by(processor_details))
           pay_subscription.with_lock do
-            pay_subscription.update(attributes)
+            pay_subscription.update!(attributes)
           end
         else
-          owner.subscriptions.create(attributes.merge(processor_details))
+          owner.subscriptions.create!(attributes.merge(processor_details))
+        end
+      rescue ActiveRecord::RecordInvalid
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
         end
       end
 
