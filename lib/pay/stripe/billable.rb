@@ -97,10 +97,6 @@ module Pay
         # No trial, card requires SCA
         if subscription.incomplete?
           Pay::Payment.new(stripe_sub.latest_invoice.payment_intent).validate
-
-        # Trial, card requires SCA
-        elsif subscription.on_trial? && stripe_sub.pending_setup_intent
-          Pay::Payment.new(stripe_sub.pending_setup_intent).validate
         end
 
         subscription
