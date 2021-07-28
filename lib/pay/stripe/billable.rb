@@ -95,7 +95,6 @@ module Pay
         subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name)
 
         # No trial, card requires SCA
-        binding.pry
         if subscription.incomplete?
           Pay::Payment.new(stripe_sub.latest_invoice.payment_intent).validate
 
