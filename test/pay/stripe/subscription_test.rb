@@ -48,11 +48,13 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "it will throw an error if the passed argument is not a string" do
-    @user.processor_id = nil
+    @user.processor = stripe
     @user.card_token = "pm_card_visa"
+    @user.subscribe
 
-    plan_hash = {}
-    assert_raise(Pay::Stripe::Error) { @user.subscribe(name: "default", plan: plan_hash) }
+    assert_raises Pay::Stripe::Error do
+      @user.swap({invalid: :object})
+    end
   end
 
   private
