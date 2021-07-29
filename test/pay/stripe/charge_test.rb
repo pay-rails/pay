@@ -5,6 +5,11 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: "cus_1234")
   end
 
+  test "sync returns Pay::Subscription" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
+    assert pay_charge.is_a?(Pay::Charge)
+  end
+
   test "sync stripe charge by ID" do
     assert_difference "Pay::Charge.count" do
       ::Stripe::Charge.stubs(:retrieve).returns(fake_stripe_charge)

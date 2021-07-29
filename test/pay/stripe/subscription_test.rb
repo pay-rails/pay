@@ -15,10 +15,14 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal 5, subscription.quantity
   end
 
+  test "sync returns Pay::Subscription" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    assert pay_subscription.is_a?(Pay::Subscription)
+  end
+
   test "sync stripe subscription by ID" do
     assert_difference "Pay::Subscription.count" do
       ::Stripe::Subscription.stubs(:retrieve).returns(fake_stripe_subscription)
-      Pay::Stripe::Subscription.sync("123")
     end
   end
 
