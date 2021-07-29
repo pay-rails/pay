@@ -5,7 +5,7 @@ module Pay
 
       delegate :processor_id, :owner, :stripe_account, to: :pay_charge
 
-      def self.sync(charge_id, object: nil, try: 0, retries: 5)
+      def self.sync(charge_id, object: nil, try: 0, retries: 1)
         # Skip loading the latest charge details from the API if we already have it
         object ||= ::Stripe::Charge.retrieve(id: charge_id)
 
