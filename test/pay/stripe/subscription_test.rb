@@ -48,12 +48,10 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "it will throw an error if the passed argument is not a string" do
-    @user.processor = :stripe
-    @user.card_token = "pm_card_visa"
-    @user.subscribe
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
 
-    assert_raises Pay::Stripe::Error do
-      @user.swap({invalid: :object})
+    assert_raises ArgumentError do
+      @user.subscription.swap({invalid: :object})
     end
   end
 
