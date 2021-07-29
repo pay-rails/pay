@@ -10,6 +10,10 @@ module Pay
           mount Pay::Engine, at: Pay.routes_path, as: "pay"
         end
       end
+
+      ActiveSupport.on_load(:active_record) do
+        include Pay::Attribute
+      end
     end
 
     config.to_prepare do

@@ -3,11 +3,12 @@ module Pay
     class Merchant
       attr_reader :merchant
 
-      delegate :stripe_connect_account_id,
-        to: :merchant
-
       def initialize(merchant)
         @merchant = merchant
+      end
+
+      def stripe_connect_account_id
+        merchant.processor_id
       end
 
       def create_account(**options)

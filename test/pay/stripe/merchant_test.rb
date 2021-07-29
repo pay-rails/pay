@@ -42,14 +42,16 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
   end
 
   test "connect account" do
-    account = Account.new merchant_processor: :stripe, stripe_connect_account_id: "acct_1IStbKQOsIOBQfn0"
+    account = Account.create
+    account.pay_merchants.create processor: :stripe, processor_id: "acct_1IStbKQOsIOBQfn0", default: true
     assert_equal ::Stripe::Account, account.merchant.account.class
   end
 
   test "connect transfer" do
     @user.charge(10_00, transfer_group: "12345")
 
-    account = Account.new merchant_processor: :stripe, stripe_connect_account_id: "acct_1IStbKQOsIOBQfn0"
+    account = Account.create
+    account.pay_merchants.create processor: :stripe, processor_id: "acct_1IStbKQOsIOBQfn0", default: true
     transfer = account.merchant.transfer(amount: 7_00, transfer_group: "12345")
     assert_equal 7_00, transfer.amount
     assert_equal "acct_1IStbKQOsIOBQfn0", transfer.destination

@@ -10,16 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_14_175351) do
+ActiveRecord::Schema.define(version: 2021_07_29_154359) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "email"
     t.string "merchant_processor"
-    if t.respond_to? :jsonb
-      t.jsonb "pay_data"
-    else
-      t.json "pay_data"
-    end
+    t.json "pay_data"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -42,6 +38,29 @@ ActiveRecord::Schema.define(version: 2021_07_14_175351) do
     t.integer "application_fee_amount"
     t.integer "pay_subscription_id"
     t.index ["processor", "processor_id"], name: "index_pay_charges_on_processor_and_processor_id", unique: true
+  end
+
+  create_table "pay_customers", force: :cascade do |t|
+    t.string "owner_type"
+    t.integer "owner_id"
+    t.string "processor"
+    t.string "processor_id"
+    t.boolean "default"
+    t.json "pay_data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["owner_type", "owner_id", "processor"], name: "index_pay_customers_on_owner_type_and_owner_id_and_processor"
+  end
+
+  create_table "pay_merchants", force: :cascade do |t|
+    t.string "owner_type"
+    t.integer "owner_id"
+    t.string "processor"
+    t.string "processor_id"
+    t.boolean "default"
+    t.json "pay_data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "pay_subscriptions", force: :cascade do |t|
