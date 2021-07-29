@@ -47,6 +47,16 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_not_nil pay_subscription.ends_at
   end
 
+  test "it will throw an error if the passed argument is not a string" do
+    @user.processor = :stripe
+    @user.card_token = "pm_card_visa"
+    @user.subscribe
+
+    assert_raises Pay::Stripe::Error do
+      @user.swap({invalid: :object})
+    end
+  end
+
   private
 
   def fake_stripe_subscription(**values)
