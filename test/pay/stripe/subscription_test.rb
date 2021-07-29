@@ -23,6 +23,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "sync stripe subscription by ID" do
     assert_difference "Pay::Subscription.count" do
       ::Stripe::Subscription.stubs(:retrieve).returns(fake_stripe_subscription)
+      Pay::Stripe::Subscription.sync("123")
     end
   end
 
