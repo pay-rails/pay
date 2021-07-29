@@ -15,6 +15,11 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal 5, subscription.quantity
   end
 
+  test "sync returns Pay::Subscription" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    assert pay_subscription.is_a?(Pay::Subscription)
+  end
+
   test "sync stripe subscription by ID" do
     assert_difference "Pay::Subscription.count" do
       ::Stripe::Subscription.stubs(:retrieve).returns(fake_stripe_subscription)
@@ -45,6 +50,14 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     fake_subscription = fake_stripe_subscription(ended_at: 1488987924)
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
     assert_not_nil pay_subscription.ends_at
+  end
+
+  test "it will throw an error if the passed argument is not a string" do
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+
+    assert_raises ArgumentError do
+      @user.subscription.swap({invalid: :object})
+    end
   end
 
   private

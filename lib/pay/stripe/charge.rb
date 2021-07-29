@@ -5,8 +5,10 @@ module Pay
 
       delegate :processor_id, :owner, :stripe_account, to: :pay_charge
 
-      def self.sync(charge_id, object: nil)
+      def self.sync(charge_id, object: nil, try: 0, retries: 1)
+        # Skip loading the latest charge details from the API if we already have it
         object ||= ::Stripe::Charge.retrieve(id: charge_id)
+
         owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
         return unless owner
 
@@ -33,10 +35,19 @@ module Pay
         processor_details = {processor: :stripe, processor_id: object.id}
         if (pay_charge = owner.charges.find_by(processor_details))
           pay_charge.with_lock do
-            pay_charge.update(attrs)
+            pay_charge.update!(attrs)
           end
+          pay_charge
         else
-          owner.charges.create(attrs.merge(processor_details))
+          owner.charges.create!(attrs.merge(processor_details))
+        end
+      rescue ActiveRecord::RecordInvalid
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
         end
       end
 
