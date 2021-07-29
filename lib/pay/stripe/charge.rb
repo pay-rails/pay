@@ -37,6 +37,7 @@ module Pay
           pay_charge.with_lock do
             pay_charge.update!(attrs)
           end
+          pay_charge
         else
           owner.charges.create!(attrs.merge(processor_details))
         end

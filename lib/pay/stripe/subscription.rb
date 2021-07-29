@@ -54,6 +54,7 @@ module Pay
           pay_subscription.with_lock do
             pay_subscription.update!(attributes)
           end
+          pay_subscription
         else
           owner.subscriptions.create!(attributes.merge(processor_details))
         end
