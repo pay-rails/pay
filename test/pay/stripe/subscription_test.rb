@@ -47,6 +47,14 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_not_nil pay_subscription.ends_at
   end
 
+  test "it will throw an error if the passed argument is not a string" do
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+
+    assert_raises ArgumentError do
+      @user.subscription.swap({invalid: :object})
+    end
+  end
+
   private
 
   def fake_stripe_subscription(**values)

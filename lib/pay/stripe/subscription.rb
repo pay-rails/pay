@@ -126,6 +126,8 @@ module Pay
       end
 
       def swap(plan)
+        raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
+
         ::Stripe::Subscription.update(
           processor_id,
           {
