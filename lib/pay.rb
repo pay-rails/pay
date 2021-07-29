@@ -7,7 +7,7 @@ module Pay
   autoload :Attribute, "pay/attribute"
   autoload :Billable, "pay/billable"
   autoload :Env, "pay/env"
-  #autoload :Merchant, "pay/merchant"
+  # autoload :Merchant, "pay/merchant"
   autoload :Payment, "pay/payment"
   autoload :Receipts, "pay/receipts"
 
