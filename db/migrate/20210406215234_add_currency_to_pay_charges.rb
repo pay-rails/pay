@@ -1,4 +1,4 @@
-class AddCurrencyToPayCharges < ActiveRecord::Migration[4.2]
+class AddCurrencyToPayCharges < ActiveRecord::Migration[5.2]
   def change
     add_column :pay_charges, :currency, :string
   end

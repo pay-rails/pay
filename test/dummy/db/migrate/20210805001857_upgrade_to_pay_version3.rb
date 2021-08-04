@@ -1,4 +1,4 @@
-class UpgradeToPayVersion3 < ActiveRecord::Migration[6.1]
+class UpgradeToPayVersion3 < ActiveRecord::Migration[5.2]
   # List of models to migrate from Pay v2 to Pay v3
   MODELS = [User, Team]
 

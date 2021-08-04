@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddPayBillableToTeams < ActiveRecord::Migration[6.0]
+class AddPayBillableToTeams < ActiveRecord::Migration[5.2]
   def change
     change_table :teams, bulk: true do |t|
       t.string :processor

@@ -1,4 +1,4 @@
-class CreatePayMerchants < ActiveRecord::Migration[6.1]
+class CreatePayMerchants < ActiveRecord::Migration[5.2]
   def change
     create_table :pay_merchants do |t|
       t.belongs_to :owner, polymorphic: true
