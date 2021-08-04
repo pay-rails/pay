@@ -122,15 +122,7 @@ module Pay
       end
 
       def change_quantity(quantity)
-<<<<<<< HEAD
         ::Stripe::Subscription.update(processor_id, {quantity: quantity}, stripe_options)
-=======
-        ::Stripe::Subscription.update(
-          processor_id,
-          {quantity: quantity},
-          {stripe_account: stripe_account}
-        )
->>>>>>> d3604b9 (Connect Subscriptions, Charges Webhooks)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
