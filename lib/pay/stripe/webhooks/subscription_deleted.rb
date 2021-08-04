@@ -3,7 +3,8 @@ module Pay
     module Webhooks
       class SubscriptionDeleted
         def call(event)
-          Pay::Stripe::Subscription.sync(event.data.object.id)
+          object = event.data.object
+          Pay::Stripe::Subscription.sync(object.id, options: { stripe_account: object.account })
         end
       end
     end
