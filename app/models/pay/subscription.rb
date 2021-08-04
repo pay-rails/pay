@@ -1,7 +1,5 @@
 module Pay
   class Subscription < Pay::ApplicationRecord
-    self.table_name = Pay.subscription_table
-
     STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid paused]
 
     # Only serialize for non-json columns

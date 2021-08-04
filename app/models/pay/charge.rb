@@ -1,7 +1,6 @@
 module Pay
   class Charge < Pay::ApplicationRecord
     self.inheritance_column = nil
-    self.table_name = Pay.chargeable_table
 
     # Only serialize for non-json columns
     serialize :data unless json_column?("data")

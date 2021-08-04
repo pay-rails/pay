@@ -5,14 +5,6 @@ class Pay::Test < ActiveSupport::TestCase
     assert_kind_of Module, Pay
   end
 
-  test "default chargeable class is Charge" do
-    assert Pay.chargeable_class, "Pay::Charge"
-  end
-
-  test "default chargeable table is charges" do
-    assert Pay.chargeable_table, "charges"
-  end
-
   test "default automount_routes is true" do
     assert Pay.automount_routes, true
   end
