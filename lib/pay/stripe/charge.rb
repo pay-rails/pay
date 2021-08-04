@@ -5,9 +5,9 @@ module Pay
 
       delegate :processor_id, :owner, :stripe_account, to: :pay_charge
 
-      def self.sync(charge_id, object: nil, try: 0, retries: 1)
+      def self.sync(charge_id, object: nil, try: 0, retries: 1, options: {})
         # Skip loading the latest charge details from the API if we already have it
-        object ||= ::Stripe::Charge.retrieve(id: charge_id)
+        object ||= ::Stripe::Charge.retrieve(charge_id, { stripe_account: options[:stripe_account]})
 
         owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
         return unless owner

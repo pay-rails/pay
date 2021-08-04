@@ -20,7 +20,7 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
-      def self.sync(subscription_id, object: nil, options: {}, name: Pay.default_product_name, try: 0, retries: 1)
+      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, try: 0, retries: 1, options: {})
         # Skip loading the latest subscription details from the API if we already have it
         object ||= ::Stripe::Subscription.retrieve(
           {
