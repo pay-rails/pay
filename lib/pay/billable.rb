@@ -16,7 +16,6 @@ module Pay
       payment_processor.processor_subscription(subscription_id, options)
     end
 
-
     # Used for creating a Pay::Subscription in the database
     def create_pay_subscription(subscription, processor, name, plan, options = {})
       options[:quantity] ||= 1

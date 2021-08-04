@@ -48,11 +48,11 @@ module Pay
         customer.processor == processor_name
       end
 
-      scope processor_name, -> { joins(:customer).where(pay_customers: { processor: processor_name }) }
+      scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
     end
 
     def self.find_by_processor_and_id(processor, processor_id)
-      joins(:customer).find_by(processor_id: processor_id, pay_customers: { processor: processor })
+      joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})
     end
 
     def self.pay_processor_for(name)

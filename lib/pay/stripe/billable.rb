@@ -121,7 +121,7 @@ module Pay
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
-      alias update_card update_payment_method
+      alias_method :update_card, :update_payment_method
 
       def update_email!
         ::Stripe::Customer.update(processor_id, {email: email, name: customer_name}, stripe_options)
@@ -145,7 +145,7 @@ module Pay
         if (payment_method_id = customer.invoice_settings.default_payment_method)
           update_card_on_file ::Stripe::PaymentMethod.retrieve(payment_method_id, stripe_options).card
         else
-          #pay_customer.update(card_type: nil, card_last4: nil)
+          pay_customer.payment_methods.update_all(default: false)
         end
       end
 

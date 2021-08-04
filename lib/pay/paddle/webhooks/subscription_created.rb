@@ -13,8 +13,10 @@ module Pay
             pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: event["user_id"])
 
             # Try passthrough if not in database
-            owner = Pay::Paddle.owner_from_passthrough(event["passthrough"])
-            pay_customer = owner&.set_payment_processor(:paddle, processor_id: event["user_id"])
+            if pay_customer.nil?
+              owner = Pay::Paddle.owner_from_passthrough(event["passthrough"])
+              pay_customer = owner&.set_payment_processor(:paddle, processor_id: event["user_id"])
+            end
 
             if pay_customer.nil?
               Rails.logger.error "[Pay] Unable to find Pay::Customer with: '#{event["passthrough"]}'"

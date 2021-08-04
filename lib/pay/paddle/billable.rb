@@ -42,7 +42,7 @@ module Pay
       def update_payment_method(token)
         sync_payment_method
       end
-      alias update_card update_payment_method
+      alias_method :update_card, :update_payment_method
 
       def update_email!
         # pass

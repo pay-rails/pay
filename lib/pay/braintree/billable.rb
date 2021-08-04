@@ -213,7 +213,7 @@ module Pay
                        {
                          payment_method_type: payment_method.class.name.demodulize.underscore
                        }
-                     end
+        end
 
         pay_payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
         pay_payment_method.update!(attributes)
@@ -267,7 +267,7 @@ module Pay
           }
 
         else
-          { payment_method_type: "unknown" }
+          {payment_method_type: "unknown"}
         end
       end
     end

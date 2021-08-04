@@ -3,7 +3,7 @@ module Pay
     module Webhooks
       class SubscriptionPaymentSucceeded
         def call(event)
-          pay_customer= Pay::Customer.find_by(processor: :paddle, processor_id: event["user_id"])
+          pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: event["user_id"])
 
           if pay_customer.nil?
             owner = Pay::Paddle.owner_from_passthrough(event["passthrough"])

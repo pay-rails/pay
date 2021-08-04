@@ -43,12 +43,12 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   end
 
   # Disable because you have to enable Apple Pay in Braintree
-  #test "braintree can charge card with Apple Pay Card" do
+  # test "braintree can charge card with Apple Pay Card" do
   #  @pay_customer.payment_method_token = "fake-apple-pay-visa-nonce"
   #  charge = @pay_customer.charge(29_00)
   #  assert_equal "card", charge.payment_method_type
   #  assert_equal "Apple Pay - Visa", charge.brand
-  #end
+  # end
 
   test "braintree can charge card with Google Pay Card" do
     # If Braintree ever introduces fake google pay nonces, we can update this
