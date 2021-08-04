@@ -108,7 +108,7 @@ module Pay
       # Handles Billable#update_card
       #
       # Returns true if successful
-      def update_card(payment_method_id)
+      def update_payment_method(payment_method_id)
         stripe_customer = customer
 
         return true if payment_method_id == stripe_customer.invoice_settings.default_payment_method
@@ -121,6 +121,7 @@ module Pay
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
+      alias update_card update_payment_method
 
       def update_email!
         ::Stripe::Customer.update(processor_id, {email: email, name: customer_name}, stripe_options)
@@ -159,14 +160,13 @@ module Pay
 
       # Save the card to the database as the user's current card
       def update_card_on_file(card)
-        pay_customer.update!(
-          data: {
-            kind: "card",
-            type: card.brand.capitalize,
-            last4: card.last4,
-            exp_month: card.exp_month,
-            exp_year: card.exp_year
-          }
+        payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
+        payment_method.update!(
+          payment_method_type: "card",
+          brand: card.brand.capitalize,
+          last4: card.last4,
+          exp_month: card.exp_month,
+          exp_year: card.exp_year
         )
 
         pay_customer.payment_method_token = nil

@@ -2,6 +2,8 @@ class Pay::Customer < Pay::ApplicationRecord
   belongs_to :owner, polymorphic: true
   has_many :charges, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
+  has_many :payment_methods, dependent: :destroy
+  has_one :default_payment_method, ->{ where(default: true) }, class_name: "Pay::PaymentMethod"
 
   attribute :plan, :string
   attribute :quantity, :integer

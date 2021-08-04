@@ -42,7 +42,7 @@ module Pay
         )
       end
 
-      def update_card(payment_method_id)
+      def update_payment_method(payment_method_id)
         pay_customer.update(
           data: {
             kind: :card,
@@ -53,6 +53,7 @@ module Pay
           }
         )
       end
+      alias update_card update_payment_method
 
       def update_email!
         # pass

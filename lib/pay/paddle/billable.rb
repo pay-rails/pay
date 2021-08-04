@@ -1,17 +1,17 @@
 module Pay
   module Paddle
     class Billable
-      attr_reader :billable
+      attr_reader :pay_customer
 
       delegate :processor_id,
         :processor_id?,
         :email,
         :customer_name,
         :card_token,
-        to: :billable
+        to: :pay_customer
 
-      def initialize(billable)
-        @billable = billable
+      def initialize(pay_customer)
+        @pay_customer = pay_customer
       end
 
       def customer
@@ -19,13 +19,13 @@ module Pay
       end
 
       def charge(amount, options = {})
-        subscription = billable.subscription
+        subscription = pay_customer.subscription
         return unless subscription.processor_id
         raise Pay::Error, "A charge_name is required to create a one-time charge" if options[:charge_name].nil?
         response = PaddlePay::Subscription::Charge.create(subscription.processor_id, amount.to_f / 100, options[:charge_name], options)
-        charge = billable.charges.find_or_initialize_by(processor: :paddle, processor_id: response[:invoice_id])
+        charge = pay_customer.charges.find_or_initialize_by(processor_id: response[:invoice_id])
         charge.update(
-          amount: Integer(response[:amount].to_f * 100),
+          amount: (response[:amount].to_f * 100).to_i,
           card_type: processor_subscription(subscription.processor_id).payment_information[:payment_method],
           paddle_receipt_url: response[:receipt_url],
           created_at: Time.zone.parse(response[:payment_date])
@@ -39,9 +39,10 @@ module Pay
         # pass
       end
 
-      def update_card(token)
-        sync_payment_information_from_paddle
+      def update_payment_method(token)
+        sync_payment_method
       end
+      alias update_card update_payment_method
 
       def update_email!
         # pass
@@ -67,8 +68,14 @@ module Pay
         # pass
       end
 
-      def sync_payment_information
-        billable.update!(payment_information(billable.subscription.processor_id))
+      def sync_payment_method(attributes: nil)
+        payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
+
+        # Lookup payment method from API unless passed in
+        attributes ||= payment_information(pay_customer.subscription.processor_id)
+        payment_method.update!(attributes)
+
+        payment_method
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
       end
@@ -81,14 +88,16 @@ module Pay
         case payment_information[:payment_method]
         when "card"
           {
-            card_type: payment_information[:card_type],
-            card_last4: payment_information[:last_four_digits],
-            card_exp_month: payment_information[:expiry_date].split("/").first,
-            card_exp_year: payment_information[:expiry_date].split("/").last
+            payment_method_type: :card,
+            brand: payment_information[:card_type],
+            last4: payment_information[:last_four_digits],
+            exp_month: payment_information[:expiry_date].split("/").first,
+            exp_year: payment_information[:expiry_date].split("/").last
           }
         when "paypal"
           {
-            card_type: "PayPal"
+            payment_method_type: :paypal,
+            brand: "PayPal"
           }
         else
           {}

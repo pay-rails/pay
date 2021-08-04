@@ -18,7 +18,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
     @pay_customer.payment_method_token = "fake-valid-visa-nonce"
     @pay_customer.customer
 
-    assert_equal "Visa", @pay_customer.data["type"]
+    assert_equal "Visa", @pay_customer.default_payment_method.brand
     assert_nil @pay_customer.payment_method_token
   end
 
@@ -31,26 +31,102 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
 
   test "braintree can update card" do
     @pay_customer.update_payment_method "fake-valid-discover-nonce"
-    assert_equal "Discover", @pay_customer.data["type"]
+    assert_equal "Discover", @pay_customer.default_payment_method.brand
     assert_nil @pay_customer.payment_method_token
   end
 
   test "braintree can charge card with credit card" do
     @pay_customer.payment_method_token = "fake-valid-visa-nonce"
     charge = @pay_customer.charge(29_00)
-
-    # Make sure it saved to the database correctly
-    assert_equal 29_00, charge.amount
-    assert_equal "Visa", charge.card_type
+    assert_equal "card", charge.payment_method_type
+    assert_equal "Visa", charge.brand
   end
 
-  test "braintree can charge card with venmo" do
+  # Disable because you have to enable Apple Pay in Braintree
+  #test "braintree can charge card with Apple Pay Card" do
+  #  @pay_customer.payment_method_token = "fake-apple-pay-visa-nonce"
+  #  charge = @pay_customer.charge(29_00)
+  #  assert_equal "card", charge.payment_method_type
+  #  assert_equal "Apple Pay - Visa", charge.brand
+  #end
+
+  test "braintree can charge card with Google Pay Card" do
+    # If Braintree ever introduces fake google pay nonces, we can update this
+    @pay_customer.payment_method_token = "fake-android-pay-visa-nonce"
+    charge = @pay_customer.charge(29_00)
+    assert_equal "card", charge.payment_method_type
+    assert_equal "Visa", charge.brand
+  end
+
+  test "braintree can charge card with Samsung Pay Card" do
+    @pay_customer.payment_method_token = "tokensam_fake_mastercard"
+    charge = @pay_customer.charge(29_00)
+    assert_equal "card", charge.payment_method_type
+    assert_equal "MasterCard", charge.brand
+  end
+
+  test "braintree can charge card with Visa Checkout Card" do
+    @pay_customer.payment_method_token = "fake-visa-checkout-amex-nonce"
+    charge = @pay_customer.charge(29_00)
+    assert_equal "card", charge.payment_method_type
+    assert_equal "American Express", charge.brand
+  end
+
+  # test "braintree can charge card with PayPal Account" do
+  #   @pay_customer.payment_method_token = "fake-paypal-billing-agreement-nonce"
+  #   charge = @pay_customer.charge(29_00)
+  #   assert_equal "paypal", charge.payment_method_type
+  #   assert_equal "PayPal", charge.brand
+  # end
+
+  test "braintree can charge card with Venmo" do
     @pay_customer.payment_method_token = "fake-venmo-account-nonce"
     charge = @pay_customer.charge(29_00)
+    assert_equal "venmo", charge.payment_method_type
+    assert_equal "Venmo", charge.brand
+  end
 
-    # Make sure it saved to the database correctly
-    assert_equal 29_00, charge.amount
-    assert_equal "Venmo", charge.card_type
+  test "braintree update credit card" do
+    @pay_customer.update_payment_method "fake-valid-discover-nonce"
+    assert_equal "card", @pay_customer.default_payment_method.type
+    assert_equal "Discover", @pay_customer.default_payment_method.brand
+  end
+
+  test "braintree update Apple Pay Card" do
+    @pay_customer.update_payment_method "fake-apple-pay-visa-nonce"
+    assert_equal "card", @pay_customer.default_payment_method.type
+    assert_equal "Apple Pay - Visa", @pay_customer.default_payment_method.brand
+  end
+
+  test "braintree update Google Pay Card" do
+    # If Braintree ever introduces fake google pay nonces, we can update this
+    @pay_customer.update_payment_method "fake-android-pay-visa-nonce"
+    assert_equal "card", @pay_customer.default_payment_method.type
+    assert_equal "Visa", @pay_customer.default_payment_method.brand
+  end
+
+  test "braintree update Samsung Pay Card" do
+    @pay_customer.update_payment_method "tokensam_fake_mastercard"
+    assert_equal "card", @pay_customer.default_payment_method.type
+    assert_equal "MasterCard", @pay_customer.default_payment_method.brand
+  end
+
+  test "braintree update Visa Checkout Card" do
+    @pay_customer.update_payment_method "fake-visa-checkout-amex-nonce"
+    assert_equal "card", @pay_customer.default_payment_method.type
+    assert_equal "American Express", @pay_customer.default_payment_method.brand
+  end
+
+  test "braintree update PayPal Account" do
+    @pay_customer.update_payment_method "fake-paypal-billing-agreement-nonce"
+    assert_equal "paypal", @pay_customer.default_payment_method.type
+    assert_equal "PayPal", @pay_customer.default_payment_method.brand
+  end
+
+  test "braintree update Venmo Account" do
+    @pay_customer.update_payment_method "fake-venmo-account-nonce"
+    assert_equal "venmo", @pay_customer.default_payment_method.type
+    assert_equal "Venmo", @pay_customer.default_payment_method.brand
   end
 
   # Invalid amount will cause the transaction to fail
@@ -115,9 +191,9 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   test "braintree card is automatically updated on subscribe" do
     assert_nil @pay_customer.data
     @pay_customer.update_payment_method "fake-valid-discover-nonce"
-    assert_equal "Discover", @pay_customer.data["type"]
+    assert_equal "Discover", @pay_customer.default_payment_method.brand
     @pay_customer.payment_method_token = "fake-valid-visa-nonce"
     @pay_customer.subscribe
-    assert_equal "Visa", @pay_customer.data["type"]
+    assert_equal "Visa", @pay_customer.default_payment_method.brand
   end
 end

@@ -111,22 +111,6 @@ module Pay
     end
   end
 
-  def self.charge_model
-    if Rails.application.config.cache_classes
-      @@charge_model ||= chargeable_class.constantize
-    else
-      chargeable_class.constantize
-    end
-  end
-
-  def self.subscription_model
-    if Rails.application.config.cache_classes
-      @@subscription_model ||= subscription_class.constantize
-    else
-      subscription_class.constantize
-    end
-  end
-
   def self.receipts_supported?
     charge_model.respond_to?(:receipt) &&
       application_name.present? &&

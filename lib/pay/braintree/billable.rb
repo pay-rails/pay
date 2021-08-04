@@ -181,26 +181,42 @@ module Pay
       end
 
       def update_card_on_file(payment_method)
-        case payment_method
-        when ::Braintree::CreditCard
-          pay_customer.update!(
-            data: {
-              kind: "card",
-              type: payment_method.card_type,
-              last4: payment_method.last_4,
-              exp_month: payment_method.expiration_month,
-              exp_year: payment_method.expiration_year
-            }
-          )
+        attributes = case payment_method
+                     when ::Braintree::CreditCard, ::Braintree::ApplePayCard, ::Braintree::GooglePayCard, ::Braintree::SamsungPayCard, ::Braintree::VisaCheckoutCard
+                       {
+                         payment_method_type: :card,
+                         brand: payment_method.card_type,
+                         last4: payment_method.last_4,
+                         exp_month: payment_method.expiration_month,
+                         exp_year: payment_method.expiration_year
+                       }
 
-        when ::Braintree::PayPalAccount
-          pay_customer.update!(
-            data: {
-              kind: "paypal",
-              email: payment_method.email
-            }
-          )
-        end
+                     when ::Braintree::PayPalAccount
+                       {
+                         payment_method_type: :paypal,
+                         brand: "PayPal",
+                         email: payment_method.email
+                       }
+                     when ::Braintree::VenmoAccount
+                       {
+                         payment_method_type: :venmo,
+                         brand: "Venmo",
+                         username: payment_method.username
+                       }
+                     when ::Braintree::UsBankAccount
+                       {
+                         payment_method_type: "us_bank_account",
+                         bank: payment_method.bank_name,
+                         last4: payment_method.last_4
+                       }
+                     else
+                       {
+                         payment_method_type: payment_method.class.name.demodulize.underscore
+                       }
+                     end
+
+        pay_payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
+        pay_payment_method.update!(attributes)
 
         # Clear the card token so we don't accidentally update twice
         pay_customer.payment_method_token = nil
@@ -208,51 +224,50 @@ module Pay
 
       def card_details_for_braintree_transaction(transaction)
         case transaction.payment_instrument_type
-        when "credit_card", "samsung_pay_card", "masterpass_card", "visa_checkout_card"
-          payment_method = transaction.send("#{transaction.payment_instrument_type}_details")
+        when "android_pay_card", "apple_pay_card", "credit_card", "google_pay_card", "samsung_pay_card", "visa_checkout_card"
+          # Lookup the attribute with the payment method details by name
+          attribute_name = transaction.payment_instrument_type
+
+          # The attribute name for Apple and Google Pay don't include _card for some reason
+          if ["apple_pay_card", "google_pay_card"].include?(transaction.payment_instrument_type)
+            attribute_name = attribute_name.split("_card").first
+
+          # Android Pay was renamed to Google Pay, but test nonces still use android_pay_card
+          elsif attribute_name == "android_pay_card"
+            attribute_name = "google_pay"
+          end
+
+          # Retrieve payment method details from transaction
+          payment_method = transaction.send("#{attribute_name}_details")
+
           {
-            card_type: payment_method.card_type,
-            card_last4: payment_method.last_4,
-            card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year
+            payment_method_type: :card,
+            brand: payment_method.card_type,
+            last4: payment_method.last_4,
+            exp_month: payment_method.expiration_month,
+            exp_year: payment_method.expiration_year
           }
 
         when "paypal_account"
           {
-            card_type: "PayPal",
-            card_last4: transaction.paypal_details.payer_email,
-            card_exp_month: nil,
-            card_exp_year: nil
-          }
-
-        when "android_pay_card"
-          payment_method = transaction.android_pay_details
-          {
-            card_type: payment_method.source_card_type,
-            card_last4: payment_method.source_card_last_4,
-            card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year
+            payment_method_type: :paypal,
+            brand: "PayPal",
+            last4: transaction.paypal_details.payer_email,
+            exp_month: nil,
+            exp_year: nil
           }
 
         when "venmo_account"
           {
-            card_type: "Venmo",
-            card_last4: transaction.venmo_account_details.username,
-            card_exp_month: nil,
-            card_exp_year: nil
-          }
-
-        when "apple_pay_card"
-          payment_method = transaction.apple_pay_details
-          {
-            card_type: payment_method.card_type,
-            card_last4: payment_method.last_4,
-            card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year
+            payment_method_type: :venmo,
+            brand: "Venmo",
+            last4: transaction.venmo_account_details.username,
+            exp_month: nil,
+            exp_year: nil
           }
 
         else
-          {}
+          { payment_method_type: "unknown" }
         end
       end
     end

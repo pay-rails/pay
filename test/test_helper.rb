@@ -58,29 +58,9 @@ require "vcr"
 # Uncomment to view the stacktrace for debugging tests
 Rails.backtrace_cleaner.remove_silencers!
 
-unless ENV["SKIP_VCR"]
-  require "webmock/minitest"
-
-  VCR.configure do |c|
-    c.cassette_library_dir = "test/vcr_cassettes"
-    c.hook_into :webmock
-    c.allow_http_connections_when_no_cassette = true
-    c.filter_sensitive_data("<VENDOR_ID>") { ENV["PADDLE_VENDOR_ID"] }
-    c.filter_sensitive_data("<VENDOR_AUTH_CODE>") { ENV["PADDLE_VENDOR_AUTH_CODE"] }
-  end
-
-  class ActiveSupport::TestCase
-    setup do
-      VCR.insert_cassette name
-    end
-
-    teardown do
-      VCR.eject_cassette name
-    end
-  end
-end
-
 # Configure all the payment providers for testing
+ENV["STRIPE_PRIVATE_KEY"] ||= "sk_test_fake"
+
 require "pay/stripe"
 require "pay/braintree"
 require "pay/paddle"
@@ -111,3 +91,28 @@ end
 # Paddle configuration
 paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle/verification/paddle_public_key.pem"))
 ENV["PADDLE_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
+
+unless ENV["SKIP_VCR"]
+  require "webmock/minitest"
+
+  VCR.configure do |c|
+    c.cassette_library_dir = "test/vcr_cassettes"
+    c.hook_into :webmock
+    c.allow_http_connections_when_no_cassette = true
+    c.filter_sensitive_data("<VENDOR_ID>") { ENV["PADDLE_VENDOR_ID"] }
+    c.filter_sensitive_data("<VENDOR_AUTH_CODE>") { ENV["PADDLE_VENDOR_AUTH_CODE"] }
+    c.filter_sensitive_data("<STRIPE_PRIVATE_KEY>") { Pay::Stripe.private_key }
+    c.filter_sensitive_data("<BRAINTREE_PRIVATE_KEY>") { Pay::Braintree.private_key }
+    c.filter_sensitive_data("<PADDLE_PRIVATE_KEY>") { Pay::Paddle.vendor_auth_code }
+  end
+
+  class ActiveSupport::TestCase
+    setup do
+      VCR.insert_cassette name
+    end
+
+    teardown do
+      VCR.eject_cassette name
+    end
+  end
+end

@@ -1,0 +1,159 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.sandbox.braintreegateway.com/merchants/zyfwpztymjqdcc5g/customers
+    body:
+      encoding: UTF-8
+      string: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <customer>
+          <email>braintree@example.org</email>
+          <first-name nil="true"/>
+          <last-name nil="true"/>
+          <payment-method-nonce>fake-apple-pay-visa-nonce</payment-method-nonce>
+        </customer>
+    headers:
+      Accept-Encoding:
+      - gzip
+      Accept:
+      - application/xml
+      User-Agent:
+      - Braintree Ruby Gem 4.3.0
+      X-Apiversion:
+      - '6'
+      Content-Type:
+      - application/xml
+      Authorization:
+      - Basic NXI1OXJyeGhuODlucGM5bjowMGYwZGY3OTMwM2UxMjcwODgxZTVmZWRhNzc4ODkyNw==
+  response:
+    status:
+      code: 201
+      message: ''
+    headers:
+      Date:
+      - Wed, 04 Aug 2021 22:27:32 GMT
+      Content-Type:
+      - application/xml; charset=utf-8
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      X-Authentication:
+      - basic_auth
+      X-User:
+      - k8kdyxqxh8zjnf35
+      Vary:
+      - Accept-Encoding, Origin
+      Content-Encoding:
+      - gzip
+      Etag:
+      - W/"601b2325f1463f59abab3ff12c670d2e"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Runtime:
+      - '0.271009'
+      X-Request-Id:
+      - 15115139-887e-46a7-8f5f-a063c6741547
+      Content-Security-Policy:
+      - frame-ancestors 'self'
+      X-Broxyid:
+      - 15115139-887e-46a7-8f5f-a063c6741547
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Paypal-Debug-Id:
+      - ff35f927c3104
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAFQUC2EAA6RVXU/bMBR951dEeXfThhYCSsM+JECTxjYJ2NYX5MQ3jcGxM9uBpr9+zqdDW6RNvMXnnHt9c318HV5scuY8g1RU8KU7m0xdB3giCOXrpXt3e4kC9yI6CpNSaZGDjI4cJ6Qkmi3OThf+yTwIPbOqQUMmGeYamfW2Sl+Kra7yxz8kSRbr0BuztTqlUmnEcQ4Op2zpalmC6zUUw28xicgLzKs9HHJMWRRLTLmWAB9gg/OCwURIs3NL1rIiE3w/aYo3e9gLxIrqAwVIwBoIwtrRVQFLl5ilpjm4kT/1Z2gaoOn81vfP/dPzY38VejagiS8L8n/xNqDdvzkFlFJgRLUlrZmIMavb+vv4fkuuzvTq15f06+3d4mZ7V908/piHntV0P0GoRgmWRHVlYClx1f0jJkSCUnCQK0xbUYGrA9G1YE/SggaOKY/m05kfGMPU3z1ei1CdJvpYBzrfceUg554qbJo3cGN1JhgB2RgkqnWODfw80G3wWDqkeN8Rtjm6y4BeX4QxvCf9l3M6IO7zEEhxyfqaYyEYYO5GtTdDryMHMWwKKrE2NxrlgussmvnmHuyCB9QVYFm34bW8QV+pgewWkmKmoIsCW7b9keTqchH/vC/J1YyRq+x5dXmWJdef1Oo+8L9dr3K8XekdpzYZaI7XgErJokzrQp17Hjbm1GoyXPe1OZ4XXE3MdPCM73Lg+iEHnQnywMRaeI0jHwwzKfj6AvgzlYLXqqXCnMRiY0bYsEm/bTOE5tEsCGah1y16rtsEUa5M/5tP68YgCE5C7y1Jn0KJUiaACKhE0qLu8jj6ADsElvEAHrihjUaLJ+DRSfCcPp3kodcue/KdI6g1tcjreU4xi+74Excv3HjXYtazMdVW0S4HspRmDiAJ65LV+Ue6XaYPyQAznZmLDVY8wkbHIwUbldYDg0BCgY3FboThum/LCVImzTNl4y1mO1Aa71VIpIgqVWKewLgV++RgZwOYpxXFmD/ZiFdoO0e9/UG6iynzLnv2Yf4LAAD//wMAcAzSassHAAA=
+  recorded_at: Wed, 04 Aug 2021 22:27:32 GMT
+- request:
+    method: post
+    uri: https://api.sandbox.braintreegateway.com/merchants/zyfwpztymjqdcc5g/transactions
+    body:
+      encoding: UTF-8
+      string: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <transaction>
+          <amount>29.0</amount>
+          <customer-id>159752648</customer-id>
+          <options>
+            <submit-for-settlement type="boolean">true</submit-for-settlement>
+          </options>
+          <type>sale</type>
+        </transaction>
+    headers:
+      Accept-Encoding:
+      - gzip
+      Accept:
+      - application/xml
+      User-Agent:
+      - Braintree Ruby Gem 4.3.0
+      X-Apiversion:
+      - '6'
+      Content-Type:
+      - application/xml
+      Authorization:
+      - Basic NXI1OXJyeGhuODlucGM5bjowMGYwZGY3OTMwM2UxMjcwODgxZTVmZWRhNzc4ODkyNw==
+  response:
+    status:
+      code: 422
+      message: ''
+    headers:
+      Date:
+      - Wed, 04 Aug 2021 22:27:32 GMT
+      Content-Type:
+      - application/xml; charset=utf-8
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      X-Authentication:
+      - basic_auth
+      X-User:
+      - k8kdyxqxh8zjnf35
+      Vary:
+      - Accept-Encoding, Origin
+      Content-Encoding:
+      - gzip
+      Cache-Control:
+      - no-cache
+      X-Runtime:
+      - '0.285842'
+      X-Request-Id:
+      - d2993d41-38d5-477a-b4b4-975ea7d64349
+      Content-Security-Policy:
+      - frame-ancestors 'self'
+      X-Broxyid:
+      - d2993d41-38d5-477a-b4b4-975ea7d64349
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Paypal-Debug-Id:
+      - 1a3759db69c14
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAFQUC2EAA6yTTW+DMAyG7/0VEXdKqcZapDQ9TNptt+08BfDaSORDsZnGv1+g0DLUTpu2E7Zf28ljB77/0DV7B4/Kml2ULlcRA1PaSpnDLnp5foy30V4suHQqBu+tjz2gswZBLBjjfQg78+wwah3sIum9bKNkkMhLg7KkcMgpcj191Eb14odIuBSIPM02G5709lSURF4VDcHQD1td2DoSGnx5lIZeZVnaJnxVxZNz8pcWGhDlAcTTUMKGElZZQGYsMWycs56Yk62GICiD5JvOXPJkLL8gJDOGW0zbNFvlv2AqGyQbwH7A8uChUsRK6au+CVMnkoAGjqBiRcvoGIJ6Bv0DoMEdt5/MdjyVuZNeavzmMUjdnSrW+XIVmE7OqI28sapEmuWbbH1/tw3zmoTHVOu6rji5MzaFVhS/hZeLQFRDty4R1gY8ua6d8WbNeDdAgbIOlb15i/sC+7c3tfiX7YVxXvl3PwEAAP//AwB4EYk++AMAAA==
+  recorded_at: Wed, 04 Aug 2021 22:27:32 GMT
+recorded_with: VCR 6.0.0

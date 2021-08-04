@@ -9,7 +9,7 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
 
   test "nothing happens if a owner can't be found" do
     ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription
-    Pay.subscription_model.any_instance.expects(:update).never
+    Pay::Subscription.any_instance.expects(:update).never
     Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
   end
 

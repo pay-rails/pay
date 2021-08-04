@@ -2,18 +2,11 @@ require "test_helper"
 
 class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
   setup do
-    @billable = User.create!(email: "gob@bluth.com", processor: :paddle, processor_id: "17368056")
+    @pay_customer = pay_customers(:paddle)
   end
 
   test "paddle cancel" do
-    @billable.subscriptions.create!(
-      processor: :paddle,
-      processor_id: "3576212",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active"
-    )
-    subscription = @billable.subscription
+    subscription = @pay_customer.subscription
     next_payment_date = Time.zone.parse(subscription.processor_subscription.next_payment[:date])
     subscription.cancel
     assert_equal subscription.ends_at, next_payment_date
@@ -21,40 +14,19 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "paddle cancel_now!" do
-    @billable.subscriptions.create!(
-      processor: :paddle,
-      processor_id: "3484448",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active"
-    )
-    subscription = @billable.subscription
+    subscription = @pay_customer.subscription
     subscription.cancel_now!
-    assert subscription.ends_at <= Time.zone.now
+    assert subscription.ends_at <= Time.current
     assert_equal "canceled", subscription.status
   end
 
   test "paddle processor subscription" do
-    @billable.subscriptions.create!(
-      processor: :paddle,
-      processor_id: "3484448",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active"
-    )
-    assert_equal @billable.subscription.processor_subscription.class, OpenStruct
-    assert_equal "active", @billable.subscription.status
+    assert_equal @pay_customer.subscription.processor_subscription.class, OpenStruct
+    assert_equal "active", @pay_customer.subscription.status
   end
 
   test "paddle pause" do
-    @billable.subscriptions.create!(
-      processor: :paddle,
-      processor_id: "3576390",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active"
-    )
-    subscription = @billable.subscription
+    subscription = @pay_customer.subscription
     next_payment_date = Time.zone.parse(subscription.processor_subscription.next_payment[:date])
     subscription.pause
     assert subscription.paused?
@@ -62,55 +34,28 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "paddle pause grace period" do
-    @billable.subscriptions.create!(
-      processor: :paddle,
-      processor_id: "3576390",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active",
-      paddle_paused_from: Time.zone.now + 1.week
-    )
-    subscription = @billable.subscription
+    @pay_customer.subscription.update!(paddle_paused_from: Time.zone.now + 1.week, status: :paused)
+    subscription = @pay_customer.subscription
     assert subscription.paused?
     assert subscription.on_grace_period?
   end
 
   test "paddle paused subscription is not active" do
-    @billable.subscriptions.create!(
-      processor: :paddle,
-      processor_id: "3576390",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "paused"
-    )
-    assert_not @billable.subscription.active?
+    @pay_customer.subscription.update!(status: :paused)
+    assert_not @pay_customer.subscription.active?
   end
 
   test "paddle paused subscription is not canceled" do
-    @billable.subscriptions.create!(
-      processor: :paddle,
-      processor_id: "3576390",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "paused"
-    )
-    assert_not @billable.subscription.canceled?
+    @pay_customer.subscription.update!(status: :paused)
+    assert_not @pay_customer.subscription.canceled?
   end
 
   test "paddle resume on paused state" do
-    travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
-      @billable.subscriptions.create!(
-        processor: :paddle,
-        processor_id: "3576390",
-        name: "default",
-        processor_plan: "some-plan",
-        status: "trialing",
-        trial_ends_at: (Date.today + 3).to_datetime
-      )
-      subscription = @billable.subscription
-      next_payment_date = Time.zone.parse(subscription.processor_subscription.next_payment[:date])
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+      subscription = @pay_customer.subscription
+      subscription.update!(status: :trialing, trial_ends_at: 3.days.from_now)
       subscription.pause
-      assert_equal subscription.paddle_paused_from, next_payment_date
+      assert_equal subscription.paddle_paused_from.to_date, subscription.processor_subscription.next_payment[:date].to_date
 
       subscription.resume
       assert_nil subscription.paddle_paused_from
@@ -119,16 +64,8 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "paddle can swap plans" do
-    @billable.subscriptions.create!(
-      processor: :paddle,
-      processor_id: "3576390",
-      name: "default",
-      processor_plan: "594469",
-      status: "active"
-    )
-    @billable.subscription.swap("594470")
-
-    assert_equal 594470, @billable.subscription.processor_subscription.plan_id
-    assert_equal "active", @billable.subscription.status
+    @pay_customer.subscription.swap("594470")
+    assert_equal 594470, @pay_customer.subscription.processor_subscription.plan_id
+    assert_equal "active", @pay_customer.subscription.status
   end
 end

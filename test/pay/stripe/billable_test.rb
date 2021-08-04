@@ -18,9 +18,9 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     @pay_customer.payment_method_token = payment_method
     @pay_customer.customer
     assert_not_nil @pay_customer.processor_id
-    assert_equal "card", @pay_customer.data["kind"]
-    assert_equal "Visa", @pay_customer.data["type"]
-    assert_equal "4242", @pay_customer.data["last4"]
+    assert_equal "card", @pay_customer.default_payment_method.type
+    assert_equal "Visa", @pay_customer.default_payment_method.brand
+    assert_equal "4242", @pay_customer.default_payment_method.last4
   end
 
   test "stripe can create a charge" do
@@ -80,12 +80,12 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   test "stripe can update card" do
     @pay_customer.update_card payment_method
 
-    assert_equal "card", @pay_customer.data["kind"]
-    assert_equal "Visa", @pay_customer.data["type"]
+    assert_equal "card", @pay_customer.default_payment_method.type
+    assert_equal "Visa", @pay_customer.default_payment_method.brand
     assert_nil @pay_customer.payment_method_token
 
     @pay_customer.update_card "pm_card_discover"
-    assert_equal "Discover", @pay_customer.data["type"]
+    assert_equal "Discover", @pay_customer.default_payment_method.brand
   end
 
   test "stripe can retrieve subscription" do
@@ -111,16 +111,16 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     # This should trigger update_card
     @pay_customer.payment_method_token = payment_method
     @pay_customer.customer
-    assert_equal "card", @pay_customer.data["kind"]
-    assert_equal "Visa", @pay_customer.data["type"]
-    assert_equal "4242", @pay_customer.data["last4"]
+    assert_equal "card", @pay_customer.default_payment_method.type
+    assert_equal "Visa", @pay_customer.default_payment_method.brand
+    assert_equal "4242", @pay_customer.default_payment_method.last4
   end
 
   test "stripe creates with no card" do
     @pay_customer.customer
     assert_equal @pay_customer.processor, "stripe"
     assert_not_nil @pay_customer.processor_id
-    assert_nil @pay_customer.data["card_last4"]
+    assert_nil @pay_customer.default_payment_method
   end
 
   test "stripe email updates on change" do
@@ -198,7 +198,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_nil @pay_customer.data
     @pay_customer.payment_method_token = "pm_card_amex"
     @pay_customer.subscribe
-    assert_equal "card", @pay_customer.data["kind"]
+    assert_equal "card", @pay_customer.default_payment_method.type
   end
 
   test "stripe subscription and one time charge" do
