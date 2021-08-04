@@ -1,4 +1,4 @@
-class AddApplicationFeeToPayModels < ActiveRecord::Migration[4.2]
+class AddApplicationFeeToPayModels < ActiveRecord::Migration[5.0]
   def change
     add_column :pay_charges, :application_fee_amount, :integer
     add_column :pay_subscriptions, :application_fee_percent, :decimal, precision: 8, scale: 2
