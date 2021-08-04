@@ -4,7 +4,7 @@ module Pay
       class SubscriptionDeleted
         def call(event)
           object = event.data.object
-          Pay::Stripe::Subscription.sync(object.id, options: { stripe_account: object.account })
+          Pay::Stripe::Subscription.sync(object.id, options: { stripe_account: event.account })
         end
       end
     end

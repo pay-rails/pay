@@ -4,7 +4,7 @@ module Pay
       class ChargeSucceeded
         def call(event)
           object = event.data.object
-          pay_charge = Pay::Stripe::Charge.sync(object.id, options: { stripe_account: object.account })
+          pay_charge = Pay::Stripe::Charge.sync(object.id, options: { stripe_account: event.account })
           notify_user(pay_charge.owner, pay_charge) if pay_charge
         end
 
