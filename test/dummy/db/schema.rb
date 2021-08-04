@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "currency"
     t.integer "application_fee_amount"
     t.integer "pay_subscription_id"
-    t.integer "customer_id"
+    t.bigint "customer_id"
     t.index ["customer_id", "processor_id"], name: "index_pay_charges_on_customer_id_and_processor_id", unique: true
     t.index ["customer_id"], name: "index_pay_charges_on_customer_id"
   end
@@ -64,7 +64,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
   end
 
   create_table "pay_payment_methods", force: :cascade do |t|
-    t.integer "customer_id"
+    t.bigint "customer_id"
     t.string "processor_id"
     t.string "default"
     t.string "kind"
@@ -86,7 +86,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "status"
     t.json "data"
     t.decimal "application_fee_percent", precision: 8, scale: 2
-    t.integer "customer_id"
+    t.bigint "customer_id"
     t.index ["customer_id", "processor_id"], name: "index_pay_subscriptions_on_customer_id_and_processor_id", unique: true
     t.index ["customer_id"], name: "index_pay_subscriptions_on_customer_id"
   end
