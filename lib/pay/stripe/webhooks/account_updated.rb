@@ -5,9 +5,8 @@ module Pay
         def call(event)
           object = event.data.object
 
-          merchant = Pay.find_merchant("stripe_connect_account_id", object.id)
-
-          return unless merchant.present?
+          merchant = Pay::Merchant.find_by(processor: :stripe, processor_id: object.id)
+          return unless merchant
 
           merchant.update(onboarding_complete: object.charges_enabled)
         end

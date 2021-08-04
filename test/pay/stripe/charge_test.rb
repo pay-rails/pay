@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
   setup do
-    @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: "cus_1234")
+    @pay_customer = pay_customers(:stripe)
   end
 
   test "sync returns Pay::Subscription" do
@@ -18,14 +18,14 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
   end
 
   test "sync stripe charge ignores when customer is missing" do
+    @pay_customer.destroy
     assert_no_difference "Pay::Charge.count" do
-      @user.destroy
       Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     end
   end
 
   test "sync associates charge with stripe subscription" do
-    pay_subscription = @user.subscriptions.create!(processor: :stripe, processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
+    pay_subscription = @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
     fake_invoice = ::Stripe::Invoice.construct_from(subscription: "sub_1234")
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_invoice))
     assert_equal pay_subscription, pay_charge.subscription

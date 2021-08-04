@@ -6,7 +6,7 @@ module Pay
     serialize :data unless json_column?("data")
 
     # Associations
-    belongs_to :owner, polymorphic: true
+    belongs_to :customer
     belongs_to :subscription, optional: true, class_name: "Pay::Subscription", foreign_key: :pay_subscription_id
 
     # Scopes
@@ -15,24 +15,23 @@ module Pay
 
     # Validations
     validates :amount, presence: true
-    validates :processor, presence: true
-    validates :processor_id, presence: true, uniqueness: {scope: :processor, case_sensitive: false}
-    validates :card_type, presence: true
+    validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: false}
 
+    # Store the payment method kind (card, paypal, etc)
     store_accessor :data, :paddle_receipt_url
     store_accessor :data, :stripe_account
 
     # Helpers for payment processors
     %w[braintree stripe paddle fake_processor].each do |processor_name|
       define_method "#{processor_name}?" do
-        processor == processor_name
+        customer.processor == processor_name
       end
 
       scope processor_name, -> { where(processor: processor_name) }
     end
 
     def payment_processor
-      @payment_processor ||= payment_processor_for(processor).new(self)
+      @payment_processor ||= payment_processor_for(customer.processor).new(self)
     end
 
     def payment_processor_for(name)
@@ -50,10 +49,6 @@ module Pay
 
     def charged_to
       "#{card_type} (**** **** **** #{card_last4})"
-    end
-
-    def paypal?
-      braintree? && card_type == "PayPal"
     end
   end
 end

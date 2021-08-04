@@ -8,13 +8,12 @@ module Pay
     serialize :data unless json_column?("data")
 
     # Associations
-    belongs_to :owner, polymorphic: true
+    belongs_to :customer
     has_many :charges, class_name: "Pay::Charge", foreign_key: :pay_subscription_id
 
     # Validations
     validates :name, presence: true
-    validates :processor, presence: true
-    validates :processor_id, presence: true, uniqueness: {scope: :processor, case_sensitive: false}
+    validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: false}
     validates :processor_plan, presence: true
     validates :quantity, presence: true
     validates :status, presence: true
@@ -36,29 +35,33 @@ module Pay
 
     attribute :prorate, :boolean, default: true
 
-    # Helpers for payment processors
-    %w[braintree stripe paddle fake_processor].each do |processor_name|
-      define_method "#{processor_name}?" do
-        processor == processor_name
-      end
-
-      scope processor_name, -> { where(processor: processor_name) }
-    end
-
-    def payment_processor
-      @payment_processor ||= payment_processor_for(processor).new(self)
-    end
-
-    def payment_processor_for(name)
-      "Pay::#{name.to_s.classify}::Subscription".constantize
-    end
-
     delegate :on_grace_period?,
       :paused?,
       :pause,
       :cancel,
       :cancel_now!,
       to: :payment_processor
+
+    # Helper methods for payment processors
+    %w[braintree stripe paddle fake_processor].each do |processor_name|
+      define_method "#{processor_name}?" do
+        customer.processor == processor_name
+      end
+
+      scope processor_name, -> { joins(:customer).where(pay_customers: { processor: processor_name }) }
+    end
+
+    def self.find_by_processor_and_id(processor, processor_id)
+      joins(:customer).find_by(processor_id: processor_id, pay_customers: { processor: processor })
+    end
+
+    def self.pay_processor_for(name)
+      "Pay::#{name.to_s.classify}::Subscription".constantize
+    end
+
+    def payment_processor
+      @payment_processor ||= self.class.pay_processor_for(customer.processor).new(self)
+    end
 
     def no_prorate
       self.prorate = false
@@ -122,7 +125,6 @@ module Pay
     end
 
     def latest_payment
-      return unless stripe?
       processor_subscription(expand: ["latest_invoice.payment_intent"]).latest_invoice.payment_intent
     end
   end

@@ -18,7 +18,7 @@ module Pay
       params = fake_event "paddle/subscription_created"
 
       GlobalID::Locator.expects(:locate_signed).returns(user)
-      assert_difference("Pay.subscription_model.count") do
+      assert_difference("Pay::Subscription.count") do
         post webhooks_paddle_path, params: params
         assert_response :success
       end

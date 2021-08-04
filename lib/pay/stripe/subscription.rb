@@ -8,7 +8,6 @@ module Pay
         :ends_at,
         :name,
         :on_trial?,
-        :owner,
         :processor_id,
         :processor_plan,
         :processor_subscription,
@@ -24,8 +23,8 @@ module Pay
         # Skip loading the latest subscription details from the API if we already have it
         object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"]})
 
-        owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
-        return unless owner
+        pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
+        return unless pay_customer
 
         attributes = {
           application_fee_percent: object.application_fee_percent,
@@ -33,7 +32,7 @@ module Pay
           quantity: object.quantity,
           name: name,
           status: object.status,
-          stripe_account: owner.stripe_account,
+          stripe_account: pay_customer.stripe_account,
           trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil)
         }
 
@@ -49,14 +48,13 @@ module Pay
         end
 
         # Update or create the subscription
-        processor_details = {processor: :stripe, processor_id: object.id}
-        if (pay_subscription = owner.subscriptions.find_by(processor_details))
+        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id))
           pay_subscription.with_lock do
             pay_subscription.update!(attributes)
           end
           pay_subscription
         else
-          owner.subscriptions.create!(attributes.merge(processor_details))
+          pay_customer.subscriptions.create!(attributes.merge(processor_id: object.id))
         end
       rescue ActiveRecord::RecordInvalid
         try += 1

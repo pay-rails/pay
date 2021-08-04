@@ -4,7 +4,7 @@ module Pay
       class CustomerUpdated
         def call(event)
           object = event.data.object
-          billable = Pay.find_billable(processor: :stripe, processor_id: object.id)
+          billable = Pay::Customer.find_by(processor: :stripe, processor_id: object.id)
 
           # Couldn't find user, we can skip
           return unless billable.present?

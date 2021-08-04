@@ -1,5 +1,5 @@
 class Team < ApplicationRecord
-  include Pay::Billable
+  pay_customer
 
   belongs_to :owner, class_name: "User"
 

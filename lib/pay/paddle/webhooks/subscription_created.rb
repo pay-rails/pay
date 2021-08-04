@@ -4,25 +4,24 @@ module Pay
       class SubscriptionCreated
         def call(event)
           # We may already have the subscription in the database, so we can update that record
-          subscription = Pay.subscription_model.find_by(processor: :paddle, processor_id: event["subscription_id"])
+          subscription = Pay::Subscription.find_by_processor_and_id(:paddle, event["subscription_id"])
 
           # Create the subscription in the database if we don't have it already
           if subscription.nil?
 
             # The customer could already be in the database
-            owner = Pay.find_billable(processor: :paddle, processor_id: event["user_id"])
+            pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: event["user_id"])
 
-            if owner.nil?
-              owner = Pay::Paddle.owner_from_passthrough(event["passthrough"])
-              owner&.update!(processor: "paddle", processor_id: event["user_id"])
-            end
+            # Try passthrough if not in database
+            owner = Pay::Paddle.owner_from_passthrough(event["passthrough"])
+            pay_customer = owner&.set_payment_processor(:paddle, processor_id: event["user_id"])
 
-            if owner.nil?
-              Rails.logger.error("[Pay] Unable to find Pay::Billable with owner: '#{event["passthrough"]}'. Searched these models: #{Pay.billable_models.join(", ")}")
+            if pay_customer.nil?
+              Rails.logger.error "[Pay] Unable to find Pay::Customer with: '#{event["passthrough"]}'"
               return
             end
 
-            subscription = Pay.subscription_model.new(owner: owner, name: Pay.default_product_name, processor: "paddle", processor_id: event["subscription_id"], status: :active)
+            subscription = pay_customer.subscriptions.new(name: Pay.default_product_name, processor_id: event["subscription_id"], status: :active)
           end
 
           subscription.quantity = event["quantity"]

@@ -1,0 +1,30 @@
+module Pay
+  module Billable
+    module SyncCustomer
+      # Syncs customer details to the payment processor.
+      # This way they're kept in sync and email notifications are
+      # always sent to the correct email address after an update.
+
+      extend ActiveSupport::Concern
+
+      included do
+        after_update :enqeue_sync_email_job, if: :pay_should_sync_customer?
+      end
+
+      def pay_should_sync_customer?
+        try(:saved_change_to_email?)
+      end
+
+      private
+
+      def enqeue_sync_email_job
+        if saved_change_to_email?
+          # Queue job to update each payment processor for this customer
+          pay_customers.pluck(:id).each do |pay_customer_id|
+            CustomerSyncJob.perform_later(id)
+          end
+        end
+      end
+    end
+  end
+end

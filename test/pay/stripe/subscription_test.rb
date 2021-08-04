@@ -2,13 +2,13 @@ require "test_helper"
 
 class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   setup do
-    @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: "cus_1234")
+    @pay_customer = pay_customers(:stripe)
   end
 
   test "change stripe subscription quantity" do
-    @user.processor_id = nil
-    @user.card_token = "pm_card_visa"
-    subscription = @user.subscribe(name: "default", plan: "default")
+    @pay_customer.processor_id = nil
+    @pay_customer.payment_method_token = "pm_card_visa"
+    subscription = @pay_customer.subscribe(name: "default", plan: "default")
     subscription.change_quantity(5)
     stripe_subscription = subscription.processor_subscription
     assert_equal 5, stripe_subscription.quantity
@@ -34,7 +34,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "sync stripe subscription ignores when customer is missing" do
-    @user.destroy
+    @pay_customer.destroy
     assert_no_difference "Pay::Subscription.count" do
       Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     end
@@ -56,7 +56,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
 
     assert_raises ArgumentError do
-      @user.subscription.swap({invalid: :object})
+      @pay_customer.subscription.swap({invalid: :object})
     end
   end
 

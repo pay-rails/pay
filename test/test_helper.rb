@@ -53,13 +53,13 @@ end
 
 require "minitest/mock"
 require "mocha/minitest"
+require "vcr"
 
 # Uncomment to view the stacktrace for debugging tests
 Rails.backtrace_cleaner.remove_silencers!
 
 unless ENV["SKIP_VCR"]
   require "webmock/minitest"
-  require "vcr"
 
   VCR.configure do |c|
     c.cassette_library_dir = "test/vcr_cassettes"

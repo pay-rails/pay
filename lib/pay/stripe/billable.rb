@@ -3,15 +3,16 @@ module Pay
     class Billable
       include Rails.application.routes.url_helpers
 
-      attr_reader :billable
+      attr_reader :pay_customer
 
       delegate :processor_id,
         :processor_id?,
         :email,
         :customer_name,
-        :card_token,
+        :payment_method_token,
+        :payment_method_token?,
         :stripe_account,
-        to: :billable
+        to: :pay_customer
 
       class << self
         def default_url_options
@@ -19,8 +20,8 @@ module Pay
         end
       end
 
-      def initialize(billable)
-        @billable = billable
+      def initialize(pay_customer)
+        @pay_customer = pay_customer
       end
 
       # Handles Billable#customer
@@ -31,13 +32,13 @@ module Pay
           ::Stripe::Customer.retrieve(processor_id, stripe_options)
         else
           sc = ::Stripe::Customer.create({email: email, name: customer_name}, stripe_options)
-          billable.update(processor: :stripe, processor_id: sc.id, stripe_account: stripe_account)
+          pay_customer.update(processor_id: sc.id, stripe_account: stripe_account)
           sc
         end
 
         # Update the user's card on file if a token was passed in
-        if card_token.present?
-          payment_method = ::Stripe::PaymentMethod.attach(card_token, {customer: stripe_customer.id}, stripe_options)
+        if payment_method_token?
+          payment_method = ::Stripe::PaymentMethod.attach(payment_method_token, {customer: stripe_customer.id}, stripe_options)
           stripe_customer = ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, stripe_options)
           update_card_on_file(payment_method.card)
         end
@@ -143,7 +144,7 @@ module Pay
         if (payment_method_id = customer.invoice_settings.default_payment_method)
           update_card_on_file ::Stripe::PaymentMethod.retrieve(payment_method_id, stripe_options).card
         else
-          billable.update(card_type: nil, card_last4: nil)
+          #pay_customer.update(card_type: nil, card_last4: nil)
         end
       end
 
@@ -158,14 +159,17 @@ module Pay
 
       # Save the card to the database as the user's current card
       def update_card_on_file(card)
-        billable.update!(
-          card_type: card.brand.capitalize,
-          card_last4: card.last4,
-          card_exp_month: card.exp_month,
-          card_exp_year: card.exp_year
+        pay_customer.update!(
+          data: {
+            kind: "card",
+            type: card.brand.capitalize,
+            last4: card.last4,
+            exp_month: card.exp_month,
+            exp_year: card.exp_year
+          }
         )
 
-        billable.card_token = nil
+        pay_customer.payment_method_token = nil
       end
 
       # Syncs a customer's subscriptions from Stripe to the database

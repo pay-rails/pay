@@ -3,7 +3,8 @@ require "test_helper"
 class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
   setup do
     @event = stripe_event("test/support/fixtures/stripe/subscription_renewing_event.json")
-    @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: @event.data.object.customer)
+    @pay_customer = pay_customers(:stripe)
+    @pay_customer.update(processor_id: @event.data.object.customer)
   end
 
   test "an email is sent to the user when subscription is renewing" do
@@ -19,7 +20,9 @@ class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
     end
   end
 
+  private
+
   def create_subscription(processor_id:)
-    @user.subscriptions.create!(processor: :stripe, processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active")
+    @pay_customer.subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active")
   end
 end

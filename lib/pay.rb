@@ -4,9 +4,8 @@ require "pay/errors"
 require "pay/adapter"
 
 module Pay
-  autoload :Billable, "pay/billable"
+  autoload :Attributes, "pay/attributes"
   autoload :Env, "pay/env"
-  autoload :Merchant, "pay/merchant"
   autoload :Payment, "pay/payment"
   autoload :Receipts, "pay/receipts"
 
@@ -17,6 +16,10 @@ module Pay
   autoload :Stripe, "pay/stripe"
 
   autoload :Webhooks, "pay/webhooks"
+
+  module Billable
+    autoload :SyncCustomer, "pay/billable/sync_customer"
+  end
 
   # Define who owns the subscription
   mattr_accessor :billable_class

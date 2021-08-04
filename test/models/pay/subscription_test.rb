@@ -2,8 +2,9 @@ require "test_helper"
 
 class Pay::Subscription::Test < ActiveSupport::TestCase
   setup do
-    @owner = User.create email: "bill@microsoft.com", card_token: "pm_card_visa", processor: :stripe
-    @subscription = Pay.subscription_model.new processor: "stripe", status: "active"
+    @owner = users(:fake)
+    @pay_customer = @owner.payment_processor
+    @subscription = @pay_customer.subscriptions.first
   end
 
   test "validates subscription uniqueness by processor and processor ID" do
@@ -13,42 +14,47 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     end
   end
 
-  test "belongs to a polymorphic owner" do
-    @subscription.owner = @owner
-    assert_equal User, @subscription.owner.class
-    @subscription.owner = Team.new
-    assert_equal Team, @subscription.owner.class
-  end
-
   test "braintree?" do
-    assert @subscription.respond_to?(:braintree?)
+    assert pay_subscriptions(:braintree).braintree?
+    refute pay_subscriptions(:fake).braintree?
   end
 
   test "stripe?" do
-    assert @subscription.respond_to?(:stripe?)
+    assert pay_subscriptions(:stripe).stripe?
+    refute pay_subscriptions(:fake).stripe?
   end
 
   test "paddle?" do
-    assert @subscription.respond_to?(:paddle?)
+    assert pay_subscriptions(:paddle).paddle?
+    refute pay_subscriptions(:fake).paddle?
+  end
+
+  test "fake_processor?" do
+    assert pay_subscriptions(:fake).fake_processor?
+    refute pay_subscriptions(:stripe).fake_processor?
   end
 
   test "braintree scope" do
-    assert Pay.subscription_model.braintree.is_a?(ActiveRecord::Relation)
+    assert Pay::Subscription.braintree.is_a?(ActiveRecord::Relation)
   end
 
   test "stripe scope" do
-    assert Pay.subscription_model.stripe.is_a?(ActiveRecord::Relation)
+    assert Pay::Subscription.stripe.is_a?(ActiveRecord::Relation)
   end
 
   test "paddle scope" do
-    assert Pay.subscription_model.paddle.is_a?(ActiveRecord::Relation)
+    assert Pay::Subscription.paddle.is_a?(ActiveRecord::Relation)
+  end
+
+  test "fake processor scope" do
+    assert Pay::Subscription.fake_processor.is_a?(ActiveRecord::Relation)
   end
 
   test ".for_name(name) scope" do
     subscription1 = create_subscription(name: "default")
     subscription2 = create_subscription(name: "superior")
 
-    subscriptions = Pay.subscription_model.for_name("default")
+    subscriptions = Pay::Subscription.for_name("default")
     assert_includes subscriptions, subscription1
     refute_includes subscriptions, subscription2
   end
@@ -58,7 +64,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     subscription2 = create_subscription(trial_ends_at: nil)
     subscription3 = create_subscription(trial_ends_at: 7.days.ago)
 
-    subscriptions = Pay.subscription_model.on_trial
+    subscriptions = Pay::Subscription.on_trial
 
     assert_includes subscriptions, subscription1
     refute_includes subscriptions, subscription2
@@ -70,7 +76,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     subscription2 = create_subscription(ends_at: 7.days.from_now)
     subscription3 = create_subscription(ends_at: nil)
 
-    subscriptions = Pay.subscription_model.cancelled
+    subscriptions = Pay::Subscription.cancelled
 
     assert_includes subscriptions, subscription1
     assert_includes subscriptions, subscription2
@@ -82,7 +88,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     subscription2 = create_subscription(ends_at: nil)
     subscription3 = create_subscription(ends_at: 7.days.ago)
 
-    subscriptions = Pay.subscription_model.on_grace_period
+    subscriptions = Pay::Subscription.on_grace_period
 
     assert_includes subscriptions, subscription1
     refute_includes subscriptions, subscription2
@@ -96,7 +102,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     subscription4 = create_subscription(ends_at: 7.days.ago)
     subscription5 = create_subscription(ends_at: 8.days.ago, trial_ends_at: 7.days.ago)
 
-    subscriptions = Pay.subscription_model.active
+    subscriptions = Pay::Subscription.active
 
     assert_includes subscriptions, subscription1
     assert_includes subscriptions, subscription2
@@ -158,51 +164,33 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "cancel" do
-    travel_to_cassette do
-      subscription = @owner.subscribe
-      refute subscription.ends_at?
-      subscription.cancel
-      assert subscription.ends_at?
-      assert subscription.processor_subscription.cancel_at_period_end
-    end
+    @subscription.cancel
+    assert @subscription.ends_at?
   end
 
   test "cancel trialing" do
-    travel_to_cassette do
-      subscription = @owner.subscribe(trial_period_days: 14)
-      refute subscription.ends_at?
-      subscription.cancel
-      assert_equal subscription.ends_at.to_date, 14.days.from_now.to_date
-      assert subscription.processor_subscription.cancel_at_period_end
-    end
+    @subscription.update(trial_ends_at: 14.days.from_now)
+    @subscription.cancel
+    assert_equal @subscription.ends_at.to_date, 14.days.from_now.to_date
   end
 
   test "cancel_now!" do
-    travel_to_cassette do
-      subscription = @owner.subscribe
-      refute subscription.ends_at?
-      subscription.cancel_now!
-      assert subscription.ends_at <= Time.current
+    freeze_time do
+      @subscription.cancel_now!
+      assert @subscription.ends_at <= Time.current
     end
   end
 
   test "resume on grace period" do
-    travel_to_cassette do
-      subscription = @owner.subscribe
-      subscription.cancel
-      subscription.resume
-      refute subscription.ends_at?
-      refute subscription.processor_subscription.cancel_at_period_end
-    end
+    @subscription.cancel
+    @subscription.resume
+    refute @subscription.ends_at?
   end
 
   test "resume off grace period" do
-    travel_to_cassette do
-      subscription = @owner.subscribe
-      subscription.cancel_now!
-      assert_raises StandardError do
-        subscription.resume
-      end
+    @subscription.update ends_at: 1.day.ago
+    assert_raises StandardError do
+      subscription.resume
     end
   end
 
@@ -212,11 +200,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "can swap plans" do
-    travel_to_cassette do
-      subscription = @owner.subscribe
-      subscription.swap("small-annual")
-      assert_equal "small-annual", subscription.processor_subscription.plan.id
-    end
+    @subscription.swap("small-annual")
+    assert_equal "small-annual", @subscription.processor_plan
   end
 
   test "statuses affect active state" do
@@ -234,8 +219,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   test "correctly handles v1 subscriptions without statuses" do
     # Subscriptions in Pay v1.x didn't have a status column, so we've set all their statuses to active
     # We just want to make sure those old, ended subscriptions are still correct
-    assert_not Pay::Subscription.new(processor: :stripe, status: :active, ends_at: 1.day.ago).active?
-    assert Pay::Subscription.new(processor: :stripe, status: :active, ends_at: 1.day.ago).canceled?
+    assert_not Pay::Subscription.new(customer: pay_customers(:fake), status: :active, ends_at: 1.day.ago).active?
+    assert Pay::Subscription.new(customer: pay_customers(:fake), status: :active, ends_at: 1.day.ago).canceled?
   end
 
   private
@@ -243,14 +228,12 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   def create_subscription(options = {})
     defaults = {
       name: "default",
-      owner: @owner,
-      processor: "stripe",
       processor_id: rand(1..999_999_999),
       processor_plan: "default",
       quantity: "1",
-      status: "active"
+      status: :active
     }
 
-    Pay.subscription_model.create! defaults.merge(options)
+    @pay_customer.subscriptions.create! defaults.merge(options)
   end
 end

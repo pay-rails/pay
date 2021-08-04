@@ -5,9 +5,9 @@ class Pay::Stripe::Webhooks::PaymentActionRequiredTest < ActiveSupport::TestCase
     @event = stripe_event("test/support/fixtures/stripe/invoice.payment_action_required.json")
 
     # Create user and subscription
-    @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: @event.data.object.customer)
-    @subscription = @user.subscriptions.create!(
-      processor: :stripe,
+    @pay_customer = pay_customers(:stripe)
+    @pay_customer.update(processor_id: @event.data.object.customer)
+    @subscription = @pay_customer.subscriptions.create!(
       processor_id: @event.data.object.subscription,
       name: "default",
       processor_plan: "some-plan",

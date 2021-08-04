@@ -5,10 +5,10 @@ module Pay
         def call(event)
           # Event is of type "invoice" see:
           # https://stripe.com/docs/api/invoices/object
-          subscription = Pay.subscription_model.find_by(processor: :stripe, processor_id: event.data.object.subscription)
+          subscription = Pay::Subscription.find_by_processor_and_id(:stripe, event.data.object.subscription)
           return unless subscription
 
-          notify_user(subscription.owner, subscription, Time.zone.at(event.data.object.next_payment_attempt))
+          notify_user(subscription.customer.owner, subscription, Time.zone.at(event.data.object.next_payment_attempt))
         end
 
         def notify_user(billable, subscription, date)

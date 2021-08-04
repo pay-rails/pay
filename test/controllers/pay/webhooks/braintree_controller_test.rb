@@ -15,9 +15,8 @@ module Pay
 
     test "should parse a braintree webhook" do
       user = User.create!
-      Pay.subscription_model.create!(
-        owner: user,
-        processor: :braintree,
+      user.set_payment_processor :braintree
+      user.payment_processor.subscriptions.create!(
         processor_id: "f6rnpm",
         processor_plan: "default",
         name: "default",

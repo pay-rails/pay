@@ -1,17 +1,18 @@
 module Pay
   module Braintree
     class Billable
-      attr_reader :billable
+      attr_reader :pay_customer
 
       delegate :processor_id,
         :processor_id?,
         :email,
         :customer_name,
-        :card_token,
-        to: :billable
+        :payment_method_token,
+        :payment_method_token?,
+        to: :pay_customer
 
-      def initialize(billable)
-        @billable = billable
+      def initialize(pay_customer)
+        @pay_customer = pay_customer
       end
 
       # Handles Billable#customer
@@ -20,20 +21,20 @@ module Pay
       def customer
         if processor_id?
           customer = gateway.customer.find(processor_id)
-          update_card card_token if card_token.present?
+          update_payment_method(payment_method_token) if payment_method_token?
           customer
         else
           result = gateway.customer.create(
             email: email,
             first_name: try(:first_name),
             last_name: try(:last_name),
-            payment_method_nonce: card_token
+            payment_method_nonce: payment_method_token
           )
           raise Pay::Braintree::Error, result unless result.success?
 
-          billable.update(processor: "braintree", processor_id: result.customer.id)
+          pay_customer.update(processor_id: result.customer.id)
 
-          if card_token.present?
+          if payment_method_token.present?
             update_card_on_file result.customer.payment_methods.last
           end
 
@@ -85,7 +86,14 @@ module Pay
         result = gateway.subscription.create(subscription_options)
         raise Pay::Braintree::Error, result unless result.success?
 
-        billable.create_pay_subscription(result.subscription, "braintree", name, plan, status: :active)
+        pay_customer.subscriptions.create(
+          name: name,
+          processor_id: result.subscription.id,
+          processor_plan: plan,
+          status: :active,
+          trial_ends_at: trial_end_date(result.subscription),
+          ends_at: nil
+        )
       rescue ::Braintree::AuthorizationError => e
         raise Pay::Braintree::AuthorizationError, e
       rescue ::Braintree::BraintreeError => e
@@ -95,7 +103,7 @@ module Pay
       # Handles Billable#update_card
       #
       # Returns true if successful
-      def update_card(token)
+      def update_payment_method(token)
         customer unless processor_id?
 
         result = gateway.payment_method.create(
@@ -108,8 +116,9 @@ module Pay
         )
         raise Pay::Braintree::Error, result unless result.success?
 
-        update_card_on_file result.payment_method
+        update_card_on_file(result.payment_method)
         update_subscriptions_to_payment_method(result.payment_method.token)
+
         true
       rescue ::Braintree::AuthorizationError => e
         raise Pay::Braintree::AuthorizationError, e
@@ -128,7 +137,7 @@ module Pay
       end
 
       def update_subscriptions_to_payment_method(token)
-        billable.subscriptions.braintree.each do |subscription|
+        pay_customer.subscriptions.each do |subscription|
           if subscription.active?
             gateway.subscription.update(subscription.processor_id, {payment_method_token: token})
           end
@@ -153,11 +162,10 @@ module Pay
 
         # Associate charge with subscription if we can
         if transaction.subscription_id
-          attrs[:subscription] = Pay::Subscription.find_by(processor: :braintree, processor_id: transaction.subscription_id)
+          attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: transaction.subscription_id)
         end
 
-        charge = billable.charges.find_or_initialize_by(
-          processor: :braintree,
+        charge = pay_customer.charges.find_or_initialize_by(
           processor_id: transaction.id,
           currency: transaction.currency_iso_code,
           application_fee_amount: transaction.service_fee_amount
@@ -175,22 +183,27 @@ module Pay
       def update_card_on_file(payment_method)
         case payment_method
         when ::Braintree::CreditCard
-          billable.update!(
-            card_type: payment_method.card_type,
-            card_last4: payment_method.last_4,
-            card_exp_month: payment_method.expiration_month,
-            card_exp_year: payment_method.expiration_year
+          pay_customer.update!(
+            data: {
+              kind: "card",
+              type: payment_method.card_type,
+              last4: payment_method.last_4,
+              exp_month: payment_method.expiration_month,
+              exp_year: payment_method.expiration_year
+            }
           )
 
         when ::Braintree::PayPalAccount
-          billable.update!(
-            card_type: "PayPal",
-            card_last4: payment_method.email
+          pay_customer.update!(
+            data: {
+              kind: "paypal",
+              email: payment_method.email
+            }
           )
         end
 
         # Clear the card token so we don't accidentally update twice
-        billable.card_token = nil
+        pay_customer.payment_method_token = nil
       end
 
       def card_details_for_braintree_transaction(transaction)

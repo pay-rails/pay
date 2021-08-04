@@ -4,11 +4,11 @@ module Pay
       attr_reader :pay_subscription
 
       delegate :active?,
+        :customer,
         :canceled?,
         :ends_at,
         :name,
         :on_trial?,
-        :owner,
         :processor_id,
         :processor_plan,
         :processor_subscription,
@@ -70,7 +70,7 @@ module Pay
         if canceled? && on_trial?
           duration = trial_ends_at.to_date - Date.today
 
-          owner.subscribe(
+          customer.subscribe(
             name: name,
             plan: processor_plan,
             trial_period: true,
@@ -100,7 +100,7 @@ module Pay
         end
 
         unless active?
-          owner.subscribe(name: name, plan: plan, trial_period: false)
+          customer.subscribe(name: name, plan: plan, trial_period: false)
           return
         end
 
@@ -207,7 +207,7 @@ module Pay
 
         cancel_now!
 
-        owner.subscribe(**options.merge(name: name, plan: plan.id))
+        customer.subscribe(**options.merge(name: name, plan: plan.id))
       end
     end
   end

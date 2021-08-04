@@ -3,14 +3,14 @@ module Pay
     class Charge
       attr_reader :pay_charge
 
-      delegate :processor_id, :owner, :stripe_account, to: :pay_charge
+      delegate :processor_id, :stripe_account, to: :pay_charge
 
       def self.sync(charge_id, object: nil, try: 0, retries: 1)
         # Skip loading the latest charge details from the API if we already have it
         object ||= ::Stripe::Charge.retrieve(id: charge_id)
 
-        owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
-        return unless owner
+        pay_customer= Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
+        return unless pay_customer
 
         attrs = {
           amount: object.amount,
@@ -22,24 +22,23 @@ module Pay
           card_type: object.payment_method_details.card.brand,
           created_at: Time.at(object.created),
           currency: object.currency,
-          stripe_account: owner.stripe_account
+          stripe_account: pay_customer.stripe_account
         }
 
         # Associate charge with subscription if we can
         if object.invoice
           invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice))
-          attrs[:subscription] = Pay::Subscription.find_by(processor: :stripe, processor_id: invoice.subscription)
+          attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: invoice.subscription)
         end
 
         # Update or create the charge
-        processor_details = {processor: :stripe, processor_id: object.id}
-        if (pay_charge = owner.charges.find_by(processor_details))
+        if (pay_charge = pay_customer.charges.find_by(processor_id: object.id))
           pay_charge.with_lock do
             pay_charge.update!(attrs)
           end
           pay_charge
         else
-          owner.charges.create!(attrs.merge(processor_details))
+          pay_customer.charges.create!(attrs.merge(processor_id: object.id))
         end
       rescue ActiveRecord::RecordInvalid
         try += 1
