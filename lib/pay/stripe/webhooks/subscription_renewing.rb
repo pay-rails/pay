@@ -2,6 +2,9 @@ module Pay
   module Stripe
     module Webhooks
       class SubscriptionRenewing
+        # Handles `invoice.upcoming` webhook from Stripe
+        # Occurs X number of days before a subscription is scheduled to create an invoice that is automatically charged—where X is determined by your subscriptions settings. Note: The received Invoice object will not have an invoice ID.
+
         def call(event)
           # Event is of type "invoice" see:
           # https://stripe.com/docs/api/invoices/object
