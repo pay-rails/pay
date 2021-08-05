@@ -20,8 +20,8 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
 
   create_table "pay_charges", force: :cascade do |t|
     t.string "processor_id", null: false
-    t.integer "amount", null: false
-    t.integer "amount_refunded"
+    t.bigint "amount", null: false
+    t.bigint "amount_refunded"
     t.string "card_type"
     t.string "card_last4"
     t.string "card_exp_month"
@@ -30,8 +30,8 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.datetime "updated_at"
     t.json "data"
     t.string "currency"
-    t.integer "application_fee_amount"
-    t.integer "pay_subscription_id"
+    t.bigint "application_fee_amount"
+    t.bigint "pay_subscription_id"
     t.bigint "customer_id"
     t.index ["customer_id", "processor_id"], name: "index_pay_charges_on_customer_id_and_processor_id", unique: true
     t.index ["customer_id"], name: "index_pay_charges_on_customer_id"
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
 
   create_table "pay_customers", force: :cascade do |t|
     t.string "owner_type"
-    t.integer "owner_id"
+    t.bigint "owner_id"
     t.string "processor"
     t.string "processor_id"
     t.boolean "default"
@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
 
   create_table "pay_merchants", force: :cascade do |t|
     t.string "owner_type"
-    t.integer "owner_id"
+    t.bigint "owner_id"
     t.string "processor"
     t.string "processor_id"
     t.boolean "default"
@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "name", null: false
     t.string "processor_id", null: false
     t.string "processor_plan", null: false
-    t.integer "quantity", default: 1, null: false
+    t.bigint "quantity", default: 1, null: false
     t.datetime "trial_ends_at"
     t.datetime "ends_at"
     t.datetime "created_at"
@@ -95,7 +95,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "email"
     t.string "name"
     t.string "owner_type"
-    t.integer "owner_id"
+    t.bigint "owner_id"
     t.text "extra_billing_info"
     t.index ["owner_type", "owner_id"], name: "index_teams_on_owner"
   end
