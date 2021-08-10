@@ -40,7 +40,7 @@ module Pay
         if payment_method_token?
           payment_method = ::Stripe::PaymentMethod.attach(payment_method_token, {customer: stripe_customer.id}, stripe_options)
           stripe_customer = ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, stripe_options)
-          update_card_on_file(payment_method.card)
+          save_payment_method(payment_method, default: true)
         end
 
         stripe_customer
@@ -86,7 +86,7 @@ module Pay
         # Inherit trial from plan unless trial override was specified
         opts[:trial_from_plan] = true unless opts[:trial_period_days]
 
-        # Load the Stripe customer to verify it exists and update card if needed
+        # Load the Stripe customer to verify it exists and update payment method if needed
         opts[:customer] = customer.id
 
         # Create subscription on Stripe
@@ -95,7 +95,7 @@ module Pay
         # Save Pay::Subscription
         subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name)
 
-        # No trial, card requires SCA
+        # No trial, payment method requires SCA
         if subscription.incomplete?
           Pay::Payment.new(stripe_sub.latest_invoice.payment_intent).validate
         end
@@ -105,7 +105,7 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
-      # Handles Billable#update_card
+      # Handles Billable#update_payment_method
       #
       # Returns true if successful
       def update_payment_method(payment_method_id)
@@ -116,7 +116,7 @@ module Pay
         payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: stripe_customer.id}, stripe_options)
         ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, stripe_options)
 
-        update_card_on_file(payment_method.card)
+        save_payment_method(payment_method, default: true)
         true
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -141,9 +141,9 @@ module Pay
       end
 
       # Used by webhooks when the customer or source changes
-      def sync_card_from_stripe
+      def sync_payment_method_from_stripe
         if (payment_method_id = customer.invoice_settings.default_payment_method)
-          update_card_on_file ::Stripe::PaymentMethod.retrieve(payment_method_id, stripe_options).card
+          save_payment_method ::Stripe::PaymentMethod.retrieve(payment_method_id, stripe_options), default: true
         else
           pay_customer.payment_methods.update_all(default: false)
         end
@@ -158,15 +158,19 @@ module Pay
         stripe_sub.trial_end.present? ? Time.at(stripe_sub.trial_end) : nil
       end
 
-      # Save the card to the database as the user's current card
-      def update_card_on_file(card)
-        payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
-        payment_method.update!(
-          payment_method_type: "card",
-          brand: card.brand.capitalize,
-          last4: card.last4,
-          exp_month: card.exp_month,
-          exp_year: card.exp_year
+      # Save the Stripe::PaymentMethod to the database
+      def save_payment_method(payment_method, default:)
+        pay_payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
+
+        details = payment_method.send(payment_method.type)
+
+        pay_payment_method.update!(
+          payment_method_type: payment_method.type,
+          brand: details.try(:brand)&.capitalize,
+          last4: details.try(:last4),
+          exp_month: details.try(:exp_month),
+          exp_year: details.try(:exp_year),
+          bank: details.try(:bank_name) || details.try(:bank) # eps, fpx, ideal, p24, acss_debit, etc
         )
 
         pay_customer.payment_method_token = nil

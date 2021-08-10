@@ -49,7 +49,8 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
           exp_year: 2021,
           last4: "4242",
           brand: "Visa"
-        }
+        },
+        type: "card"
       }
     )
     ::Stripe::Charge.construct_from(values)

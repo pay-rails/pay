@@ -16,14 +16,21 @@ module Pay
           amount: object.amount,
           amount_refunded: object.amount_refunded,
           application_fee_amount: object.application_fee_amount,
-          card_exp_month: object.payment_method_details.card.exp_month,
-          card_exp_year: object.payment_method_details.card.exp_year,
-          card_last4: object.payment_method_details.card.last4,
-          card_type: object.payment_method_details.card.brand,
           created_at: Time.at(object.created),
           currency: object.currency,
           stripe_account: pay_customer.stripe_account
         }
+
+        # Store payment method details
+        details = object.payment_method_details.send(object.payment_method_details.type)
+        attrs.merge(
+          payment_method_type: object.payment_method_details.type,
+          brand: details.try(:brand)&.capitalize,
+          last4: details.try(:last4),
+          exp_month: details.try(:exp_month),
+          exp_year: details.try(:exp_year),
+          bank: details.try(:bank_name) || details.try(:bank) # eps, fpx, ideal, p24, acss_debit, etc
+        )
 
         # Associate charge with subscription if we can
         if object.invoice

@@ -224,6 +224,135 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_equal "usd", charge.currency
   end
 
+  test "stripe saves acss_debit" do
+    pm = Stripe::PaymentMethod.create(type: "acss_debit", acss_debit: { account_number: "00123456789", institution_number: "000", transit_number: "11000" }, billing_details: { email: "test@example.org", name: "Test User" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "acss_debit", @pay_customer.default_payment_method.type
+    assert_equal "STRIPE TEST BANK", @pay_customer.default_payment_method.bank
+    assert_equal "6789", @pay_customer.default_payment_method.last4
+  end
+
+  test "stripe saves afterpay_clearpay" do
+    pm = Stripe::PaymentMethod.create(type: "afterpay_clearpay", billing_details: { address: { line1: "1 Fake Street", city: "Cupertino", state: "CA", country: "US", postal_code: "95102"}, email: "test@example.org", name: "Test User" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "afterpay_clearpay", @pay_customer.default_payment_method.type
+  end
+
+  test "stripe saves alipay" do
+    pm = Stripe::PaymentMethod.create(type: "alipay")
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "alipay", @pay_customer.default_payment_method.type
+  end
+
+  # Only available in Australia
+  # test "stripe saves au_becs_debit" do
+  #   pm = Stripe::PaymentMethod.create(type: "au_becs_debit", au_becs_debit: { account_number: "000123456", bsb_number: "000-000" }, billing_details: { email: "test@example.org", name: "Test User" })
+  #   @pay_customer.save_payment_method(pm, default: true)
+  #   assert_equal "au_becs_debit", @pay_customer.default_payment_method.type
+  #   assert_equal "3456", @pay_customer.default_payment_method.last4
+  # end
+
+  # Merchant country should be among Bacs Debit supported countries: AT, BE, CH, DE, DK, ES, FI, FR, GB, IE, IT, LU, NL, NO, SE, PT
+  # test "stripe saves bacs_debit" do
+  #   pm = Stripe::PaymentMethod.create(type: "bacs_debit", bacs_debit: { account_number: "00012345", sort_code: "108800" }, billing_details: { email: "test@example.org" , name: "Test User", address: { line1: "1 Fake Street", city: "Cupertino", state: "CA", postal_code: 95102, country: "DE"}})
+  #   @pay_customer.save_payment_method(pm, default: true)
+  #   assert_equal "bacs_debit", @pay_customer.default_payment_method.type
+  #   assert_equal "3456", @pay_customer.default_payment_method.last4
+  # end
+
+  test "stripe saves bancontact" do
+    pm = Stripe::PaymentMethod.create(type: "bancontact", billing_details: { name: "Test User" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "bancontact", @pay_customer.default_payment_method.type
+  end
+
+  test "stripe saves boleto" do
+    pm = Stripe::PaymentMethod.create(type: "boleto", boleto: { tax_id: "000.000.000-00" }, billing_details: { email: "test@example.org", name: "Test User", address: { line1: "1 Fake Street", city: "Salvador", state: "BA", country: "BR", postal_code: "41940-340" } })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "boleto", @pay_customer.default_payment_method.type
+  end
+
+  # Direct creation of PaymentMethods for type 'card_present' is disallowed.
+  # test "stripe saves card_present" do
+  #   pm = Stripe::PaymentMethod.create(type: "card_present")
+  #   @pay_customer.save_payment_method(pm, default: true)
+  #   assert_equal "eps", @pay_customer.default_payment_method.type
+  #   assert_equal "bank_austria", @pay_customer.default_payment_method.bank
+  # end
+
+  test "stripe saves eps bank" do
+    pm = Stripe::PaymentMethod.create(type: "eps", eps: { bank: "bank_austria" }, billing_details: { name: "Test User" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "eps", @pay_customer.default_payment_method.type
+    assert_equal "bank_austria", @pay_customer.default_payment_method.bank
+  end
+
+  test "stripe saves fpx" do
+    pm = Stripe::PaymentMethod.create(type: "fpx", fpx: { bank: "affin_bank" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "fpx", @pay_customer.default_payment_method.type
+    assert_equal "affin_bank", @pay_customer.default_payment_method.bank
+  end
+
+  test "stripe saves giropay" do
+    pm = Stripe::PaymentMethod.create(type: "giropay", billing_details: { name: "Test User" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "giropay", @pay_customer.default_payment_method.type
+  end
+
+  test "stripe saves grabpay" do
+    pm = Stripe::PaymentMethod.create(type: "grabpay")
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "grabpay", @pay_customer.default_payment_method.type
+  end
+
+  test "stripe saves ideal" do
+    pm = Stripe::PaymentMethod.create(type: "ideal", ideal: { bank: "abn_amro" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "ideal", @pay_customer.default_payment_method.type
+    assert_equal "abn_amro", @pay_customer.default_payment_method.bank
+  end
+
+  # Direct creation of PaymentMethods for type 'interac_present' is disallowed.
+  # test "stripe saves interac_present" do
+  #   pm = Stripe::PaymentMethod.create(type: "interac_present", billing_details: { name: "Test User" })
+  #   @pay_customer.save_payment_method(pm, default: true)
+  #   assert_equal "interac_present", @pay_customer.default_payment_method.type
+  #   assert_equal "abn_amro", @pay_customer.default_payment_method.bank
+  # end
+
+  test "stripe saves oxxo" do
+    pm = Stripe::PaymentMethod.create(type: "oxxo", billing_details: { email: "test@example.org", name: "Test User" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "oxxo", @pay_customer.default_payment_method.type
+  end
+
+  test "stripe saves p24" do
+    pm = Stripe::PaymentMethod.create(type: "p24", p24: { bank: "ing" }, billing_details: { email: "test@example.org" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "p24", @pay_customer.default_payment_method.type
+    assert_equal "ing", @pay_customer.default_payment_method.bank
+  end
+
+  test "stripe saves sepa_debit" do
+    pm = Stripe::PaymentMethod.create(type: "sepa_debit", sepa_debit: { iban: "DK5000400440116243" }, billing_details: { email: "test@example.org", name: "Test User" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "sepa_debit", @pay_customer.default_payment_method.type
+    assert_equal "6243", @pay_customer.default_payment_method.last4
+  end
+
+  test "stripe saves sofort" do
+    pm = Stripe::PaymentMethod.create(type: "sofort", sofort: { country: "DE" })
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "sofort", @pay_customer.default_payment_method.type
+  end
+
+  test "stripe saves wechat_pay" do
+    pm = Stripe::PaymentMethod.create(type: "wechat_pay")
+    @pay_customer.save_payment_method(pm, default: true)
+    assert_equal "wechat_pay", @pay_customer.default_payment_method.type
+  end
+
   private
 
   def payment_method
