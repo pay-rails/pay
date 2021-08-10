@@ -33,7 +33,7 @@ Want to add a new payment provider? Contributions are welcome.
 
 * [Installation](docs/1_installation.md)
 * [Configuration](docs/2_configuration.md)
-* Usage
+* **Usage**
   * [Customers](docs/3_customers.md)
   * [Payment Methods](docs/4_payment_methods.md)
   * [Charges](docs/5_charges.md)
@@ -41,14 +41,14 @@ Want to add a new payment provider? Contributions are welcome.
   * [Routes & Webhooks](docs/7_webhooks.md)
   * [Customizing Pay Models](docs/8_customizing_models.md)
 
-* Payment Processors
+* **Payment Processors**
   * [Stripe](docs/stripe/1_overview.md)
   * [Braintree](docs/braintree/1_overview.md)
   * [Paddle](docs/paddle/1_overview.md)
   * [Fake Processor](docs/fake_processor/1_overview.md)
-* Marketplaces
+* **Marketplaces**
   * [Stripe Connect](docs/marketplaces/stripe_connect.md)
-* Contributing
+* **Contributing**
   * [Adding A Payment Processor](docs/contributing/adding_a_payment_processor.md)
 
 ## 🙏 Contributing
