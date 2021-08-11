@@ -160,7 +160,7 @@ module Pay
 
       # Save the Stripe::PaymentMethod to the database
       def save_payment_method(payment_method, default:)
-        pay_payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
+        pay_payment_method = pay_customer.payment_methods.where(processor_id: payment_method.id).first_or_initialize
 
         details = payment_method.send(payment_method.type)
 

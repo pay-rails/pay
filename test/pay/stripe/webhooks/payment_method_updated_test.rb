@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::Stripe::Webhooks::PaymentMethodUpdatedtest < ActiveSupport::TestCase
+class Pay::Stripe::Webhooks::PaymentMethodUpdatedTest < ActiveSupport::TestCase
   setup do
     @event = stripe_event("test/support/fixtures/stripe/payment_method.updated.json")
   end
@@ -15,7 +15,7 @@ class Pay::Stripe::Webhooks::PaymentMethodUpdatedtest < ActiveSupport::TestCase
       status: "active"
     )
 
-    Pay::Stripe::Billable.any_instance.expects(:sync_card_from_stripe)
+    Pay::Stripe::Billable.any_instance.expects(:sync_payment_method_from_stripe)
     Pay::Stripe::Webhooks::PaymentMethodUpdated.new.call(@event)
   end
 
@@ -29,7 +29,7 @@ class Pay::Stripe::Webhooks::PaymentMethodUpdatedtest < ActiveSupport::TestCase
       status: "active"
     )
 
-    Pay::Stripe::Billable.any_instance.expects(:sync_card_from_stripe).never
+    Pay::Stripe::Billable.any_instance.expects(:sync_payment_method_from_stripe).never
     Pay::Stripe::Webhooks::PaymentMethodUpdated.new.call(@event)
   end
 end

@@ -9,7 +9,7 @@ module Pay
           # Couldn't find user, we can skip
           return unless billable.present?
 
-          Pay::Stripe::Billable.new(billable).sync_card_from_stripe
+          Pay::Stripe::Billable.new(billable).sync_payment_method_from_stripe
         end
       end
     end
