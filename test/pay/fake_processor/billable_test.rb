@@ -32,4 +32,10 @@ class Pay::FakeProcessor::Billable::Test < ActiveSupport::TestCase
       @pay_customer.subscribe
     end
   end
+
+  test "fake processor add payment method" do
+    assert_difference "Pay::PaymentMethod.count" do
+      @pay_customer.add_payment_method("x")
+    end
+  end
 end

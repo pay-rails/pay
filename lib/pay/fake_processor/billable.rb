@@ -34,7 +34,7 @@ module Pay
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         pay_customer.subscriptions.create!(
-          processor_id: rand(1_000_000),
+          processor_id: rand(100_000_000),
           name: name,
           processor_plan: plan,
           status: :active,
@@ -42,12 +42,13 @@ module Pay
         )
       end
 
-      def add_payment_method(payment_method_id, default: true)
-        pay_customer.update(
+      def add_payment_method(payment_method_id, default: false)
+        pay_customer.payment_methods.create!(
+          processor_id: rand(100_000_000),
           default: default,
+          type: :fake,
           data: {
-            kind: :card,
-            type: :fake,
+            brand: "Fake",
             last4: 1234,
             exp_month: Date.today.month,
             exp_year: Date.today.year

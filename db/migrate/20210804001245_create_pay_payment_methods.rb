@@ -9,5 +9,7 @@ class CreatePayPaymentMethods < ActiveRecord::Migration[5.2]
 
       t.timestamps
     end
+
+    add_index :pay_payment_methods, [:customer_id, :processor_id], unique: true
   end
 end
