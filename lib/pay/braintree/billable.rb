@@ -34,7 +34,7 @@ module Pay
 
           pay_customer.update(processor_id: result.customer.id)
 
-          if payment_method_token.present?
+          if payment_method_token?
             update_card_on_file result.customer.payment_methods.last
           end
 

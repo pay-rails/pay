@@ -3,6 +3,8 @@ class Pay::PaymentMethod < Pay::ApplicationRecord
 
   belongs_to :customer
 
+  store_accessor :data, :stripe_account
+
   store_accessor :data, :type # card, paypal, ideal, sepa_debit, etc
   store_accessor :data, :brand # Visa, Mastercard, Discover, PayPal
   store_accessor :data, :last4
