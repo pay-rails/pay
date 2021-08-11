@@ -13,4 +13,3 @@ module Pay
     end
   end
 end
-

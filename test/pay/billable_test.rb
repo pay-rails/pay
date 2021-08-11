@@ -42,12 +42,12 @@ class Pay::Billable::Test < ActiveSupport::TestCase
   end
 
   test "updating a card" do
-    assert @user.payment_processor.update_card("a1b2c3")
+    assert @user.payment_processor.update_payment_method("a1b2c3")
   end
 
   test "updating a card without a processor" do
     assert_raises StandardError do
-      users(:none).payment_processor.update_card("whoops")
+      users(:none).payment_processor.update_payment_method("whoops")
     end
   end
 

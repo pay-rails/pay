@@ -1,10 +1,11 @@
 module Pay
   module Braintree
+    autoload :AuthorizationError, "pay/braintree/authorization_error"
     autoload :Billable, "pay/braintree/billable"
     autoload :Charge, "pay/braintree/charge"
-    autoload :Subscription, "pay/braintree/subscription"
     autoload :Error, "pay/braintree/error"
-    autoload :AuthorizationError, "pay/braintree/authorization_error"
+    autoload :PaymentMethod, "pay/braintree/payment_method"
+    autoload :Subscription, "pay/braintree/subscription"
 
     module Webhooks
       autoload :SubscriptionCanceled, "pay/braintree/webhooks/subscription_canceled"

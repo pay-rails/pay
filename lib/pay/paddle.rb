@@ -2,8 +2,9 @@ module Pay
   module Paddle
     autoload :Billable, "pay/paddle/billable"
     autoload :Charge, "pay/paddle/charge"
-    autoload :Subscription, "pay/paddle/subscription"
     autoload :Error, "pay/paddle/error"
+    autoload :PaymentMethod, "pay/paddle/payment_method"
+    autoload :Subscription, "pay/paddle/subscription"
 
     module Webhooks
       autoload :SignatureVerifier, "pay/paddle/webhooks/signature_verifier"

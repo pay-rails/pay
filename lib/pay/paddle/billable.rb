@@ -39,10 +39,9 @@ module Pay
         # pass
       end
 
-      def update_payment_method(token)
+      def add_payment_method(token, default: true)
         sync_payment_method
       end
-      alias_method :update_card, :update_payment_method
 
       def update_email!
         # pass

@@ -24,9 +24,6 @@ module Pay
         @pay_customer = pay_customer
       end
 
-      # Handles Billable#customer
-      #
-      # Returns Stripe::Customer
       def customer
         stripe_customer = if processor_id?
           ::Stripe::Customer.retrieve(processor_id, stripe_options)
@@ -36,11 +33,12 @@ module Pay
           sc
         end
 
-        # Update the user's card on file if a token was passed in
         if payment_method_token?
           payment_method = ::Stripe::PaymentMethod.attach(payment_method_token, {customer: stripe_customer.id}, stripe_options)
-          stripe_customer = ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, stripe_options)
-          save_payment_method(payment_method, default: true)
+          pay_payment_method = save_payment_method(payment_method, default: false)
+          pay_payment_method.make_default!
+
+          pay_customer.payment_method_token = nil
         end
 
         stripe_customer
@@ -48,9 +46,6 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
-      # Handles Billable#charge
-      #
-      # Returns Pay::Charge
       def charge(amount, options = {})
         stripe_customer = customer
         args = {
@@ -65,16 +60,12 @@ module Pay
         payment_intent = ::Stripe::PaymentIntent.create(args, stripe_options)
         Pay::Payment.new(payment_intent).validate
 
-        # Create a new charge object
         charge = payment_intent.charges.first
         Pay::Stripe::Charge.sync(charge.id, object: charge)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
-      # Handles Billable#subscribe
-      #
-      # Returns Pay::Subscription
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         quantity = options.delete(:quantity) || 1
         opts = {
@@ -105,10 +96,7 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
-      # Handles Billable#update_payment_method
-      #
-      # Returns true if successful
-      def update_payment_method(payment_method_id)
+      def add_payment_method(payment_method_id, default: false)
         stripe_customer = customer
 
         return true if payment_method_id == stripe_customer.invoice_settings.default_payment_method
@@ -116,12 +104,25 @@ module Pay
         payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: stripe_customer.id}, stripe_options)
         ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, stripe_options)
 
-        save_payment_method(payment_method, default: true)
-        true
+        save_payment_method(payment_method, default: default)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
-      alias_method :update_card, :update_payment_method
+
+      # Save the Stripe::PaymentMethod to the database
+      def save_payment_method(payment_method, default:)
+        pay_payment_method = pay_customer.payment_methods.where(processor_id: payment_method.id).first_or_initialize
+
+        attributes = Pay::Stripe::PaymentMethod.extract_attributes(payment_method).merge(default: default)
+
+        pay_customer.payment_methods.update_all(default: false) if default
+        pay_payment_method.update!(attributes)
+
+        # Reload the Rails association
+        pay_customer.reload_default_payment_method if default
+
+        pay_payment_method
+      end
 
       def update_email!
         ::Stripe::Customer.update(processor_id, {email: email, name: customer_name}, stripe_options)
@@ -140,15 +141,6 @@ module Pay
         ::Stripe::Invoice.upcoming({customer: processor_id}, stripe_options)
       end
 
-      # Used by webhooks when the customer or source changes
-      def sync_payment_method_from_stripe
-        if (payment_method_id = customer.invoice_settings.default_payment_method)
-          save_payment_method ::Stripe::PaymentMethod.retrieve(payment_method_id, stripe_options), default: true
-        else
-          pay_customer.payment_methods.update_all(default: false)
-        end
-      end
-
       def create_setup_intent
         ::Stripe::SetupIntent.create({customer: processor_id, usage: :off_session}, stripe_options)
       end
@@ -156,24 +148,6 @@ module Pay
       def trial_end_date(stripe_sub)
         # Times in Stripe are returned in UTC
         stripe_sub.trial_end.present? ? Time.at(stripe_sub.trial_end) : nil
-      end
-
-      # Save the Stripe::PaymentMethod to the database
-      def save_payment_method(payment_method, default:)
-        pay_payment_method = pay_customer.payment_methods.where(processor_id: payment_method.id).first_or_initialize
-
-        details = payment_method.send(payment_method.type)
-
-        pay_payment_method.update!(
-          payment_method_type: payment_method.type,
-          brand: details.try(:brand)&.capitalize,
-          last4: details.try(:last4),
-          exp_month: details.try(:exp_month),
-          exp_year: details.try(:exp_year),
-          bank: details.try(:bank_name) || details.try(:bank) # eps, fpx, ideal, p24, acss_debit, etc
-        )
-
-        pay_customer.payment_method_token = nil
       end
 
       # Syncs a customer's subscriptions from Stripe to the database

@@ -6,13 +6,12 @@ module Pay
           object = event.data.object
 
           if object.customer
-            billable = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
+            pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
 
             # Couldn't find user, we can skip
-            return unless billable.present?
+            return unless pay_customer.present?
 
-            Pay::Stripe::Billable.new(billable).sync_payment_method_from_stripe
-
+            Pay::Stripe::PaymentMethod.sync(object.id, stripe_account: event.try(:account))
           else
             # If customer was removed, we should delete the payment method if it exists
             Pay::PaymentMethod.find_by_processor_and_id(:stripe, object.id)&.destroy

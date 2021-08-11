@@ -24,6 +24,10 @@ class Pay::Customer < Pay::ApplicationRecord
     @pay_processor ||= self.class.processor_for(processor).new(self)
   end
 
+  def update_payment_method(payment_method_id)
+    add_payment_method(payment_method_id, default: true)
+  end
+
   def subscription(name: Pay.default_product_name)
     subscriptions.loaded? ? subscriptions.reverse.detect { |s| s.name == name } : subscriptions.for_name(name).last
   end

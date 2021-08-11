@@ -2,9 +2,10 @@ module Pay
   module Stripe
     autoload :Billable, "pay/stripe/billable"
     autoload :Charge, "pay/stripe/charge"
-    autoload :Subscription, "pay/stripe/subscription"
     autoload :Error, "pay/stripe/error"
     autoload :Merchant, "pay/stripe/merchant"
+    autoload :PaymentMethod, "pay/stripe/payment_method"
+    autoload :Subscription, "pay/stripe/subscription"
 
     module Webhooks
       autoload :AccountUpdated, "pay/stripe/webhooks/account_updated"

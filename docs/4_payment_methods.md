@@ -2,7 +2,7 @@
 
 The first thing you'll need to do is add a payment method. You will get a payment method token from the payment processor's Javascript library. See the payment processors docs for how to setup their Javascript.
 
-## Adding A Payment Method
+## Assigning A Payment Method
 
 With Pay, you can simply assign the payment method token before making a charge or subscription.
 
@@ -19,7 +19,7 @@ If a customer would like to purchase and provide a new payment method, you may s
 
 ## Updating the default Payment Method
 
-To update the default payment method on file, you can use the `update_payment_method`:
+To update the default payment method on file, you can use  `update_payment_method`:
 
 ```ruby
 @user.payment_processor.update_payment_method(params[:payment_method_token])
@@ -37,6 +37,15 @@ Paddle uses an [Update Payment Details URL](https://developer.paddle.com/guides/
 
 You may either redirect to this URL or use Paddle's Javascript to render as an overlay or inline.
 
+## Adding other Payment Methods
+
+You can also add a payment method without making it the default.
+
+```ruby
+@user.payment_processor.add_payment_method(params[:payment_method_token], default: false)
+```
+
 ## Next
 
 See [Charges](docs/5_charges.md)
+

@@ -42,8 +42,9 @@ module Pay
         )
       end
 
-      def update_payment_method(payment_method_id)
+      def add_payment_method(payment_method_id, default: true)
         pay_customer.update(
+          default: default,
           data: {
             kind: :card,
             type: :fake,
@@ -53,7 +54,6 @@ module Pay
           }
         )
       end
-      alias_method :update_card, :update_payment_method
 
       def update_email!
         # pass

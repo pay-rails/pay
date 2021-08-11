@@ -16,7 +16,7 @@ class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
     assert_nil @pay_customer.default_payment_method
   end
 
-  test "update_card_from stripe is not called if user can't be found" do
+  test "stripe is not called if user can't be found" do
     @pay_customer.destroy
     Pay::Stripe::Billable.any_instance.expects(:sync_payment_method_from_stripe).never
     Pay::Stripe::Webhooks::CustomerUpdated.new.call(@event)

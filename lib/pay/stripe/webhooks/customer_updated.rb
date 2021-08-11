@@ -4,12 +4,19 @@ module Pay
       class CustomerUpdated
         def call(event)
           object = event.data.object
-          billable = Pay::Customer.find_by(processor: :stripe, processor_id: object.id)
+          pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.id)
 
           # Couldn't find user, we can skip
-          return unless billable.present?
+          return unless pay_customer.present?
 
-          Pay::Stripe::Billable.new(billable).sync_payment_method_from_stripe
+          # Sync default card
+          if (payment_method_id = pay_customer.customer.invoice_settings.default_payment_method)
+            Pay::Stripe::PaymentMethod.sync(payment_method_id, {stripe_account: event.account}.compact)
+
+          else
+            # No default payment method set
+            pay_customer.payment_methods.update_all(default: false)
+          end
         end
       end
     end

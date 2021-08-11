@@ -26,9 +26,9 @@ module Pay
         attrs.merge(
           payment_method_type: object.payment_method_details.type,
           brand: details.try(:brand)&.capitalize,
-          last4: details.try(:last4),
-          exp_month: details.try(:exp_month),
-          exp_year: details.try(:exp_year),
+          last4: details.try(:last4).to_s,
+          exp_month: details.try(:exp_month).to_s,
+          exp_year: details.try(:exp_year).to_s,
           bank: details.try(:bank_name) || details.try(:bank) # eps, fpx, ideal, p24, acss_debit, etc
         )
 

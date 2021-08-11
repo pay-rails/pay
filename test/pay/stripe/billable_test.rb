@@ -78,24 +78,24 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can update card" do
-    @pay_customer.update_card payment_method
+    @pay_customer.update_payment_method payment_method
 
     assert_equal "card", @pay_customer.default_payment_method.type
     assert_equal "Visa", @pay_customer.default_payment_method.brand
     assert_nil @pay_customer.payment_method_token
 
-    @pay_customer.update_card "pm_card_discover"
+    @pay_customer.update_payment_method "pm_card_discover"
     assert_equal "Discover", @pay_customer.default_payment_method.brand
   end
 
   test "stripe can retrieve subscription" do
-    @pay_customer.update_card(payment_method)
+    @pay_customer.update_payment_method(payment_method)
     subscription = ::Stripe::Subscription.create(plan: "small-monthly", customer: @pay_customer.processor_id)
     assert_equal @pay_customer.processor_subscription(subscription.id), subscription
   end
 
   test "can create an invoice" do
-    @pay_customer.update_card(payment_method)
+    @pay_customer.update_payment_method(payment_method)
 
     ::Stripe::InvoiceItem.create(
       customer: @pay_customer.processor_id,
@@ -108,7 +108,6 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe card gets updated automatically when retrieving customer" do
-    # This should trigger update_card
     @pay_customer.payment_method_token = payment_method
     @pay_customer.customer
     assert_equal "card", @pay_customer.default_payment_method.type
@@ -117,6 +116,9 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe creates with no card" do
+    # Clear out any fixtures
+    @pay_customer.payment_methods.destroy_all
+
     @pay_customer.customer
     assert_equal @pay_customer.processor, "stripe"
     assert_not_nil @pay_customer.processor_id
@@ -147,7 +149,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe handles exception when updating a card" do
-    exception = assert_raises(Pay::Stripe::Error) { @pay_customer.update_card("abcd") }
+    exception = assert_raises(Pay::Stripe::Error) { @pay_customer.update_payment_method("abcd") }
     assert_equal "No such PaymentMethod: 'abcd'", exception.message
   end
 
