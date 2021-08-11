@@ -16,6 +16,8 @@ module Pay
       autoload :CustomerUpdated, "pay/stripe/webhooks/customer_updated"
       autoload :PaymentActionRequired, "pay/stripe/webhooks/payment_action_required"
       autoload :PaymentIntentSucceeded, "pay/stripe/webhooks/payment_intent_succeeded"
+      autoload :PaymentMethodAttached, "pay/stripe/webhooks/payment_method_attached"
+      autoload :PaymentMethodDetached, "pay/stripe/webhooks/payment_method_detached"
       autoload :PaymentMethodUpdated, "pay/stripe/webhooks/payment_method_updated"
       autoload :SubscriptionCreated, "pay/stripe/webhooks/subscription_created"
       autoload :SubscriptionDeleted, "pay/stripe/webhooks/subscription_deleted"
@@ -81,10 +83,10 @@ module Pay
         events.subscribe "stripe.customer.deleted", Pay::Stripe::Webhooks::CustomerDeleted.new
 
         # If a customer's payment source was deleted in Stripe, we should update as well
-        events.subscribe "stripe.payment_method.attached", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
+        events.subscribe "stripe.payment_method.attached", Pay::Stripe::Webhooks::PaymentMethodAttached.new
         events.subscribe "stripe.payment_method.updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
         events.subscribe "stripe.payment_method.card_automatically_updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
-        events.subscribe "stripe.payment_method.detached", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
+        events.subscribe "stripe.payment_method.detached", Pay::Stripe::Webhooks::PaymentMethodDetached.new
 
         # If an account is updated in stripe, we should update it as well
         events.subscribe "stripe.account.updated", Pay::Stripe::Webhooks::AccountUpdated.new
