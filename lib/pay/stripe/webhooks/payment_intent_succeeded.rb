@@ -10,7 +10,7 @@ module Pay
         def call(event)
           object = event.data.object
           object.charges.data.each do |charge|
-            Pay::Stripe::Charge.sync(charge.id)
+            Pay::Stripe::Charge.sync(charge.id, stripe_account: event.try(:account))
           end
         end
       end

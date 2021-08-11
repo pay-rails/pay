@@ -5,9 +5,9 @@ module Pay
 
       delegate :processor_id, :stripe_account, to: :pay_charge
 
-      def self.sync(charge_id, object: nil, try: 0, retries: 1)
+      def self.sync(charge_id, object: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest charge details from the API if we already have it
-        object ||= ::Stripe::Charge.retrieve(id: charge_id)
+        object ||= ::Stripe::Charge.retrieve(charge_id, {stripe_account: stripe_account}.compact)
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
@@ -34,7 +34,7 @@ module Pay
 
         # Associate charge with subscription if we can
         if object.invoice
-          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice))
+          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice, {stripe_account: stripe_account}.compact))
           attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: invoice.subscription)
         end
 

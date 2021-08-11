@@ -3,7 +3,7 @@ module Pay
     module Webhooks
       class ChargeSucceeded
         def call(event)
-          pay_charge = Pay::Stripe::Charge.sync(event.data.object.id)
+          pay_charge = Pay::Stripe::Charge.sync(event.data.object.id, stripe_account: event.try(:account))
           notify_user(pay_charge.owner, pay_charge) if pay_charge
         end
 

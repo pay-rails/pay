@@ -19,9 +19,9 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
-      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, try: 0, retries: 1)
+      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest subscription details from the API if we already have it
-        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"]})
+        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"]}, {stripe_account: stripe_account}.compact)
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
