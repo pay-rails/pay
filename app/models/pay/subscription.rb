@@ -9,13 +9,6 @@ module Pay
     belongs_to :customer
     has_many :charges, class_name: "Pay::Charge", foreign_key: :pay_subscription_id
 
-    # Validations
-    validates :name, presence: true
-    validates :processor_id, presence: true, uniqueness: {scope: :customer_id}
-    validates :processor_plan, presence: true
-    validates :quantity, presence: true
-    validates :status, presence: true
-
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
     scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.zone.now) }
@@ -32,6 +25,13 @@ module Pay
     store_accessor :data, :stripe_account
 
     attribute :prorate, :boolean, default: true
+
+    # Validations
+    validates :name, presence: true
+    validates :processor_id, presence: true, uniqueness: {scope: :customer_id}
+    validates :processor_plan, presence: true
+    validates :quantity, presence: true
+    validates :status, presence: true
 
     delegate :on_grace_period?,
       :paused?,
