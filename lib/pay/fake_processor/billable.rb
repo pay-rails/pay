@@ -20,7 +20,7 @@ module Pay
 
       def charge(amount, options = {})
         pay_customer.charges.create(
-          processor_id: rand(100_000_000),
+          processor_id: NanoId.generate,
           amount: amount,
           data: {
             kind: :card,
@@ -34,7 +34,7 @@ module Pay
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         pay_customer.subscriptions.create!(
-          processor_id: rand(100_000_000),
+          processor_id: NanoId.generate,
           name: name,
           processor_plan: plan,
           status: :active,
@@ -44,7 +44,7 @@ module Pay
 
       def add_payment_method(payment_method_id, default: false)
         pay_customer.payment_methods.create!(
-          processor_id: rand(100_000_000),
+          processor_id: NanoId.generate,
           default: default,
           type: :fake,
           data: {
