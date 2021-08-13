@@ -220,6 +220,13 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_not_nil invoice.lines.data.find { |l| l.price&.id == "price_1ILVZaKXBGcbgpbZQ26kgXWG" }
   end
 
+  test "stripe prices api" do
+    price_id = "price_1JNJJkKXBGcbgpbZuOiH3XJK"
+    @pay_customer.payment_method_token = "pm_card_visa"
+    pay_subscription = @pay_customer.subscribe plan: price_id
+    assert_equal price_id, pay_subscription.processor_plan
+  end
+
   test "stripe saves currency on charge" do
     @pay_customer.payment_method_token = "pm_card_visa"
     charge = @pay_customer.charge(29_00)
