@@ -1,8 +1,18 @@
 # Using Pay with Stripe
 
-Stripe has multiple integrations:
+Stripe has multiple options for payments
 
-* Stripe Checkout - Hosted pages for payments
+* Stripe Checkout - Hosted pages for payments (you'll redirect users to Stripe)
+* Stripe Elements - Payment fields on your site
+
+## Prices & Plans
+
+Stripe introduced Products & Prices to support more payment options. Previously, they had a concept called Plan that was for subscriptions. Pay supports both Price IDs and Plan IDs when subscribing.
+
+```ruby
+@user.payment_processor.subscribe(plan: "price_1234")
+@user.payment_processor.subscribe(plan: "plan_1234")
+```
 
 ## Stripe Checkout
 
