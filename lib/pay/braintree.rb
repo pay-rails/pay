@@ -8,6 +8,7 @@ module Pay
     autoload :Subscription, "pay/braintree/subscription"
 
     module Webhooks
+      autoload :Check, "pay/braintree/webhooks/check"
       autoload :SubscriptionCanceled, "pay/braintree/webhooks/subscription_canceled"
       autoload :SubscriptionChargedSuccessfully, "pay/braintree/webhooks/subscription_charged_successfully"
       autoload :SubscriptionChargedUnsuccessfully, "pay/braintree/webhooks/subscription_charged_unsuccessfully"
@@ -48,6 +49,7 @@ module Pay
 
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
+        events.subscribe "braintree.check", Pay::Braintree::Webhooks::Check.new
         events.subscribe "braintree.subscription_canceled", Pay::Braintree::Webhooks::SubscriptionCanceled.new
         events.subscribe "braintree.subscription_charged_successfully", Pay::Braintree::Webhooks::SubscriptionChargedSuccessfully.new
         events.subscribe "braintree.subscription_charged_unsuccessfully", Pay::Braintree::Webhooks::SubscriptionChargedUnsuccessfully.new
