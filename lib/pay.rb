@@ -6,6 +6,7 @@ require "pay/adapter"
 module Pay
   autoload :Attributes, "pay/attributes"
   autoload :Env, "pay/env"
+  autoload :NanoId, "pay/nano_id"
   autoload :Payment, "pay/payment"
   autoload :Receipts, "pay/receipts"
 
