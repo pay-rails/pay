@@ -11,6 +11,6 @@ class Pay::Stripe::Webhooks::AccountUpdatedTest < ActiveSupport::TestCase
     Pay::Stripe::Webhooks::AccountUpdated.new.call(@event.data)
 
     assert @account.reload.onboarding_complete
-    assert @account.reload.stripe_connect_account_id != nil
+    assert !@account.reload.stripe_connect_account_id.nil?
   end
 end

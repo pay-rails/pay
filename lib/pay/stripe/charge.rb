@@ -7,7 +7,7 @@ module Pay
 
       def self.sync(charge_id, object: nil, try: 0, retries: 1, options: {})
         # Skip loading the latest charge details from the API if we already have it
-        object ||= ::Stripe::Charge.retrieve(charge_id, { stripe_account: options[:stripe_account]})
+        object ||= ::Stripe::Charge.retrieve(charge_id, {stripe_account: options[:stripe_account]})
 
         owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
         return unless owner
@@ -27,7 +27,7 @@ module Pay
 
         # Associate charge with subscription if we can
         if object.invoice
-          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice, { stripe_account: owner.stripe_account }))
+          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice, {stripe_account: owner.stripe_account}))
           attrs[:subscription] = Pay::Subscription.find_by(processor: :stripe, processor_id: invoice.subscription)
         end
 

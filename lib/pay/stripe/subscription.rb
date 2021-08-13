@@ -25,9 +25,9 @@ module Pay
         object ||= ::Stripe::Subscription.retrieve(
           {
             id: subscription_id,
-            expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
+            expand: ["pending_setup_intent", "latest_invoice.payment_intent"]
           },
-          { stripe_account: options[:stripe_account] }
+          {stripe_account: options[:stripe_account]}
         )
 
         owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)

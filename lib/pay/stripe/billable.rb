@@ -172,7 +172,7 @@ module Pay
       def sync_subscriptions
         subscriptions = ::Stripe::Subscription.list({customer: customer}, stripe_options)
         subscriptions.map do |subscription|
-          Pay::Stripe::Subscription.sync(subscription.id, options: { stripe_account: stripe_account })
+          Pay::Stripe::Subscription.sync(subscription.id, options: {stripe_account: stripe_account})
         end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
