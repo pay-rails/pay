@@ -33,7 +33,8 @@ module Pay
           name: name,
           status: object.status,
           stripe_account: pay_customer.stripe_account,
-          trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil)
+          trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil),
+          metadata: object.metadata
         }
 
         attributes[:ends_at] = if object.ended_at

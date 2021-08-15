@@ -23,4 +23,11 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     charge.update(data: data)
     assert_equal data, charge.data
   end
+
+  test "stores metadata" do
+    charge = pay_charges(:stripe)
+    metadata = {"foo" => "bar"}
+    charge.update(metadata: metadata)
+    assert_equal metadata, charge.metadata
+  end
 end

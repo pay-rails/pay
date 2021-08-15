@@ -33,6 +33,11 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
+  test "sync stores subscription metadata" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    assert_equal({"license_id" => 1}, pay_subscription.metadata)
+  end
+
   test "sync stripe subscription ignores when customer is missing" do
     @pay_customer.destroy
     assert_no_difference "Pay::Subscription.count" do
@@ -78,7 +83,10 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
       },
       quantity: 1,
       status: "active",
-      trial_end: nil
+      trial_end: nil,
+      metadata: {
+        license_id: 1
+      }
     )
     ::Stripe::Subscription.construct_from(values)
   end

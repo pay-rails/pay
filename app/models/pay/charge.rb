@@ -2,9 +2,6 @@ module Pay
   class Charge < Pay::ApplicationRecord
     self.inheritance_column = nil
 
-    # Only serialize for non-json columns
-    serialize :data unless json_column?("data")
-
     # Associations
     belongs_to :customer
     belongs_to :subscription, optional: true, class_name: "Pay::Subscription", foreign_key: :pay_subscription_id

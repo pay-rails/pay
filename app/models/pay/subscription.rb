@@ -2,9 +2,6 @@ module Pay
   class Subscription < Pay::ApplicationRecord
     STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid paused]
 
-    # Only serialize for non-json columns
-    serialize :data unless json_column?("data")
-
     # Associations
     belongs_to :customer
     has_many :charges, class_name: "Pay::Charge", foreign_key: :pay_subscription_id

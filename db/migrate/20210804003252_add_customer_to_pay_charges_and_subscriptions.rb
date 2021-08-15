@@ -1,5 +1,8 @@
 class AddCustomerToPayChargesAndSubscriptions < ActiveRecord::Migration[5.2]
   def change
+    add_column :pay_subscriptions, :metadata, Pay::Adapter.json_column_type
+    add_column :pay_charges, :metadata, Pay::Adapter.json_column_type
+
     add_reference :pay_charges, :customer, index: true, foreign_key: {to_table: :pay_customers}
     add_reference :pay_subscriptions, :customer, index: true, foreign_key: {to_table: :pay_customers}
 

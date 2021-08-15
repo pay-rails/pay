@@ -5,9 +5,14 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     @pay_customer = pay_customers(:stripe)
   end
 
-  test "sync returns Pay::Subscription" do
+  test "sync returns Pay::Charge" do
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     assert pay_charge.is_a?(Pay::Charge)
+  end
+
+  test "sync stores charge metadata" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
+    assert_equal({"license_id" => 1}, pay_charge.metadata)
   end
 
   test "sync stripe charge by ID" do
@@ -51,6 +56,9 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
           brand: "Visa"
         },
         type: "card"
+      },
+      metadata: {
+        license_id: 1
       }
     )
     ::Stripe::Charge.construct_from(values)

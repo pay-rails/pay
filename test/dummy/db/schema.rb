@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "currency"
     t.bigint "application_fee_amount"
     t.bigint "pay_subscription_id"
+    t.json "metadata"
     t.bigint "customer_id"
     t.index ["customer_id", "processor_id"], name: "index_pay_charges_on_customer_id_and_processor_id", unique: true
     t.index ["customer_id"], name: "index_pay_charges_on_customer_id"
@@ -87,6 +88,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "status"
     t.json "data"
     t.decimal "application_fee_percent", precision: 8, scale: 2
+    t.json "metadata"
     t.bigint "customer_id"
     t.index ["customer_id", "processor_id"], name: "index_pay_subscriptions_on_customer_id_and_processor_id", unique: true
     t.index ["customer_id"], name: "index_pay_subscriptions_on_customer_id"

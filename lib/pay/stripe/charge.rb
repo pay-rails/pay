@@ -18,7 +18,8 @@ module Pay
           application_fee_amount: object.application_fee_amount,
           created_at: Time.at(object.created),
           currency: object.currency,
-          stripe_account: pay_customer.stripe_account
+          stripe_account: pay_customer.stripe_account,
+          metadata: object.metadata
         }
 
         # Store payment method details

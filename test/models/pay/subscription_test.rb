@@ -14,6 +14,13 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     end
   end
 
+  test "pay subscription stores metadata" do
+    pay_subscription = pay_subscriptions(:stripe)
+    metadata = {"foo" => "bar"}
+    pay_subscription.update(metadata: metadata)
+    assert_equal metadata, pay_subscription.metadata
+  end
+
   test "braintree?" do
     assert pay_subscriptions(:braintree).braintree?
     refute pay_subscriptions(:fake).braintree?
