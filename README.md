@@ -74,7 +74,7 @@ To sync customer names, your `Billable` model should respond to the `first_name`
 Finally, run the migrations
 
 ```bash
-rake db:migrate
+bin/rails db:migrate
 ```
 
 > If you run into `NoMethodError (undefined method 'stripe_customer' for #<User:0x00007fbc34b9bf20>)`, fully restart your Rails application `bin/spring stop && rails s`
@@ -134,21 +134,23 @@ Pay automatically looks up credentials for each payment provider. We recommend s
 You'll need to add your API keys to your Rails credentials. You can do this by running:
 
 ```bash
-rails credentials:edit --environment=development
+bin/rails credentials:edit --environment=development
 ```
 
 They should be formatted like the following:
 
 ```yaml
 stripe:
-  private_key: xxxx
-  public_key: yyyy
-  signing_secret: zzzz
+  private_key: sk_test_xxxx
+  public_key: pk_test_yyyy
+  signing_secret: whsec_zzzz
+
 braintree:
   private_key: xxxx
   public_key: yyyy
   merchant_id: aaaa
   environment: sandbox
+
 paddle:
   vendor_id: xxxx
   vendor_auth_code: yyyy
@@ -161,7 +163,9 @@ You can also nest these credentials under the Rails environment if using a share
 ```yaml
 development:
   stripe:
-    private_key: xxxx
+    private_key: sk_test_xxxx
+    public_key: pk_test_yyyy
+    signing_secret: whsec_zzzz
 # ...
 ```
 
@@ -608,10 +612,18 @@ If you have a catch all route (for 404s etc) and need to control where/when the 
 
 ```ruby
 # config/initializers/pay.rb
-config.automount_routes = false
+Pay.setup do |config|
+  # ...
+
+  config.automount_routes = false
+end
 
 # config/routes.rb
-mount Pay::Engine, at: '/secret-webhook-path'
+Rails.application.routes.draw do
+  mount Pay::Engine, at: '/pay' # You can change the `at` path to feed your needs.
+
+  # Other routes here
+end
 ```
 
 If you just want to modify where the engine mounts it's routes then you can change the path.
@@ -619,7 +631,11 @@ If you just want to modify where the engine mounts it's routes then you can chan
 ```ruby
 # config/initializers/pay.rb
 
-config.routes_path = '/secret-webhook-path'
+Pay.setup do |config|
+  # ...
+
+  config.routes_path = '/pay'
+end
 ```
 
 ## Payment Providers
