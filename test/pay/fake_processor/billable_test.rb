@@ -38,4 +38,12 @@ class Pay::FakeProcessor::Billable::Test < ActiveSupport::TestCase
       @pay_customer.add_payment_method("x")
     end
   end
+
+  test "generates fake processor_id" do
+    user = users(:none)
+    pay_customer = user.set_payment_processor :fake_processor, allow_fake: true
+    assert_nil pay_customer.processor_id
+    pay_customer.customer
+    assert_not_nil pay_customer.processor_id
+  end
 end

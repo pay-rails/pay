@@ -29,7 +29,7 @@ module Pay
           ::Stripe::Customer.retrieve(processor_id, stripe_options)
         else
           sc = ::Stripe::Customer.create({email: email, name: customer_name}, stripe_options)
-          pay_customer.update(processor_id: sc.id, stripe_account: stripe_account)
+          pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
           sc
         end
 

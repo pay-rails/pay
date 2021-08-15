@@ -15,11 +15,15 @@ module Pay
       end
 
       def customer
+        pay_customer.update!(processor_id: NanoId.generate) unless processor_id?
         pay_customer
       end
 
       def charge(amount, options = {})
-        pay_customer.charges.create(
+        # Make to generate a processor_id
+        customer
+
+        attributes = options.merge(
           processor_id: NanoId.generate,
           amount: amount,
           data: {
@@ -30,9 +34,13 @@ module Pay
             exp_year: Date.today.year
           }
         )
+        pay_customer.charges.create!(attributes)
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
+        # Make to generate a processor_id
+        customer
+
         attributes = options.merge(
           processor_id: NanoId.generate,
           name: name,
@@ -44,6 +52,9 @@ module Pay
       end
 
       def add_payment_method(payment_method_id, default: false)
+        # Make to generate a processor_id
+        customer
+
         pay_customer.payment_methods.create!(
           processor_id: NanoId.generate,
           default: default,

@@ -32,7 +32,7 @@ module Pay
         else
           result = gateway.customer.create(email: email, first_name: try(:first_name), last_name: try(:last_name), payment_method_nonce: payment_method_token)
           raise Pay::Braintree::Error, result unless result.success?
-          pay_customer.update(processor_id: result.customer.id)
+          pay_customer.update!(processor_id: result.customer.id)
 
           if payment_method_token?
             save_payment_method(result.customer.payment_methods.last, default: true)
