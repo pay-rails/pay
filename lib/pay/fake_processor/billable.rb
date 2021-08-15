@@ -33,13 +33,14 @@ module Pay
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
-        pay_customer.subscriptions.create!(
+        attributes = options.merge(
           processor_id: NanoId.generate,
           name: name,
           processor_plan: plan,
           status: :active,
           quantity: options.fetch(:quantity, 1)
         )
+        pay_customer.subscriptions.create!(attributes)
       end
 
       def add_payment_method(payment_method_id, default: false)
