@@ -26,6 +26,7 @@ module Pay
             subscription = pay_customer.subscriptions.new(name: Pay.default_product_name, processor_id: event["subscription_id"], status: :active)
           end
 
+          subscription.metadata = Pay::Paddle.parse_passthrough(event["passthrough"].except("owner_sgid"))
           subscription.quantity = event["quantity"]
           subscription.processor_plan = event["subscription_plan_id"]
           subscription.paddle_update_url = event["update_url"]

@@ -51,7 +51,8 @@ module Pay
         args = {
           amount: amount.to_i / 100.0,
           customer_id: customer.id,
-          options: {submit_for_settlement: true}
+          options: {submit_for_settlement: true},
+          custom_fields: options.delete(:metadata)
         }.merge(options)
 
         result = gateway.transaction.sale(args)
@@ -73,6 +74,7 @@ module Pay
           options.merge!(trial_period: true, trial_duration: trial_period_days, trial_duration_unit: :day)
         end
 
+        metadata = options.delete(:metadata)
         subscription_options = options.merge(
           payment_method_token: token,
           plan_id: plan
@@ -81,13 +83,14 @@ module Pay
         result = gateway.subscription.create(subscription_options)
         raise Pay::Braintree::Error, result unless result.success?
 
-        pay_customer.subscriptions.create(
+        pay_customer.subscriptions.create!(
           name: name,
           processor_id: result.subscription.id,
           processor_plan: plan,
           status: :active,
           trial_ends_at: trial_end_date(result.subscription),
-          ends_at: nil
+          ends_at: nil,
+          metadata: metadata
         )
       rescue ::Braintree::AuthorizationError => e
         raise Pay::Braintree::AuthorizationError, e
@@ -141,10 +144,13 @@ module Pay
       def save_transaction(transaction)
         attrs = card_details_for_braintree_transaction(transaction)
         attrs[:amount] = transaction.amount.to_f * 100
+        attrs[:metadata] = transaction.custom_fields
 
         # Associate charge with subscription if we can
         if transaction.subscription_id
-          attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: transaction.subscription_id)
+          pay_subscription = pay_customer.subscriptions.find_by(processor_id: transaction.subscription_id)
+          attrs[:subscription] = pay_subscription
+          attrs[:metadata] = pay_subscription.metadata
         end
 
         charge = pay_customer.charges.find_or_initialize_by(
@@ -152,7 +158,7 @@ module Pay
           currency: transaction.currency_iso_code,
           application_fee_amount: transaction.service_fee_amount
         )
-        charge.update(attrs)
+        charge.update!(attrs)
         charge
       end
 
