@@ -1,5 +1,11 @@
 ### Unreleased
 
+### 2.7.2
+
+* Don't validate SetupIntent for trialing subscriptions - @archonic
+* Validate uniqueness of charges and subscriptions - @excid3
+* Better handle out of order webhooks and race conditions - @excid3
+
 ### 2.7.1
 
 * Refactor Stripe webhooks to always retrieve latest records - @excid3
