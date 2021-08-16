@@ -30,7 +30,7 @@ module Pay
             currency: event["currency"],
             paddle_receipt_url: event["receipt_url"],
             subscription: pay_customer.subscriptions.find_by(processor_id: event["subscription_id"]),
-            metadata: Pay::Paddle.parse_passthrough(event["passthrough"].except("owner_sgid"))
+            metadata: Pay::Paddle.parse_passthrough(event["passthrough"]).except("owner_sgid")
           }.merge(payment_method_details)
 
           charge = pay_customer.charges.find_or_initialize_by(processor_id: event["subscription_payment_id"])
