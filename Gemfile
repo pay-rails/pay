@@ -12,7 +12,7 @@ gemspec
 # your gem to rubygems.org.
 
 gem "byebug"
-gem "appraisal", github: "excid3/appraisal", branch: "fix-bundle-env"
+gem "appraisal"
 gem "overcommit"
 
 gem "braintree", ">= 2.92.0"
