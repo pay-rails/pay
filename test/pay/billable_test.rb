@@ -147,16 +147,24 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     user = User.new
     assert_nil user.payment_processor
 
-    user.set_payment_processor :stripe
-    assert_equal "stripe", user.payment_processor.processor
+    assert_difference "user.pay_customers.count" do
+      user.set_payment_processor :stripe
+      assert_equal "stripe", user.payment_processor.processor
+    end
 
-    user.set_payment_processor :braintree
-    assert_equal "braintree", user.payment_processor.processor
+    assert_difference "user.pay_customers.count" do
+      user.set_payment_processor :braintree
+      assert_equal "braintree", user.payment_processor.processor
+    end
 
-    user.set_payment_processor :paddle
-    assert_equal "paddle", user.payment_processor.processor
+    assert_difference "user.pay_customers.count" do
+      user.set_payment_processor :paddle
+      assert_equal "paddle", user.payment_processor.processor
+    end
 
-    user.set_payment_processor :fake_processor, allow_fake: true
-    assert_equal "fake_processor", user.payment_processor.processor
+    assert_difference "user.pay_customers.count" do
+      user.set_payment_processor :fake_processor, allow_fake: true
+      assert_equal "fake_processor", user.payment_processor.processor
+    end
   end
 end
