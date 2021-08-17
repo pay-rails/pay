@@ -86,7 +86,6 @@ module Pay
         case payment_information[:payment_method]
         when "card"
           {
-            processor_id: subscription_id,
             payment_method_type: :card,
             brand: payment_information[:card_type],
             last4: payment_information[:last_four_digits],
@@ -95,12 +94,11 @@ module Pay
           }
         when "paypal"
           {
-            processor_id: subscription_id,
             payment_method_type: :paypal,
             brand: "PayPal"
           }
         else
-          {processor_id: subscription_id}
+          {}
         end
       end
     end
