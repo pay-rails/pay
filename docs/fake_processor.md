@@ -31,7 +31,7 @@ Pay provides a virtual attribute and validation to ensure the fake processor is 
 # Inside Pay::Billable
 attribute :pay_fake_processor_allowed, :boolean, default: false
 
-validate :pay_fake_processor_allowed
+validate :pay_fake_processor_is_allowed
 
 def pay_fake_processor_is_allowed
   return unless processor == "fake_processor"
