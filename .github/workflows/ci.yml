@@ -14,12 +14,9 @@ jobs:
       matrix:
         ruby: ['2.7', '3.0']
         gemfile:
-          - rails_5_2
           - rails_6
           - rails_6_1
-        exclude:
-          - ruby: '3.0'
-            gemfile: 'rails_5_2'
+          - rails_master
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -50,6 +47,7 @@ jobs:
         gemfile:
           - rails_6
           - rails_6_1
+          - rails_master
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -89,6 +87,7 @@ jobs:
         gemfile:
           - rails_6
           - rails_6_1
+          - rails_master
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
