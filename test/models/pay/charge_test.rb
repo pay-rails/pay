@@ -13,8 +13,12 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     end
   end
 
-  test "#charged_to" do
-    assert_equal "VISA (**** **** **** 4242)", pay_charges(:stripe).charged_to
+  test "#charged_to card" do
+    assert_equal "Visa (**** **** **** 4242)", pay_charges(:stripe).charged_to
+  end
+
+  test "#charged_to paypal" do
+    assert_equal "PayPal (test@example.org)", pay_charges(:braintree).charged_to
   end
 
   test "stores data about the charge" do

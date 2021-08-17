@@ -59,7 +59,12 @@ module Pay
     end
 
     def charged_to
-      "#{card_type} (**** **** **** #{card_last4})"
+      case payment_method_type
+      when "card"
+        "#{brand} (**** **** **** #{last4})"
+      when "paypal"
+        "#{brand} (#{email})"
+      end
     end
   end
 end

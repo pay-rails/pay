@@ -22,8 +22,8 @@ module Pay
         end
 
         def create_charge(pay_customer, event)
-          billable = Pay::Paddle::Billable.new(pay_customer)
-          payment_method_details = billable.payment_information(event["subscription_id"])
+          payment_method_details = Pay::Paddle::PaymentMethod.payment_method_details_for(subscription_id: event["subscription_id"])
+
           attributes = {
             amount: (event["sale_gross"].to_f * 100).to_i,
             created_at: Time.zone.parse(event["event_time"]),
@@ -37,7 +37,7 @@ module Pay
           charge.update!(attributes)
 
           # Update customer's payment method
-          billable.sync_payment_method(attributes: payment_method_details)
+          Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: payment_method_details)
 
           charge
         end

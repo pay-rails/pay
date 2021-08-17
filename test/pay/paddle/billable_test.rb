@@ -37,7 +37,7 @@ class Pay::Paddle::Billable::Test < ActiveSupport::TestCase
     }
     PaddlePay::Subscription::User.stubs(:list).returns([subscription_user])
 
-    @pay_customer.sync_payment_method
+    Pay::Paddle::PaymentMethod.sync(pay_customer: @pay_customer)
 
     assert_equal "card", @pay_customer.default_payment_method.type
     assert_equal "Visa", @pay_customer.default_payment_method.brand

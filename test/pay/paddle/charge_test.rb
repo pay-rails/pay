@@ -9,7 +9,7 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
     charge = @pay_customer.charges.create!(
       processor_id: "11018517",
       amount: 119,
-      card_type: "card",
+      payment_method_type: "card",
       paddle_receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
       created_at: Time.zone.now
     )
@@ -21,7 +21,7 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
     charge = @pay_customer.charges.create!(
       processor_id: "11018517",
       amount: 119,
-      card_type: "card",
+      payment_method_type: "card",
       paddle_receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
       created_at: Time.zone.now
     )
@@ -34,7 +34,7 @@ class Pay::Paddle::Charge::Test < ActiveSupport::TestCase
     charge = @pay_customer.charges.create!(
       processor_id: "does-not-exist",
       amount: 119,
-      card_type: "card",
+      payment_method_type: "card",
       paddle_receipt_url: "https://my.paddle.com/receipt/15124577-11018517/57042319-chre8cc6b3d11d5-1696e10c7c",
       created_at: Time.zone.now
     )

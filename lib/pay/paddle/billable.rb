@@ -22,14 +22,20 @@ module Pay
         subscription = pay_customer.subscription
         return unless subscription.processor_id
         raise Pay::Error, "A charge_name is required to create a one-time charge" if options[:charge_name].nil?
+
         response = PaddlePay::Subscription::Charge.create(subscription.processor_id, amount.to_f / 100, options[:charge_name], options)
-        charge = pay_customer.charges.find_or_initialize_by(processor_id: response[:invoice_id])
-        charge.update(
+
+        attributes = {
           amount: (response[:amount].to_f * 100).to_i,
-          card_type: processor_subscription(subscription.processor_id).payment_information[:payment_method],
           paddle_receipt_url: response[:receipt_url],
           created_at: Time.zone.parse(response[:payment_date])
-        )
+        }
+
+        # Lookup subscription payment method details
+        attributes.merge! Pay::Paddle::PaymentMethod.payment_method_details_for(subscription_id: subscription.processor_id)
+
+        charge = pay_customer.charges.find_or_initialize_by(processor_id: response[:invoice_id])
+        charge.update(attributes)
         charge
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
@@ -40,7 +46,7 @@ module Pay
       end
 
       def add_payment_method(token, default: true)
-        sync_payment_method
+        Pay::Paddle::PaymentMethod.sync(self)
       end
 
       def update_email!
@@ -57,49 +63,6 @@ module Pay
         OpenStruct.new(hash)
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
-      end
-
-      def invoice!(options = {})
-        # pass
-      end
-
-      def upcoming_invoice
-        # pass
-      end
-
-      def sync_payment_method(attributes: nil)
-        payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
-
-        # Lookup payment method from API unless passed in
-        attributes ||= payment_information(pay_customer.subscription.processor_id)
-        payment_method.update!(attributes)
-
-        payment_method
-      rescue ::PaddlePay::PaddlePayError => e
-        raise Pay::Paddle::Error, e
-      end
-
-      def payment_information(subscription_id)
-        subscription_user = PaddlePay::Subscription::User.list({subscription_id: subscription_id}).try(:first)
-        payment_information = subscription_user ? subscription_user[:payment_information] : {}
-
-        case payment_information[:payment_method]
-        when "card"
-          {
-            payment_method_type: :card,
-            brand: payment_information[:card_type],
-            last4: payment_information[:last_four_digits],
-            exp_month: payment_information[:expiry_date].split("/").first,
-            exp_year: payment_information[:expiry_date].split("/").last
-          }
-        when "paypal"
-          {
-            payment_method_type: :paypal,
-            brand: "PayPal"
-          }
-        else
-          {}
-        end
       end
     end
   end
