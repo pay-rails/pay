@@ -1,4 +1,4 @@
-class AddCustomerToPayChargesAndSubscriptions < ActiveRecord::Migration[5.2]
+class AddCustomerToPayChargesAndSubscriptions < ActiveRecord::Migration[6.0]
   def change
     add_column :pay_subscriptions, :metadata, Pay::Adapter.json_column_type
     add_column :pay_charges, :metadata, Pay::Adapter.json_column_type

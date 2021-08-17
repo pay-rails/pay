@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.0
+
+* **Requires Rails 6+**
+
 ### 2.7.2
 
 * Don't validate SetupIntent for trialing subscriptions - @archonic

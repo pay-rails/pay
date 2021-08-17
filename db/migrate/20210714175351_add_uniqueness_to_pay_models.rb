@@ -1,4 +1,4 @@
-class AddUniquenessToPayModels < ActiveRecord::Migration[5.2]
+class AddUniquenessToPayModels < ActiveRecord::Migration[6.0]
   def change
     add_index :pay_charges, [:processor, :processor_id], unique: true
     add_index :pay_subscriptions, [:processor, :processor_id], unique: true

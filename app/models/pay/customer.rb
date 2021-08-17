@@ -5,6 +5,8 @@ class Pay::Customer < Pay::ApplicationRecord
   has_many :payment_methods, dependent: :destroy
   has_one :default_payment_method, -> { where(default: true) }, class_name: "Pay::PaymentMethod"
 
+  validates :processor_id, allow_blank: true, uniqueness: { scope: :processor }
+
   attribute :plan, :string
   attribute :quantity, :integer
   attribute :payment_method_token, :string
@@ -59,5 +61,11 @@ class Pay::Customer < Pay::ApplicationRecord
 
   def customer_name
     [owner.try(:first_name), owner.try(:last_name)].compact.join(" ")
+  end
+
+  %w{ stripe braintree paddle fake_processor }.each do |processor_name|
+    define_method "#{processor_name}?" do
+      processor == processor_name
+    end
   end
 end

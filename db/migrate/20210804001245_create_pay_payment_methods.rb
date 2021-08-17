@@ -1,4 +1,4 @@
-class CreatePayPaymentMethods < ActiveRecord::Migration[5.2]
+class CreatePayPaymentMethods < ActiveRecord::Migration[6.0]
   def change
     create_table :pay_payment_methods do |t|
       t.belongs_to :customer, index: true, foreign_key: {to_table: :pay_customers}

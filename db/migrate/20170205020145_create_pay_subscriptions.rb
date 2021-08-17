@@ -1,4 +1,4 @@
-class CreatePaySubscriptions < ActiveRecord::Migration[5.2]
+class CreatePaySubscriptions < ActiveRecord::Migration[6.0]
   def change
     create_table :pay_subscriptions do |t|
       # Some Billable objects use string as ID, add `type: :string` if needed

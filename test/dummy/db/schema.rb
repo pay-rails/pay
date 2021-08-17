@@ -20,20 +20,16 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
 
   create_table "pay_charges", force: :cascade do |t|
     t.string "processor_id", null: false
-    t.bigint "amount", null: false
-    t.bigint "amount_refunded"
-    t.string "card_type"
-    t.string "card_last4"
-    t.string "card_exp_month"
-    t.string "card_exp_year"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer "amount", null: false
+    t.integer "amount_refunded"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.json "data"
     t.string "currency"
-    t.bigint "application_fee_amount"
-    t.bigint "pay_subscription_id"
+    t.integer "application_fee_amount"
+    t.integer "pay_subscription_id"
     t.json "metadata"
-    t.bigint "customer_id"
+    t.integer "customer_id"
     t.index ["customer_id", "processor_id"], name: "index_pay_charges_on_customer_id_and_processor_id", unique: true
     t.index ["customer_id"], name: "index_pay_charges_on_customer_id"
   end
@@ -45,10 +41,10 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "processor_id"
     t.boolean "default"
     t.json "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["owner_type", "owner_id", "processor"], name: "index_pay_customers_on_owner_type_and_owner_id_and_processor"
-    t.index ["owner_type", "owner_id"], name: "index_pay_customers_on_owner"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["owner_type", "owner_id", "processor", "processor_id"], name: "unique_owner_and_processor_id"
+    t.index ["owner_type", "owner_id"], name: "index_pay_customers_on_owner_type_and_owner_id"
   end
 
   create_table "pay_merchants", force: :cascade do |t|
@@ -58,10 +54,10 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "processor_id"
     t.boolean "default"
     t.json "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["owner_type", "owner_id", "processor"], name: "index_pay_merchants_on_owner_type_and_owner_id_and_processor"
-    t.index ["owner_type", "owner_id"], name: "index_pay_merchants_on_owner"
+    t.index ["owner_type", "owner_id"], name: "index_pay_merchants_on_owner_type_and_owner_id"
   end
 
   create_table "pay_payment_methods", force: :cascade do |t|
@@ -70,8 +66,8 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.boolean "default"
     t.string "type"
     t.json "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["customer_id", "processor_id"], name: "index_pay_payment_methods_on_customer_id_and_processor_id", unique: true
     t.index ["customer_id"], name: "index_pay_payment_methods_on_customer_id"
   end
@@ -80,16 +76,16 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "name", null: false
     t.string "processor_id", null: false
     t.string "processor_plan", null: false
-    t.bigint "quantity", default: 1, null: false
+    t.integer "quantity", default: 1, null: false
     t.datetime "trial_ends_at"
     t.datetime "ends_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.string "status"
     t.json "data"
     t.decimal "application_fee_percent", precision: 8, scale: 2
     t.json "metadata"
-    t.bigint "customer_id"
+    t.integer "customer_id"
     t.index ["customer_id", "processor_id"], name: "index_pay_subscriptions_on_customer_id_and_processor_id", unique: true
     t.index ["customer_id"], name: "index_pay_subscriptions_on_customer_id"
   end
@@ -98,9 +94,9 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.string "email"
     t.string "name"
     t.string "owner_type"
-    t.bigint "owner_id"
+    t.integer "owner_id"
     t.text "extra_billing_info"
-    t.index ["owner_type", "owner_id"], name: "index_teams_on_owner"
+    t.index ["owner_type", "owner_id"], name: "index_teams_on_owner_type_and_owner_id"
   end
 
   create_table "users", force: :cascade do |t|
