@@ -55,7 +55,7 @@ module Pay
           pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
         end
 
-        # Save the latest charge if we already have it and it was successful (otherwise, let webhooks take care of creating it)
+        # Sync the latest charge if we already have it loaded (like during subscrbe), otherwise, let webhooks take care of creating it
         if (charge = object.try(:latest_invoice).try(:charge)) && charge.try(:status) == "succeeded"
           Pay::Stripe::Charge.sync(charge.id, object: charge)
         end
