@@ -39,7 +39,7 @@ module Pay
           paddle_update_url: object.update_url,
           processor_plan: object.plan_id || object.subscription_plan_id,
           quantity: object.quantity,
-          status: object.state || object.status,
+          status: object.state || object.status
         }
 
         # If paused or delete while on trial, set ends_at to match
