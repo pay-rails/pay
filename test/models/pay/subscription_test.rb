@@ -231,8 +231,21 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "should cancel active subscriptions when owner is deleted" do
-    @owner.destroy
-    assert_equal "canceled", @subscription.status
+    # TODO: Need to figure out how to test that cancel_now! was called on the Subscription
+    # Maybe we do it via after_commit :cancel_now!, on: [:destroy] ?
+    fail
+  end
+  
+  test "should delete associated pay_customer when owner is deleted" do
+    assert_difference("Pay::Customer.count", -1) do
+      @owner.destroy
+    end
+  end
+
+  test "should delete associated pay_subscription when owner is deleted" do
+    assert_difference("Pay::Subscription.count", -1) do
+      @owner.destroy
+    end
   end  
 
   private
