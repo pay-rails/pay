@@ -69,7 +69,7 @@ module Pay
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         quantity = options.delete(:quantity) || 1
         opts = {
-          expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
+          expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"],
           items: [plan: plan, quantity: quantity],
           off_session: true
         }.merge(options)

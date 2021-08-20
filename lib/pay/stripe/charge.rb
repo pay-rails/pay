@@ -12,6 +12,7 @@ module Pay
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
 
+        payment_method = object.payment_method_details.send(object.payment_method_details.type)
         attrs = {
           amount: object.amount,
           amount_refunded: object.amount_refunded,
@@ -19,19 +20,14 @@ module Pay
           created_at: Time.at(object.created),
           currency: object.currency,
           stripe_account: pay_customer.stripe_account,
-          metadata: object.metadata
-        }
-
-        # Store payment method details
-        details = object.payment_method_details.send(object.payment_method_details.type)
-        attrs.merge(
+          metadata: object.metadata,
           payment_method_type: object.payment_method_details.type,
-          brand: details.try(:brand)&.capitalize,
-          last4: details.try(:last4).to_s,
-          exp_month: details.try(:exp_month).to_s,
-          exp_year: details.try(:exp_year).to_s,
-          bank: details.try(:bank_name) || details.try(:bank) # eps, fpx, ideal, p24, acss_debit, etc
-        )
+          brand: payment_method.try(:brand)&.capitalize,
+          last4: payment_method.try(:last4).to_s,
+          exp_month: payment_method.try(:exp_month).to_s,
+          exp_year: payment_method.try(:exp_year).to_s,
+          bank: payment_method.try(:bank_name) || payment_method.try(:bank) # eps, fpx, ideal, p24, acss_debit, etc
+        }
 
         # Associate charge with subscription if we can
         if object.invoice

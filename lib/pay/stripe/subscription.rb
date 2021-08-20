@@ -21,7 +21,7 @@ module Pay
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest subscription details from the API if we already have it
-        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"]}, {stripe_account: stripe_account}.compact)
+        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]}, {stripe_account: stripe_account}.compact)
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
@@ -48,14 +48,19 @@ module Pay
         end
 
         # Update or create the subscription
-        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id))
-          pay_subscription.with_lock do
-            pay_subscription.update!(attributes)
-          end
-          pay_subscription
+        pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
+        if pay_subscription
+          pay_subscription.with_lock { pay_subscription.update!(attributes) }
         else
-          pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
+          pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
         end
+
+        # Save the latest charge if it was successful
+        if (charge = object.latest_invoice.charge) && charge.status == "succeeded"
+          Pay::Stripe::Charge.sync(charge.id, object: charge)
+        end
+
+        pay_subscription
       rescue ActiveRecord::RecordInvalid
         try += 1
         if try <= retries

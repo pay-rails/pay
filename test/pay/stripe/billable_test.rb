@@ -52,6 +52,16 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_equal "small-monthly", @pay_customer.subscription.processor_plan
   end
 
+  test "stripe subscribe also saves initial charge" do
+    assert_difference "@pay_customer.charges.count" do
+      @pay_customer.payment_method_token = payment_method
+      @pay_customer.subscribe(name: "default", plan: "small-monthly")
+    end
+
+    assert @pay_customer.subscribed?
+    assert_equal "Visa", @pay_customer.charges.last.brand
+  end
+
   test "stripe can swap a subscription" do
     @pay_customer.payment_method_token = payment_method
     subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
