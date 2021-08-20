@@ -236,14 +236,21 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     fail
   end
   
-  test "should delete associated pay_customer when owner is deleted" do
-    assert_difference("Pay::Customer.count", -1) do
+  test "should delete associated pay_charges when owner is deleted" do
+    # TODO: Need to add a Pay::Charge record in fixtures.
+    assert_difference("Pay::Charge.count", -(@owner.charges.count)) do
       @owner.destroy
     end
   end
 
-  test "should delete associated pay_subscription when owner is deleted" do
-    assert_difference("Pay::Subscription.count", -1) do
+  test "should delete associated pay_customers when owner is deleted" do
+    assert_difference("Pay::Customer.count", -(@owner.pay_customers.count)) do
+      @owner.destroy
+    end
+  end
+
+  test "should delete associated pay_subscriptions when owner is deleted" do
+    assert_difference("Pay::Subscription.count", -(@owner.subscriptions.count)) do
       @owner.destroy
     end
   end  
