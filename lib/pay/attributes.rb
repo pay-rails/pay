@@ -13,7 +13,7 @@ module Pay
         has_many :subscriptions, through: :pay_customers, class_name: "Pay::Subscription", dependent: :destroy
         has_one :payment_processor, -> { where(default: true) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
 
-        after_commit :cancel_active_subscriptions!, on: :destroy
+        before_destroy :cancel_active_subscriptions!
       end
 
       # Changes a user's payment processor
