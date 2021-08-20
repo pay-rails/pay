@@ -72,11 +72,6 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
-  test "should cancel active subscriptions when owner is deleted" do
-    @pay_customer.owner.destroy
-    assert_equal "canceled", @pay_customer.subscription.status
-  end
-
   private
 
   def fake_stripe_subscription(**values)

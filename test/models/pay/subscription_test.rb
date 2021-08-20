@@ -230,6 +230,11 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert Pay::Subscription.new(customer: pay_customers(:fake), status: :active, ends_at: 1.day.ago).canceled?
   end
 
+  test "should cancel active subscriptions when owner is deleted" do
+    @owner.destroy
+    assert_equal "canceled", @subscription.status
+  end  
+
   private
 
   def create_subscription(options = {})
