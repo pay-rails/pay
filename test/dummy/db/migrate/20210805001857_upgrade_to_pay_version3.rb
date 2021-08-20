@@ -40,11 +40,11 @@ class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
           begin
             case pay_customer.processor
             when "braintree"
-              #payment_method_id = pay_customer.customer.payment_methods.find(&:default?)
-              #Pay::Braintree::PaymentMethod.sync(payment_method_id) if payment_method_id
+              payment_method_id = pay_customer.customer.payment_methods.find(&:default?)
+              Pay::Braintree::PaymentMethod.sync(payment_method_id) if payment_method_id
             when "stripe"
-              #payment_method_id = pay_customer.customer.invoice_settings.default_payment_method
-              #Pay::Stripe::PaymentMethod.sync(payment_method_id) if payment_method_id
+              payment_method_id = pay_customer.customer.invoice_settings.default_payment_method
+              Pay::Stripe::PaymentMethod.sync(payment_method_id) if payment_method_id
             end
           rescue
           end
