@@ -30,7 +30,6 @@ module Pay
           application_fee_percent: object.application_fee_percent,
           processor_plan: object.plan.id,
           quantity: object.quantity,
-          name: name,
           status: object.status,
           stripe_account: pay_customer.stripe_account,
           trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil),
@@ -55,7 +54,7 @@ module Pay
           end
           pay_subscription
         else
-          pay_customer.subscriptions.create!(attributes.merge(processor_id: object.id))
+          pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
         end
       rescue ActiveRecord::RecordInvalid
         try += 1

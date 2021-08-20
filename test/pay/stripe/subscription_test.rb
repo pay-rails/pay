@@ -20,6 +20,13 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert pay_subscription.is_a?(Pay::Subscription)
   end
 
+  test "sync Pay::Subscription retains custom name" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription, name: "Custom")
+    assert_equal "Custom", pay_subscription.name
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    assert_equal "Custom", pay_subscription.name
+  end
+
   test "sync stripe subscription by ID" do
     assert_difference "Pay::Subscription.count" do
       ::Stripe::Subscription.stubs(:retrieve).returns(fake_stripe_subscription)
