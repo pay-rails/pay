@@ -2,9 +2,9 @@ require "test_helper"
 
 class Pay::Paddle::Webhooks::SubscriptionCancelledTest < ActiveSupport::TestCase
   setup do
-    @data = JSON.parse(File.read("test/support/fixtures/paddle/subscription_cancelled.json"))
+    @data = OpenStruct.new JSON.parse(File.read("test/support/fixtures/paddle/subscription_cancelled.json"))
     @pay_customer = pay_customers(:paddle)
-    @pay_customer.update(processor_id: @data["user_id"])
+    @pay_customer.update(processor_id: @data.user_id)
   end
 
   test "it sets ends_at on the subscription" do

@@ -2,9 +2,9 @@ require "test_helper"
 
 class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::TestCase
   setup do
-    @data = JSON.parse(File.read("test/support/fixtures/paddle/subscription_payment_succeeded.json"))
+    @data = OpenStruct.new JSON.parse(File.read("test/support/fixtures/paddle/subscription_payment_succeeded.json"))
     @pay_customer = pay_customers(:paddle)
-    @pay_customer.update(processor_id: @data["user_id"])
+    @pay_customer.update(processor_id: @data.user_id)
   end
 
   test "a charge is created" do
@@ -27,14 +27,14 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
     end
 
     charge = Pay::Charge.last
-    assert_equal (@data["sale_gross"].to_f * 100).to_i, charge.amount
+    assert_equal (@data.sale_gross.to_f * 100).to_i, charge.amount
     assert_equal "card", charge.payment_method_type
     assert_equal "Visa", charge.brand
-    assert_equal @data["receipt_url"], charge.paddle_receipt_url
+    assert_equal @data.receipt_url, charge.paddle_receipt_url
   end
 
   test "paddle charge is associated with subscription" do
-    @pay_customer.subscription.update!(processor_id: @data["subscription_id"])
+    @pay_customer.subscription.update!(processor_id: @data.subscription_id)
     assert_difference "Pay::Charge.count" do
       PaddlePay::Subscription::User.stubs(:list).returns(:nil)
       Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new.call(@data)
@@ -44,7 +44,7 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
   end
 
   test "a charge is created and card details are set" do
-    @data["payment_method"] = "card"
+    @data.payment_method = "card"
     subscription_user = {
       subscription_id: 7654321,
       plan_id: 123456,
@@ -141,7 +141,7 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
   end
 
   test "a charge isn't created if it already exists" do
-    @pay_customer.charges.create!(processor_id: @data["subscription_payment_id"], amount: 1_00, payment_method_type: @data["payment_method"])
+    @pay_customer.charges.create!(processor_id: @data.subscription_payment_id, amount: 1_00, payment_method_type: @data.payment_method)
 
     assert_no_difference "Pay::Charge.count" do
       Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new.call(@data)
