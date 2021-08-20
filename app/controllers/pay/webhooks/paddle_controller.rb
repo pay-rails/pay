@@ -25,7 +25,7 @@ module Pay
       def verified_event
         event = check_params.as_json
         verifier = Pay::Paddle::Webhooks::SignatureVerifier.new(event)
-        return event if verifier.verify
+        return OpenStruct.new(event) if verifier.verify
         raise Pay::Paddle::Error, "Unable to verify Paddle webhook event"
       end
 
