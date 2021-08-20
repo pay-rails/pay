@@ -85,6 +85,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
       current_period_start: 1486568724,
       customer: "cus_1234",
       ended_at: nil,
+      latest_invoice: "in_1000",
       plan: {
         id: "default"
       },
