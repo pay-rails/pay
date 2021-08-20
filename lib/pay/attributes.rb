@@ -12,6 +12,8 @@ module Pay
         has_many :charges, through: :pay_customers, class_name: "Pay::Charge", dependent: :destroy
         has_many :subscriptions, through: :pay_customers, class_name: "Pay::Subscription", dependent: :destroy
         has_one :payment_processor, -> { where(default: true) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
+
+        after_commit :cancel_active_subscriptions!, on: :destroy
       end
 
       # Changes a user's payment processor
@@ -54,5 +56,12 @@ module Pay
         end
       end
     end
+
+    private
+
+    def cancel_active_subscriptions!
+      byebug
+    end
+
   end
 end
