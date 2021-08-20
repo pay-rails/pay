@@ -3,6 +3,12 @@
 ### 3.0.0
 
 * **Requires Rails 6+**
+* Migrates `processor` and `processor_id` from models to `Pay::Customer` model
+* Replaces include Pay::Billable with pay_customer method
+* Replaces include Pay::Merchant with pay_merchant method
+* Changes Pay::Charge to associate with Pay::Customer instead of `owner{polymorphic}`
+* Changes Pay::Subscription to associate with `Pay::Customer` instead of `owner{polymorphic}`
+* Migrates card fields from models to `Pay::PaymentMethod` model
 
 ### 2.7.2
 
