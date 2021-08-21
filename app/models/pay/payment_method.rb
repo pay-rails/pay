@@ -17,7 +17,7 @@ class Pay::PaymentMethod < Pay::ApplicationRecord
   # Aliases to share PaymentMethodAttributes
   alias_attribute :payment_method_type, :type
 
-  validates :processor_id, presence: true, uniqueness: {scope: :customer_id}
+  validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
 
   def self.find_by_processor_and_id(processor, processor_id)
     joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})
