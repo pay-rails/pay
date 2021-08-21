@@ -15,7 +15,7 @@ class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
   end
 
   test "stripe is not called if user can't be found" do
-    event = stripe_event("test/support/fixtures/stripe/customer_updated_event.json", overrides: {"object" => { "id" => "missing"}})
+    event = stripe_event("test/support/fixtures/stripe/customer_updated_event.json", overrides: {"object" => {"id" => "missing"}})
     Pay::Stripe::Billable.any_instance.expects(:sync_payment_method_from_stripe).never
     Pay::Stripe::Webhooks::CustomerUpdated.new.call(event)
   end
