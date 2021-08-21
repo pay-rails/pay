@@ -54,6 +54,5 @@ module Pay
         end
       end
     end
-
   end
 end
