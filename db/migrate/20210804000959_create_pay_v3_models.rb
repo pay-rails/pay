@@ -6,10 +6,15 @@ class CreatePayV3Models < ActiveRecord::Migration[6.0]
       t.string :processor_id
       t.boolean :default
       t.public_send Pay::Adapter.json_column_type, :data
+      t.datetime :deleted_at
 
       t.timestamps
     end
-    add_index :pay_customers, [:owner_type, :owner_id, :processor]
+    # Index for `payment_processor` and `pay_customer` associations
+    add_index :pay_customers, [:owner_type, :owner_id, :deleted_at, :default], name: :customer_owner_processor_index
+
+    # Index typically used by webhooks
+    add_index :pay_customers, [:processor, :processor_id]
 
     create_table :pay_merchants do |t|
       t.belongs_to :owner, polymorphic: true, index: false

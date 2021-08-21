@@ -39,14 +39,28 @@ class ActiveSupport::TestCase
     Pay.braintree_gateway.webhook_notification.parse(raw["bt_signature"], raw["bt_payload"])
   end
 
-  def stripe_event(filename)
-    ::Stripe::Event.construct_from({data: JSON.parse(File.read(filename))})
+  def stripe_event(filename, overrides: {})
+    data = JSON.parse(File.read(filename))
+    ::Stripe::Event.construct_from({data: data.deep_merge(overrides)})
   end
 
   def travel_to_cassette
     travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
       yield
     end
+  end
+
+  def assert_indexed_selects
+    subscriber = ActiveSupport::Notifications.subscribe "sql.active_record" do |name, started, finished, unique_id, data|
+      if data[:sql].starts_with? "SELECT"
+        result = data[:connection].explain(data[:sql], data[:binds]).downcase
+        assert result.include?("index"), "Query `#{data[:name]}` did not use an index!"
+      end
+    end
+
+    yield
+
+    ActiveSupport::Notifications.unsubscribe(subscriber)
   end
 end
 

@@ -5,10 +5,11 @@ class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
     @event = stripe_event("test/support/fixtures/stripe/customer_deleted_event.json")
   end
 
-  test "a customers subscription information is nulled out upon deletion" do
+  test "stripe customer delete marks pay customer deleted" do
     pay_customer = pay_customers(:stripe)
-    pay_customer.update(processor_id: @event.data.object.id)
-    pay_customer.subscriptions.create!(
+    pay_customer.update!(processor_id: @event.data.object.id)
+    pay_customer.payment_methods.create!(processor_id: "pm_fake")
+    pay_subscription = pay_customer.subscriptions.create!(
       processor_id: "sub_someid",
       name: "default",
       processor_plan: "some-plan",
@@ -16,10 +17,14 @@ class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
       status: "active"
     )
 
-    assert_difference "Pay::Subscription.count", -2 do
-      assert_difference "Pay::Customer.count", -1 do
-        Pay::Stripe::Webhooks::CustomerDeleted.new.call(@event)
-      end
-    end
+    Pay::Stripe::Webhooks::CustomerDeleted.new.call(@event)
+
+    pay_customer.reload
+    pay_subscription.reload
+
+    refute pay_customer.default?
+    assert pay_customer.deleted_at?
+    assert_empty pay_customer.payment_methods
+    assert pay_subscription.canceled?
   end
 end

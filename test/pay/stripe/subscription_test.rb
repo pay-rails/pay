@@ -46,9 +46,8 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "sync stripe subscription ignores when customer is missing" do
-    @pay_customer.destroy
     assert_no_difference "Pay::Subscription.count" do
-      Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+      Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(customer: "missing"))
     end
   end
 

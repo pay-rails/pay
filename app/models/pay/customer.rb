@@ -5,6 +5,9 @@ class Pay::Customer < Pay::ApplicationRecord
   has_many :payment_methods, dependent: :destroy
   has_one :default_payment_method, -> { where(default: true) }, class_name: "Pay::PaymentMethod"
 
+  scope :active, ->{ where(deleted_at: nil) }
+  scope :deleted, ->{ where.not(deleted_at: nil) }
+
   validates :processor_id, allow_blank: true, uniqueness: {scope: :processor}
 
   attribute :plan, :string
