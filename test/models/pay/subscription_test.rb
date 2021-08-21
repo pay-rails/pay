@@ -239,7 +239,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "should delete associated pay_customers when owner is deleted" do
-    assert_difference("Pay::Customer.count", -(@owner.pay_customers.count)) do
+    assert_difference("Pay::Customer.count", -@owner.pay_customers.count) do
       @owner.destroy
     end
   end
