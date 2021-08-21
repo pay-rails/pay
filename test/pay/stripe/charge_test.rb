@@ -23,9 +23,8 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
   end
 
   test "sync stripe charge ignores when customer is missing" do
-    @pay_customer.destroy
     assert_no_difference "Pay::Charge.count" do
-      Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
+      Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(customer: "missing"))
     end
   end
 

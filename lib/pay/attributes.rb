@@ -8,10 +8,10 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
+        has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner, dependent: :destroy
         has_many :charges, through: :pay_customers, class_name: "Pay::Charge"
         has_many :subscriptions, through: :pay_customers, class_name: "Pay::Subscription"
-        has_one :payment_processor, -> { where(default: true) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
+        has_one :payment_processor, -> { where(default: true, deleted_at: nil) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
       end
 
       # Changes a user's payment processor
@@ -25,7 +25,7 @@ module Pay
 
         ActiveRecord::Base.transaction do
           pay_customers.update_all(default: false)
-          pay_customer = pay_customers.where(processor: processor_name).first_or_initialize
+          pay_customer = pay_customers.active.where(processor: processor_name).first_or_initialize
           pay_customer.update!(attributes.merge(default: true))
         end
 
