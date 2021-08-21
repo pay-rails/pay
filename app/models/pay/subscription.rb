@@ -15,6 +15,9 @@ module Pay
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
 
+    # Callbacks
+    before_destroy :cancel_now!, if: :active?
+
     # TODO: Include these with a module
     store_accessor :data, :paddle_update_url
     store_accessor :data, :paddle_cancel_url
