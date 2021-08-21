@@ -230,16 +230,11 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert Pay::Subscription.new(customer: pay_customers(:fake), status: :active, ends_at: 1.day.ago).canceled?
   end
 
-  test "should cancel active subscriptions when owner is deleted" do
-    # TODO: Need to figure out how to test that cancel_now! was called on the Subscription
-    # Maybe we do it via after_commit :cancel_now!, on: [:destroy] ?
-    fail
-  end
-  
-  test "should delete associated pay_charges when owner is deleted" do
-    # TODO: Need to add a Pay::Charge record in fixtures.
-    assert_difference("Pay::Charge.count", -(@owner.charges.count)) do
-      @owner.destroy
+  test "should cancel active subscriptions before being deleted" do
+    assert_equal "active", @subscription.status
+    freeze_time do
+      @subscription.destroy
+      assert_equal "canceled", @subscription.status
     end
   end
 
@@ -248,12 +243,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       @owner.destroy
     end
   end
-
-  test "should delete associated pay_subscriptions when owner is deleted" do
-    assert_difference("Pay::Subscription.count", -(@owner.subscriptions.count)) do
-      @owner.destroy
-    end
-  end  
 
   private
 
