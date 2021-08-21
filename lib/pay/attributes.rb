@@ -8,7 +8,7 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
+        has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner, dependent: :destroy
         has_many :charges, through: :pay_customers, class_name: "Pay::Charge"
         has_many :subscriptions, through: :pay_customers, class_name: "Pay::Subscription"
         has_one :payment_processor, -> { where(default: true) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
