@@ -12,7 +12,7 @@ module Pay
 
     # Validations
     validates :amount, presence: true
-    validates :processor_id, presence: true, uniqueness: {scope: :customer_id}
+    validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
 
     # Store the payment method kind (card, paypal, etc)
     store_accessor :data, :paddle_receipt_url

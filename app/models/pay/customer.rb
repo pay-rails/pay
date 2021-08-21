@@ -8,7 +8,7 @@ class Pay::Customer < Pay::ApplicationRecord
   scope :active, -> { where(deleted_at: nil) }
   scope :deleted, -> { where.not(deleted_at: nil) }
 
-  validates :processor_id, allow_blank: true, uniqueness: {scope: :processor}
+  validates :processor_id, allow_blank: true, uniqueness: {scope: :processor, case_sensitive: true}
 
   attribute :plan, :string
   attribute :quantity, :integer
