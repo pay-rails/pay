@@ -9,6 +9,8 @@
 * Changes Pay::Charge to associate with Pay::Customer instead of `owner{polymorphic}`
 * Changes Pay::Subscription to associate with `Pay::Customer` instead of `owner{polymorphic}`
 * Migrates card fields from models to `Pay::PaymentMethod` model
+* Subscriptions are automatically canceled when a Pay::Subscription deleted - @stevepolitodesign
+* Active subscriptions are canceled when a Pay::Customer's owner is deleted - @stevepolitodesign
 
 ### 2.7.2
 
