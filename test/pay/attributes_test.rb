@@ -21,4 +21,11 @@ class Pay::AttributesTest < ActiveSupport::TestCase
 
     assert user.payment_processor
   end
+
+  test "deleting user doesn't remove pay customers" do
+    Pay::Subscription.any_instance.expects(:cancel_now!)
+    assert_no_difference "Pay::Customer.count" do
+      users(:stripe).destroy
+    end
+  end
 end

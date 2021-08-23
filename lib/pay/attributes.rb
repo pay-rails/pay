@@ -8,10 +8,12 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner, dependent: :destroy
+        has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
         has_many :charges, through: :pay_customers, class_name: "Pay::Charge"
         has_many :subscriptions, through: :pay_customers, class_name: "Pay::Subscription"
         has_one :payment_processor, -> { where(default: true, deleted_at: nil) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
+
+        after_commit :cancel_active_pay_subscriptions!, on: [:destroy]
       end
 
       # Changes a user's payment processor
@@ -31,6 +33,10 @@ module Pay
 
         # Return new payment processor
         reload_payment_processor
+      end
+
+      def cancel_active_pay_subscriptions!
+        subscriptions.active.each(&:cancel_now!)
       end
     end
 
