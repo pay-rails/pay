@@ -145,6 +145,8 @@ module Pay
         attrs = card_details_for_braintree_transaction(transaction)
         attrs[:amount] = transaction.amount.to_f * 100
         attrs[:metadata] = transaction.custom_fields
+        attrs[:currency] = transaction.currency_iso_code
+        attrs[:application_fee_amount] = transaction.service_fee_amount
 
         # Associate charge with subscription if we can
         if transaction.subscription_id
@@ -153,11 +155,7 @@ module Pay
           attrs[:metadata] = pay_subscription.metadata
         end
 
-        charge = pay_customer.charges.find_or_initialize_by(
-          processor_id: transaction.id,
-          currency: transaction.currency_iso_code,
-          application_fee_amount: transaction.service_fee_amount
-        )
+        charge = pay_customer.charges.find_or_initialize_by(processor_id: transaction.id)
         charge.update!(attrs)
         charge
       end
