@@ -34,4 +34,30 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     charge.update(metadata: metadata)
     assert_equal metadata, charge.metadata
   end
+
+  test "with_active_customer scope" do
+    charge = pay_charges(:stripe)
+    customer = charge.customer
+    charges = Pay::Charge.with_active_customer
+
+    assert_includes charges, charge
+    customer.update(deleted_at: Time.now)
+
+    refute_includes charges, charge
+  end
+  
+  test "with_deleted_customer scope" do
+    charge = pay_charges(:stripe)
+    customer = charge.customer
+    charges = Pay::Charge.with_deleted_customer
+
+    refute_includes charges, charge
+    customer.update(deleted_at: Time.now)
+
+    assert_includes charges, charge
+  end
+
+  private
+
+
 end
