@@ -45,7 +45,7 @@ class Pay::Charge::Test < ActiveSupport::TestCase
 
     refute_includes charges, charge
   end
-  
+
   test "with_deleted_customer scope" do
     charge = pay_charges(:stripe)
     customer = charge.customer
@@ -58,6 +58,4 @@ class Pay::Charge::Test < ActiveSupport::TestCase
   end
 
   private
-
-
 end
