@@ -66,6 +66,14 @@ class Pay::Customer < Pay::ApplicationRecord
     [owner.try(:first_name), owner.try(:last_name)].compact.join(" ")
   end
 
+  def active?
+    deleted_at.nil?
+  end
+
+  def deleted?
+    deleted_at.present?
+  end
+
   %w[stripe braintree paddle fake_processor].each do |processor_name|
     define_method "#{processor_name}?" do
       processor == processor_name
