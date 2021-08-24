@@ -96,7 +96,9 @@ class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
     MODELS.each do |klass|
       remove_column klass.table_name, :processor
       remove_column klass.table_name, :processor_id
-      remove_column klass.table_name, :pay_data
+      if ActiveRecord::Base.connection.column_exists?(klass.table_name, :pay_data)
+        remove_column klass.table_name, :pay_data
+      end
       remove_column klass.table_name, :card_type
       remove_column klass.table_name, :card_last4
       remove_column klass.table_name, :card_exp_month
