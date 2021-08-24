@@ -47,12 +47,11 @@ class Pay::Charge::Test < ActiveSupport::TestCase
   test "with_deleted_customer scope" do
     charge = pay_charges(:stripe)
     customer = charge.customer
-    charges = Pay::Charge.with_deleted_customer
 
-    refute_includes charges, charge
+    refute_includes Pay::Charge.with_deleted_customer, charge
     customer.update(deleted_at: Time.now)
 
-    assert_includes charges, charge
+    assert_includes Pay::Charge.with_deleted_customer, charge
   end
 
   private
