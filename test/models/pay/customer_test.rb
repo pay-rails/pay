@@ -11,11 +11,12 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert_includes Pay::Customer.deleted, pay_customers(:deleted)
   end
 
+  test "active?" do
+    assert pay_customers(:stripe).active?
+  end
+
   test "deleted?" do
     assert pay_customers(:deleted).deleted?
   end
 
-  test "active?" do
-    assert pay_customers(:stripe).deleted?
-  end
 end
