@@ -18,5 +18,4 @@ class Pay::CustomerTest < ActiveSupport::TestCase
   test "deleted?" do
     assert pay_customers(:deleted).deleted?
   end
-
 end
