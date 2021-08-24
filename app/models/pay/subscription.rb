@@ -14,6 +14,7 @@ module Pay
     scope :active, -> { where(ends_at: nil).or(on_grace_period).or(on_trial) }
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
+    scope :with_deleted_customer, -> { joins(:customer).merge(Customer.deleted) }
 
     # Callbacks
     before_destroy :cancel_now!, if: :active?
