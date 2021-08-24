@@ -118,6 +118,26 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription5
   end
 
+  test "with_active_customer scope" do
+    subscription = create_subscription
+
+    assert_includes Pay::Subscription.with_active_customer, subscription
+
+    @pay_customer.update!(deleted_at: Time.now)
+
+    refute_includes Pay::Subscription.with_active_customer, subscription
+  end
+
+  test "with_deleted_customer scope" do
+    subscription = create_subscription
+
+    refute_includes Pay::Subscription.with_deleted_customer, subscription
+
+    @pay_customer.update!(deleted_at: Time.now)
+
+    assert_includes Pay::Subscription.with_deleted_customer, subscription
+  end
+
   test "active trial" do
     @subscription.trial_ends_at = 5.minutes.from_now
     assert @subscription.on_trial?
