@@ -9,11 +9,3 @@ Pay.braintree_gateway = Braintree::Gateway.new(
 logger = Logger.new("/dev/null")
 logger.level = Logger::INFO
 Pay.braintree_gateway.config.logger = logger
-
-module Braintree
-  class Configuration
-    def self.gateway
-      Pay.braintree_gateway
-    end
-  end
-end
