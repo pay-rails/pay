@@ -7,13 +7,24 @@ class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
     @pay_customer.update(processor_id: @event.data.object.customer)
   end
 
-  test "an email is sent to the user when subscription is renewing" do
+  test "yearly subscription should receive renewal email" do
+    @event.data.object.lines.data.first.price.recurring.interval = "year"
+
     create_subscription(processor_id: @event.data.object.subscription)
     Pay::Stripe::Webhooks::SubscriptionRenewing.new.call(@event)
     assert_enqueued_emails 1
   end
 
-  test "an email is not sent when subscription can't be found" do
+  test "monthly subscription should not receive renewal email" do
+    @event.data.object.lines.data.first.price.recurring.interval = "month"
+
+    create_subscription(processor_id: @event.data.object.subscription)
+    assert_no_enqueued_emails do
+      Pay::Stripe::Webhooks::SubscriptionRenewing.new.call(@event)
+    end
+  end
+
+  test "missing subscription should not receive renewal email" do
     assert_no_enqueued_emails do
       create_subscription(processor_id: "does-not-exist")
       Pay::Stripe::Webhooks::SubscriptionRenewing.new.call(@event)

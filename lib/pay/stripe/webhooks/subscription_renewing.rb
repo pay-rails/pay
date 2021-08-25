@@ -11,6 +11,13 @@ module Pay
           subscription = Pay::Subscription.find_by_processor_and_id(:stripe, event.data.object.subscription)
           return unless subscription
 
+          # Stripe subscription items all have the same interval
+          price = event.data.object.lines.data.first.price
+          return unless price.type == "recurring"
+
+          interval = price.recurring.interval
+          return unless interval == "year"
+
           notify_user(subscription.customer.owner, subscription, Time.zone.at(event.data.object.next_payment_attempt))
         end
 
