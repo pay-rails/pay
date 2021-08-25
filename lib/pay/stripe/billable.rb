@@ -1,8 +1,6 @@
 module Pay
   module Stripe
     class Billable
-      include Rails.application.routes.url_helpers
-
       attr_reader :pay_customer
 
       delegate :processor_id,
@@ -17,6 +15,7 @@ module Pay
       def self.default_url_options
         Rails.application.config.action_mailer.default_url_options || {}
       end
+      include Rails.application.routes.url_helpers
 
       def initialize(pay_customer)
         @pay_customer = pay_customer
