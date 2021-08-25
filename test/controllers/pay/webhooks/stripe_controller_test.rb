@@ -36,7 +36,7 @@ module Pay
       pay_customer = pay_customers(:stripe)
       pay_customer.update(processor_id: stripe_event.data.object.customer)
 
-      assert_difference "Pay::Webhook.count"  do
+      assert_difference "Pay::Webhook.count" do
         assert_enqueued_with(job: Pay::Webhooks::ProcessJob) do
           post webhooks_stripe_path, params: params
           assert_response :success

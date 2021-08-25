@@ -24,7 +24,6 @@ module Pay
         status: "active"
       )
 
-
       assert_difference("Pay::Webhook.count") do
         assert_enqueued_with(job: Pay::Webhooks::ProcessJob) do
           post webhooks_braintree_path, params: params
