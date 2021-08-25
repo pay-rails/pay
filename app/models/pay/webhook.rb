@@ -1,5 +1,9 @@
 module Pay
   class Webhook < Pay::ApplicationRecord
+    validates :processor, presence: true
+    validates :event_type, presence: true
+    validates :event, presence: true
+
     def process!
       Pay::Webhooks.instrument type: "#{processor}.#{event_type}", event: rehydrated_event
 
