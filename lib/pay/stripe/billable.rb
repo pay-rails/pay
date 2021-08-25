@@ -14,10 +14,8 @@ module Pay
         :stripe_account,
         to: :pay_customer
 
-      class << self
-        def default_url_options
-          Rails.application.config.action_mailer.default_url_options || {}
-        end
+      def self.default_url_options
+        Rails.application.config.action_mailer.default_url_options || {}
       end
 
       def initialize(pay_customer)
