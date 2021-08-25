@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/subscription_renewing_event.json")
+    @event = stripe_event("invoice.upcoming")
     @pay_customer = pay_customers(:stripe)
     @pay_customer.update(processor_id: @event.data.object.customer)
   end

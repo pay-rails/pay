@@ -38,6 +38,14 @@ class CreatePayV3Models < ActiveRecord::Migration[6.0]
     end
     add_index :pay_payment_methods, [:customer_id, :processor_id], unique: true
 
+    create_table :pay_webhooks do |t|
+      t.string :processor
+      t.string :event_type
+      t.public_send Pay::Adapter.json_column_type, :event
+
+      t.timestamps
+    end
+
     add_column :pay_subscriptions, :metadata, Pay::Adapter.json_column_type
     add_column :pay_charges, :metadata, Pay::Adapter.json_column_type
 

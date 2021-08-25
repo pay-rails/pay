@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/customer_deleted_event.json")
+    @event = stripe_event("customer.deleted")
   end
 
   test "stripe customer delete marks pay customer deleted" do

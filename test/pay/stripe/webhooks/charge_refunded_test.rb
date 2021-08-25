@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::ChargeRefundedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/charge_refunded_event.json")
+    @event = stripe_event("charge.refunded")
   end
 
   test "a charge is updated with refunded amount" do

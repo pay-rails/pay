@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::PaymentMethodUpdatedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/payment_method.updated.json")
+    @event = stripe_event("payment_method.updated")
   end
 
   test "updates payment method in database" do

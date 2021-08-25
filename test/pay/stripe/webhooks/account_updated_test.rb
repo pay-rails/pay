@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::AccountUpdatedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/account_updated_event.json")
+    @event = stripe_event("account.updated")
   end
 
   test "an account is authorized" do

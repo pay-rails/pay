@@ -6,7 +6,7 @@ module Pay
       end
 
       def create
-        delegate_event(verified_event)
+        queue_event(verified_event)
         head :ok
       rescue Pay::Paddle::Error
         head :bad_request
@@ -14,22 +14,19 @@ module Pay
 
       private
 
-      def delegate_event(event)
-        Pay::Webhooks.instrument type: "paddle.#{type}", event: event
-      end
-
-      def type
-        params[:alert_name]
+      def queue_event(event)
+        record = Pay::Webhook.create(processor: :paddle, event_type: params[:alert_name], event: event)
+        Pay::Webhooks::ProcessJob.perform_later(record)
       end
 
       def verified_event
-        event = check_params.as_json
+        event = verify_params.as_json
         verifier = Pay::Paddle::Webhooks::SignatureVerifier.new(event)
-        return OpenStruct.new(event) if verifier.verify
+        return event if verifier.verify
         raise Pay::Paddle::Error, "Unable to verify Paddle webhook event"
       end
 
-      def check_params
+      def verify_params
         params.except(:action, :controller).permit!
       end
     end

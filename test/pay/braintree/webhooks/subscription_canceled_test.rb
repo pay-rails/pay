@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Braintree::Webhooks::SubscriptionCanceledTest < ActiveSupport::TestCase
   setup do
-    @event = braintree_event "braintree/subscription_cancelled"
+    @event = braintree_event "subscription_cancelled"
   end
 
   test "it sets ends_at on the subscription" do

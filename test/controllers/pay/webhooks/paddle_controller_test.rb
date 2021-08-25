@@ -18,9 +18,16 @@ module Pay
       params = fake_event "paddle/subscription_created"
 
       GlobalID::Locator.expects(:locate_signed).returns(user)
-      assert_difference("Pay::Subscription.count") do
-        post webhooks_paddle_path, params: params
-        assert_response :success
+
+      assert_difference("Pay::Webhook.count") do
+        assert_enqueued_with(job: Pay::Webhooks::ProcessJob) do
+          post webhooks_paddle_path, params: params
+          assert_response :success
+        end
+      end
+
+      assert_difference("user.subscriptions.count") do
+        perform_enqueued_jobs
       end
     end
   end

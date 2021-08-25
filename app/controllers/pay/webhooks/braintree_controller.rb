@@ -6,7 +6,7 @@ module Pay
       end
 
       def create
-        delegate_event(verified_event)
+        queue_event(verified_event)
         head :ok
       rescue ::Braintree::InvalidSignature
         head :bad_request
@@ -14,8 +14,13 @@ module Pay
 
       private
 
-      def delegate_event(event)
-        Pay::Webhooks.instrument type: "braintree.#{event.kind}", event: event
+      def queue_event(event)
+        record = Pay::Webhook.create(
+          processor: :braintree,
+          event_type: event.kind,
+          event: {bt_signature: params[:bt_signature], bt_payload: params[:bt_payload]}
+        )
+        Pay::Webhooks::ProcessJob.perform_later(record)
       end
 
       def verified_event

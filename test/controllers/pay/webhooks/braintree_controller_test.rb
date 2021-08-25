@@ -14,20 +14,26 @@ module Pay
     end
 
     test "should parse a braintree webhook" do
-      user = User.create!
-      user.set_payment_processor :braintree
-      user.payment_processor.subscriptions.create!(
+      params = fake_event "braintree/subscription_charged_successfully"
+
+      pay_customer = pay_customers(:braintree)
+      pay_customer.subscriptions.create!(
         processor_id: "f6rnpm",
         processor_plan: "default",
         name: "default",
         status: "active"
       )
 
-      params = fake_event "braintree/subscription_charged_successfully"
 
-      assert_difference("user.charges.count") do
-        post webhooks_braintree_path, params: params
-        assert_response :success
+      assert_difference("Pay::Webhook.count") do
+        assert_enqueued_with(job: Pay::Webhooks::ProcessJob) do
+          post webhooks_braintree_path, params: params
+          assert_response :success
+        end
+      end
+
+      assert_difference("pay_customer.charges.count") do
+        perform_enqueued_jobs
       end
     end
   end

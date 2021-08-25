@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::PaymentMethodAttachedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/payment_method.attached.json")
+    @event = stripe_event("payment_method.attached")
   end
 
   test "payment_method.detached removes payment method from database" do
