@@ -26,6 +26,11 @@ class User
 end
 
 user = User.last
+
+# Set the Merchant processor
+user.update(merchant_processor: :stripe)
+
+# Create the Stripe::Account for this merchant
 user.merchant.create_account
 #=> Stripe::Account
 
