@@ -11,7 +11,8 @@ module Pay
           subscription = Pay::Subscription.find_by_processor_and_id(:stripe, event.data.object.subscription)
           return unless subscription
 
-          notify_user(subscription.customer.owner, subscription, Time.zone.at(event.data.object.next_payment_attempt))
+          interval = event.data.object.lines.data.filter_map{|h| h.plan&.interval}.first
+          notify_user(subscription.customer.owner, subscription, Time.zone.at(event.data.object.next_payment_attempt)) if interval == 'year'
         end
 
         def notify_user(billable, subscription, date)
