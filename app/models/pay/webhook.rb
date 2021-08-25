@@ -16,7 +16,6 @@ module Pay
     def rehydrated_event
       case processor
       when "braintree"
-        # TODO: We've already verified the payload, so we should be able to load this without
         Pay.braintree_gateway.webhook_notification.parse(event["bt_signature"], event["bt_payload"])
       when "paddle"
         to_recursive_ostruct(event)
