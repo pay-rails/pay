@@ -11,17 +11,17 @@ ENV["STRIPE_PRIVATE_KEY"] ||= "sk_test_fake"
 paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle/verification/paddle_public_key.pem"))
 ENV["PADDLE_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
 
+require "braintree"
+require "stripe"
+require "paddle_pay"
+require "receipts"
+
 require File.expand_path("dummy/config/environment.rb", __dir__)
 ActiveRecord::Migrator.migrations_paths = [File.expand_path("dummy/db/migrate", __dir__), File.expand_path("../db/migrate", __dir__)]
 require "rails/test_help"
 require "byebug"
 require "minitest/mock"
 require "mocha/minitest"
-
-# Payment processors for testing
-require "braintree"
-require "stripe"
-require "paddle_pay"
 
 require_relative "support/braintree"
 require_relative "support/vcr"
