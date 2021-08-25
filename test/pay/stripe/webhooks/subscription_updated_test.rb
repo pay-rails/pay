@@ -67,7 +67,7 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
     ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: false, ended_at: nil, cancel_at: nil)
 
     Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
-    assert_equal nil, subscription.reload.ends_at
+    assert_nil subscription.reload.ends_at
   end
 
   def fake_stripe_subscription(**values)
