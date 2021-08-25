@@ -15,6 +15,8 @@ module Pay
       private
 
       def queue_event(event)
+        return unless Pay::Webhooks.delegator.listening?("paddle.#{params[:alert_name]}")
+
         record = Pay::Webhook.create(processor: :paddle, event_type: params[:alert_name], event: event)
         Pay::Webhooks::ProcessJob.perform_later(record)
       end

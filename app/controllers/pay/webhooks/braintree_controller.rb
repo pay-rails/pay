@@ -15,6 +15,8 @@ module Pay
       private
 
       def queue_event(event)
+        return unless Pay::Webhooks.delegator.listening?("braintree.#{event.kind}")
+
         record = Pay::Webhook.create(
           processor: :braintree,
           event_type: event.kind,

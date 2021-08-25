@@ -35,6 +35,10 @@ module Pay
         backend.instrument name_with_namespace(type), event
       end
 
+      def listening?(type)
+        backend.notifier.listening? name_with_namespace(type)
+      end
+
       # Strips down to event data only
       class NotificationAdapter
         def initialize(subscriber)

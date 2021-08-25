@@ -16,6 +16,8 @@ module Pay
       private
 
       def queue_event(event)
+        return unless Pay::Webhooks.delegator.listening?("stripe.#{event.type}")
+
         record = Pay::Webhook.create(processor: :stripe, event_type: event.type, event: event)
         Pay::Webhooks::ProcessJob.perform_later(record)
       end

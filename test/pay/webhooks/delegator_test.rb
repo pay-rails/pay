@@ -62,6 +62,12 @@ class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
     assert_equal 2, results.length
   end
 
+  test "listening?" do
+    refute delegator.listening?("example.test_event")
+    delegator.subscribe "example.test_event", ->(event) {}
+    assert delegator.listening?("example.test_event")
+  end
+
   private
 
   attr_reader :delegator
