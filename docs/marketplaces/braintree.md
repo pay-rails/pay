@@ -27,7 +27,7 @@ Payments for the billable will be processed through the sub-merchant account.
 ### Creating a marketplace transaction
 
 ```ruby
-@user.charge(10_00, service_fee_amount: "1.00")
+@user.payment_processor.charge(10_00, service_fee_amount: "1.00")
 ```
 
 Pay will store the `service_fee_amount` for transactions in the `application_fee_amount` field on `Pay::Charge`.

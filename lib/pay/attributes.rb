@@ -48,7 +48,7 @@ module Pay
 
       def pay_merchant
         has_many :pay_merchants, class_name: "Pay::Merchant", as: :owner, inverse_of: :owner
-        has_one :merchant, -> { where(default: true) }, class_name: "Pay::Merchant", as: :owner, inverse_of: :owner
+        has_one :merchant_processor, -> { where(default: true) }, class_name: "Pay::Merchant", as: :owner, inverse_of: :owner
 
         define_method :set_merchant_processor do |processor_name|
           ActiveRecord::Base.transaction do
