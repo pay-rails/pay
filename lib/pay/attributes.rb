@@ -40,6 +40,26 @@ module Pay
       end
     end
 
+    module MerchantExtension
+      extend ActiveSupport::Concern
+
+      included do
+        has_many :pay_merchants, class_name: "Pay::Merchant", as: :owner, inverse_of: :owner
+        has_one :merchant_processor, -> { where(default: true) }, class_name: "Pay::Merchant", as: :owner, inverse_of: :owner
+      end
+
+      def set_merchant_processor(processor_name, **attributes)
+        ActiveRecord::Base.transaction do
+          pay_merchants.update_all(default: false)
+          pay_merchant = pay_merchants.where(processor: processor_name).first_or_initialize
+          pay_merchant.update!(attributes.merge(default: true))
+        end
+
+        # Return new payment processor
+        reload_merchant_processor
+      end
+    end
+
     class_methods do
       def pay_customer
         include Billable::SyncCustomer
@@ -47,17 +67,7 @@ module Pay
       end
 
       def pay_merchant
-        has_many :pay_merchants, class_name: "Pay::Merchant", as: :owner, inverse_of: :owner
-        has_one :merchant_processor, -> { where(default: true) }, class_name: "Pay::Merchant", as: :owner, inverse_of: :owner
-
-        define_method :set_merchant_processor do |processor_name|
-          ActiveRecord::Base.transaction do
-            pay_merchants.update_all(default: false)
-
-            pay_merchant = pay_merchants.where(processor: processor_name).first_or_initialize
-            pay_merchant.update!(processor: processor_name, default: true)
-          end
-        end
+        include MerchantExtension
       end
     end
   end

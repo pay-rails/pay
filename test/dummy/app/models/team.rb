@@ -1,5 +1,6 @@
 class Team < ApplicationRecord
   pay_customer
+  pay_merchant
 
   belongs_to :owner, class_name: "User"
 
