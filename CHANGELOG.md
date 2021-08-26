@@ -2,6 +2,8 @@
 
 ### 3.0.0
 
+See the [UPGRADE](UPGRADE.md) guide for steps on upgrading from Pay 2.x.
+
 * **Requires Rails 6+**
 * Migrates `processor` and `processor_id` from models to `Pay::Customer` model
 * Replaces include Pay::Billable with pay_customer method

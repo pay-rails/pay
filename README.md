@@ -8,7 +8,7 @@
 
 Pay is a payments engine for Ruby on Rails 5.2 and higher.
 
-**Upgrading?** Check the CHANGELOG for any required migrations or changes needed if you're upgrading from a previous version of Pay.
+**Upgrading?** Check the [UPGRADE](UPGRADE.md) guide for required changes and/or migration when upgrading from a previous version of Pay.
 
 ## 🧑‍💻 Tutorial
 
