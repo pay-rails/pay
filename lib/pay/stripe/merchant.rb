@@ -34,7 +34,7 @@ module Pay
 
       def account_link(refresh_url:, return_url:, type: "account_onboarding", **options)
         ::Stripe::AccountLink.create({
-          account: stripe_connect_account_id,
+          account: processor_id,
           refresh_url: refresh_url,
           return_url: return_url,
           type: type
@@ -45,7 +45,7 @@ module Pay
 
       # A single-use login link for Express accounts to access their Stripe dashboard
       def login_link(**options)
-        ::Stripe::Account.create_login_link(stripe_connect_account_id)
+        ::Stripe::Account.create_login_link(processor_id)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
