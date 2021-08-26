@@ -6,7 +6,7 @@ module Pay
       end
 
       def create
-        delegate_event(verified_event)
+        queue_event(verified_event)
         head :ok
       rescue ::Stripe::SignatureVerificationError => e
         log_error(e)
@@ -15,8 +15,11 @@ module Pay
 
       private
 
-      def delegate_event(event)
-        Pay::Webhooks.instrument type: "stripe.#{event.type}", event: event
+      def queue_event(event)
+        return unless Pay::Webhooks.delegator.listening?("stripe.#{event.type}")
+
+        record = Pay::Webhook.create(processor: :stripe, event_type: event.type, event: event)
+        Pay::Webhooks::ProcessJob.perform_later(record)
       end
 
       def verified_event

@@ -3,7 +3,7 @@ module Pay
     module Webhooks
       class SubscriptionUpdated
         def call(event)
-          subscription = Pay.subscription_model.find_by(processor: :paddle, processor_id: event["subscription_id"])
+          subscription = Pay::Subscription.find_by_processor_and_id(:paddle, event["subscription_id"])
 
           return if subscription.nil?
 

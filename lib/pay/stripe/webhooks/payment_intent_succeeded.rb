@@ -2,17 +2,15 @@ module Pay
   module Stripe
     module Webhooks
       class PaymentIntentSucceeded
+        # This webhook does NOT send notifications because stripe sends both
+        # `charge.succeeded` and `payment_intent.succeeded` events.
+        #
+        # We use `charge.succeeded` as the single place to send notifications
+
         def call(event)
           object = event.data.object
           object.charges.data.each do |charge|
-            pay_charge = Pay::Stripe::Charge.sync(charge.id)
-            notify_user(pay_charge.owner, pay_charge) if pay_charge
-          end
-        end
-
-        def notify_user(billable, charge)
-          if Pay.send_emails && charge.respond_to?(:receipt)
-            Pay::UserMailer.with(billable: billable, charge: charge).receipt.deliver_later
+            Pay::Stripe::Charge.sync(charge.id, stripe_account: event.try(:account))
           end
         end
       end

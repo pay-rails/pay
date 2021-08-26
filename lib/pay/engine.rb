@@ -10,6 +10,11 @@ module Pay
           mount Pay::Engine, at: Pay.routes_path, as: "pay"
         end
       end
+
+      # Include the pay attributes for ActiveRecord models
+      ActiveSupport.on_load(:active_record) do
+        include Pay::Attributes
+      end
     end
 
     config.to_prepare do
@@ -17,7 +22,7 @@ module Pay
       Pay::Braintree.setup if defined? ::Braintree
       Pay::Paddle.setup if defined? ::PaddlePay
 
-      Pay.charge_model.include Pay::Receipts if defined? ::Receipts::Receipt
+      Pay::Charge.include Pay::Receipts if defined? ::Receipts::Receipt
     end
   end
 end

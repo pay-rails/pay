@@ -2,12 +2,17 @@ require "test_helper"
 
 class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
   setup do
-    @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: "cus_1234")
+    @pay_customer = pay_customers(:stripe)
   end
 
-  test "sync returns Pay::Subscription" do
+  test "sync returns Pay::Charge" do
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     assert pay_charge.is_a?(Pay::Charge)
+  end
+
+  test "sync stores charge metadata" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
+    assert_equal({"license_id" => 1}, pay_charge.metadata)
   end
 
   test "sync stripe charge by ID" do
@@ -19,13 +24,12 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync stripe charge ignores when customer is missing" do
     assert_no_difference "Pay::Charge.count" do
-      @user.destroy
-      Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
+      Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(customer: "missing"))
     end
   end
 
   test "sync associates charge with stripe subscription" do
-    pay_subscription = @user.subscriptions.create!(processor: :stripe, processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
+    pay_subscription = @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
     fake_invoice = ::Stripe::Invoice.construct_from(subscription: "sub_1234")
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_invoice))
     assert_equal pay_subscription, pay_charge.subscription
@@ -49,7 +53,11 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
           exp_year: 2021,
           last4: "4242",
           brand: "Visa"
-        }
+        },
+        type: "card"
+      },
+      metadata: {
+        license_id: 1
       }
     )
     ::Stripe::Charge.construct_from(values)

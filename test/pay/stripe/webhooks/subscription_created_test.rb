@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/subscription_created_event.json")
+    @event = stripe_event("subscription.created")
   end
 
   test "subscription is created" do

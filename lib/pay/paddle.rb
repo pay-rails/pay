@@ -2,8 +2,9 @@ module Pay
   module Paddle
     autoload :Billable, "pay/paddle/billable"
     autoload :Charge, "pay/paddle/charge"
-    autoload :Subscription, "pay/paddle/subscription"
     autoload :Error, "pay/paddle/error"
+    autoload :PaymentMethod, "pay/paddle/payment_method"
+    autoload :Subscription, "pay/paddle/subscription"
 
     module Webhooks
       autoload :SignatureVerifier, "pay/paddle/webhooks/signature_verifier"
@@ -44,9 +45,12 @@ module Pay
       options.merge(owner_sgid: owner.to_sgid.to_s).to_json
     end
 
+    def self.parse_passthrough(passthrough)
+      JSON.parse(passthrough)
+    end
+
     def self.owner_from_passthrough(passthrough)
-      passthrough_json = JSON.parse(passthrough)
-      GlobalID::Locator.locate_signed(passthrough_json["owner_sgid"])
+      GlobalID::Locator.locate_signed parse_passthrough(passthrough)["owner_sgid"]
     rescue JSON::ParserError
       nil
     end

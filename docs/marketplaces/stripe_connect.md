@@ -11,32 +11,28 @@ Not sure what account types to use? Read the Stripe docs: https://stripe.com/doc
 
 ## Usage
 
-To add Merchant functionality to a model, run the generator:
+To add Merchant functionality to a model, configure the model:
 
-```bash
-rails g pay:merchant User
-rails db:migrate
+```ruby
+class User
+  pay_merchant
+end
 ```
 
 ## Example
 
 ```ruby
-class User
-  include Pay::Merchant
-end
+@user = User.last
 
-user = User.last
+# Use Stripe for the Merchant
+@user.set_merchant_processor :stripe
 
-# Set the Merchant processor
-user.update(merchant_processor: :stripe)
-
-# Create the Stripe::Account for this merchant
-user.merchant.create_account
+@user.merchant_processor.create_account
 #=> Stripe::Account
 
-user.merchant.account_link
-user.merchant.login_link
-user.merchant.transfer(amount: 25_00)
+@user.merchant_processor.account_link
+@user.merchant_processor.login_link
+@user.merchant_processor.transfer(amount: 25_00)
 ```
 
 ## Charge Types

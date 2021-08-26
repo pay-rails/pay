@@ -3,14 +3,17 @@ module Pay
     module Webhooks
       class SubscriptionCancelled
         def call(event)
-          subscription = Pay.subscription_model.find_by(processor: :paddle, processor_id: event["subscription_id"])
+          pay_subscription = Pay::Subscription.find_by_processor_and_id(:paddle, event.subscription_id)
 
           # We couldn't find the subscription for some reason, maybe it's from another service
-          return if subscription.nil?
+          return if pay_subscription.nil?
 
           # User canceled subscriptions have an ends_at
           # Automatically canceled subscriptions need this value set
-          subscription.update!(ends_at: Time.zone.parse(event["cancellation_effective_date"])) if subscription.ends_at.blank? && event["cancellation_effective_date"].present?
+          pay_subscription.update!(ends_at: Time.zone.parse(event.cancellation_effective_date)) if pay_subscription.ends_at.blank? && event.cancellation_effective_date.present?
+
+          # Paddle doesn't allow reusing customers, so we should remove their payment methods
+          pay_subscription.customer.payment_methods.destroy_all
         end
       end
     end

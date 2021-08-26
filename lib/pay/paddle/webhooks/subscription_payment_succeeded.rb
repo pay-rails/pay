@@ -3,43 +3,41 @@ module Pay
     module Webhooks
       class SubscriptionPaymentSucceeded
         def call(event)
-          billable = Pay.find_billable(processor: :paddle, processor_id: event["user_id"])
+          pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: event.user_id)
 
-          if billable.nil?
-            billable = Pay::Paddle.owner_from_passthrough(event["passthrough"])
-            billable&.update!(processor: "paddle", processor_id: event["user_id"])
+          if pay_customer.nil?
+            owner = Pay::Paddle.owner_from_passthrough(event.passthrough)
+            pay_customer = owner&.set_payment_processor :paddle, processor_id: event.user_id
           end
 
-          if billable.nil?
-            Rails.logger.error("[Pay] Unable to find Pay::Billable with owner: '#{event["passthrough"]}'. Searched these models: #{Pay.billable_models.join(", ")}")
+          if pay_customer.nil?
+            Rails.logger.error("[Pay] Unable to find Pay::Customer with: '#{event.passthrough}'")
             return
           end
 
-          return if billable.charges.where(processor_id: event["subscription_payment_id"]).any?
+          return if pay_customer.charges.where(processor_id: event.subscription_payment_id).any?
 
-          charge = create_charge(billable, event)
-          notify_user(billable, charge)
+          charge = create_charge(pay_customer, event)
+          notify_user(pay_customer.owner, charge)
         end
 
-        def create_charge(user, event)
-          charge = user.charges.find_or_initialize_by(
-            processor: :paddle,
-            processor_id: event["subscription_payment_id"]
-          )
+        def create_charge(pay_customer, event)
+          payment_method_details = Pay::Paddle::PaymentMethod.payment_method_details_for(subscription_id: event.subscription_id)
 
-          params = {
-            amount: Integer(event["sale_gross"].to_f * 100),
-            card_type: event["payment_method"],
-            created_at: Time.zone.parse(event["event_time"]),
-            currency: event["currency"],
-            paddle_receipt_url: event["receipt_url"],
-            subscription: Pay::Subscription.find_by(processor: :paddle, processor_id: event["subscription_id"])
-          }
+          attributes = {
+            amount: (event.sale_gross.to_f * 100).to_i,
+            created_at: Time.zone.parse(event.event_time),
+            currency: event.currency,
+            paddle_receipt_url: event.receipt_url,
+            subscription: pay_customer.subscriptions.find_by(processor_id: event.subscription_id),
+            metadata: Pay::Paddle.parse_passthrough(event.passthrough).except("owner_sgid")
+          }.merge(payment_method_details)
 
-          payment_information = Pay::Paddle::Billable.new(user).payment_information(event["subscription_id"])
+          charge = pay_customer.charges.find_or_initialize_by(processor_id: event.subscription_payment_id)
+          charge.update!(attributes)
 
-          charge.update(params.merge(payment_information))
-          user.update(payment_information)
+          # Update customer's payment method
+          Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: payment_method_details)
 
           charge
         end

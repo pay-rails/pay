@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::Paddle::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
+class Pay::Paddle::Webhooks::SignatureVerifierTest < ActiveSupport::TestCase
   setup do
     @data = JSON.parse(File.read("test/support/fixtures/paddle/subscription_created.json"))
   end

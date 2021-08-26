@@ -21,9 +21,8 @@ Gem::Specification.new do |s|
     "README.md"
   ]
 
-  s.add_dependency "rails", ">= 4.2"
+  s.add_dependency "rails", ">= 6.0.0"
 
-  s.add_development_dependency "minitest-rails", ">= 6", "< 7.0"
   s.add_development_dependency "mocha"
   s.add_development_dependency "standardrb"
   s.add_development_dependency "vcr"

@@ -1,3 +1,3 @@
 class User < ApplicationRecord
-  include Pay::Billable
+  pay_customer
 end

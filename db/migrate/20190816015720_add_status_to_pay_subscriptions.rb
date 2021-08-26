@@ -1,4 +1,4 @@
-class AddStatusToPaySubscriptions < ActiveRecord::Migration[4.2]
+class AddStatusToPaySubscriptions < ActiveRecord::Migration[6.0]
   def self.up
     add_column :pay_subscriptions, :status, :string
 

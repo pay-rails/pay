@@ -1,0 +1,98 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/payment_methods
+    body:
+      encoding: UTF-8
+      string: type=acss_debit&acss_debit[account_number]=00123456789&acss_debit[institution_number]=000&acss_debit[transit_number]=11000&billing_details[email]=test%40example.org&billing_details[name]=Test+User
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/5.37.0 PayRails/2.7.1 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_vwr8UvlVMiqAnv","request_duration_ms":0}}'
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.7.1"},"bindings_version":"5.37.0","lang":"ruby","lang_version":"3.0.1
+        p64 (2021-04-05)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 20.5.0 Darwin Kernel Version 20.5.0: Sat May  8 05:10:33
+        PDT 2021; root:xnu-7195.121.3~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 10 Aug 2021 22:38:19 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '626'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Request-Id:
+      - req_4oNR7WSSeb1ZuX
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-C-Cost:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "pm_1JN3aRKXBGcbgpbZ78xTUWhL",
+          "object": "payment_method",
+          "acss_debit": {
+            "bank_name": "STRIPE TEST BANK",
+            "fingerprint": "GNY6jXyWJDu9AnX2",
+            "institution_number": "000",
+            "last4": "6789",
+            "transit_number": "11000"
+          },
+          "billing_details": {
+            "address": {
+              "city": null,
+              "country": null,
+              "line1": null,
+              "line2": null,
+              "postal_code": null,
+              "state": null
+            },
+            "email": "test@example.org",
+            "name": "Test User",
+            "phone": null
+          },
+          "created": 1628635099,
+          "customer": null,
+          "livemode": false,
+          "metadata": {
+          },
+          "type": "acss_debit"
+        }
+  recorded_at: Tue, 10 Aug 2021 22:38:19 GMT
+recorded_with: VCR 6.0.0

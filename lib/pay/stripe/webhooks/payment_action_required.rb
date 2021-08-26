@@ -8,9 +8,9 @@ module Pay
 
           object = event.data.object
 
-          subscription = Pay.subscription_model.find_by(processor: :stripe, processor_id: object.subscription)
+          subscription = Pay::Subscription.find_by_processor_and_id(:stripe, object.subscription)
           return if subscription.nil?
-          billable = subscription.owner
+          billable = subscription.customer.owner
 
           notify_user(billable, event.data.object.payment_intent, subscription)
         end

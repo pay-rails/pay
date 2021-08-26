@@ -4,24 +4,16 @@ module Pay
       class CustomerDeleted
         def call(event)
           object = event.data.object
-          billable = Pay.find_billable(processor: :stripe, processor_id: object.id)
+          pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.id)
 
-          # Couldn't find user, we can skip
-          return unless billable.present?
+          # Mark all subscriptions as canceled
+          pay_customer.subscriptions.active.update_all(ends_at: Time.current, status: "canceled")
 
-          billable.update(
-            processor_id: nil,
-            trial_ends_at: nil,
-            card_type: nil,
-            card_last4: nil,
-            card_exp_month: nil,
-            card_exp_year: nil
-          )
+          # Remove all payment methods
+          pay_customer.payment_methods.destroy_all
 
-          billable.subscriptions.update_all(
-            trial_ends_at: nil,
-            ends_at: Time.zone.now
-          )
+          # Mark customer as deleted
+          pay_customer&.update!(default: false, deleted_at: Time.current)
         end
       end
     end

@@ -1,43 +1,24 @@
 require "test_helper"
 
-class Pay::Stripe::Webhooks::PaymentMethodUpdatedtest < ActiveSupport::TestCase
+class Pay::Stripe::Webhooks::PaymentMethodUpdatedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/payment_method.updated.json")
+    @event = stripe_event("payment_method.updated")
   end
 
-  test "update_card_from stripe is called upon customer update" do
-    user = User.create!(
-      email: "gob@bluth.com",
-      processor: :stripe,
-      processor_id: @event.data.object.customer
-    )
-    user.subscriptions.create!(
-      processor: :stripe,
-      processor_id: "sub_someid",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active"
-    )
+  test "updates payment method in database" do
+    payment_method = pay_payment_methods(:one)
 
-    Pay::Stripe::Billable.any_instance.expects(:sync_card_from_stripe)
+    # Spoof Stripe PaymentMethod lookup
+    fake_payment_method = OpenStruct.new(id: payment_method.processor_id, customer: "cus_1234", type: "card", card: OpenStruct.new(brand: "Visa", last4: "4242", exp_month: "01", exp_year: "2034"))
+    ::Stripe::PaymentMethod.expects(:retrieve).returns(fake_payment_method)
+
+    fake_customer = OpenStruct.new(invoice_settings: OpenStruct.new(default_payment_method: nil))
+    ::Stripe::Customer.expects(:retrieve).returns(fake_customer)
+
+    assert_equal payment_method.exp_year, payment_method.exp_year
     Pay::Stripe::Webhooks::PaymentMethodUpdated.new.call(@event)
-  end
 
-  test "update_card_from stripe is not called if user can't be found" do
-    user = User.create!(
-      email: "gob@bluth.com",
-      processor: :stripe,
-      processor_id: "does-not-exist"
-    )
-    user.subscriptions.create!(
-      processor: :stripe,
-      processor_id: "sub_someid",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active"
-    )
-
-    Pay::Stripe::Billable.any_instance.expects(:sync_card_from_stripe).never
-    Pay::Stripe::Webhooks::PaymentMethodUpdated.new.call(@event)
+    payment_method.reload
+    assert_equal "2034", payment_method.exp_year
   end
 end

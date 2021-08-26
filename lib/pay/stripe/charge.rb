@@ -3,43 +3,46 @@ module Pay
     class Charge
       attr_reader :pay_charge
 
-      delegate :processor_id, :owner, :stripe_account, to: :pay_charge
+      delegate :processor_id, :stripe_account, to: :pay_charge
 
-      def self.sync(charge_id, object: nil, try: 0, retries: 1)
+      def self.sync(charge_id, object: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest charge details from the API if we already have it
-        object ||= ::Stripe::Charge.retrieve(id: charge_id)
+        object ||= ::Stripe::Charge.retrieve(charge_id, {stripe_account: stripe_account}.compact)
 
-        owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
-        return unless owner
+        pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
+        return unless pay_customer
 
+        payment_method = object.payment_method_details.send(object.payment_method_details.type)
         attrs = {
           amount: object.amount,
           amount_refunded: object.amount_refunded,
           application_fee_amount: object.application_fee_amount,
-          card_exp_month: object.payment_method_details.card.exp_month,
-          card_exp_year: object.payment_method_details.card.exp_year,
-          card_last4: object.payment_method_details.card.last4,
-          card_type: object.payment_method_details.card.brand,
           created_at: Time.at(object.created),
           currency: object.currency,
-          stripe_account: owner.stripe_account
+          stripe_account: pay_customer.stripe_account,
+          metadata: object.metadata,
+          payment_method_type: object.payment_method_details.type,
+          brand: payment_method.try(:brand)&.capitalize,
+          last4: payment_method.try(:last4).to_s,
+          exp_month: payment_method.try(:exp_month).to_s,
+          exp_year: payment_method.try(:exp_year).to_s,
+          bank: payment_method.try(:bank_name) || payment_method.try(:bank) # eps, fpx, ideal, p24, acss_debit, etc
         }
 
         # Associate charge with subscription if we can
         if object.invoice
-          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice))
-          attrs[:subscription] = Pay::Subscription.find_by(processor: :stripe, processor_id: invoice.subscription)
+          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve(object.invoice, {stripe_account: stripe_account}.compact))
+          attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: invoice.subscription)
         end
 
         # Update or create the charge
-        processor_details = {processor: :stripe, processor_id: object.id}
-        if (pay_charge = owner.charges.find_by(processor_details))
+        if (pay_charge = pay_customer.charges.find_by(processor_id: object.id))
           pay_charge.with_lock do
             pay_charge.update!(attrs)
           end
           pay_charge
         else
-          owner.charges.create!(attrs.merge(processor_details))
+          pay_customer.charges.create!(attrs.merge(processor_id: object.id))
         end
       rescue ActiveRecord::RecordInvalid
         try += 1

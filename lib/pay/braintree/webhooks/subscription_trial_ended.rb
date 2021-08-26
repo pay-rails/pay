@@ -8,10 +8,10 @@ module Pay
           subscription = event.subscription
           return if subscription.nil?
 
-          pay_subscription = Pay.subscription_model.find_by(processor: :braintree, processor_id: subscription.id)
+          pay_subscription = Pay::Subscription.find_by_processor_and_id(:braintree, subscription.id)
           return unless pay_subscription.present?
 
-          pay_subscription.update(trial_ends_at: Time.zone.now)
+          pay_subscription.update(trial_ends_at: Time.current)
         end
       end
     end

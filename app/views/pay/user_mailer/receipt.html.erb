@@ -10,8 +10,8 @@ Amount: USD <%= ActionController::Base.helpers.number_to_currency(params[:charge
 Charged to: <%= params[:charge].charged_to %><br/>
 Transaction ID: <%= params[:charge].id %><br/>
 Date: <%= params[:charge].created_at %><br/>
-<% if params[:charge].owner.extra_billing_info? %>
-<%= params[:charge].owner.extra_billing_info %><br/>
+<% if params[:charge].customer.owner.extra_billing_info? %>
+<%= params[:charge].customer.owner.extra_billing_info %><br/>
 <% end %>
 <br/>
 <br/>

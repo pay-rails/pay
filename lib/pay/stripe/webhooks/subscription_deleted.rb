@@ -3,7 +3,8 @@ module Pay
     module Webhooks
       class SubscriptionDeleted
         def call(event)
-          Pay::Stripe::Subscription.sync(event.data.object.id)
+          # Canceled subscriptions are still accessible via the API, so we can sync their details
+          Pay::Stripe::Subscription.sync(event.data.object.id, stripe_account: event.try(:account))
         end
       end
     end

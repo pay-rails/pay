@@ -1,12 +1,10 @@
 require "test_helper"
 
 class Pay::Braintree::ErrorTest < ActiveSupport::TestCase
-  setup do
-    @user = User.create!(email: "gob@bluth.com", processor: :braintree)
-  end
-
   test "raising braintree failures keep the same message" do
-    exception = assert_raises(Pay::Braintree::Error) { @user.charge(0) }
+    pay_customer = pay_customers(:braintree)
+    pay_customer.update(processor_id: nil)
+    exception = assert_raises(Pay::Braintree::Error) { pay_customer.charge(0) }
     assert_match "Amount must be greater than zero.", exception.to_s
     assert_equal ::Braintree::ErrorResult, exception.cause.class
   end

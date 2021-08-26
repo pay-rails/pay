@@ -2,22 +2,14 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/customer_deleted_event.json")
+    @event = stripe_event("customer.deleted")
   end
 
-  test "a customers subscription information is nulled out upon deletion" do
-    user = User.create!(
-      email: "gob@bluth.com",
-      processor: :stripe,
-      processor_id: @event.data.object.id,
-      card_type: "Visa",
-      card_exp_month: 1,
-      card_exp_year: 2019,
-      card_last4: "4444",
-      trial_ends_at: 3.days.from_now
-    )
-    subscription = user.subscriptions.create!(
-      processor: :stripe,
+  test "stripe customer delete marks pay customer deleted" do
+    pay_customer = pay_customers(:stripe)
+    pay_customer.update!(processor_id: @event.data.object.id)
+    pay_customer.payment_methods.create!(processor_id: "pm_fake")
+    pay_subscription = pay_customer.subscriptions.create!(
       processor_id: "sub_someid",
       name: "default",
       processor_plan: "some-plan",
@@ -27,13 +19,12 @@ class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
 
     Pay::Stripe::Webhooks::CustomerDeleted.new.call(@event)
 
-    assert_nil user.reload.processor_id
-    assert_nil user.reload.card_type
-    assert_nil user.reload.card_exp_month
-    assert_nil user.reload.card_exp_year
-    assert_nil user.reload.card_last4
-    assert_nil user.reload.trial_ends_at
+    pay_customer.reload
+    pay_subscription.reload
 
-    assert_nil subscription.reload.trial_ends_at
+    refute pay_customer.default?
+    assert pay_customer.deleted_at?
+    assert_empty pay_customer.payment_methods
+    assert pay_subscription.canceled?
   end
 end

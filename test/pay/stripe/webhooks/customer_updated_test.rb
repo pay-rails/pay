@@ -2,42 +2,21 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/customer_updated_event.json")
+    @pay_customer = pay_customers(:stripe)
   end
 
-  test "update_card_from stripe is called upon customer update" do
-    user = User.create!(
-      email: "gob@bluth.com",
-      processor: :stripe,
-      processor_id: @event.data.object.id
-    )
-    user.subscriptions.create!(
-      processor: :stripe,
-      processor_id: "sub_someid",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active"
-    )
-
-    Pay::Stripe::Billable.any_instance.expects(:sync_card_from_stripe)
-    Pay::Stripe::Webhooks::CustomerUpdated.new.call(@event)
+  test "removes default payment method if default payment method set to null" do
+    event = stripe_event("customer.updated")
+    Pay::Stripe::Billable.any_instance.expects(:customer).returns(OpenStruct.new(invoice_settings: OpenStruct.new(default_payment_method: nil)))
+    assert_not_nil @pay_customer.default_payment_method
+    Pay::Stripe::Webhooks::CustomerUpdated.new.call(event)
+    @pay_customer.reload
+    assert_nil @pay_customer.default_payment_method
   end
 
-  test "update_card_from stripe is not called if user can't be found" do
-    user = User.create!(
-      email: "gob@bluth.com",
-      processor: :stripe,
-      processor_id: "does-not-exist"
-    )
-    user.subscriptions.create!(
-      processor: :stripe,
-      processor_id: "sub_someid",
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active"
-    )
-
-    Pay::Stripe::Billable.any_instance.expects(:sync_card_from_stripe).never
-    Pay::Stripe::Webhooks::CustomerUpdated.new.call(@event)
+  test "stripe is not called if user can't be found" do
+    event = stripe_event("customer.updated", overrides: {"object" => {"id" => "missing"}})
+    Pay::Stripe::Billable.any_instance.expects(:sync_payment_method_from_stripe).never
+    Pay::Stripe::Webhooks::CustomerUpdated.new.call(event)
   end
 end

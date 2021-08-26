@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Stripe::Webhooks::SubscriptionDeletedTest < ActiveSupport::TestCase
   setup do
-    @event = stripe_event("test/support/fixtures/stripe/subscription_deleted_event.json")
+    @event = stripe_event("subscription.deleted")
   end
 
   test "syncs subscription" do

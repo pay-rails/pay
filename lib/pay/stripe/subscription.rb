@@ -8,7 +8,6 @@ module Pay
         :ends_at,
         :name,
         :on_trial?,
-        :owner,
         :processor_id,
         :processor_plan,
         :processor_subscription,
@@ -20,21 +19,21 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
-      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, try: 0, retries: 1)
+      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest subscription details from the API if we already have it
-        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent"]})
+        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]}, {stripe_account: stripe_account}.compact)
 
-        owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
-        return unless owner
+        pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
+        return unless pay_customer
 
         attributes = {
           application_fee_percent: object.application_fee_percent,
           processor_plan: object.plan.id,
           quantity: object.quantity,
-          name: name,
           status: object.status,
-          stripe_account: owner.stripe_account,
-          trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil)
+          stripe_account: pay_customer.stripe_account,
+          trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil),
+          metadata: object.metadata
         }
 
         attributes[:ends_at] = if object.ended_at
@@ -49,15 +48,19 @@ module Pay
         end
 
         # Update or create the subscription
-        processor_details = {processor: :stripe, processor_id: object.id}
-        if (pay_subscription = owner.subscriptions.find_by(processor_details))
-          pay_subscription.with_lock do
-            pay_subscription.update!(attributes)
-          end
-          pay_subscription
+        pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
+        if pay_subscription
+          pay_subscription.with_lock { pay_subscription.update!(attributes) }
         else
-          owner.subscriptions.create!(attributes.merge(processor_details))
+          pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
         end
+
+        # Sync the latest charge if we already have it loaded (like during subscrbe), otherwise, let webhooks take care of creating it
+        if (charge = object.try(:latest_invoice).try(:charge)) && charge.try(:status) == "succeeded"
+          Pay::Stripe::Charge.sync(charge.id, object: charge)
+        end
+
+        pay_subscription
       rescue ActiveRecord::RecordInvalid
         try += 1
         if try <= retries

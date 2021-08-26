@@ -8,14 +8,14 @@ module Pay
           subscription = event.subscription
           return if subscription.nil?
 
-          pay_subscription = Pay.subscription_model.find_by(processor: :braintree, processor_id: subscription.id)
+          pay_subscription = Pay::Subscription.find_by_processor_and_id(:braintree, subscription.id)
           return unless pay_subscription.present?
 
-          billable = pay_subscription.owner
-          charge = Pay::Braintree::Billable.new(billable).save_transaction(subscription.transactions.first)
+          pay_customer = pay_subscription.customer
+          charge = Pay::Braintree::Billable.new(pay_customer).save_transaction(subscription.transactions.first)
 
           if Pay.send_emails
-            Pay::UserMailer.with(billable: billable, charge: charge).receipt.deliver_later
+            Pay::UserMailer.with(billable: pay_customer.owner, charge: charge).receipt.deliver_later
           end
         end
       end

@@ -3,14 +3,14 @@ require "minitest/mock"
 
 class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
   setup do
-    @billable = User.new email: "test@example.com"
-    @billable.processor = "braintree"
+    @pay_customer = pay_customers(:braintree)
+    @pay_customer.update(processor_id: nil)
   end
 
   test "can partially refund a transaction" do
-    @billable.card_token = "fake-valid-visa-nonce"
+    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
 
-    charge = @billable.charge(29_00)
+    charge = @pay_customer.charge(29_00)
     assert charge.present?
 
     charge.refund!(10_00)
@@ -18,9 +18,9 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
   end
 
   test "can fully refund a transaction" do
-    @billable.card_token = "fake-valid-visa-nonce"
+    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
 
-    charge = @billable.charge(37_00)
+    charge = @pay_customer.charge(37_00)
     assert charge.present?
 
     charge.refund!
@@ -28,14 +28,22 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
   end
 
   test "you can ask the charge for the type" do
-    assert Pay::Charge.new(processor: "stripe").stripe?
-    assert Pay::Charge.new(processor: "braintree").braintree?
-    assert Pay::Charge.new(processor: "braintree", card_type: "PayPal").paypal?
+    assert pay_customers(:stripe).charges.new.stripe?
+    refute pay_customers(:braintree).charges.new.stripe?
+
+    assert pay_customers(:braintree).charges.new.braintree?
+    refute pay_customers(:braintree).charges.new.stripe?
+
+    assert pay_customers(:paddle).charges.new.paddle?
+    refute pay_customers(:paddle).charges.new.stripe?
+
+    assert pay_customers(:fake).charges.new.fake_processor?
+    refute pay_customers(:fake).charges.new.stripe?
   end
 
   test "braintree saves currency on charge" do
-    @billable.card_token = "fake-valid-visa-nonce"
-    charge = @billable.charge(29_00)
+    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    charge = @pay_customer.charge(29_00)
     assert_equal "USD", charge.currency
   end
 end

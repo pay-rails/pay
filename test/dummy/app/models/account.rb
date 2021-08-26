@@ -1,3 +1,3 @@
 class Account < ApplicationRecord
-  include Pay::Merchant
+  pay_merchant
 end

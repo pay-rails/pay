@@ -2,13 +2,13 @@ require "test_helper"
 
 class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   setup do
-    @user = User.create!(email: "gob@bluth.com", processor: :stripe, processor_id: "cus_1234")
+    @pay_customer = pay_customers(:stripe)
   end
 
   test "change stripe subscription quantity" do
-    @user.processor_id = nil
-    @user.card_token = "pm_card_visa"
-    subscription = @user.subscribe(name: "default", plan: "default")
+    @pay_customer.processor_id = nil
+    @pay_customer.payment_method_token = "pm_card_visa"
+    subscription = @pay_customer.subscribe(name: "default", plan: "default")
     subscription.change_quantity(5)
     stripe_subscription = subscription.processor_subscription
     assert_equal 5, stripe_subscription.quantity
@@ -18,6 +18,13 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "sync returns Pay::Subscription" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     assert pay_subscription.is_a?(Pay::Subscription)
+  end
+
+  test "sync Pay::Subscription retains custom name" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription, name: "Custom")
+    assert_equal "Custom", pay_subscription.name
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    assert_equal "Custom", pay_subscription.name
   end
 
   test "sync stripe subscription by ID" do
@@ -33,10 +40,14 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
+  test "sync stores subscription metadata" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    assert_equal({"license_id" => 1}, pay_subscription.metadata)
+  end
+
   test "sync stripe subscription ignores when customer is missing" do
-    @user.destroy
     assert_no_difference "Pay::Subscription.count" do
-      Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+      Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(customer: "missing"))
     end
   end
 
@@ -56,7 +67,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
 
     assert_raises ArgumentError do
-      @user.subscription.swap({invalid: :object})
+      @pay_customer.subscription.swap({invalid: :object})
     end
   end
 
@@ -73,12 +84,16 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
       current_period_start: 1486568724,
       customer: "cus_1234",
       ended_at: nil,
+      latest_invoice: "in_1000",
       plan: {
         id: "default"
       },
       quantity: 1,
       status: "active",
-      trial_end: nil
+      trial_end: nil,
+      metadata: {
+        license_id: 1
+      }
     )
     ::Stripe::Subscription.construct_from(values)
   end
