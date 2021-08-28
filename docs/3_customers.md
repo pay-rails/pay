@@ -54,4 +54,4 @@ It is currently not possible to retrieve a Customer object through the Paddle AP
 
 ## Next
 
-See [Payment Methods](docs/4_payment_methods.md)
+See [Payment Methods](4_payment_methods.md)

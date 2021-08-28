@@ -119,5 +119,5 @@ config.active_job.queue_adapter = :sidekiq
 
 ## Next
 
-See [Customers](docs/3_customers.md)
+See [Customers](3_customers.md)
 

@@ -82,4 +82,4 @@ Paddle provides a receipt URL for each payment.
 
 ## Next
 
-See [Subscriptions](docs/6_subscriptions.md)
+See [Subscriptions](6_subscriptions.md)

@@ -47,5 +47,5 @@ You can also add a payment method without making it the default.
 
 ## Next
 
-See [Charges](docs/5_charges.md)
+See [Charges](5_charges.md)
 
