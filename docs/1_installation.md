@@ -76,4 +76,4 @@ To sync customer names automatically to your payment processor, your model shoul
 
 ## Next
 
-See [Configuration](docs/2_configuration.md)
+See [Configuration](2_configuration.md)
