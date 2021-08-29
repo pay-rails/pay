@@ -76,7 +76,9 @@ module Pay
       end
 
       def subscription(**options)
-        ::Stripe::Subscription.retrieve(options.merge(id: processor_id))
+        options.merge!(id: processor_id)
+        options[:expand] ||= ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]
+        ::Stripe::Subscription.retrieve(options, {stripe_account: stripe_account}.compact)
       end
 
       def cancel
