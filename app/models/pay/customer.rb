@@ -59,8 +59,8 @@ class Pay::Customer < Pay::ApplicationRecord
       subscribed?(name: name, processor_plan: processor_plan)
   end
 
-  def has_incomplete_payment?(name: Pay.default_product_name)
-    subscription(name: name)&.has_incomplete_payment?
+  def has_incomplete_payment?
+    subscriptions.active.incomplete.any?
   end
 
   def customer_name
