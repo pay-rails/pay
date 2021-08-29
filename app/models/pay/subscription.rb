@@ -20,7 +20,6 @@ module Pay
     # Callbacks
     before_destroy :cancel_now!, if: :active?
 
-    # TODO: Include these with a module
     store_accessor :data, :paddle_update_url
     store_accessor :data, :paddle_cancel_url
     store_accessor :data, :paddle_paused_from
