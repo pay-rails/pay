@@ -42,19 +42,19 @@ module Pay
       end
 
       def paused?
-        false
+        pay_subscription.status == "paused"
       end
 
       def pause
-        raise NotImplementedError, "FakeProcessor does not support pausing subscriptions"
+        pay_subscription.update(status: :paused, trial_ends_at: Time.current)
       end
 
       def resume
-        unless on_grace_period?
+        unless on_grace_period? || paused?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end
 
-        pay_subscription.update(ends_at: nil, status: :active)
+        pay_subscription.update(status: :active, ends_at: nil)
       end
 
       def swap(plan)
