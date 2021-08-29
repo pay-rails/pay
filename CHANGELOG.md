@@ -14,6 +14,7 @@ See the [UPGRADE](UPGRADE.md) guide for steps on upgrading from Pay 2.x.
 * Queues webhooks in `Pay::Webhook` for processing with ActiveJob to handle large volumes of webhooks
 * Subscriptions are automatically canceled when a Pay::Subscription deleted - @stevepolitodesign
 * Active subscriptions are canceled when a Pay::Customer's owner is deleted - @stevepolitodesign
+* Add `invoice` to Pay::Charge
 
 ### 2.7.2
 

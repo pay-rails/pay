@@ -1,14 +1,14 @@
 module Pay
   module Receipts
-    def filename
-      "receipt-#{created_at.strftime("%Y-%m-%d")}.pdf"
-    end
-
     def product
       Pay.application_name
     end
 
-    # Must return a file object
+    def receipt_filename
+      "receipt-#{created_at.strftime("%Y-%m-%d")}.pdf"
+    end
+    alias filename receipt_filename
+
     def receipt
       receipt_pdf.render
     end
@@ -16,6 +16,34 @@ module Pay
     def receipt_pdf
       ::Receipts::Receipt.new(
         id: id,
+        product: product,
+        company: {
+          name: Pay.business_name,
+          address: Pay.business_address,
+          email: Pay.support_email
+        },
+        line_items: line_items
+      )
+    end
+
+    def invoice_filename
+      "invoice-#{created_at.strftime("%Y-%m-%d")}.pdf"
+    end
+
+    def invoice
+      invoice_pdf.render
+    end
+
+    def invoice_pdf
+      ::Receipts::Invoice.new(
+        id: id,
+        issue_date: created_at,
+        due_date: created_at,
+        status: "<b><color rgb='#5eba7d'>PAID</color></b>",
+        bill_to: [
+          customer.customer_name,
+          customer.email
+        ].compact,
         product: product,
         company: {
           name: Pay.business_name,
