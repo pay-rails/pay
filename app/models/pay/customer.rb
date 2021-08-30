@@ -76,6 +76,8 @@ class Pay::Customer < Pay::ApplicationRecord
   end
 
   %w[stripe braintree paddle fake_processor].each do |processor_name|
+    scope processor_name, -> { where(processor: processor_name) }
+
     define_method "#{processor_name}?" do
       processor == processor_name
     end
