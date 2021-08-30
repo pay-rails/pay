@@ -223,8 +223,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
       ]
     )
 
-    invoice_id = Pay::Subscription.last.processor_subscription.latest_invoice
-    invoice = ::Stripe::Invoice.retrieve(invoice_id)
+    invoice = Pay::Subscription.last.processor_subscription.latest_invoice
     assert_equal 25_00, invoice.total
     assert_not_nil invoice.lines.data.find { |l| l.plan&.id == "default" }
     assert_not_nil invoice.lines.data.find { |l| l.price&.id == "price_1ILVZaKXBGcbgpbZQ26kgXWG" }
