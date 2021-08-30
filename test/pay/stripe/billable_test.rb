@@ -66,9 +66,8 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     @pay_customer.payment_method_token = payment_method
     subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
     subscription.swap("small-annual")
-    assert @pay_customer.subscribed?
-    assert_equal "default", @pay_customer.subscription.name
-    assert_equal "small-annual", @pay_customer.subscription.processor_plan
+    assert_equal "default", subscription.name
+    assert_equal "small-annual", subscription.processor_plan
   end
 
   test "stripe fails when subscribing with no payment method" do

@@ -105,13 +105,14 @@ module Pay
 
     def resume
       payment_processor.resume
-      update(ends_at: nil, status: "active")
+      update(ends_at: nil, status: :active)
       self
     end
 
     def swap(plan)
+      raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
       payment_processor.swap(plan)
-      update(processor_plan: plan, ends_at: nil)
+      update(processor_plan: plan, ends_at: nil, status: :active)
     end
 
     def swap_and_invoice(plan)

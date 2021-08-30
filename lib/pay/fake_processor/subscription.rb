@@ -38,7 +38,7 @@ module Pay
       end
 
       def on_grace_period?
-        canceled? && Time.zone.now < ends_at
+        canceled? && Time.current < ends_at
       end
 
       def paused?
@@ -53,14 +53,9 @@ module Pay
         unless on_grace_period? || paused?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end
-
-        pay_subscription.update(status: :active, ends_at: nil)
       end
 
       def swap(plan)
-        raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
-
-        pay_subscription.update(processor_plan: plan)
       end
     end
   end

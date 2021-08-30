@@ -10,7 +10,7 @@ module Pay
           case event["status"]
           when "deleted"
             subscription.status = "canceled"
-            subscription.ends_at = Time.zone.parse(event["next_bill_date"]) || Time.zone.now if subscription.ends_at.blank?
+            subscription.ends_at = Time.zone.parse(event["next_bill_date"]) || Time.current if subscription.ends_at.blank?
           when "trialing"
             subscription.status = "trialing"
             subscription.trial_ends_at = Time.zone.parse(event["next_bill_date"])

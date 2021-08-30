@@ -45,13 +45,13 @@ module Pay
 
       def cancel_now!
         gateway.subscription.cancel(processor_subscription.id)
-        pay_subscription.update(status: :canceled, ends_at: Time.zone.now)
+        pay_subscription.update(status: :canceled, ends_at: Time.current)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
 
       def on_grace_period?
-        canceled? && Time.zone.now < ends_at
+        canceled? && Time.current < ends_at
       end
 
       def paused?
@@ -122,12 +122,7 @@ module Pay
             prorate_charges: prorate?
           }
         })
-
-        if result.success?
-          pay_subscription.update(status: :active, processor_plan: braintree_plan.id, ends_at: nil)
-        else
-          raise Error, "Braintree failed to swap plans: #{result.message}"
-        end
+        raise Error, "Braintree failed to swap plans: #{result.message}" unless result.success?
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
