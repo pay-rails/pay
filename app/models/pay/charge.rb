@@ -4,7 +4,7 @@ module Pay
 
     # Associations
     belongs_to :customer
-    belongs_to :subscription, optional: true, class_name: "Pay::Subscription", foreign_key: :pay_subscription_id
+    belongs_to :subscription, optional: true
 
     # Scopes
     scope :sorted, -> { order(created_at: :desc) }

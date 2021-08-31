@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_001857) do
     t.json "data"
     t.string "currency"
     t.bigint "application_fee_amount"
-    t.bigint "pay_subscription_id"
+    t.bigint "subscription_id"
     t.json "metadata"
     t.bigint "customer_id"
     t.index ["customer_id", "processor_id"], name: "index_pay_charges_on_customer_id_and_processor_id", unique: true

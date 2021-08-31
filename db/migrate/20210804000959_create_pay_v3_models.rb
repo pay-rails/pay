@@ -46,6 +46,8 @@ class CreatePayV3Models < ActiveRecord::Migration[6.0]
       t.timestamps
     end
 
+    rename_column :pay_charges, :pay_subscription_id, :subscription_id
+
     add_column :pay_subscriptions, :metadata, Pay::Adapter.json_column_type
     add_column :pay_charges, :metadata, Pay::Adapter.json_column_type
 
