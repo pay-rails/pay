@@ -11,10 +11,10 @@ We recommend setting these IDs as data attributes on your `form`.
 You can use  `data-payment-intent` or `data-setup-intent` depending on if you're making a payment (PaymentIntent) or setting up a card to use later (SetupIntent).
 
 ```erb
-<%= form_with url: subscription_path, 
-  id: "payment-form", 
-  data: { 
-    payment_intent: @payment_intent, 
+<%= form_with url: subscription_path,
+  id: "payment-form",
+  data: {
+    payment_intent: @payment_intent,
     setup_intent: @setup_intent
   } do |form| %>
 
