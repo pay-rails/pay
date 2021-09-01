@@ -6,7 +6,7 @@
 
 <img src="docs/images/stripe_partner_badge.svg" height="26px">
 
-Pay is a payments engine for Ruby on Rails 5.2 and higher.
+Pay is a payments engine for Ruby on Rails 6.0 and higher.
 
 **Upgrading?** Check the [UPGRADE](UPGRADE.md) guide for required changes and/or migration when upgrading from a previous version of Pay.
 
