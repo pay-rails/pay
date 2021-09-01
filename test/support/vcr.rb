@@ -20,14 +20,12 @@ unless ENV["SKIP_VCR"]
     end
 
     teardown do
-      begin
-        cassette = VCR.current_cassette
-        VCR.eject_cassette
-      rescue VCR::Errors::UnusedHTTPInteractionError
-        puts
-        puts "Unused HTTP requests in cassette: #{cassette.file}"
-        raise
-      end
+      cassette = VCR.current_cassette
+      VCR.eject_cassette
+    rescue VCR::Errors::UnusedHTTPInteractionError
+      puts
+      puts "Unused HTTP requests in cassette: #{cassette.file}"
+      raise
     end
   end
 end

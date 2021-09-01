@@ -41,7 +41,6 @@ module Pay
 
         stripe_customer
       rescue ::Stripe::StripeError => e
-        binding.irb
         raise Pay::Stripe::Error, e
       end
 
@@ -55,7 +54,7 @@ module Pay
           confirmation_method: :automatic,
           currency: "usd",
           customer: processor_id,
-          payment_method: payment_method&.processor_id,
+          payment_method: payment_method&.processor_id
         }.merge(options)
 
         payment_intent = ::Stripe::PaymentIntent.create(args, stripe_options)
