@@ -2,7 +2,7 @@ module Pay
   class Payment
     attr_reader :intent
 
-    delegate :id, :amount, :client_secret, :status, :confirm, to: :intent
+    delegate :id, :amount, :client_secret, :customer, :status, :confirm, to: :intent
 
     def self.from_id(id)
       intent = id.start_with?("seti_") ? ::Stripe::SetupIntent.retrieve(id) : ::Stripe::PaymentIntent.retrieve(id)
