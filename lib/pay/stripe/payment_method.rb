@@ -10,7 +10,7 @@ module Pay
       end
 
       def self.sync(id, object: nil, stripe_account: nil, try: 0, retries: 1)
-        object ||= ::Stripe::PaymentMethod.retrieve(id, stripe_options)
+        object ||= ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
