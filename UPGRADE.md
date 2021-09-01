@@ -20,6 +20,76 @@ Upgrading from Pay 2.x to 3.0 requires moving data for several things:
 Here's an example migration for migrating data. This migration is purely an example for reference. Please modify this migration as needed.
 
 ```ruby
+class CreatePayV3Models < ActiveRecord::Migration[6.0]
+  def change
+    create_table :pay_customers do |t|
+      t.belongs_to :owner, polymorphic: true, index: false
+      t.string :processor
+      t.string :processor_id
+      t.boolean :default
+      t.public_send Pay::Adapter.json_column_type, :data
+      t.datetime :deleted_at
+
+      t.timestamps
+    end
+    # Index for `payment_processor` and `pay_customer` associations
+    add_index :pay_customers, [:owner_type, :owner_id, :deleted_at], name: :customer_owner_processor_index
+
+    # Index typically used by webhooks
+    add_index :pay_customers, [:processor, :processor_id]
+
+    create_table :pay_merchants do |t|
+      t.belongs_to :owner, polymorphic: true, index: false
+      t.string :processor
+      t.string :processor_id
+      t.boolean :default
+      t.public_send Pay::Adapter.json_column_type, :data
+
+      t.timestamps
+    end
+    add_index :pay_merchants, [:owner_type, :owner_id, :processor]
+
+    create_table :pay_payment_methods do |t|
+      t.belongs_to :customer, foreign_key: {to_table: :pay_customers}, index: false
+      t.string :processor_id
+      t.boolean :default
+      t.string :type
+      t.public_send Pay::Adapter.json_column_type, :data
+
+      t.timestamps
+    end
+    add_index :pay_payment_methods, [:customer_id, :processor_id], unique: true
+
+    create_table :pay_webhooks do |t|
+      t.string :processor
+      t.string :event_type
+      t.public_send Pay::Adapter.json_column_type, :event
+
+      t.timestamps
+    end
+
+    rename_column :pay_charges, :pay_subscription_id, :subscription_id
+
+    add_column :pay_charges, :application_fee_amount, :integer
+    add_column :pay_charges, :currency, :string
+    add_column :pay_charges, :metadata, Pay::Adapter.json_column_type
+    add_column :pay_subscriptions, :application_fee_percent, :decimal, precision: 8, scale: 2
+    add_column :pay_subscriptions, :metadata, Pay::Adapter.json_column_type
+
+    remove_index :pay_charges, [:processor, :processor_id] if index_exists?(:pay_charges, [:processor, :processor_id])
+    remove_index :pay_subscriptions, [:processor, :processor_id] if index_exists?(:pay_subscriptions, [:processor, :processor_id])
+
+    safety_assured do
+      add_reference :pay_charges, :customer, foreign_key: {to_table: :pay_customers}, index: false
+      add_reference :pay_subscriptions, :customer, foreign_key: {to_table: :pay_customers}, index: false
+      add_index :pay_charges, [:customer_id, :processor_id], unique: true
+      add_index :pay_subscriptions, [:customer_id, :processor_id], unique: true
+    end
+  end
+end
+```
+
+```ruby
 class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
   # List of models to migrate from Pay v2 to Pay v3
   MODELS = [User, Team]
@@ -54,7 +124,7 @@ class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
           subscription.update!(customer: customer)
         end
 
-         # Migrate to Pay::PaymentMethod
+        # Migrate to Pay::PaymentMethod
         if record.card_type?
           # Lookup default payment method via API and create them as Pay::PaymentMethods
           begin
@@ -213,7 +283,7 @@ user.payment_processor.on_trial? #=> true
 
 ### Payment Methods
 
-Pay 3 now keeps track of multiple payment methods. Each is associated with a Pay::Customer and one is marked as the default. 
+Pay 3 now keeps track of multiple payment methods. Each is associated with a Pay::Customer and one is marked as the default.
 
 We also now support every payment method (previously only Card or PayPal). This means you can store Venmo details, iDeal, FPX, or any other payment method supported by Stripe, Braintree, etc.
 
