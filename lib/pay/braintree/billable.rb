@@ -105,7 +105,7 @@ module Pay
           customer_id: processor_id,
           payment_method_nonce: token,
           options: {
-            make_default: true,
+            make_default: default,
             verify_card: true
           }
         )

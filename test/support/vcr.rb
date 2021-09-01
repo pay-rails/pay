@@ -16,11 +16,18 @@ unless ENV["SKIP_VCR"]
 
   class ActiveSupport::TestCase
     setup do
-      VCR.insert_cassette name
+      VCR.insert_cassette name, allow_unused_http_interactions: false
     end
 
     teardown do
-      VCR.eject_cassette name
+      begin
+        cassette = VCR.current_cassette
+        VCR.eject_cassette
+      rescue VCR::Errors::UnusedHTTPInteractionError
+        puts
+        puts "Unused HTTP requests in cassette: #{cassette.file}"
+        raise
+      end
     end
   end
 end

@@ -24,7 +24,7 @@ module Pay
 
       def customer
         stripe_customer = if processor_id?
-          ::Stripe::Customer.retrieve(processor_id, stripe_options)
+          ::Stripe::Customer.retrieve({id: processor_id}, stripe_options)
         else
           sc = ::Stripe::Customer.create({email: email, name: customer_name}, stripe_options)
           pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
@@ -41,18 +41,21 @@ module Pay
 
         stripe_customer
       rescue ::Stripe::StripeError => e
+        binding.irb
         raise Pay::Stripe::Error, e
       end
 
       def charge(amount, options = {})
-        stripe_customer = customer
+        add_payment_method(payment_method_token, default: true) if payment_method_token?
+
+        payment_method = pay_customer.default_payment_method
         args = {
           amount: amount,
           confirm: true,
           confirmation_method: :automatic,
           currency: "usd",
-          customer: stripe_customer.id,
-          payment_method: stripe_customer.invoice_settings.default_payment_method
+          customer: processor_id,
+          payment_method: payment_method&.processor_id,
         }.merge(options)
 
         payment_intent = ::Stripe::PaymentIntent.create(args, stripe_options)
@@ -95,12 +98,16 @@ module Pay
       end
 
       def add_payment_method(payment_method_id, default: false)
-        stripe_customer = customer
+        customer unless processor_id?
+        payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: processor_id}, stripe_options)
 
-        return true if payment_method_id == stripe_customer.invoice_settings.default_payment_method
-
-        payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: stripe_customer.id}, stripe_options)
-        ::Stripe::Customer.update(stripe_customer.id, {invoice_settings: {default_payment_method: payment_method.id}}, stripe_options)
+        if default
+          ::Stripe::Customer.update(processor_id, {
+            invoice_settings: {
+              default_payment_method: payment_method.id
+            }
+          }, stripe_options)
+        end
 
         save_payment_method(payment_method, default: default)
       rescue ::Stripe::StripeError => e

@@ -148,6 +148,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe handles exception when creating a charge" do
+    @pay_customer.payment_methods.destroy_all
     exception = assert_raises(Pay::Stripe::Error) { @pay_customer.charge(0) }
     assert_equal "This value must be greater than or equal to 1.", exception.message
   end

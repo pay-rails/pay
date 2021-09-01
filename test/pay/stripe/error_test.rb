@@ -4,6 +4,7 @@ class Pay::Stripe::ErrorTest < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:stripe)
     @pay_customer.update(processor_id: nil)
+    @pay_customer.payment_methods.destroy_all
   end
 
   test "re-raised stripe exceptions keep the same message" do

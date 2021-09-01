@@ -3,14 +3,14 @@ module Pay
     class PaymentMethod
       attr_reader :pay_payment_method
 
-      delegate :customer, :processor_id, :stripe_account, to: :pay_payment_method
+      delegate :customer, :processor_id, to: :pay_payment_method
 
       def initialize(pay_payment_method)
         @pay_payment_method = pay_payment_method
       end
 
       def self.sync(id, object: nil, stripe_account: nil, try: 0, retries: 1)
-        object ||= ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
+        object ||= ::Stripe::PaymentMethod.retrieve(id, stripe_options)
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
@@ -54,7 +54,7 @@ module Pay
 
       # Options for Stripe requests
       def stripe_options
-        {stripe_account: stripe_account}.compact
+        {stripe_account: customer.stripe_account}.compact
       end
     end
   end

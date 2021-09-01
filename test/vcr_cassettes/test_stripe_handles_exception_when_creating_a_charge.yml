@@ -2,119 +2,24 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.stripe.com/v1/customers
-    body:
-      encoding: UTF-8
-      string: email=stripe%40example.org&name=Stripe+User
-    headers:
-      User-Agent:
-      - Stripe/v1 RubyBindings/5.37.0 PayRails/2.7.1 (https://github.com/pay-rails/pay)
-      Authorization:
-      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
-      Content-Type:
-      - application/x-www-form-urlencoded
-      X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_3qyUtLpqx5XgQi","request_duration_ms":1548}}'
-      Stripe-Version:
-      - '2020-08-27'
-      X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.7.1"},"bindings_version":"5.37.0","lang":"ruby","lang_version":"3.0.1
-        p64 (2021-04-05)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 20.5.0 Darwin Kernel Version 20.5.0: Sat May  8 05:10:33
-        PDT 2021; root:xnu-7195.121.3~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - nginx
-      Date:
-      - Wed, 04 Aug 2021 03:57:05 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '594'
-      Connection:
-      - keep-alive
-      Access-Control-Allow-Credentials:
-      - 'true'
-      Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
-      Access-Control-Allow-Origin:
-      - "*"
-      Access-Control-Expose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
-      Access-Control-Max-Age:
-      - '300'
-      Cache-Control:
-      - no-cache, no-store
-      Request-Id:
-      - req_73MGm6WQu5v2Mn
-      Stripe-Version:
-      - '2020-08-27'
-      X-Stripe-C-Cost:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
-    body:
-      encoding: UTF-8
-      string: |
-        {
-          "id": "cus_JyYK1JPNokHjFO",
-          "object": "customer",
-          "address": null,
-          "balance": 0,
-          "created": 1628049425,
-          "currency": null,
-          "default_source": null,
-          "delinquent": false,
-          "description": null,
-          "discount": null,
-          "email": "stripe@example.org",
-          "invoice_prefix": "8D317A35",
-          "invoice_settings": {
-            "custom_fields": null,
-            "default_payment_method": null,
-            "footer": null
-          },
-          "livemode": false,
-          "metadata": {
-          },
-          "name": "Stripe User",
-          "next_invoice_sequence": 1,
-          "phone": null,
-          "preferred_locales": [
-
-          ],
-          "shipping": null,
-          "tax_exempt": "none"
-        }
-  recorded_at: Wed, 04 Aug 2021 03:57:05 GMT
-- request:
-    method: post
     uri: https://api.stripe.com/v1/payment_intents
     body:
       encoding: UTF-8
-      string: amount=0&confirm=true&confirmation_method=automatic&currency=usd&customer=cus_JyYK1JPNokHjFO
+      string: amount=0&confirm=true&confirmation_method=automatic&currency=usd
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.37.0 PayRails/2.7.1 (https://github.com/pay-rails/pay)
+      - Stripe/v1 RubyBindings/5.38.0 PayRails/3.0.0 (https://github.com/pay-rails/pay)
       Authorization:
       - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_73MGm6WQu5v2Mn","request_duration_ms":423}}'
+      - '{"last_request_metrics":{"request_id":"req_obxi1Sijg7TOxL","request_duration_ms":1}}'
       Stripe-Version:
       - '2020-08-27'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.7.1"},"bindings_version":"5.37.0","lang":"ruby","lang_version":"3.0.1
-        p64 (2021-04-05)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"3.0.0"},"bindings_version":"5.38.0","lang":"ruby","lang_version":"3.0.2
+        p107 (2021-07-07)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
         Chriss-iMac.local 20.5.0 Darwin Kernel Version 20.5.0: Sat May  8 05:10:33
         PDT 2021; root:xnu-7195.121.3~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
       Accept-Encoding:
@@ -129,7 +34,7 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Wed, 04 Aug 2021 03:57:05 GMT
+      - Wed, 01 Sep 2021 15:33:20 GMT
       Content-Type:
       - application/json
       Content-Length:
@@ -149,7 +54,7 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Request-Id:
-      - req_yNJ9N6Gtnpus8A
+      - req_rFTU93U8DuL5em
       Stripe-Version:
       - '2020-08-27'
       X-Stripe-C-Cost:
@@ -168,5 +73,5 @@ http_interactions:
             "type": "invalid_request_error"
           }
         }
-  recorded_at: Wed, 04 Aug 2021 03:57:05 GMT
+  recorded_at: Wed, 01 Sep 2021 15:33:20 GMT
 recorded_with: VCR 6.0.0

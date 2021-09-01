@@ -12,9 +12,6 @@ module Pay
     store_accessor :data, :username
     store_accessor :data, :bank
 
-    # Stripe Marketplace
-    store_accessor :data, :stripe_account
-
     # Aliases to share PaymentMethodAttributes
     alias_attribute :payment_method_type, :type
 
