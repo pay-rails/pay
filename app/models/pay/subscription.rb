@@ -18,7 +18,7 @@ module Pay
     scope :with_deleted_customer, -> { joins(:customer).merge(Customer.deleted) }
 
     # Callbacks
-    before_destroy :cancel_now!, if: :active?
+    before_destroy :cancel_if_active
 
     store_accessor :data, :paddle_update_url
     store_accessor :data, :paddle_cancel_url
@@ -126,6 +126,16 @@ module Pay
 
     def latest_payment
       processor_subscription(expand: ["latest_invoice.payment_intent"]).latest_invoice.payment_intent
+    end
+
+    private
+
+    def cancel_if_active
+      if active?
+        cancel_now!
+      end
+    rescue => e
+      Rails.logger.info "[Pay] Unable to automatically cancel subscription `#{processor} #{id}`: #{e.message}"
     end
   end
 end
