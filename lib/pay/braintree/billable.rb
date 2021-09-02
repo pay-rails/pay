@@ -160,8 +160,6 @@ module Pay
         charge
       end
 
-      private
-
       def gateway
         Pay.braintree_gateway
       end
@@ -197,7 +195,14 @@ module Pay
                        }
                      else
                        {
-                         payment_method_type: payment_method.class.name.demodulize.underscore
+                         payment_method_type: payment_method.class.name.demodulize.underscore,
+                         brand: payment_method.try(:card_type),
+                         last4: payment_method.try(:last_4),
+                         exp_month: payment_method.try(:expiration_month),
+                         exp_year: payment_method.try(:expiration_year),
+                         bank: payment_method.try(:bank_name),
+                         username: payment_method.try(:username),
+                         email: payment_method.try(:email)
                        }
         end
 

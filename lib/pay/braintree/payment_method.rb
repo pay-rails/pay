@@ -5,6 +5,15 @@ module Pay
 
       delegate :customer, :processor_id, to: :pay_payment_method
 
+      def self.sync(id, object: nil, try: 0, retries: 1)
+        object ||= gateway.payment_method.find(id)
+
+        pay_customer = Pay::Customer.find_by(processor: :braintree, processor_id: object.customer_id)
+        return unless pay_customer
+
+        pay_customer.save_payment_method(object, default: object.default?)
+      end
+
       def initialize(pay_payment_method)
         @pay_payment_method = pay_payment_method
       end

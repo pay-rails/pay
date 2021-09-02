@@ -7,6 +7,8 @@ module Pay
 
       # Paddle doesn't provide PaymentMethod IDs, so we have to lookup via the Customer
       def self.sync(pay_customer:, attributes: nil)
+        return unless pay_customer.subscription
+
         payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
         payment_method.processor_id ||= NanoId.generate
 
