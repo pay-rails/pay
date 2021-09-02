@@ -2,9 +2,9 @@ require "test_helper"
 
 class UserMailerTest < ActionMailer::TestCase
   setup do
-    @user = users(:stripe)
+    @charge = pay_charges(:stripe)
+    @user = @charge.customer.owner
     @user.update(extra_billing_info: "extra billing info")
-    @charge = @user.payment_processor.charges.new(amount: 125_37, created_at: Time.current)
   end
 
   test "receipt" do

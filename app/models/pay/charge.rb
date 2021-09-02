@@ -89,7 +89,7 @@ module Pay
         "SEPA Debit #{last4}"
 
       else
-        payment_method_type.titleize
+        payment_method_type&.titleize
       end
     end
   end
