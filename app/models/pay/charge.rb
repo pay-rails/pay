@@ -63,9 +63,33 @@ module Pay
     def charged_to
       case payment_method_type
       when "card"
-        "#{brand} (**** **** **** #{last4})"
+        "#{brand.titleize} (**** **** **** #{last4})"
       when "paypal"
         "#{brand} (#{email})"
+
+      # Braintree
+      when "venmo"
+        "#{brand.titleize} #{username}"
+      when "us_bank_account"
+        "#{bank} #{last4}"
+
+      # Stripe
+      when "acss_debit"
+        "#{bank} #{last4}"
+      when "eps", "fpx", "ideal", "p24"
+        bank
+
+      when "au_becs_debit"
+        "BECS Debit #{last4}"
+
+      when "bacs_debit"
+        "Bacs Debit #{last4}"
+
+      when "sepa_debit"
+        "SEPA Debit #{last4}"
+
+      else
+        payment_method_type.titleize
       end
     end
   end
