@@ -30,23 +30,21 @@ bundle
 
 ## Migrations
 
-We need to add migrations to your application, run the following migration:
+Copy the Pay migrations to your app:
 
 ````bash
 bin/rails pay:install:migrations
 ````
 
->If your models rely on non integer ids (uuids for example) you will need to alter the `create_pay_subscriptions` and `create_pay_charges` migrations.
+>If your models rely on non integer ids (uuids for example) you will need to alter the migrations.
 
-Finally, run the migrations
+Then run the migrations:
 
 ```bash
-rake db:migrate
+bin/rails db:migrate
 ```
 
-> Make sure to fully restart your Rails application after installation: `bin/spring stop && rails s`
-
-Lastly, make sure you've configured your ActionMailer `default_url_options` so Pay can generate links (for features like Stripe Checkout).
+Make sure you've configured your ActionMailer `default_url_options` so Pay can generate links (for features like Stripe Checkout).
 
 ```ruby
 # config/application.rb
