@@ -31,3 +31,6 @@ Rails.application.config.to_prepare do
 end
 ```
 
+## Next
+
+See [Testing](9_testing.md)

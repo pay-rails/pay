@@ -1,6 +1,6 @@
 # Testing Pay
 
-Pay comes with a fake payment processor to make testing easy. It can also be used in production to give free access to friends, testers, etc. 
+Pay comes with a fake payment processor to make testing easy. It can also be used in production to give free access to friends, testers, etc.
 
 ### Using the Fake Processor
 
@@ -33,6 +33,3 @@ Fake processor charges and subscriptions will automatically assign these fields 
 # Expired Trial
 @user.payment_processor.subscribe(plan: "fake", trial_ends_at: 1.week.ago)
 ```
-
-
-

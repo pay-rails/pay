@@ -28,7 +28,7 @@ Subscribe takes several arguments and options:
 
 ##### Paddle Subscriptions
 
-Paddle does not allow you to create a subscription through the API. 
+Paddle does not allow you to create a subscription through the API.
 
 Instead, Pay uses webhooks to create the the subscription in the database. The Paddle [passthrough parameter](https://developer.paddle.com/guides/how-tos/checkout/pass-parameters) is required during checkout to associate the subscription with the correct `Pay::Customer`.
 
@@ -235,3 +235,6 @@ With Paddle, you may resume a paused subscription:
 #=> #<Stripe::Subscription>
 ```
 
+## Next
+
+See [Webhooks](7_webhooks.md)

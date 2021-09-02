@@ -16,7 +16,7 @@ Pay comes with a bunch of different webhook handlers built-in. Each payment proc
 
 Webhooks are automatically mounted at `/pay/webhooks/:provider`
 
-To configure webhooks on your payment processor, use the following URLs (with your domain): 
+To configure webhooks on your payment processor, use the following URLs (with your domain):
 
 * **Stripe** - `https://example.org/pay/webhooks/stripe`
 * **Braintree** - `https://example.org/pay/webhooks/braintree`
@@ -74,3 +74,7 @@ Need to unsubscribe or disable one of the default webhook processors? Simply uns
 ```ruby
 Pay::Webhooks.delegator.unsubscribe "stripe.charge.succeeded"
 ```
+
+## Next
+
+See [Customizing Models](8_customizing_models.md)
