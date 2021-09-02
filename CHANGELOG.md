@@ -1,5 +1,8 @@
 ### Unreleased
 
+* Add payment methods to Pay::Charge `charged_to` helper - @excid3
+* Improve `swap` error message - @excid3
+
 ### 3.0.1
 
 * Add `rake pay:payment_methods:sync_default` task for easily upgrading to Pay 3 - @excid3
