@@ -6,7 +6,7 @@ Follow this guide to upgrade older pay versions. These may require database migr
 
 This is a major change to add support for multiple payment methods, fixing bugs, and improving the architecture of Pay.
 
-### Database Migration
+### Database Migrations
 
 Upgrading from Pay 2.x to 3.0 requires moving data for several things:
 
@@ -123,22 +123,6 @@ class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
           customer = Pay::Customer.where(owner: record, processor: subscription.processor).first_or_create!
           subscription.update!(customer: customer)
         end
-
-        # Migrate to Pay::PaymentMethod
-        if record.card_type?
-          # Lookup default payment method via API and create them as Pay::PaymentMethods
-          begin
-            case pay_customer.processor
-            when "braintree"
-              payment_method_id = pay_customer.customer.payment_methods.find(&:default?)
-              Pay::Braintree::PaymentMethod.sync(payment_method_id) if payment_method_id
-            when "stripe"
-              payment_method_id = pay_customer.customer.invoice_settings.default_payment_method
-              Pay::Stripe::PaymentMethod.sync(payment_method_id) if payment_method_id
-            end
-          rescue
-          end
-        end
       end
 
       # Migrate Pay::Charge payment method details
@@ -217,6 +201,11 @@ class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
     end
   end
 end
+```
+
+After running migrations, run the following to sync the customer default payment methods to the Pay::PaymentMethods table.
+```ruby
+rake pay:payment_methods:sync_default
 ```
 
 ### Pay::Customer
