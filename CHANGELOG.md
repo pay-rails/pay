@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.1
+
+* Add `rake pay:payment_methods:sync_default` task for easily upgrading to Pay 3 - @excid3
+
 ### 3.0.0
 
 See the [UPGRADE](UPGRADE.md) guide for steps on upgrading from Pay 2.x.
