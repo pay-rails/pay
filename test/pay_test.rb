@@ -47,4 +47,12 @@ class Pay::Test < ActiveSupport::TestCase
     assert Pay.respond_to?(:send_emails)
     assert Pay.respond_to?(:send_emails=)
   end
+
+  test "can set email deliverability per mailer action" do
+    MAILER_ACTIONS = %i(receipt refund subscription_renewing payment_action_required)
+    MAILER_ACTIONS.each do |mailer_action|
+      assert Pay.emails.respond_to?(:"#{mailer_action}")
+      assert Pay.emails.respond_to?(:"#{mailer_action}=")
+    end
+  end
 end

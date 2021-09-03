@@ -48,6 +48,24 @@ module Pay
 
   mattr_accessor :routes_path
   @@routes_path = "/pay"
+  
+  module Emails
+    mattr_accessor :receipt
+    @@receipt = true
+
+    mattr_accessor :refund
+    @@refund = true
+
+    mattr_accessor :subscription_renewing
+    @@subscription_renewing = true
+
+    mattr_accessor :payment_action_required
+    @@payment_action_required = true
+  end
+
+  def self.emails
+    Emails
+  end
 
   def self.setup
     yield self
