@@ -48,7 +48,7 @@ module Pay
 
   mattr_accessor :routes_path
   @@routes_path = "/pay"
-  
+
   module Emails
     mattr_accessor :receipt
     @@receipt = true

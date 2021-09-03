@@ -64,6 +64,6 @@ class Pay::Test < ActiveSupport::TestCase
   private
 
   def mailer_actions
-    %i(receipt refund subscription_renewing payment_action_required)
+    %i[receipt refund subscription_renewing payment_action_required]
   end
 end
