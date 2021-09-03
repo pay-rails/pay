@@ -12,8 +12,7 @@ end
 def sync_default_payment_method(pay_customer, retries: 2)
   try = 0
   begin
-    puts "Syncing Pay::Customer ##{pay_customer.id} attempt #{try+1}: #{pay_customer.processor.titleize} #{pay_customer.processor_id}"
-    raise Pay::Error
+    puts "Syncing Pay::Customer ##{pay_customer.id} attempt #{try + 1}: #{pay_customer.processor.titleize} #{pay_customer.processor_id}"
     case pay_customer.processor
     when "braintree"
       payment_method = pay_customer.customer.payment_methods.find(&:default?)
