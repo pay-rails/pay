@@ -55,4 +55,11 @@ class Pay::Test < ActiveSupport::TestCase
       assert Pay.emails.respond_to?(:"#{mailer_action}=")
     end
   end
+
+  test "default value for mailers is true" do
+    MAILER_ACTIONS = %i(receipt refund subscription_renewing payment_action_required)
+    MAILER_ACTIONS.each do |mailer_action|
+      assert Pay.emails.send(:"#{mailer_action}"), true
+    end
+  end
 end
