@@ -31,6 +31,17 @@ class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
     end
   end
 
+  test "should prevent delivery" do
+    Pay.emails.subscription_renewing=false
+
+    @event.data.object.lines.data.first.price.recurring.interval = "year"
+    create_subscription(processor_id: @event.data.object.subscription)
+
+    assert_no_enqueued_emails do
+      Pay::Stripe::Webhooks::SubscriptionRenewing.new.call(@event)
+    end
+  end
+
   private
 
   def create_subscription(processor_id:)

@@ -6,6 +6,8 @@ module Pay
         # Occurs X number of days before a subscription is scheduled to create an invoice that is automatically charged—where X is determined by your subscriptions settings. Note: The received Invoice object will not have an invoice ID.
 
         def call(event)
+          return unless Pay.emails.subscription_renewing
+
           # Event is of type "invoice" see:
           # https://stripe.com/docs/api/invoices/object
           subscription = Pay::Subscription.find_by_processor_and_id(:stripe, event.data.object.subscription)
