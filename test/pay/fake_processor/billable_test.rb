@@ -54,7 +54,7 @@ class Pay::FakeProcessor::Billable::Test < ActiveSupport::TestCase
     refute pay_customer.on_generic_trial?
 
     time = 14.days.from_now
-    pay_subscription = pay_customer.subscribe(trial_ends_at: time, ends_at: time)
+    pay_customer.subscribe(trial_ends_at: time, ends_at: time)
 
     assert pay_customer.on_generic_trial?
   end
