@@ -79,12 +79,10 @@ class CreatePayV3Models < ActiveRecord::Migration[6.0]
     remove_index :pay_charges, [:processor, :processor_id] if index_exists?(:pay_charges, [:processor, :processor_id])
     remove_index :pay_subscriptions, [:processor, :processor_id] if index_exists?(:pay_subscriptions, [:processor, :processor_id])
 
-    safety_assured do
-      add_reference :pay_charges, :customer, foreign_key: {to_table: :pay_customers}, index: false
-      add_reference :pay_subscriptions, :customer, foreign_key: {to_table: :pay_customers}, index: false
-      add_index :pay_charges, [:customer_id, :processor_id], unique: true
-      add_index :pay_subscriptions, [:customer_id, :processor_id], unique: true
-    end
+    add_reference :pay_charges, :customer, foreign_key: {to_table: :pay_customers}, index: false
+    add_reference :pay_subscriptions, :customer, foreign_key: {to_table: :pay_customers}, index: false
+    add_index :pay_charges, [:customer_id, :processor_id], unique: true
+    add_index :pay_subscriptions, [:customer_id, :processor_id], unique: true
   end
 end
 ```
@@ -102,40 +100,11 @@ class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
         pay_customer = Pay::Customer.where(owner: record, processor: record.processor, processor_id: record.processor_id).first_or_initialize
         pay_customer.update!(
           default: true,
-
-          # Optional: Used for Marketplace payments
           data: {
             stripe_account: record.try(:stripe_account),
             braintree_account: record.try(:braintree_account),
           }
         )
-
-        # Associate Pay::Charges with new Pay::Customer
-        Pay::Charge.where(owner_type: record.class.name, owner_id: record.id).each do |charge|
-          # Since customers can switch between payment processors, we have to find or create
-          customer = Pay::Customer.where(owner: record, processor: charge.processor).first_or_create!
-          charge.update!(customer: customer)
-        end
-
-        # Associate Pay::Subscription with new Pay::Customer
-        Pay::Subscription.where(owner_type: record.class.name, owner_id: record.id).each do |subscription|
-          # Since customers can switch between payment processors, we have to find or create
-          customer = Pay::Customer.where(owner: record, processor: subscription.processor).first_or_create!
-          subscription.update!(customer: customer)
-        end
-      end
-
-      # Migrate Pay::Charge payment method details
-      Pay::Charge.find_each do |charge|
-        # Data column should be a hash. If we find a string instead, replace it
-        charge.data = {} if charge.data.is_a?(String)
-
-        case charge.card_type.downcase
-        when "paypal"
-          charge.update(payment_method_type: :paypal, brand: "PayPal", email: charge.card_last4)
-        else
-          charge.update(payment_method_type: :card, brand: charge.card_type, last4: charge.card_last4, exp_month: charge.card_exp_month, exp_year: charge.card_exp_year)
-        end
       end
 
       # Migrate generic trials
@@ -153,6 +122,37 @@ class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
           processor: :fake_processor
         )
       end
+    end
+
+    # Associate Pay::Charges with new Pay::Customer
+    Pay::Charge.find_each do |charge|
+      # Since customers can switch between payment processors, we have to find or create
+      owner = charge.owner_type.constantize.find_by(id: charge.owner_id)
+      next unless owner
+
+      customer = Pay::Customer.where(owner: owner, processor: charge.processor).first_or_create!
+
+      # Data column should be a hash. If we find a string instead, replace it
+      charge.data = {} if charge.data.is_a?(String)
+
+      case charge.card_type.downcase
+      when "paypal"
+        charge.update!(customer: customer, payment_method_type: :paypal, brand: "PayPal", email: charge.card_last4)
+      else
+        charge.update!(customer: customer, payment_method_type: :card, brand: charge.card_type, last4: charge.card_last4, exp_month: charge.card_exp_month, exp_year: charge.card_exp_year)
+      end
+    end
+
+    # Associate Pay::Subscriptions with new Pay::Customer
+    Pay::Subscription.find_each.each do |subscription|
+      # Since customers can switch between payment processors, we have to find or create
+      owner = subscription.owner_type.constantize.find_by(id: subscription.owner_id)
+      next unless owner
+      customer = Pay::Customer.where(owner: owner, processor: subscription.processor).first_or_create!
+
+      # Data column should be a hash. If we find a string instead, replace it
+      subscription.data = {} if subscription.data.is_a?(String)
+      subscription.update!(customer: customer)
     end
 
     # Drop unneeded columns
