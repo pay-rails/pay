@@ -46,4 +46,16 @@ class Pay::FakeProcessor::Billable::Test < ActiveSupport::TestCase
     pay_customer.customer
     assert_not_nil pay_customer.processor_id
   end
+
+  test "generic trial" do
+    user = users(:none)
+    pay_customer = user.set_payment_processor :fake_processor, allow_fake: true
+
+    refute pay_customer.on_generic_trial?
+
+    time = 14.days.from_now
+    pay_subscription = pay_customer.subscribe(trial_ends_at: time, ends_at: time)
+
+    assert pay_customer.on_generic_trial?
+  end
 end

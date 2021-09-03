@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Add `on_generic_trial?` to Pay::Customer for easier checking - @excid3
+
 ### 3.0.2
 
 * Add payment methods to Pay::Charge `charged_to` helper - @excid3

@@ -79,14 +79,20 @@ Stripe is the only payment processor that allows subscriptions without a payment
 
 ##### Trials Without Payment Method
 
-To create a trial without a card, we can use the Fake Processor.
+To create a trial without a card, we can use the Fake Processor to create a subscription with matching trial and end times.
 
 ```ruby
-@user.set_payment_processor :fake_processor
-@user.payment_processor.subscribe(trial_ends_at: 14.days.from_now, ends_at: 14.days.from_now)
+time = 14.days.from_now
+@user.set_payment_processor :fake_processor, allow_fake: true
+@user.payment_processor.subscribe(trial_ends_at: time, ends_at: time)
 ```
 
 This will create a fake subscription in our database that we can use. Once expired, the customer will need to subscribe using a real payment processor.
+
+```ruby
+@user.payment_processor.on_generic_trial?
+#=> true
+```
 
 ##### Trials with Payment Method required
 

@@ -76,6 +76,16 @@ module Pay
       deleted_at.present?
     end
 
+    def on_generic_trial?
+      return false unless fake_processor?
+
+      subscription = subscriptions.active.last
+      return false unless subscription
+
+      # If these match, consider it a generic trial
+      subscription.trial_ends_at == subscription.ends_at
+    end
+
     %w[stripe braintree paddle fake_processor].each do |processor_name|
       scope processor_name, -> { where(processor: processor_name) }
 
