@@ -1,5 +1,8 @@
 ### Unreleased
 
+### 3.0.3
+
+* Add retries for payment method sync in case of rate limiting - @excid3
 * Add `on_generic_trial?` to Pay::Customer for easier checking - @excid3
 
 ### 3.0.2
