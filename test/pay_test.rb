@@ -42,4 +42,9 @@ class Pay::Test < ActiveSupport::TestCase
     assert Pay.respond_to?(:default_plan_name)
     assert Pay.respond_to?(:default_plan_name=)
   end
+
+  test "can set email deliverability" do
+    assert Pay.respond_to?(:send_emails)
+    assert Pay.respond_to?(:send_emails=)
+  end
 end
