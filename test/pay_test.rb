@@ -49,17 +49,21 @@ class Pay::Test < ActiveSupport::TestCase
   end
 
   test "can set email deliverability per mailer action" do
-    MAILER_ACTIONS = %i(receipt refund subscription_renewing payment_action_required)
-    MAILER_ACTIONS.each do |mailer_action|
+    mailer_actions.each do |mailer_action|
       assert Pay.emails.respond_to?(:"#{mailer_action}")
       assert Pay.emails.respond_to?(:"#{mailer_action}=")
     end
   end
 
   test "default value for mailers is true" do
-    MAILER_ACTIONS = %i(receipt refund subscription_renewing payment_action_required)
-    MAILER_ACTIONS.each do |mailer_action|
-      assert Pay.emails.send(:"#{mailer_action}"), true
+    mailer_actions.each do |mailer_action|
+      assert_equal Pay.emails.send(mailer_action), true
     end
+  end
+
+  private
+
+  def mailer_actions
+    %i(receipt refund subscription_renewing payment_action_required)
   end
 end
