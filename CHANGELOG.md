@@ -1,5 +1,7 @@
 ### Unreleased
 
+### 3.0.2
+
 * Add payment methods to Pay::Charge `charged_to` helper - @excid3
 * Improve `swap` error message - @excid3
 
