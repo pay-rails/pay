@@ -60,6 +60,18 @@ module Pay
       payment_processor.refund!(refund_amount)
     end
 
+    def refunded?
+      amount_refunded.to_i > 0
+    end
+
+    def full_refund?
+      refunded? && amount == amount_refunded
+    end
+
+    def partial_refund?
+      refunded? && !full_refund?
+    end
+
     def charged_to
       case payment_method_type
       when "card"

@@ -54,5 +54,23 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert_includes Pay::Charge.with_deleted_customer, charge
   end
 
-  private
+  test "refunded" do
+    assert Pay::Charge.new(amount: 1_00, amount_refunded: 1_00).refunded?
+    refute Pay::Charge.new(amount: 1_00, amount_refunded: 0).refunded?
+    refute Pay::Charge.new(amount: 1_00, amount_refunded: nil).refunded?
+  end
+
+  test "full_refund" do
+    assert Pay::Charge.new(amount: 1_00, amount_refunded: 1_00).full_refund?
+    refute Pay::Charge.new(amount: 1_00, amount_refunded: 50).full_refund?
+    refute Pay::Charge.new(amount: 1_00, amount_refunded: 0).full_refund?
+    refute Pay::Charge.new(amount: 1_00, amount_refunded: nil).full_refund?
+  end
+
+  test "partial_refund" do
+    assert Pay::Charge.new(amount: 1_00, amount_refunded: 50).partial_refund?
+    refute Pay::Charge.new(amount: 1_00, amount_refunded: 1_00).partial_refund?
+    refute Pay::Charge.new(amount: 1_00, amount_refunded: 0).partial_refund?
+    refute Pay::Charge.new(amount: 1_00, amount_refunded: nil).partial_refund?
+  end
 end

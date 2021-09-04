@@ -1,5 +1,11 @@
 ### Unreleased
 
+* Add `refunded?` `partial_refund?` and `full_refund?` methods to `Pay::Charge` - @excid3
+
+### 3.0.6
+
+* Fix payment method sync on customer updated - @excid3
+
 ### 3.0.5
 
 * Fix Stripe customer.updated webhook - @excid3
