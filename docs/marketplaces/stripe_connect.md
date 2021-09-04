@@ -47,8 +47,6 @@ Stripe provides multiple ways of handling payments
 
 ### Direct Charges
 
-![chart](https://stripe.com/img/docs/connect/direct_charges.svg)
-
 * You create a charge on your user’s account so the payment appears as a charge on the connected account, not in your account balance.
 * The connected account’s balance increases with every charge.
 * Your account balance increases with application fees from every charge.
@@ -67,8 +65,6 @@ var stripe = Stripe('<%= @sample_credentials.test_publishable_key %>', {
 
 ### Destination Charges
 
-![chart](https://stripe.com/img/docs/connect/application_fee_amount.svg)
-
 * You create a charge on your platform’s account so the payment appears as a charge on your account. Then, you determine whether some or all of those funds are transferred to the connected account.
 * Your account balance will be debited for the cost of the Stripe fees, refunds, and chargebacks.
 
@@ -83,8 +79,6 @@ var stripe = Stripe('<%= @sample_credentials.test_publishable_key %>', {
 ```
 
 ### Separate Charges and Transfers
-
-![chart](https://stripe.com/img/docs/connect/charges_transfers.svg)
 
 * You create a charge on your platform’s account and also transfer funds to your user’s account. The payment appears as a charge on your account and there’s also a transfer to a connected account (amount determined by you), which is withdrawn from your account balance.
 * You can transfer funds to multiple connected accounts.
