@@ -1,9 +1,17 @@
 ### Unreleased
 
-### 3.0.3
+### 3.0.5
+
+* Fix Stripe customer.updated webhook - @excid3
+
+### 3.0.4
 
 * Add retries for payment method sync in case of rate limiting - @excid3
 * Add `on_generic_trial?` to Pay::Customer for easier checking - @excid3
+
+### 3.0.3
+
+Yanked
 
 ### 3.0.2
 
