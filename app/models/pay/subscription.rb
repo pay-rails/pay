@@ -135,7 +135,7 @@ module Pay
         cancel_now!
       end
     rescue => e
-      Rails.logger.info "[Pay] Unable to automatically cancel subscription `#{processor} #{id}`: #{e.message}"
+      Rails.logger.info "[Pay] Unable to automatically cancel subscription `#{customer.processor} #{id}`: #{e.message}"
     end
   end
 end

@@ -3,9 +3,7 @@ require "minitest/mock"
 
 class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   setup do
-    @pay_customer = pay_customers(:braintree)
-    @pay_customer.update(processor_id: nil)
-    @pay_customer.subscriptions.delete_all
+    @pay_customer = Pay::Customer.create!(processor: :braintree, owner: users(:none))
   end
 
   test "braintree customer" do
