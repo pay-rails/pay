@@ -1,5 +1,10 @@
 ### Unreleased
 
+### 3.0.7
+
+* Namespace locales under `pay` - @excid3
+* I18n receipt and invoice dates - @excid3
+* Add `business_logo` config - @excid3
 * Add `refunded?` `partial_refund?` and `full_refund?` methods to `Pay::Charge` - @excid3
 
 ### 3.0.6
