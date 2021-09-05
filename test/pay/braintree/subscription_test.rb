@@ -2,10 +2,7 @@ require "test_helper"
 
 class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   setup do
-    @user = users(:braintree)
-    @pay_customer = @user.payment_processor
-    @pay_customer.update(processor_id: nil)
-    @pay_customer.subscriptions.delete_all
+    @pay_customer = Pay::Customer.create!(processor: :braintree, owner: users(:none))
     @pay_customer.payment_method_token = "fake-valid-visa-nonce"
   end
 

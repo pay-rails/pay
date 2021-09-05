@@ -2,13 +2,13 @@
 http_interactions:
 - request:
     method: post
-    uri: https://vendors.paddle.com/api/2.0/subscription/users_update
+    uri: https://sandbox-vendors.paddle.com/api/2.0/subscription/users_update
     body:
       encoding: UTF-8
-      string: plan_id=594470&prorate=true&quantity=1&subscription_id=3576390&vendor_auth_code=d4fa0981f2c51335215bfbf31cddfbf1af76951baa11427910&vendor_id=123456
+      string: plan_id=594470&prorate=true&quantity=1&subscription_id=3576390&vendor_auth_code=<PADDLE_PRIVATE_KEY>&vendor_id=924
     headers:
       User-Agent:
-      - Faraday v1.0.1
+      - Faraday v1.7.1
       Content-Type:
       - application/x-www-form-urlencoded
       Accept-Encoding:
@@ -21,48 +21,43 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 05 Jun 2020 06:09:12 GMT
+      - Sun, 05 Sep 2021 04:15:35 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
       - chunked
       Connection:
       - keep-alive
-      Set-Cookie:
-      - __cfduid=d942dc7f678d36f6dfef1c169e0634cde1591337351; expires=Sun, 05-Jul-20
-        06:09:11 GMT; path=/; domain=.paddle.com; HttpOnly; SameSite=Lax
-      - paddle_session_vendor=eyJpdiI6ImsrZDdqeEFablwveWh3bCs4TGNhenU2RFpcLzY3MTFTa0xJTEVITFJqa3F0ND0iLCJ2YWx1ZSI6IitqK1NIbktQS1NIVGpKRWhWbjRVcW1EK0NLNmFvcmRZRVgycFBndWFNU21WZmNocEs3WlZ4Um1rS1BkMW5cL0IzSzVxZlBnTEo3NHRPYmsyVUFQTmZSdz09IiwibWFjIjoiZDU0NmMwNmRhM2ViYTdiMDEyN2I4OTJkNjYwYmNjMDVjMzU3MTExMmQ3MTkxNTU2ODgyZjhkODliM2E3ZThmMyJ9;
-        expires=Fri, 05-Jun-2020 08:09:12 GMT; Max-Age=7200; path=/; domain=vendors.paddle.com;
-        secure; HttpOnly;SameSite=none;Secure
-      X-Powered-By:
-      - PHP/7.2.31
+      Vary:
+      - Host
       Cache-Control:
-      - no-cache
+      - no-cache, private
       X-Frame-Options:
       - sameorigin
       P3p:
       - CP="CAO CUR ADMa DEVa TAIa OUR DELa STP ONL NAV STA PUR"
+      Set-Cookie:
+      - sandbox_paddle_session_vendor=eyJpdiI6ImxsXC94XC9mNXJ4cDZsOXNZajkybnZtQT09IiwidmFsdWUiOiJcL1crR0ZBRDg1cm1MKzdLVjZ1VjhlRkNcL2trd3hFOEtyUnplOGNvWngrZEUyNTU2bXVabytOUnJDWE91U1wvd3duQlpaR2FRWkJXalNKUGN6UHRMN2IwUT09IiwibWFjIjoiMWY0NDYzZjg2NmY3ODIzNjJlOTI1ZWZiMjdjMTcyZGRiYjkwODMyNzA5MzcyYzlmZjg1MGU4NzUxODU3OWM2ZCJ9;
+        expires=Sun, 05-Sep-2021 06:15:35 GMT; Max-Age=7200; path=/; domain=sandbox-vendors.paddle.com;
+        secure; httponly;SameSite=lax;Secure
       Cf-Cache-Status:
       - DYNAMIC
-      Cf-Request-Id:
-      - 0324b211f800009cee08a53200000001
       Expect-Ct:
       - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
       Server:
       - cloudflare
       Cf-Ray:
-      - 59e7b92fff259cee-AMS
+      - 689ca3236b292b5f-ORD
     body:
       encoding: ASCII-8BIT
-      string: '{"success":true,"response":{"subscription_id":3576390,"user_id":17368056,"plan_id":594470,"next_payment":{"amount":0,"currency":"USD","date":"2020-07-04"}}}'
-    http_version: null
-  recorded_at: Fri, 05 Jun 2020 06:09:12 GMT
+      string: '{"success": true, "response": {"subscription_id": 3576390, "user_id": 17368056, "plan_id": 594470, "next_payment": {"amount": 144.06, "currency": "USD", "date": "2018-02-15"}}}'
+  recorded_at: Sun, 05 Sep 2021 04:15:35 GMT
 - request:
     method: post
-    uri: https://vendors.paddle.com/api/2.0/subscription/users
+    uri: https://sandbox-vendors.paddle.com/api/2.0/subscription/users
     body:
       encoding: UTF-8
-      string: subscription_id=3576390&vendor_auth_code=d4fa0981f2c51335215bfbf31cddfbf1af76951baa11427910&vendor_id=123456
+      string: pause=false&subscription_id=3576390&vendor_auth_code=d4fa0981f2c51335215bfbf31cddfbf1af76951baa11427910&vendor_id=123456
     headers:
       User-Agent:
       - Faraday v1.0.1
@@ -78,7 +73,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 05 Jun 2020 06:09:12 GMT
+      - Thu, 04 Jun 2020 14:12:55 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -86,10 +81,10 @@ http_interactions:
       Connection:
       - keep-alive
       Set-Cookie:
-      - __cfduid=db3f2205ea08e2be252c5f23cae6d9c5a1591337352; expires=Sun, 05-Jul-20
-        06:09:12 GMT; path=/; domain=.paddle.com; HttpOnly; SameSite=Lax
-      - paddle_session_vendor=eyJpdiI6ImJsQW1PdWpsYWQ5WGZKZ2RXbDNodDFwTExHem02bzRFbnZ3VTZHQjY2ZXc9IiwidmFsdWUiOiIxM2Y3TUllMUlTYXZsMFhiakRYR0l1bDZvTEZ0RmdIaUJ5TnZhb2kyazZEckR5aHByUHQ0WE8wU1JBK1R3MERTY2VsTW5nb3NBVlBkODdRdTdqd2cwdz09IiwibWFjIjoiY2ZjZjFmNmJlODY4Y2U2ZWM3YmU2YzI0YmE0NGI4M2U0NjlmMDdiNTQyMGI5Y2JlMjM4MWZjZDE0MzQ1MGFkOCJ9;
-        expires=Fri, 05-Jun-2020 08:09:12 GMT; Max-Age=7200; path=/; domain=vendors.paddle.com;
+      - __cfduid=d231247ba1a2e03d49a6ea2d495ebc1c11591279973; expires=Sat, 04-Jul-20
+        14:12:53 GMT; path=/; domain=.paddle.com; HttpOnly; SameSite=Lax
+      - paddle_session_vendor=eyJpdiI6IkRqZHJqOWxtUzhxTEtobGMyQnd1emZOQVpSXC83NStaNStrY05vZ2w4TTAwPSIsInZhbHVlIjoiMWh5U1dObDNvZG5QSklOczQ1T0k0enpPM1dveTRkT1IzREJORjY0YUlONWNHQkdNdTdEUGZsbFVqUyt0UWZIdlVWRjBMTUpBbzBWTGZWdUFnUEJxY3c9PSIsIm1hYyI6ImYxMWI3ZTg0ZWViNzhlYWI2ODU4MjMxNDQ1ODRhZmMzMTBkNzllOGNlNGI0ODQ5Njc1OTBjN2IyNGNmZTU4NzMifQ%3D%3D;
+        expires=Thu, 04-Jun-2020 16:12:55 GMT; Max-Age=7200; path=/; domain=vendors.paddle.com;
         secure; HttpOnly;SameSite=none;Secure
       X-Powered-By:
       - PHP/7.2.31
@@ -102,17 +97,16 @@ http_interactions:
       Cf-Cache-Status:
       - DYNAMIC
       Cf-Request-Id:
-      - 0324b215f20000c86734266200000001
+      - '0321468d8f00001f5178bb7200000001'
       Expect-Ct:
       - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
       Server:
       - cloudflare
       Cf-Ray:
-      - 59e7b9365db4c867-AMS
+      - 59e2405c1a5b1f51-FRA
     body:
       encoding: ASCII-8BIT
-      string: '{"success":true,"response":[{"subscription_id":3576390,"plan_id":594470,"user_id":17368056,"user_email":"test@example.com","marketing_consent":false,"update_url":"https:\/\/checkout.paddle.com\/subscription\/update?user=17368056&subscription=3576390&hash=cc553b2a75a8a8c23bbd22463e5820a8580ea71198db9519ed752ea36d90ceee","cancel_url":"https:\/\/checkout.paddle.com\/subscription\/cancel?user=17368056&subscription=3576390&hash=53fafebb9ea30fc7853acbbb57a4bcecc02948ee7deb602df441b1fe19e6aa9a","state":"active","signup_date":"2020-06-04
-        13:06:33","last_payment":{"amount":0,"currency":"USD","date":"2020-06-04"},"linked_subscriptions":[],"payment_information":{"payment_method":"card","card_type":"visa","last_four_digits":"1234","expiry_date":"06\/2022"},"next_payment":{"amount":0,"currency":"USD","date":"2020-07-04"}}]}'
+      string: '{"success":true,"response":[{"subscription_id":3576390,"user_id":17368056,"plan_id":594470,"next_payment":{"amount":0,"currency":"USD","date":"2020-07-04"}}]}'
     http_version: null
-  recorded_at: Fri, 05 Jun 2020 06:09:12 GMT
-recorded_with: VCR 5.1.0
+  recorded_at: Thu, 04 Jun 2020 14:12:52 GMT
+recorded_with: VCR 6.0.0
