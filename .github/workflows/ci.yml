@@ -33,7 +33,7 @@ jobs:
         run: bundle exec standardrb
       - name: Run tests
         env:
-          DATABASE_URL: "sqlite3:noticed_test"
+          DATABASE_URL: "sqlite3:pay_test"
           STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
         run: |
           bin/rails db:test:prepare
