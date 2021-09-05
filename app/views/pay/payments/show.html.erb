@@ -24,41 +24,41 @@
 
     <div class="bg-white rounded-lg shadow-xl p-4 sm:py-6 sm:px-10 mb-5">
       <% if @payment.succeeded? %>
-        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "successful.header" %></h1>
-        <p class="mb-6"><%=t "successful.description" %></p>
+        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "pay.successful.header" %></h1>
+        <p class="mb-6"><%=t "pay.successful.description" %></p>
 
       <% elsif @payment.canceled? %>
-        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "cancelled.header" %></h1>
-        <p class="mb-6"><%=t "cancelled.description" %></p>
+        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "pay.cancelled.header" %></h1>
+        <p class="mb-6"><%=t "pay.cancelled.description" %></p>
 
       <% else %>
         <div data-payment-intent-target="form" id="payment-elements">
           <!-- Instructions -->
-          <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "requires_action.header", amount: number_to_currency(@payment.amount / 100.0) %></h1>
-          <p class="mb-6"><%=t "requires_action.description" %></p>
+          <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "pay.requires_action.header", amount: number_to_currency(@payment.amount / 100.0) %></h1>
+          <p class="mb-6"><%=t "pay.requires_action.description" %></p>
 
           <div data-payment-intent-target="cardFields" class="hidden">
             <!-- Name -->
-            <label for="cardholder-name" class="inline-block text-sm text-gray-700 font-semibold mb-2"><%=t "requires_action.full_name" %></label>
+            <label for="cardholder-name" class="inline-block text-sm text-gray-700 font-semibold mb-2"><%=t "pay.requires_action.full_name" %></label>
             <input data-payment-intent-target="name" id="cardholder-name" type="text" placeholder="Jane Doe" required autofocus class="mt-1 mb-6 block w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
 
             <!-- Card -->
-            <label for="card-element" class="inline-block text-sm text-gray-700 font-semibold mb-2"><%=t "requires_action.card" %></label>
+            <label for="card-element" class="inline-block text-sm text-gray-700 font-semibold mb-2"><%=t "pay.requires_action.card" %></label>
             <div data-payment-intent-target="card" id="card-element" class="mt-1 mb-6 block w-full px-3 py-4 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></div>
           </div>
 
           <!-- Pay Button -->
           <button data-payment-intent-target="button" data-action="click->payment-intent#confirmPayment" class="inline-block w-full px-4 py-3 mb-4 text-white rounded-lg bg-blue-400 hover:bg-blue-500">
-            <%=t "requires_action.button", amount: number_to_currency(@payment.amount / 100.0) %>
+            <%=t "pay.requires_action.button", amount: number_to_currency(@payment.amount / 100.0) %>
           </button>
         </div>
       <% end %>
 
-      <%= link_to t("back"), @redirect_to, class: "inline-block w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-center text-gray-600 rounded-lg" %>
+      <%= link_to t("pay.back"), @redirect_to, class: "inline-block w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-center text-gray-600 rounded-lg" %>
     </div>
 
     <p class="text-center text-gray-500 text-sm">
-      © <%= Date.current.year %> <%= Pay.business_name %> <%=t "all_rights_reserved" %>
+      © <%= Date.current.year %> <%= Pay.business_name %> <%=t "pay.all_rights_reserved" %>
     </p>
   </div>
 </div>
@@ -119,14 +119,14 @@
       if (result.error) {
         if (result.error.code === 'parameter_invalid_empty' &&
           result.error.param === 'payment_method_data[billing_details][name]') {
-          this.errorMessageValue = '<%=t "requires_action.name_missing" %>'
+          this.errorMessageValue = '<%=t "pay.requires_action.name_missing" %>'
         } else {
           this.errorMessageValue = result.error.message
           this.statusValue = result.error.payment_intent.status
         }
       } else {
         this.completeValue = true;
-        this.successMessageValue = '<%=t "requires_action.success" %>'
+        this.successMessageValue = '<%=t "pay.requires_action.success" %>'
       }
     }
 

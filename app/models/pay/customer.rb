@@ -65,7 +65,7 @@ module Pay
     end
 
     def customer_name
-      [owner.try(:first_name), owner.try(:last_name)].compact.join(" ")
+      owner.respond_to?(:name) ? owner.name : [owner.try(:first_name), owner.try(:last_name)].compact.join(" ")
     end
 
     def active?

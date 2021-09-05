@@ -13,13 +13,13 @@ module Pay
 
   class ActionRequired < PaymentError
     def message
-      I18n.t("errors.action_required")
+      I18n.t("pay.errors.action_required")
     end
   end
 
   class InvalidPaymentMethod < PaymentError
     def message
-      I18n.t("errors.invalid_payment")
+      I18n.t("pay.errors.invalid_payment")
     end
   end
 end
