@@ -1,5 +1,8 @@
 ### Unreleased
 
+* Fix Pay::Subscription charges association
+* Remove Pay::Charge default sort
+
 ### 3.0.9
 
 * Fix translation key - @excid3
