@@ -4,7 +4,7 @@ module Pay
 
     # Associations
     belongs_to :customer
-    has_many :charges, class_name: "Pay::Charge", foreign_key: :pay_subscription_id
+    has_many :charges
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }

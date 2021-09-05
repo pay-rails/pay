@@ -5,6 +5,10 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert_equal Pay::Customer, pay_charges(:stripe).customer.class
   end
 
+  test "charge belongs to subscription" do
+    assert_equal pay_subscriptions(:stripe), pay_charges(:stripe).subscription
+  end
+
   test "validates charge uniqueness by Pay::Customer and processor ID" do
     user = users(:stripe)
     user.payment_processor.charges.create!(amount: 1, processor_id: "1")

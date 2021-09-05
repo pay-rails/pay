@@ -21,6 +21,10 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_equal metadata, pay_subscription.metadata
   end
 
+  test "subscription has many charges" do
+    assert_equal pay_charges(:stripe), pay_subscriptions(:stripe).charges.first
+  end
+
   test "braintree?" do
     assert pay_subscriptions(:braintree).braintree?
     refute pay_subscriptions(:fake).braintree?
