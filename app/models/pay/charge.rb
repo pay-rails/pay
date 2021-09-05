@@ -10,7 +10,6 @@ module Pay
     scope :sorted, -> { order(created_at: :desc) }
     scope :with_active_customer, -> { joins(:customer).merge(Customer.active) }
     scope :with_deleted_customer, -> { joins(:customer).merge(Customer.deleted) }
-    default_scope -> { sorted }
 
     # Validations
     validates :amount, presence: true
