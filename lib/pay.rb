@@ -31,6 +31,7 @@ module Pay
   mattr_accessor :application_name
   mattr_accessor :business_address
   mattr_accessor :business_name
+  mattr_accessor :business_logo
   mattr_accessor :support_email
 
   # Email configuration
