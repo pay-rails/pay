@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.8
+
+* Better invoice line items format - @excid3
+
 ### 3.0.7
 
 * Namespace locales under `pay` - @excid3
