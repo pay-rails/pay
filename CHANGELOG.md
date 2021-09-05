@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.9
+
+* Fix translation key - @excid3
+
 ### 3.0.8
 
 * Better invoice line items format - @excid3
