@@ -175,6 +175,7 @@ module Pay
       # checkout(line_items, "price_12345", allow_promotion_codes: true)
       #
       def checkout(**options)
+        customer unless processor_id?
         args = {
           customer: processor_id,
           payment_method_types: ["card"],
@@ -203,6 +204,7 @@ module Pay
       # checkout_charge(amount: 15_00, name: "T-shirt", quantity: 2)
       #
       def checkout_charge(amount:, name:, quantity: 1, **options)
+        customer unless processor_id?
         currency = options.delete(:currency) || "usd"
         checkout(
           line_items: {
@@ -218,6 +220,7 @@ module Pay
       end
 
       def billing_portal(**options)
+        customer unless processor_id?
         args = {
           customer: processor_id,
           return_url: options.delete(:return_url) || root_url
