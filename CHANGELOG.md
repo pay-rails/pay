@@ -1,7 +1,13 @@
 ### Unreleased
 
-* Fix Pay::Subscription charges association
-* Remove Pay::Charge default sort
+### 3.0.11
+
+* Fix Stripe charge.refunded webhook - @excid3
+
+### 3.0.10
+
+* Fix Pay::Subscription charges association - @excid3
+* Remove Pay::Charge default sort - @excid3
 
 ### 3.0.9
 
