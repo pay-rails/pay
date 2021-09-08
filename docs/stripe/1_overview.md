@@ -37,10 +37,31 @@ current_user.processor = :stripe
 @checkout_session = current_user.payment_processor.checkout(mode: "subscription", line_items: "default")
 
 # Setup a new card for future use
-@subscription = current_user.payment_processor.checkout(mode: "setup")
+@checkout_session = current_user.payment_processor.checkout(mode: "setup")
 ```
 
-2. Render the button
+Success and cancel and cancel URLs are automatically generated for you and point to the root URL. To customize these, pass in the following options.
+
+```ruby
+@checkout_session = current_user.payment_processor.checkout(
+  mode: "payment",
+  line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG",
+  success_url: root_url(session_id: "{CHECKOUT_SESSION_ID}"),
+  cancel_url: root_url(session_id: "{CHECKOUT_SESSION_ID}")
+)
+```
+
+The `"{CHECKOUT_SESSION_ID}"` is a placeholder that tells Stripe to replace that string with the actual checkout session ID. This allows you to lookup the checkout session on your success page and confirm the payment was successful before fulfilling the customer's purchase.
+
+2. Redirect or Render the button
+
+If you want to redirect directly to checkout, simply redirect to the `url` on the session object.
+
+```ruby
+redirect_to @checkout_session.url
+```
+
+Alternatively, you can use Pay & Stripe.js to render a button that will take the user to Stripe Checkout.
 
 ```erb
 <%= render partial: "pay/stripe/checkout_button", locals: { session: @checkout_session, title: "Checkout" } %>

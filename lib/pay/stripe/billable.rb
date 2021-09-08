@@ -181,8 +181,8 @@ module Pay
           payment_method_types: ["card"],
           mode: "payment",
           # These placeholder URLs will be replaced in a following step.
-          success_url: options.delete(:success_url) || root_url,
-          cancel_url: options.delete(:cancel_url) || root_url
+          success_url: options.delete(:success_url) || root_url(session_id: "{CHECKOUT_SESSION_ID}"),
+          cancel_url: options.delete(:cancel_url) || root_url(session_id: "{CHECKOUT_SESSION_ID}")
         }
 
         # Line items are optional
