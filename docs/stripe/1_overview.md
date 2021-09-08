@@ -28,7 +28,7 @@ Choose the checkout button mode you need and pass any required arguments. Read t
 
 ```ruby
 # Make sure the user's payment processor is Stripe
-current_user.processor = :stripe
+current_user.set_payment_processor :stripe
 
 # One-time payments
 @checkout_session = current_user.payment_processor.checkout(mode: "payment", line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG")
