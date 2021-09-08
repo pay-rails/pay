@@ -1,5 +1,10 @@
 ### Unreleased
 
+### 3.0.12
+
+* Add `CHECKOUT_SESSION_ID` to checkout URLs by default and document how to add them - @excid3
+* Fix invoice bill_to to use `customer.owner` instead of `owner` - @excid3
+
 ### 3.0.11
 
 * Fix Stripe charge.refunded webhook - @excid3

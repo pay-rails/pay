@@ -50,9 +50,9 @@ module Pay
     end
 
     def invoice_pdf(**options)
-      bill_to = [owner.name]
-      bill_to += [owner.extra_billing_info] if owner.extra_billing_info?
-      bill_to += [nil, owner.email]
+      bill_to = [customer.owner.name]
+      bill_to += [customer.owner.extra_billing_info] if customer.owner.extra_billing_info?
+      bill_to += [nil, customer.owner.email]
 
       total = ActionController::Base.helpers.number_to_currency(amount / 100.0)
 
