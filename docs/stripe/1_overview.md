@@ -53,6 +53,8 @@ Success and cancel and cancel URLs are automatically generated for you and point
 
 The `"{CHECKOUT_SESSION_ID}"` is a placeholder that tells Stripe to replace that string with the actual checkout session ID. This allows you to lookup the checkout session on your success page and confirm the payment was successful before fulfilling the customer's purchase.
 
+https://stripe.com/docs/payments/checkout/custom-success-page
+
 2. Redirect or Render the button
 
 If you want to redirect directly to checkout, simply redirect to the `url` on the session object.
