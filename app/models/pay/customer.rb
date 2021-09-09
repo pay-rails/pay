@@ -65,6 +65,7 @@ module Pay
     end
 
     def customer_name
+      return owner.pay_customer_name if owner.respond_to?(:pay_customer_name) && owner.pay_customer_name.present?
       owner.respond_to?(:name) ? owner.name : [owner.try(:first_name), owner.try(:last_name)].compact.join(" ")
     end
 
