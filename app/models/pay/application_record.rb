@@ -5,8 +5,8 @@ module Pay
 
     # Serialize using ActiveRecord::Store when column is text
     def self.ensure_store(name)
-      return unless connected? && table_exists?
-      store name if attribute_types[name.to_s].type == :text
+      return unless table_exists?
+      store name, coder: JSON if attribute_types[name.to_s].type == :text
     end
   end
 end

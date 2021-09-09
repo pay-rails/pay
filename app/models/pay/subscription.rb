@@ -21,6 +21,7 @@ module Pay
     before_destroy :cancel_if_active
 
     ensure_store :data
+    ensure_store :metadata
 
     store_accessor :data, :paddle_update_url
     store_accessor :data, :paddle_cancel_url

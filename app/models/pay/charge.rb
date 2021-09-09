@@ -16,6 +16,7 @@ module Pay
     validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
 
     ensure_store :data
+    ensure_store :metadata
 
     # Store the payment method kind (card, paypal, etc)
     store_accessor :data, :paddle_receipt_url
