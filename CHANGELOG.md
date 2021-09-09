@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Store `stripe_account` when syncing Stripe payment methods - @excid3
+
 ### 3.0.12
 
 * Add `CHECKOUT_SESSION_ID` to checkout URLs by default and document how to add them - @excid3

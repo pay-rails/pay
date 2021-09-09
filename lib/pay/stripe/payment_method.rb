@@ -18,7 +18,7 @@ module Pay
         default_payment_method_id = pay_customer.customer.invoice_settings.default_payment_method
         default = (id == default_payment_method_id)
 
-        attributes = extract_attributes(object).merge(default: default)
+        attributes = extract_attributes(object).merge(default: default, stripe_account: stripe_account)
 
         pay_customer.payment_methods.update_all(default: false) if default
         pay_payment_method = pay_customer.payment_methods.where(processor_id: object.id).first_or_initialize
