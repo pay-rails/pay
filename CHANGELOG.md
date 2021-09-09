@@ -1,6 +1,7 @@
 ### Unreleased
 
 * Ensure that `data` columns are `ActiveRecord::Store` with `text` columns. - @excid3
+* Store `stripe_account` when syncing Stripe payment methods - @excid3
 
 ### 3.0.12
 
