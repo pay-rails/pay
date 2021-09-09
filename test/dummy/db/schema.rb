@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2017_02_05_000000) do
     t.bigint "application_fee_amount"
     t.bigint "amount_refunded"
     t.json "metadata"
-    t.json "data"
+    t.json "data", default: {}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["customer_id", "processor_id"], name: "index_pay_charges_on_customer_id_and_processor_id", unique: true
@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 2017_02_05_000000) do
     t.string "processor", null: false
     t.string "processor_id"
     t.boolean "default"
-    t.json "data"
+    t.json "data", default: {}
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -54,7 +54,7 @@ ActiveRecord::Schema.define(version: 2017_02_05_000000) do
     t.string "processor", null: false
     t.string "processor_id"
     t.boolean "default"
-    t.json "data"
+    t.json "data", default: {}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["owner_type", "owner_id", "processor"], name: "index_pay_merchants_on_owner_type_and_owner_id_and_processor"
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 2017_02_05_000000) do
     t.string "processor_id", null: false
     t.boolean "default"
     t.string "type"
-    t.json "data"
+    t.json "data", default: {}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["customer_id", "processor_id"], name: "index_pay_payment_methods_on_customer_id_and_processor_id", unique: true
@@ -81,8 +81,8 @@ ActiveRecord::Schema.define(version: 2017_02_05_000000) do
     t.datetime "trial_ends_at"
     t.datetime "ends_at"
     t.decimal "application_fee_percent", precision: 8, scale: 2
-    t.json "metadata"
-    t.json "data"
+    t.json "metadata", default: {}
+    t.json "data", default: {}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["customer_id", "processor_id"], name: "index_pay_subscriptions_on_customer_id_and_processor_id", unique: true
@@ -91,7 +91,7 @@ ActiveRecord::Schema.define(version: 2017_02_05_000000) do
   create_table "pay_webhooks", force: :cascade do |t|
     t.string "processor"
     t.string "event_type"
-    t.json "event"
+    t.json "event", default: {}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

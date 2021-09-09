@@ -4,6 +4,8 @@ module Pay
     validates :event_type, presence: true
     validates :event, presence: true
 
+    ensure_store :event
+
     def process!
       Pay::Webhooks.instrument type: "#{processor}.#{event_type}", event: rehydrated_event
 
