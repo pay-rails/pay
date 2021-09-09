@@ -9,7 +9,7 @@ charge.refunded
 payment_intent.succeeded
 
 invoice.upcoming
-invoice.payment_action-required
+invoice.payment_action_required
 
 customer.subscription.created
 customer.subscription.updated
