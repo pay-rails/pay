@@ -7,6 +7,11 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     @subscription = @pay_customer.subscriptions.first
   end
 
+  test "text data column" do
+    pay_subscriptions(:stripe).update!(stripe_account: "acct_1")
+    assert_equal "acct_1", pay_subscriptions(:stripe).stripe_account
+  end
+
   test "validates subscription uniqueness by processor and processor ID" do
     create_subscription(name: "default", processor_id: 1)
     assert_raises ActiveRecord::RecordInvalid do

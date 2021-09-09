@@ -18,4 +18,9 @@ class Pay::CustomerTest < ActiveSupport::TestCase
   test "deleted?" do
     assert pay_customers(:deleted).deleted?
   end
+
+  test "text data column" do
+    pay_customers(:stripe).update!(stripe_account: "acct_1")
+    assert_equal "acct_1", pay_customers(:stripe).stripe_account
+  end
 end

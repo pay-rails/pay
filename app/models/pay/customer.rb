@@ -16,6 +16,8 @@ module Pay
     attribute :quantity, :integer
     attribute :payment_method_token, :string
 
+    ensure_store :data
+
     # Account(s) for marketplace payments
     store_accessor :data, :stripe_account
     store_accessor :data, :braintree_account

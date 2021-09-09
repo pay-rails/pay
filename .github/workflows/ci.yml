@@ -118,3 +118,43 @@ jobs:
         run: |
           bin/rails db:test:prepare
           bin/rails test
+
+  mariadb:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ['2.7', '3.0']
+        gemfile:
+          - rails_6
+          - rails_6_1
+          - rails_master
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
+      BUNDLE_PATH_RELATIVE_TO_CWD: true
+
+    services:
+      mysql:
+        image: mariadb:10
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: default
+          bundler-cache: true
+      - name: StandardRb check
+        run: bundle exec standardrb
+      - name: Run tests
+        env:
+          STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
+          DATABASE_URL: mysql2://root:password@127.0.0.1:3306/test
+        run: |
+          bin/rails db:test:prepare
+          bin/rails test

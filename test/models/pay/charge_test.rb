@@ -1,6 +1,11 @@
 require "test_helper"
 
 class Pay::Charge::Test < ActiveSupport::TestCase
+  test "text data column" do
+    pay_charges(:stripe).update!(stripe_account: "acct_1")
+    assert_equal "acct_1", pay_charges(:stripe).stripe_account
+  end
+
   test "belongs to a Pay::Customer" do
     assert_equal Pay::Customer, pay_charges(:stripe).customer.class
   end

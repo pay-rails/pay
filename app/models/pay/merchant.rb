@@ -4,6 +4,8 @@ module Pay
 
     validates :processor, presence: true
 
+    ensure_store :data
+
     store_accessor :data, :onboarding_complete
 
     delegate_missing_to :pay_processor
