@@ -6,7 +6,7 @@ First, you'll need to create a concern with the functionality you'd like to add.
 
 ```ruby
 # app/models/concerns/charge_extensions.rb
-module Charge
+module ChargeExtensions
   extend ActiveSupport::Concern
 
   included do
