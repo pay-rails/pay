@@ -286,3 +286,15 @@ charge.last4 #=> "4242"
 charge.payment_method_type #=> "paypal"
 charge.email #=> "test@example.org"
 ```
+
+### Configuration Changes
+
+We've removed several configuration options since Pay 3+ will always use the models from the gem for charges, subscriptions, etc.
+
+Removed options:
+* Pay.billable_class
+* Pay.billable_table
+* Pay.chargeable_class
+* Pay.chargeable_table
+* Pay.subscription_class
+* Pay.subscription_table
