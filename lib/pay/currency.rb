@@ -23,7 +23,7 @@ module Pay
 
     def format_amount(amount, **options)
       number_to_currency(
-        amount / subunit_to_unit.to_f,
+        amount.to_i / subunit_to_unit.to_f,
         {
           precision: precision,
           unit: unit,

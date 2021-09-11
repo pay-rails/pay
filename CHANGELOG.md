@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.14
+
+* Add `amount_with_currency` to `Pay::Payment` - @excid3
+
 ### 3.0.13
 
 * Add `Pay::Currency` for formatting amounts with currency - @excid3

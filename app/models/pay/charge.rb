@@ -72,11 +72,11 @@ module Pay
     end
 
     def amount_with_currency
-      Pay::Currency.format(amount.to_i, currency: currency)
+      Pay::Currency.format(amount, currency: currency)
     end
 
     def amount_refunded_with_currency
-      Pay::Currency.format(amount_refunded.to_i, currency: currency)
+      Pay::Currency.format(amount_refunded, currency: currency)
     end
 
     def charged_to
