@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.15
+
+* Accept options for `Pay::Currency.format` - @excid3
+
 ### 3.0.14
 
 * Add `amount_with_currency` to `Pay::Payment` - @excid3
