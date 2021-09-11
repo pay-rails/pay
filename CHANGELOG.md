@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.16
+
+* Remove hardcoded currency in emails - @excid3
+
 ### 3.0.15
 
 * Accept options for `Pay::Currency.format` - @excid3
