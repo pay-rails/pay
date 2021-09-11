@@ -14,4 +14,8 @@ class Pay::Currency::Test < ActiveSupport::TestCase
   test "defaults to :usd if currency nil" do
     assert_equal "$15.39", Pay::Currency.format(15_39, currency: nil)
   end
+
+  test "options" do
+    assert_equal "$15", Pay::Currency.format(15_39, currency: nil, precision: 0)
+  end
 end
