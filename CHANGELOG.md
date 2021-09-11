@@ -1,5 +1,7 @@
 ### Unreleased
 
+### 3.0.13
+
 * Add `Pay::Currency` for formatting amounts with currency - @excid3
 * Add `amount_with_currency` and `amount_refunded_with_currency` to `Pay::Charge` - @excid3
 * Safer pay processor lookup when processor is blank - @excid3
