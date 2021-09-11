@@ -34,7 +34,7 @@
       <% else %>
         <div data-payment-intent-target="form" id="payment-elements">
           <!-- Instructions -->
-          <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "pay.requires_action.header", amount: number_to_currency(@payment.amount / 100.0) %></h1>
+          <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "pay.requires_action.header", amount: @payment.amount_with_currency %></h1>
           <p class="mb-6"><%=t "pay.requires_action.description" %></p>
 
           <div data-payment-intent-target="cardFields" class="hidden">
@@ -49,7 +49,7 @@
 
           <!-- Pay Button -->
           <button data-payment-intent-target="button" data-action="click->payment-intent#confirmPayment" class="inline-block w-full px-4 py-3 mb-4 text-white rounded-lg bg-blue-400 hover:bg-blue-500">
-            <%=t "pay.requires_action.button", amount: number_to_currency(@payment.amount / 100.0) %>
+            <%=t "pay.requires_action.button", amount: @payment.amount_with_currency %>
           </button>
         </div>
       <% end %>

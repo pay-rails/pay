@@ -71,6 +71,14 @@ module Pay
       refunded? && !full_refund?
     end
 
+    def amount_with_currency
+      Pay::Currency.format(amount.to_i, currency: currency)
+    end
+
+    def amount_refunded_with_currency
+      Pay::Currency.format(amount_refunded.to_i, currency: currency)
+    end
+
     def charged_to
       case payment_method_type
       when "card"
