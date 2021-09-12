@@ -27,7 +27,7 @@ Our supported payment processors are:
 
 Want to add a new payment provider? Contributions are welcome.
 
-> We make our best attempt to standardize the different payment providers. They function differently so keep that in mind if you plan on doing more complex payments. It would be best to stick witha single payment provider in that case so you don't run into discrepancies.
+> We make our best attempt to standardize the different payment providers. They function differently so keep that in mind if you plan on doing more complex payments. It would be best to stick with a single payment provider in that case so you don't run into discrepancies.
 
 ## 📚 Docs
 
