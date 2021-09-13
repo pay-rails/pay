@@ -427,6 +427,14 @@ user.customer #> Stripe or Braintree customer account
 
 It is currently not possible to retrieve a payment processor account through the API.
 
+#### Retrieving Customer's invoice settings (only if already a customer)
+
+```ruby
+user = User.find_by(email: 'george.michael@bluthcompany.co')
+
+user.customer.invoice_settings
+```
+
 #### Updating a Customer's Credit Card
 
 ##### Stripe and Braintree
@@ -565,6 +573,30 @@ user.subscription.resume
 user = User.find_by(email: 'lucille2@bluthcompany.co')
 
 user.subscription.processor_subscription
+```
+
+#### Checking a Subscription's prorate Status
+
+```ruby
+user = User.find_by(email: 'lucille2@bluthcompany.co')
+
+user.subscription.prorate?
+```
+
+#### Retrieving subscription quantity
+
+```ruby
+user = User.find_by(email: 'lucille2@bluthcompany.co')
+
+user.subscription.quantity
+```
+
+#### Update subscription quantity
+
+```ruby
+user = User.find_by(email: 'lucille2@bluthcompany.co')
+
+user.subscription.change_quantity(4)
 ```
 
 ### Customizing Pay Models
