@@ -75,6 +75,10 @@ Need to unsubscribe or disable one of the default webhook processors? Simply uns
 Pay::Webhooks.delegator.unsubscribe "stripe.charge.succeeded"
 ```
 
+## Stripe CLI
+
+The Stripe CLI lets you forward webhooks to your local Rails server during development. See the [Stripe Webhooks](stripe/5_webhooks.md) docs on how to use it.
+
 ## Next
 
 See [Customizing Models](8_customizing_models.md)
