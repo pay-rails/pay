@@ -3,16 +3,13 @@ module Pay
     module Webhooks
       class SubscriptionPaymentRefunded
         def call(event)
-          charge = Pay::Charge.find_by_processor_and_id(:paddle, event.subscription_payment_id)
-          return unless charge.present?
+          pay_charge = Pay::Charge.find_by_processor_and_id(:paddle, event.subscription_payment_id)
+          return unless pay_charge.present?
 
-          charge.update(amount_refunded: (event.gross_refund.to_f * 100).to_i)
-          notify_user(charge.customer.owner, charge)
-        end
+          pay_charge.update(amount_refunded: (event.gross_refund.to_f * 100).to_i)
 
-        def notify_user(billable, charge)
           if Pay.send_emails
-            Pay::UserMailer.with(billable: billable, charge: charge).refund.deliver_later
+            Pay::UserMailer.with(pay_customer: pay_charge.customer, charge: pay_charge).refund.deliver_later
           end
         end
       end

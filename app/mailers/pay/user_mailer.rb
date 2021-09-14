@@ -23,11 +23,7 @@ module Pay
     private
 
     def to
-      if params[:billable].respond_to?(:customer_name)
-        "#{params[:billable].customer_name} <#{params[:billable].email}>"
-      else
-        params[:billable].email
-      end
+      "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>"
     end
   end
 end

@@ -12,10 +12,10 @@ module Pay
           return unless pay_subscription.present?
 
           pay_customer = pay_subscription.customer
-          charge = Pay::Braintree::Billable.new(pay_customer).save_transaction(subscription.transactions.first)
+          pay_charge = Pay::Braintree::Billable.new(pay_customer).save_transaction(subscription.transactions.first)
 
-          if Pay.send_emails
-            Pay::UserMailer.with(billable: pay_customer.owner, charge: charge).receipt.deliver_later
+          if pay_charge && Pay.send_emails
+            Pay::UserMailer.with(pay_customer: pay_customer, charge: pay_charge).receipt.deliver_later
           end
         end
       end

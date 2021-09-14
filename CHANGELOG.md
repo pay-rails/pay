@@ -1,5 +1,8 @@
 ### Unreleased
 
+* Charge succeeded should send email even when receipts gem isn't available - @excid3
+* Update mailers to use `Pay::Customer#customer_name` - @excid3
+* Use `pay_customer` instead of `billable` in mailers - @excid3
 * Remove payment methods when cancelling Paddle subscription - @excid3
 
 ### 3.0.17

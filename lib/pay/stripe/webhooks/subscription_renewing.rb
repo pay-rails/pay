@@ -18,12 +18,12 @@ module Pay
           interval = price.recurring.interval
           return unless interval == "year"
 
-          notify_user(subscription.customer.owner, subscription, Time.zone.at(event.data.object.next_payment_attempt))
-        end
-
-        def notify_user(billable, subscription, date)
           if Pay.send_emails
-            Pay::UserMailer.with(billable: billable, subscription: subscription, date: date).subscription_renewing.deliver_later
+            Pay::UserMailer.with(
+              pay_customer: subscription.customer,
+              subscription: subscription,
+              date: Time.zone.at(event.data.object.next_payment_attempt)
+            ).subscription_renewing.deliver_later
           end
         end
       end
