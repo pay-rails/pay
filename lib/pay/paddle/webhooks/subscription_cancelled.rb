@@ -13,7 +13,7 @@ module Pay
           pay_subscription.update!(ends_at: Time.zone.parse(event.cancellation_effective_date)) if pay_subscription.ends_at.blank? && event.cancellation_effective_date.present?
 
           # Paddle doesn't allow reusing customers, so we should remove their payment methods
-          pay_subscription.customer.payment_methods.destroy_all
+          Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
         end
       end
     end

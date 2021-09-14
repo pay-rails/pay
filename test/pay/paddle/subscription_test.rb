@@ -8,14 +8,18 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
   test "paddle cancel" do
     subscription = @pay_customer.subscription
     next_payment_date = Time.zone.parse(subscription.processor_subscription.next_payment[:date])
-    subscription.cancel
+    assert_difference "@pay_customer.payment_methods.count", -1 do
+      subscription.cancel
+    end
     assert_equal subscription.ends_at, next_payment_date
     assert_equal "canceled", subscription.status
   end
 
   test "paddle cancel_now!" do
     subscription = @pay_customer.subscription
-    subscription.cancel_now!
+    assert_difference "@pay_customer.payment_methods.count", -1 do
+      subscription.cancel_now!
+    end
     assert subscription.ends_at <= Time.current
     assert_equal "canceled", subscription.status
   end

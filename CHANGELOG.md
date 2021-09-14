@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Remove payment methods when cancelling Paddle subscription - @excid3
+
 ### 3.0.17
 
 * Convert `paddle_paused_from` to Time - @excid3
