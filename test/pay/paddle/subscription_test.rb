@@ -68,4 +68,9 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
     assert_equal 594470, @pay_customer.subscription.processor_subscription.plan_id
     assert_equal "active", @pay_customer.subscription.status
   end
+
+  test "paused from timestamp" do
+    pay_subscriptions(:paddle).update(paddle_paused_from: 14.days.from_now)
+    assert_equal ActiveSupport::TimeWithZone, pay_subscriptions(:paddle).paddle_paused_from.class
+  end
 end

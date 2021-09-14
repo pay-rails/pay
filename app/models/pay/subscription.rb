@@ -128,6 +128,12 @@ module Pay
       processor_subscription(expand: ["latest_invoice.payment_intent"]).latest_invoice.payment_intent
     end
 
+    def paddle_paused_from
+      if (timestamp = super)
+        Time.zone.parse(timestamp)
+      end
+    end
+
     private
 
     def cancel_if_active

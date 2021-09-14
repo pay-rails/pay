@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.17
+
+* Convert `paddle_paused_from` to Time - @excid3
+
 ### 3.0.16
 
 * Remove hardcoded currency in emails - @excid3
