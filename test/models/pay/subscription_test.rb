@@ -262,6 +262,17 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     end
   end
 
+  test "generic_trial?" do
+    subscription = pay_subscriptions(:fake)
+    subscription.update(trial_ends_at: 14.days.from_now)
+    assert subscription.generic_trial?
+
+    # Must be fake processor
+    subscription = pay_subscriptions(:stripe)
+    subscription.update(trial_ends_at: 14.days.from_now)
+    refute subscription.generic_trial?
+  end
+
   private
 
   def create_subscription(options = {})

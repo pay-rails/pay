@@ -1,5 +1,8 @@
 ### Unreleased
 
+### 3.0.18
+
+* Add `generic_trial?` to `Pay::Subscription` for checking if fake processor trial - @excid3
 * Charge succeeded should send email even when receipts gem isn't available - @excid3
 * Update mailers to use `Pay::Customer#customer_name` - @excid3
 * Use `pay_customer` instead of `billable` in mailers - @excid3

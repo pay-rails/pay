@@ -70,6 +70,10 @@ module Pay
       self.trial_ends_at = nil
     end
 
+    def generic_trial?
+      fake_processor? && trial_ends_at?
+    end
+
     def on_trial?
       trial_ends_at? && Time.zone.now < trial_ends_at
     end
