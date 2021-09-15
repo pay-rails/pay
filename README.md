@@ -23,7 +23,7 @@ Our supported payment processors are:
 - Stripe ([SCA Compatible](https://stripe.com/docs/strong-customer-authentication) using API version `2020-08-27`)
 - Paddle (SCA Compatible & supports PayPal)
 - Braintree (supports PayPal)
-- [Fake Processor](docs/fake_processor.md) (used for generic trials without cards, free subscriptions, testing, etc)
+- [Fake Processor](docs/fake_processor/1_overview.md) (used for generic trials without cards, free subscriptions, testing, etc)
 
 Want to add a new payment provider? Contributions are welcome.
 
