@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.19
+
+* Correctly handle cancelling a paused Paddle subscription - @excid3
+
 ### 3.0.18
 
 * Add `generic_trial?` to `Pay::Subscription` for checking if fake processor trial - @excid3

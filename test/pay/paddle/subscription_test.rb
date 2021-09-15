@@ -77,4 +77,16 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
     pay_subscriptions(:paddle).update(paddle_paused_from: 14.days.from_now)
     assert_equal ActiveSupport::TimeWithZone, pay_subscriptions(:paddle).paddle_paused_from.class
   end
+
+  test "paddle cancel paused subscription" do
+    subscription = @pay_customer.subscription
+    subscription.update(paddle_paused_from: "Sat, 04 Jul 2020 00:00:00.000000000 UTC +00:00")
+    assert_nil subscription.processor_subscription.next_payment
+    assert_difference "@pay_customer.payment_methods.count", -1 do
+      subscription.cancel
+    end
+    assert_not_nil subscription.ends_at
+    assert_equal subscription.ends_at, subscription.paddle_paused_from
+    assert_equal "canceled", subscription.status
+  end
 end
