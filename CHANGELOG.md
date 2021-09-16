@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.21
+
+* Add update_customer methods for SyncCustomer job - @excid3
+
 ### 3.0.20
 
 * Safely handle receipts for users without `extra_billing_info` - @excid3
