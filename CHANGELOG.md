@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.20
+
+* Safely handle receipts for users without `extra_billing_info` - @excid3
+
 ### 3.0.19
 
 * Correctly handle cancelling a paused Paddle subscription - @excid3
