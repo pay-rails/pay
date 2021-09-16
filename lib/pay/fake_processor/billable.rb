@@ -19,6 +19,10 @@ module Pay
         pay_customer
       end
 
+      def update_customer!
+        # pass
+      end
+
       def charge(amount, options = {})
         # Make to generate a processor_id
         customer

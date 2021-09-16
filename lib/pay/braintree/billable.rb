@@ -30,7 +30,8 @@ module Pay
 
           customer
         else
-          result = gateway.customer.create(email: email, first_name: try(:first_name), last_name: try(:last_name), payment_method_nonce: payment_method_token)
+          first_name, last_name = customer_name.split(" ", 2)
+          result = gateway.customer.create(email: email, first_name: first_name, last_name: last_name, payment_method_nonce: payment_method_token)
           raise Pay::Braintree::Error, result unless result.success?
           pay_customer.update!(processor_id: result.customer.id)
 
@@ -45,6 +46,13 @@ module Pay
         raise Pay::Braintree::AuthorizationError, e
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
+      end
+
+      # Syncs name and email to Braintree::Customer
+      def update_customer!
+        return unless processor_id?
+        first_name, last_name = customer_name.split(" ", 2)
+        gateway.customer.update(processor_id, first_name: first_name, last_name: last_name, email: email)
       end
 
       def charge(amount, options = {})
