@@ -44,6 +44,12 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
+      # Syncs name and email to Stripe::Customer
+      def update_customer!
+        return unless processor_id?
+        ::Stripe::Customer.update(processor_id, {name: customer_name, email: email}, stripe_options)
+      end
+
       def charge(amount, options = {})
         add_payment_method(payment_method_token, default: true) if payment_method_token?
 

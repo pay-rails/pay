@@ -18,6 +18,10 @@ module Pay
         # pass
       end
 
+      def update_customer!
+        # pass
+      end
+
       def charge(amount, options = {})
         subscription = pay_customer.subscription
         return unless subscription.processor_id
