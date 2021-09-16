@@ -11,7 +11,7 @@ Amount: <%= params[:charge].amount_refunded_with_currency %><br/>
 Refunded to: <%= params[:charge].charged_to %><br/>
 Transaction ID: <%= params[:charge].id %><br/>
 Date: <%= params[:charge].created_at %><br/>
-<% if params[:charge].customer.owner.extra_billing_info? %>
+<% if params[:charge].customer.owner.try(:extra_billing_info?) %>
 <%= params[:charge].customer.owner.extra_billing_info %><br/>
 <% end %>
 <br/>

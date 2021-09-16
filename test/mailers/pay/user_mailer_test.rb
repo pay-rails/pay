@@ -53,4 +53,22 @@ class UserMailerTest < ActionMailer::TestCase
     assert_equal I18n.t("pay.user_mailer.payment_action_required.subject"), email.subject
     assert_includes email.body.decoded, Pay::Engine.instance.routes.url_helpers.payment_path("x")
   end
+
+  test "receipt with no extra billing info column" do
+    team = teams(:one)
+    @pay_customer.update!(owner: team)
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, charge: @charge).receipt
+
+    assert_equal [team.owner.email], email.to
+    assert_equal I18n.t("pay.user_mailer.receipt.subject"), email.subject
+  end
+
+  test "refund with no extra billing info column" do
+    team = teams(:one)
+    @pay_customer.update!(owner: team)
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, charge: @charge).refund
+
+    assert_equal [team.owner.email], email.to
+    assert_equal I18n.t("pay.user_mailer.refund.subject"), email.subject
+  end
 end

@@ -21,7 +21,7 @@ module Pay
         [I18n.t("pay.receipt.amount"), Pay::Currency.format(amount, currency: currency)],
         [I18n.t("pay.receipt.charged_to"), charged_to]
       ]
-      line_items << [I18n.t("pay.receipt.additional_info"), customer.owner.extra_billing_info] if customer.owner.extra_billing_info?
+      line_items << [I18n.t("pay.receipt.additional_info"), customer.owner.extra_billing_info] if customer.owner.try(:extra_billing_info?)
       line_items << [I18n.t("pay.receipt.refunded"), Pay::Currency.format(amount_refunded, currency: currency)] if refunded?
 
       defaults = {
@@ -49,7 +49,7 @@ module Pay
 
     def invoice_pdf(**options)
       bill_to = [customer.owner.name]
-      bill_to += [customer.owner.extra_billing_info] if customer.owner.extra_billing_info?
+      bill_to += [customer.owner.extra_billing_info] if customer.owner.try(:extra_billing_info?)
       bill_to += [nil, customer.owner.email]
 
       total = Pay::Currency.format(amount, currency: currency)
