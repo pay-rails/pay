@@ -1,5 +1,7 @@
 ### Unreleased
 
+### 3.0.22
+
 * Update to `@hotwired/stimulus` for payments view - @excid3
 * Update test/dummy app to Pay 3 - @excid3
 
