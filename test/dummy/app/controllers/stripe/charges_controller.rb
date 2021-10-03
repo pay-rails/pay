@@ -3,7 +3,7 @@ module Stripe
     before_action :set_charge, only: [:show, :refund]
 
     def index
-      @charges = Pay::Charge.where(processor: :stripe).order(created_at: :desc)
+      @charges = Pay::Charge.joins(:customer).where(pay_customers: {processor: :stripe}).order(created_at: :desc)
     end
 
     def show
@@ -13,9 +13,10 @@ module Stripe
     end
 
     def create
-      current_user.processor = params[:processor]
-      current_user.card_token = params[:card_token]
-      charge = current_user.charge(params[:amount])
+      current_user.set_payment_processor params[:processor]
+      current_user.payment_processor.payment_method_token = params[:card_token]
+      binding.irb
+      charge = current_user.payment_processor.charge(params[:amount])
       redirect_to stripe_charge_path(charge)
     rescue Pay::ActionRequired => e
       redirect_to pay.payment_path(e.payment.id)
