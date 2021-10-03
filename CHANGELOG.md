@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Update to `@hotwired/stimulus` for payments view - @excid3
+
 ### 3.0.21
 
 * Add update_customer methods for SyncCustomer job - @excid3
