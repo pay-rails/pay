@@ -46,12 +46,12 @@ Success and cancel and cancel URLs are automatically generated for you and point
 @checkout_session = current_user.payment_processor.checkout(
   mode: "payment",
   line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG",
-  success_url: root_url(session_id: "{CHECKOUT_SESSION_ID}"),
-  cancel_url: root_url(session_id: "{CHECKOUT_SESSION_ID}")
+  success_url: root_url,
+  cancel_url: root_url
 )
 ```
 
-The `"{CHECKOUT_SESSION_ID}"` is a placeholder that tells Stripe to replace that string with the actual checkout session ID. This allows you to lookup the checkout session on your success page and confirm the payment was successful before fulfilling the customer's purchase.
+The `session_id` param will be included on success and cancel URLs automatically. This allows you to lookup the checkout session on your success page and confirm the payment was successful before fulfilling the customer's purchase.
 
 https://stripe.com/docs/payments/checkout/custom-success-page
 

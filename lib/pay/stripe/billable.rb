@@ -202,14 +202,7 @@ module Pay
           }
         end
 
-        args.merge!(options)
-
-        # Add session_id to success_url
-        uri = URI.parse(args[:success_url])
-        uri.query = URI.encode_www_form(URI.decode_www_form(uri.query.to_s).to_h.merge("session_id" => "{CHECKOUT_SESSION_ID}").to_a)
-        args[:success_url] = uri.to_s.gsub("%7BCHECKOUT_SESSION_ID%7D", "{CHECKOUT_SESSION_ID}")
-
-        ::Stripe::Checkout::Session.create(args, stripe_options)
+        ::Stripe::Checkout::Session.create(args.merge(options), stripe_options)
       end
 
       # https://stripe.com/docs/api/checkout/sessions/create
@@ -246,6 +239,13 @@ module Pay
       # Options for Stripe requests
       def stripe_options
         {stripe_account: stripe_account}.compact
+      end
+
+      # Includes the `session_id` param for Stripe Checkout with existing params (and makes sure the curly braces aren't escaped)
+      def merge_session_id_param(url)
+        uri = URI.parse(url)
+        uri.query = URI.encode_www_form(URI.decode_www_form(uri.query.to_s).to_h.merge("session_id" => "{CHECKOUT_SESSION_ID}").to_a)
+        uri.to_s.gsub("%7BCHECKOUT_SESSION_ID%7D", "{CHECKOUT_SESSION_ID}")
       end
     end
   end
