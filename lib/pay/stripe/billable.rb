@@ -187,8 +187,8 @@ module Pay
           payment_method_types: ["card"],
           mode: "payment",
           # These placeholder URLs will be replaced in a following step.
-          success_url: options.delete(:success_url) || root_url(session_id: "{CHECKOUT_SESSION_ID}"),
-          cancel_url: options.delete(:cancel_url) || root_url(session_id: "{CHECKOUT_SESSION_ID}")
+          success_url: options.delete(:success_url) || root_url,
+          cancel_url: options.delete(:cancel_url) || root_url
         }
 
         # Line items are optional
@@ -202,7 +202,14 @@ module Pay
           }
         end
 
-        ::Stripe::Checkout::Session.create(args.merge(options), stripe_options)
+        args.merge!(options)
+
+        # Add session_id to success_url
+        uri = URI.parse(args[:success_url])
+        uri.query = URI.encode_www_form(URI.decode_www_form(uri.query.to_s).to_h.merge("session_id" => "{CHECKOUT_SESSION_ID}").to_a)
+        args[:success_url] = uri.to_s.gsub("%7BCHECKOUT_SESSION_ID%7D", "{CHECKOUT_SESSION_ID}")
+
+        ::Stripe::Checkout::Session.create(args, stripe_options)
       end
 
       # https://stripe.com/docs/api/checkout/sessions/create

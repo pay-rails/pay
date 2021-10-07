@@ -7,6 +7,11 @@ class Pay::Stripe::CheckoutTest < ActiveSupport::TestCase
     @pay_customer.customer
   end
 
+  test "checkout success_url includes session_id" do
+    session = @pay_customer.checkout(mode: "setup")
+    assert_equal "http://localhost:3000/?session_id={CHECKOUT_SESSION_ID}", session.success_url
+  end
+
   test "checkout setup session" do
     session = @pay_customer.checkout(mode: "setup")
     assert_equal "setup", session.mode
