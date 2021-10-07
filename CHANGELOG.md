@@ -1,5 +1,9 @@
 ### Unreleased
 
+### 3.0.23
+
+* Merge Stripe Checkout `session_id` param into `success_url` automatically - @excid3
+
 ### 3.0.22
 
 * Update to `@hotwired/stimulus` for payments view - @excid3
