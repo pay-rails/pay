@@ -225,7 +225,7 @@ Instead of adding fields to your models, Pay now manages everything in a `Pay::C
 
 ```ruby
 # Choose a payment provider
-user.set_pay_processor :stripe
+user.set_payment_processor :stripe
 #=> Creates a Pay::Customer object with associated Stripe::Customer
 
 user.payment_processor
@@ -242,7 +242,7 @@ Instead of calling `@user.charge`, Pay 3 moves the `charge`, `subscribe`, and ot
 You can switch between payment processors at anytime and Pay will mark the most recent one as the default. It will also retain the previous Pay::Customers so they can be reused as needed.
 
 ```ruby
-user.set_pay_processor :stripe
+user.set_payment_processor :stripe
 
 # Charge Stripe::Customer $10
 user.payment_processor.charge(10_00)
@@ -261,8 +261,8 @@ user.payment_processor.subscribe(plan: "whatever")
 Generic trials are now done using the fake payment processor
 
 ```ruby
-user.set_pay_processor :fake, allow_fake: true
-user.payment_processor.subscribe(trial_days: 14, ends_at: 14.days.from_now)
+user.set_payment_processor :fake_processor, allow_fake: true
+user.payment_processor.subscribe(trial_ends_at: 14.days.from_now, ends_at: 14.days.from_now)
 user.payment_processor.on_trial? #=> true
 ```
 
