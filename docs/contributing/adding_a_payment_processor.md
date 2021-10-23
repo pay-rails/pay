@@ -12,7 +12,7 @@ Pay instantiates Payment Processor classes to implement the API requests to the 
 
 For example, a `Pay::Charge.refund!` will look up the payment processor (Stripe, for example) and instantiate `Pay::Stripe::Charge` with the `Pay::Charge` record. It will then call `refund!` allowing `Pay::Stripe::Charge` to handle the `refund` API request.
 
-Each payment processor needs to implement the same classes in order to fulfill the hooks for making API requests. 
+Each payment processor needs to implement the same classes in order to fulfill the hooks for making API requests.
 
 We recommend copying FakeProcessor as the basis for your new payment processor and replacing each method with the appropriate API requests.
 

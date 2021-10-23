@@ -49,7 +49,7 @@ Want to add a new payment provider? Contributions are welcome.
 * **Marketplaces**
   * [Stripe Connect](docs/marketplaces/stripe_connect.md)
 * **Contributing**
-  * [Adding A Payment Processor](docs/contributing/8_adding_a_payment_processor.md)
+  * [Adding A Payment Processor](docs/contributing/adding_a_payment_processor.md)
 
 ## 🙏 Contributing
 

@@ -107,3 +107,7 @@ end
 ```
 
 That's it!
+
+## Next
+
+See [Credentials](2_credentials.md)
