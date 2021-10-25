@@ -2,7 +2,7 @@
 
 ### Development
 
-You can use the [Stripe CLI](https://stripe.com/docs/stripe-cli) to test and forward webhooks in development. 
+You can use the [Stripe CLI](https://stripe.com/docs/stripe-cli) to test and forward webhooks in development.
 
 ```bash
 stripe listen --forward-to localhost:3000/pay/webhooks/stripe
@@ -12,7 +12,8 @@ stripe listen --forward-to localhost:3000/pay/webhooks/stripe
 
 Pay requires the following webhooks to properly sync charges and subscriptions as they happen.
 
-```customer.subscription.updated
+```ruby
+customer.subscription.updated
 charge.succeeded
 charge.refunded
 
@@ -37,4 +38,3 @@ account.updated
 checkout.session.completed
 checkout.session.async_payment_succeeded
 ```
-

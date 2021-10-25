@@ -146,8 +146,6 @@ You can also check for a specific subscription or plan:
 @user.payment_processor.on_trial_or_subscribed?(name: "default", plan: "annual")
 ```
 
-
-
 ## Subscription API
 
 Individual subscriptions provide similar helper methods to check their state.
