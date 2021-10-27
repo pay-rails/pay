@@ -103,6 +103,7 @@ Pay.setup do |config|
 
   config.automount_routes = true
   config.routes_path = "/pay" # Only when automount_routes is true
+  config.enabled_processors = [:stripe, :braintree, :paddle] # All processors are enabled by default
 end
 ```
 
