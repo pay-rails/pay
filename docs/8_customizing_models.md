@@ -25,7 +25,7 @@ Then you can tell Rails to include the concern whenever it loads the application
 ```ruby
 # config/initializers/pay.rb
 
-# Re-include the SubscriptionExtensions every time Rails reloads
+# Re-include the ChargeExtensions every time Rails reloads
 Rails.application.config.to_prepare do
   Pay::Charge.include ChargeExtensions
 end
