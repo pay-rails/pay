@@ -9,5 +9,4 @@ Pay.setup do |config|
   config.business_address = "1600 Pennsylvania Avenue NW"
   config.application_name = "My App"
   config.support_email = "helpme@example.com"
-
 end

@@ -57,4 +57,20 @@ module Pay
   def self.setup
     yield self
   end
+
+  def self.initialize_payment_processors
+    # Call setup method on each enabled processor
+    enabled_processors.filter do |processor|
+      processor_class_name = processor.to_s.classify.prepend("Pay::")
+      next unless Pay.processor_enabled?(processor) && Object.const_defined?(processor_class_name)
+
+      processor_class_name.constantize.setup
+    end
+
+    Pay::Charge.include Pay::Receipts if defined? ::Receipts::Receipt
+  end
+
+  def self.processor_enabled?(name)
+    Array.wrap(enabled_processors).include?(name)
+  end
 end
