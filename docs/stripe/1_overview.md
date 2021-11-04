@@ -40,7 +40,7 @@ current_user.set_payment_processor :stripe
 @checkout_session = current_user.payment_processor.checkout(mode: "setup")
 ```
 
-Success and cancel and cancel URLs are automatically generated for you and point to the root URL. To customize these, pass in the following options.
+Success and cancel URLs are automatically generated for you and point to the root URL. To customize these, pass in the following options.
 
 ```ruby
 @checkout_session = current_user.payment_processor.checkout(
