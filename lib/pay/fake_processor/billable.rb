@@ -44,7 +44,6 @@ module Pay
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         # Make to generate a processor_id
         customer
-
         attributes = options.merge(
           processor_id: NanoId.generate,
           name: name,
@@ -52,6 +51,13 @@ module Pay
           status: :active,
           quantity: options.fetch(:quantity, 1)
         )
+
+        trial_days = attributes[:trial_period_days]
+        if trial_days
+          attributes[:trial_ends_at] = Time.now + trial_days
+          attributes.delete(:trial_period_days)
+        end
+
         pay_customer.subscriptions.create!(attributes)
       end
 
