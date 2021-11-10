@@ -15,8 +15,10 @@ module Pay
         details = object.payment_method_details
         payment_details = if details.type == 'ach_debit'
                             {
+                              card_exp_month: '**',
+                              card_exp_year: '****',
+                              card_last4: details.ach_debit.last4,
                               card_type: details.type,
-                              card_last4: details.ach_debit.last4
                             }
                           else
                             {
