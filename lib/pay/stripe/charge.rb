@@ -12,18 +12,29 @@ module Pay
         owner = Pay.find_billable(processor: :stripe, processor_id: object.customer)
         return unless owner
 
+        details = object.payment_method_details
+        payment_details = if details.type == 'ach_debit'
+                            {
+                              card_type: details.type,
+                              card_last4: details.ach_debit.last4
+                            }
+                          else
+                            {
+                              card_exp_month: details.card.exp_month,
+                              card_exp_year: details.card.exp_year,
+                              card_last4: details.card.last4,
+                              card_type: details.card.brand
+                            }
+                          end
+
         attrs = {
           amount: object.amount,
           amount_refunded: object.amount_refunded,
           application_fee_amount: object.application_fee_amount,
-          card_exp_month: object.payment_method_details.card.exp_month,
-          card_exp_year: object.payment_method_details.card.exp_year,
-          card_last4: object.payment_method_details.card.last4,
-          card_type: object.payment_method_details.card.brand,
           created_at: Time.at(object.created),
           currency: object.currency,
           stripe_account: owner.stripe_account
-        }
+        }.merge(payment_details)
 
         # Associate charge with subscription if we can
         if object.invoice
