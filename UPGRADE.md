@@ -18,6 +18,7 @@ Upgrading from Pay 2.x to 3.0 requires moving data for several things:
 6. Drop unneeded columns
 
 Here's an example migration for migrating data. This migration is purely an example for reference. Please modify this migration as needed.
+A quick walkthrough of both migrations is available in this video (starting at 6:40): https://www.youtube.com/watch?v=nJLf26sGD3o
 
 ```ruby
 class CreatePayV3Models < ActiveRecord::Migration[6.0]
