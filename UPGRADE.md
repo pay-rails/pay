@@ -185,6 +185,10 @@ class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
     add_column :pay_charges, :owner_type, :string
     add_column :pay_charges, :owner_id, :integer
     add_column :pay_charges, :processor, :string
+    add_column :pay_charges, :card_type, :string
+    add_column :pay_charges, :card_last4, :string
+    add_column :pay_charges, :card_exp_month, :string
+    add_column :pay_charges, :card_exp_year, :string
     add_column :pay_subscriptions, :owner_type, :string
     add_column :pay_subscriptions, :owner_id, :integer
     add_column :pay_subscriptions, :processor, :string
