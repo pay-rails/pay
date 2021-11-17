@@ -15,7 +15,6 @@ module Stripe
     def create
       current_user.set_payment_processor params[:processor]
       current_user.payment_processor.payment_method_token = params[:card_token]
-      binding.irb
       charge = current_user.payment_processor.charge(params[:amount])
       redirect_to stripe_charge_path(charge)
     rescue Pay::ActionRequired => e
