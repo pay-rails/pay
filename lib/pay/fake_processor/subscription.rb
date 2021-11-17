@@ -57,6 +57,9 @@ module Pay
 
       def swap(plan)
       end
+
+      def change_quantity(quantity)
+      end
     end
   end
 end
