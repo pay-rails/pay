@@ -52,7 +52,7 @@ module Pay
           quantity: options.fetch(:quantity, 1)
         )
 
-        if (trial_period_days = attributes.delete(:trial_period_days)
+        if (trial_period_days = attributes.delete(:trial_period_days))
           attributes[:trial_ends_at] = trial_period_days.to_i.days.from_now
         end
 
