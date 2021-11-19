@@ -52,10 +52,8 @@ module Pay
           quantity: options.fetch(:quantity, 1)
         )
 
-        trial_days = attributes[:trial_period_days]
-        if trial_days
-          attributes[:trial_ends_at] = Time.now + trial_days
-          attributes.delete(:trial_period_days)
+        if (trial_period_days = attributes.delete(:trial_period_days)
+          attributes[:trial_ends_at] = trial_period_days.to_i.days.from_now
         end
 
         pay_customer.subscriptions.create!(attributes)
