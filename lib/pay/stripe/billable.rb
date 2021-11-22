@@ -198,7 +198,7 @@ module Pay
               item
             else
               {
-                price: item, 
+                price: item,
                 quantity: options.delete(:quantity) || 1
               }
             end
