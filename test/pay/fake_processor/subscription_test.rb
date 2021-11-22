@@ -48,4 +48,9 @@ class Pay::FakeProcessor::Subscription::Test < ActiveSupport::TestCase
     @subscription.swap("another_plan")
     assert_equal "another_plan", @subscription.processor_plan
   end
+
+  test "fake change quantity" do
+    @subscription.change_quantity(3)
+    assert_equal 3, @subscription.quantity
+  end
 end
