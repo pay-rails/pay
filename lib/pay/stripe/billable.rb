@@ -202,6 +202,8 @@ module Pay
           }
         end
 
+        options.delete(:quantity)
+
         ::Stripe::Checkout::Session.create(args.merge(options), stripe_options)
       end
 
