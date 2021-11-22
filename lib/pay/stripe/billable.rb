@@ -197,12 +197,13 @@ module Pay
             if item.is_a? Hash
               item
             else
-              {price: item, quantity: options.fetch(:quantity, 1)}
+              {
+                price: item, 
+                quantity: options.delete(:quantity) || 1)
+              }
             end
           }
         end
-
-        options.delete(:quantity)
 
         ::Stripe::Checkout::Session.create(args.merge(options), stripe_options)
       end
