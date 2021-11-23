@@ -194,7 +194,7 @@ module Pay
         # Line items are optional
         if (line_items = options.delete(:line_items))
           quantity = options.delete(:quantity) || 1
-          
+
           args[:line_items] = Array.wrap(line_items).map { |item|
             if item.is_a? Hash
               item
