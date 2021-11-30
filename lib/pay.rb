@@ -39,6 +39,9 @@ module Pay
   mattr_accessor :send_emails
   @@send_emails = true
 
+  mattr_accessor :generate_receipts
+  @@generate_receipts = true
+
   mattr_accessor :automount_routes
   @@automount_routes = true
 

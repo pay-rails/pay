@@ -18,7 +18,7 @@ gem 'braintree', '>= 4.4', '< 5.0'
 # To use Paddle, also include:
 gem 'paddle_pay', '~> 0.1'
 
-# To use Receipts
+# To use Receipts gem which will append PDF attachments to your payment emails
 gem 'receipts', '~> 1.1'
 ```
 
