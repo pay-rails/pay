@@ -17,6 +17,12 @@ class Pay::FakeProcessor::Subscription::Test < ActiveSupport::TestCase
     end
   end
 
+  test "fake processor trial period" do
+    new_subscription = @pay_customer.subscribe(trial_period_days: 14)
+    assert new_subscription.on_trial?
+    assert new_subscription.trial_ends_at > Time.now
+  end
+
   test "fake processor cancel_now!" do
     @subscription.cancel_now!
     assert_not @subscription.active?
@@ -41,5 +47,10 @@ class Pay::FakeProcessor::Subscription::Test < ActiveSupport::TestCase
   test "fake processor swap" do
     @subscription.swap("another_plan")
     assert_equal "another_plan", @subscription.processor_plan
+  end
+
+  test "fake change quantity" do
+    @subscription.change_quantity(3)
+    assert_equal 3, @subscription.quantity
   end
 end

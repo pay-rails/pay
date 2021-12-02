@@ -6,7 +6,7 @@ Routes are automatically mounted to `/pay` by default.
 
 We provide a route for confirming Stripe SCA payments at `/pay/payments/:payment_intent_id`
 
-See [Stripe SCA docs](docs/stripe/4_sca.md)
+See [Stripe SCA docs](stripe/4_sca.md)
 
 ## Webhooks
 

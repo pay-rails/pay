@@ -177,8 +177,8 @@ module Pay
       # checkout(mode: "subscription")
       #
       # checkout(line_items: "price_12345", quantity: 2)
-      # checkout(line_items [{ price: "price_123" }, { price: "price_456" }])
-      # checkout(line_items, "price_12345", allow_promotion_codes: true)
+      # checkout(line_items: [{ price: "price_123" }, { price: "price_456" }])
+      # checkout(line_items: "price_12345", allow_promotion_codes: true)
       #
       def checkout(**options)
         customer unless processor_id?
@@ -193,11 +193,16 @@ module Pay
 
         # Line items are optional
         if (line_items = options.delete(:line_items))
+          quantity = options.delete(:quantity) || 1
+
           args[:line_items] = Array.wrap(line_items).map { |item|
             if item.is_a? Hash
               item
             else
-              {price: item, quantity: options.fetch(:quantity, 1)}
+              {
+                price: item,
+                quantity: quantity
+              }
             end
           }
         end
