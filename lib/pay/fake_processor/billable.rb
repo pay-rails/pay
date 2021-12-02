@@ -31,8 +31,8 @@ module Pay
           processor_id: NanoId.generate,
           amount: amount,
           data: {
-            kind: :card,
-            type: :fake,
+            payment_method_type: :card,
+            brand: "Fake",
             last4: 1234,
             exp_month: Date.today.month,
             exp_year: Date.today.year
@@ -59,10 +59,10 @@ module Pay
         # Make to generate a processor_id
         customer
 
-        pay_customer.payment_methods.create!(
+        pay_payment_method = pay_customer.payment_methods.create!(
           processor_id: NanoId.generate,
           default: default,
-          type: :fake,
+          type: :card,
           data: {
             brand: "Fake",
             last4: 1234,
@@ -70,6 +70,9 @@ module Pay
             exp_year: Date.today.year
           }
         )
+
+        pay_customer.reload_default_payment_method if default
+        pay_payment_method
       end
 
       def update_email!

@@ -35,8 +35,12 @@ class Pay::FakeProcessor::Billable::Test < ActiveSupport::TestCase
 
   test "fake processor add payment method" do
     assert_difference "Pay::PaymentMethod.count" do
-      @pay_customer.add_payment_method("x")
+      @pay_customer.add_payment_method("x", default: true)
     end
+
+    payment_method = @pay_customer.default_payment_method
+    assert_equal "card", payment_method.type
+    assert_equal "Fake", payment_method.brand
   end
 
   test "generates fake processor_id" do
