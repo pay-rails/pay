@@ -13,7 +13,6 @@ stripe listen --forward-to localhost:3000/pay/webhooks/stripe
 Pay requires the following webhooks to properly sync charges and subscriptions as they happen.
 
 ```ruby
-customer.subscription.updated
 charge.succeeded
 charge.refunded
 
