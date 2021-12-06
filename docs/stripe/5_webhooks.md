@@ -29,7 +29,7 @@ customer.deleted
 
 payment_method.attached
 payment_method.updated
-payment_method.card_automatically_updated
+payment_method.automatically_updated
 payment_method.detached
 
 account.updated
