@@ -51,6 +51,18 @@ Success and cancel URLs are automatically generated for you and point to the roo
 )
 ```
 
+You can pass any other [Stripe subscription parameters](https://stripe.com/docs/api/checkout/sessions/create#create_checkout_session-subscription_data). For example, to create 30-day trial subscriptions:
+
+```ruby
+@checkout_session = current_user.payment_processor.checkout(
+  mode: "payment",
+  line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG",
+  success_url: root_url,
+  cancel_url: root_url,
+  subscription_data: { trial_period_days: 30 }
+)
+```
+
 The `session_id` param will be included on success and cancel URLs automatically. This allows you to lookup the checkout session on your success page and confirm the payment was successful before fulfilling the customer's purchase.
 
 https://stripe.com/docs/payments/checkout/custom-success-page
