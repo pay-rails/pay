@@ -2,90 +2,104 @@
 
 Stripe has multiple options for payments
 
-* Stripe Checkout - Hosted pages for payments (you'll redirect users to Stripe)
-* Stripe Elements - Payment fields on your site
+* [Stripe Checkout](https://stripe.com/payments/checkout) - Hosted pages for payments (you'll redirect users to Stripe)
+* [Stripe Elements](https://stripe.com/payments/elements) - Payment fields on your site
 
 ## Prices & Plans
 
-Stripe introduced Products & Prices to support more payment options. Previously, they had a concept called Plan that was for subscriptions. Pay supports both Price IDs and Plan IDs when subscribing.
+Stripe introduced Products & Prices to support more payment options. Previously, they had a concept called Plan that was for subscriptions. Pay supports both `Price IDs` and `Plan IDs` when subscribing.
 
 ```ruby
 @user.payment_processor.subscribe(plan: "price_1234")
 @user.payment_processor.subscribe(plan: "plan_1234")
 ```
 
+See: https://stripe.com/docs/api/subscriptions/create
+
 ## Stripe Checkout
 
 [Stripe Checkout](https://stripe.com/docs/payments/checkout) allows you to simply redirect to Stripe for handling payments. The main benefit is that it's super fast to setup payments in your application, they're SCA compatible, and they will get improved automatically by Stripe.
+
+📝 **Warning**: You need to configure webhooks before using Stripe Checkout otherwise your application won't be updated with the correct data.
 
 ![stripe checkout example](https://i.imgur.com/nFsCBCK.gif)
 
 ### How to use Stripe Checkout with Pay
 
-1. Create a checkout session
-
-Choose the checkout button mode you need and pass any required arguments. Read the [Stripe Checkout Session API docs](https://stripe.com/docs/api/checkout/sessions/create) to see what options are available.
+Choose the checkout button mode you need and pass any required arguments. Read the [Stripe Checkout Session API docs](https://stripe.com/docs/api/checkout/sessions/create) to see what options are available. For instance:
 
 ```ruby
-# Make sure the user's payment processor is Stripe
-current_user.set_payment_processor :stripe
+class SubscriptionsController < ApplicationController
+  def checkout
+    # Make sure the user's payment processor is Stripe
+    current_user.set_payment_processor :stripe
 
-# One-time payments
-@checkout_session = current_user.payment_processor.checkout(mode: "payment", line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG")
+    # One-time payments (https://stripe.com/docs/payments/accept-a-payment)
+    @checkout_session = current_user.payment_processor.checkout(mode: "payment", line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG")
 
-# Subscriptions
-@checkout_session = current_user.payment_processor.checkout(mode: "subscription", line_items: "default")
+    # Or Subscriptions (https://stripe.com/docs/billing/subscriptions/build-subscription)
+    @checkout_session = current_user.payment_processor.checkout(
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      locale: I18n.locale,
+      line_items: [{
+        price: 'price_1ILVZaKXBGcbgpbZQ26kgXWG',
+        quantity: 4
+      }],
+      subscription_data: {
+        trial_period_days: 15
+      },
+      success_url: root_url,
+      cancel_url: root_url
+    )
 
-# Setup a new card for future use
-@checkout_session = current_user.payment_processor.checkout(mode: "setup")
+    # Or Setup a new card for future use (https://stripe.com/docs/payments/save-and-reuse)
+    @checkout_session = current_user.payment_processor.checkout(mode: "setup")
+
+    # If you want to redirect directly to checkout
+    redirect_to @checkout_session.url, allow_other_host: true, status: :see_other
+  end
+end
 ```
 
-Success and cancel URLs are automatically generated for you and point to the root URL. To customize these, pass in the following options.
+Alternatively, you can use Pay & Stripe.js to render a button that will take the user to Stripe Checkout instead of redirecting immediately.
 
-```ruby
-@checkout_session = current_user.payment_processor.checkout(
-  mode: "payment",
-  line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG",
-  success_url: root_url,
-  cancel_url: root_url
-)
+```erb
+<%= render "pay/stripe/checkout_button", session: @checkout_session, title: "Checkout" %>
 ```
 
 The `session_id` param will be included on success and cancel URLs automatically. This allows you to lookup the checkout session on your success page and confirm the payment was successful before fulfilling the customer's purchase.
 
 https://stripe.com/docs/payments/checkout/custom-success-page
 
-2. Redirect or Render the button
+## Stripe Customer Billing Portal
 
-If you want to redirect directly to checkout, simply redirect to the `url` on the session object.
-
-```ruby
-redirect_to @checkout_session.url
-```
-
-Alternatively, you can use Pay & Stripe.js to render a button that will take the user to Stripe Checkout.
-
-```erb
-<%= render partial: "pay/stripe/checkout_button", locals: { session: @checkout_session, title: "Checkout" } %>
-```
-
-3. Link to the Customer Billing Portal
-
-Customers will want to update their payment method, subscription, etc. This can be done with the Customer Billing Portal. It works the same as the other Stripe Checkout pages.
+Customers will want to update their payment method, subscription, etc. This can be done with the [Customer Billing Portal](https://stripe.com/docs/billing/subscriptions/integrating-customer-portal). It works the same as the other Stripe Checkout pages.
 
 First, create a session in your controller:
 
 ```ruby
-@portal_session = current_user.payment_processor.billing_portal
+class SubscriptionsController < ApplicationController
+  def index
+    @portal_session = current_user.payment_processor.billing_portal
+    # 
+  end
+end
 ```
 
-Then link to it in your view
+Then link to it in your view:
 
 ```erb
 <%= link_to "Billing Portal", @portal_session.url %>
 ```
 
-4. Fulfilling orders after Checkout completed
+Or redirect to it in your controller:
+
+```ruby
+redirect_to @portal_session.url, allow_other_host: true, status: :see_other
+```
+
+## Fulfilling orders after Checkout completed
 
 For one-time payments, you'll need to add a webhook listener for the Checkout `stripe.checkout.session.completed` and `stripe.checkout.session.async_payment_succeeded` events. Some payment methods are delayed so you need to verify the `payment_status == "paid"`. The async payment succeeded event fires when delayed payments are complete.
 
@@ -99,9 +113,9 @@ class FulfillCheckout
   def call(event)
     object = event.data.object
 
-    if object.payment_status == "paid"
-      # Handle fulfillment
-    end
+    return object.payment_status != "paid"
+
+    # Handle fulfillment
   end
 end
 ```
