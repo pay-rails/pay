@@ -15,7 +15,7 @@ To subscribe a user, you can call the `subscribe` method.
 You can pass additional options to go directly to the payment processor's API. For example, the `quantity` option to subscribe to a plan with for per-seat pricing.
 
 ```ruby
-@user.subscribe(name: "default", plan: "monthly", quantity: 3)
+@user.payment_processor.subscribe(name: "default", plan: "monthly", quantity: 3)
 ```
 
 Subscribe takes several arguments and options:
@@ -36,8 +36,8 @@ In your Javascript, include `passthrough` in Checkout using the `Pay::Paddle.pas
 
 ```javascript
 Paddle.Checkout.open({
-	product: 12345,
-	passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
+  product: 12345,
+  passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
 });
 ```
 

@@ -82,7 +82,7 @@ When enabled, the following emails will be sent when:
 
 - A charge succeeded
 - A charge was refunded
-- A subscription is about to renew
+- A yearly subscription is about to renew
 
 ## Configuration
 
