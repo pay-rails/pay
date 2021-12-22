@@ -96,7 +96,7 @@ Then link to it in your view:
 Or redirect to it in your controller:
 
 ```ruby
-redirect_to @portal_session.url
+redirect_to @portal_session.url, allow_other_host: true, status: :see_other
 ```
 
 ## Fulfilling orders after Checkout completed
