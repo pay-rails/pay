@@ -82,14 +82,21 @@ First, create a session in your controller:
 class SubscriptionsController < ApplicationController
   def index
     @portal_session = current_user.payment_processor.billing_portal
+    # 
   end
 end
 ```
 
-Then link to it in your view
+Then link to it in your view:
 
 ```erb
 <%= link_to "Billing Portal", @portal_session.url %>
+```
+
+Or redirect to it in your controller:
+
+```ruby
+redirect_to @portal_session.url
 ```
 
 ## Fulfilling orders after Checkout completed
