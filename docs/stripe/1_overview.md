@@ -2,8 +2,8 @@
 
 Stripe has multiple options for payments
 
-* [Stripe Checkout](https://stripe.com/fr/payments/checkout) - Hosted pages for payments (you'll redirect users to Stripe)
-* [Stripe Elements](https://stripe.com/fr/payments/elements) - Payment fields on your site
+* [Stripe Checkout](https://stripe.com/payments/checkout) - Hosted pages for payments (you'll redirect users to Stripe)
+* [Stripe Elements](https://stripe.com/payments/elements) - Payment fields on your site
 
 ## Prices & Plans
 
@@ -57,12 +57,12 @@ class SubscriptionsController < ApplicationController
     @checkout_session = current_user.payment_processor.checkout(mode: "setup")
 
     # If you want to redirect directly to checkout
-    # redirect_to @checkout_session.url, allow_other_host: true, status: :see_other
+    redirect_to @checkout_session.url, allow_other_host: true, status: :see_other
   end
 end
 ```
 
-Alternatively, you can use Pay & Stripe.js to render a button that will take the user to Stripe Checkout.
+Alternatively, you can use Pay & Stripe.js to render a button that will take the user to Stripe Checkout instead of redirecting immediately.
 
 ```erb
 <%= render "pay/stripe/checkout_button", session: @checkout_session, title: "Checkout" %>
