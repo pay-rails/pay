@@ -82,4 +82,24 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     refute Pay::Charge.new(amount: 1_00, amount_refunded: 0).partial_refund?
     refute Pay::Charge.new(amount: 1_00, amount_refunded: nil).partial_refund?
   end
+
+  test "amount_with_currency" do
+    assert_equal "$0.00", Pay::Charge.new(amount: nil, currency: nil).amount_with_currency
+    assert_equal "$123.45", Pay::Charge.new(amount: 123_45, currency: :usd).amount_with_currency
+    assert_equal "€123,45", Pay::Charge.new(amount: 123_45, currency: :eur).amount_with_currency
+    assert_equal "£123.45", Pay::Charge.new(amount: 123_45, currency: :gbp).amount_with_currency
+    assert_equal "¥12,345", Pay::Charge.new(amount: 123_45, currency: :jpy).amount_with_currency
+    assert_equal "12.345 ع.د", Pay::Charge.new(amount: 123_45, currency: :iqd).amount_with_currency
+    assert_equal "12 345 Ft", Pay::Charge.new(amount: 123_45, currency: :huf).amount_with_currency
+  end
+
+  test "amount_refunded_with_currency" do
+    assert_equal "$0.00", Pay::Charge.new(amount_refunded: nil, currency: nil).amount_with_currency
+    assert_equal "$123.45", Pay::Charge.new(amount_refunded: 123_45, currency: :usd).amount_refunded_with_currency
+    assert_equal "€123,45", Pay::Charge.new(amount_refunded: 123_45, currency: :eur).amount_refunded_with_currency
+    assert_equal "£123.45", Pay::Charge.new(amount_refunded: 123_45, currency: :gbp).amount_refunded_with_currency
+    assert_equal "¥12,345", Pay::Charge.new(amount_refunded: 123_45, currency: :jpy).amount_refunded_with_currency
+    assert_equal "12.345 ع.د", Pay::Charge.new(amount_refunded: 123_45, currency: :iqd).amount_refunded_with_currency
+    assert_equal "12 345 Ft", Pay::Charge.new(amount_refunded: 123_45, currency: :huf).amount_refunded_with_currency
+  end
 end

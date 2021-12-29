@@ -9,6 +9,11 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert_equal "Fake User", @user.payment_processor.customer_name
   end
 
+  test "customer with a pay_customer_name" do
+    @user.define_singleton_method(:pay_customer_name) { "Pay Customer Name" }
+    assert_equal "Pay Customer Name", @user.payment_processor.customer_name
+  end
+
   test "has charges" do
     assert_equal Pay::Charge.none, users(:none).charges
   end

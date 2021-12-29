@@ -8,6 +8,8 @@ class Pay::FakeProcessor::Charge::Test < ActiveSupport::TestCase
 
   test "fake processor charge" do
     assert_equal @charge, @charge.processor_charge
+    assert_equal "card", @charge.payment_method_type
+    assert_equal "Fake", @charge.brand
   end
 
   test "fake processor refund" do

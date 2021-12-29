@@ -73,6 +73,10 @@ module Pay
       self.trial_ends_at = nil
     end
 
+    def generic_trial?
+      fake_processor? && trial_ends_at?
+    end
+
     def on_trial?
       trial_ends_at? && Time.zone.now < trial_ends_at
     end
@@ -129,6 +133,12 @@ module Pay
 
     def latest_payment
       processor_subscription(expand: ["latest_invoice.payment_intent"]).latest_invoice.payment_intent
+    end
+
+    def paddle_paused_from
+      if (timestamp = super)
+        Time.zone.parse(timestamp)
+      end
     end
 
     private

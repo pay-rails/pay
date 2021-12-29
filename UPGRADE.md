@@ -18,6 +18,7 @@ Upgrading from Pay 2.x to 3.0 requires moving data for several things:
 6. Drop unneeded columns
 
 Here's an example migration for migrating data. This migration is purely an example for reference. Please modify this migration as needed.
+A quick walkthrough of both migrations is available in this video (starting at 6:40): https://www.youtube.com/watch?v=nJLf26sGD3o
 
 ```ruby
 class CreatePayV3Models < ActiveRecord::Migration[6.0]
@@ -185,6 +186,10 @@ class UpgradeToPayVersion3 < ActiveRecord::Migration[6.0]
     add_column :pay_charges, :owner_type, :string
     add_column :pay_charges, :owner_id, :integer
     add_column :pay_charges, :processor, :string
+    add_column :pay_charges, :card_type, :string
+    add_column :pay_charges, :card_last4, :string
+    add_column :pay_charges, :card_exp_month, :string
+    add_column :pay_charges, :card_exp_year, :string
     add_column :pay_subscriptions, :owner_type, :string
     add_column :pay_subscriptions, :owner_id, :integer
     add_column :pay_subscriptions, :processor, :string
@@ -225,7 +230,7 @@ Instead of adding fields to your models, Pay now manages everything in a `Pay::C
 
 ```ruby
 # Choose a payment provider
-user.set_pay_processor :stripe
+user.set_payment_processor :stripe
 #=> Creates a Pay::Customer object with associated Stripe::Customer
 
 user.payment_processor
@@ -242,7 +247,7 @@ Instead of calling `@user.charge`, Pay 3 moves the `charge`, `subscribe`, and ot
 You can switch between payment processors at anytime and Pay will mark the most recent one as the default. It will also retain the previous Pay::Customers so they can be reused as needed.
 
 ```ruby
-user.set_pay_processor :stripe
+user.set_payment_processor :stripe
 
 # Charge Stripe::Customer $10
 user.payment_processor.charge(10_00)
@@ -261,8 +266,8 @@ user.payment_processor.subscribe(plan: "whatever")
 Generic trials are now done using the fake payment processor
 
 ```ruby
-user.set_pay_processor :fake, allow_fake: true
-user.payment_processor.subscribe(trial_days: 14, ends_at: 14.days.from_now)
+user.set_payment_processor :fake_processor, allow_fake: true
+user.payment_processor.subscribe(trial_ends_at: 14.days.from_now, ends_at: 14.days.from_now)
 user.payment_processor.on_trial? #=> true
 ```
 
@@ -286,3 +291,15 @@ charge.last4 #=> "4242"
 charge.payment_method_type #=> "paypal"
 charge.email #=> "test@example.org"
 ```
+
+### Configuration Changes
+
+We've removed several configuration options since Pay 3+ will always use the models from the gem for charges, subscriptions, etc.
+
+Removed options:
+* Pay.billable_class
+* Pay.billable_table
+* Pay.chargeable_class
+* Pay.chargeable_table
+* Pay.subscription_class
+* Pay.subscription_table

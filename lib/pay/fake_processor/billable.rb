@@ -19,6 +19,10 @@ module Pay
         pay_customer
       end
 
+      def update_customer!
+        # pass
+      end
+
       def charge(amount, options = {})
         # Make to generate a processor_id
         customer
@@ -27,8 +31,8 @@ module Pay
           processor_id: NanoId.generate,
           amount: amount,
           data: {
-            kind: :card,
-            type: :fake,
+            payment_method_type: :card,
+            brand: "Fake",
             last4: 1234,
             exp_month: Date.today.month,
             exp_year: Date.today.year
@@ -40,7 +44,6 @@ module Pay
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         # Make to generate a processor_id
         customer
-
         attributes = options.merge(
           processor_id: NanoId.generate,
           name: name,
@@ -48,6 +51,11 @@ module Pay
           status: :active,
           quantity: options.fetch(:quantity, 1)
         )
+
+        if (trial_period_days = attributes.delete(:trial_period_days))
+          attributes[:trial_ends_at] = trial_period_days.to_i.days.from_now
+        end
+
         pay_customer.subscriptions.create!(attributes)
       end
 
@@ -55,10 +63,10 @@ module Pay
         # Make to generate a processor_id
         customer
 
-        pay_customer.payment_methods.create!(
+        pay_payment_method = pay_customer.payment_methods.create!(
           processor_id: NanoId.generate,
           default: default,
-          type: :fake,
+          type: :card,
           data: {
             brand: "Fake",
             last4: 1234,
@@ -66,6 +74,9 @@ module Pay
             exp_year: Date.today.year
           }
         )
+
+        pay_customer.reload_default_payment_method if default
+        pay_payment_method
       end
 
       def update_email!

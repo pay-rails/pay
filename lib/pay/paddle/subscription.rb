@@ -75,9 +75,19 @@ module Pay
       end
 
       def cancel
-        ends_at = on_trial? ? trial_ends_at : processor_subscription.next_payment[:date]
+        ends_at = if on_trial?
+          trial_ends_at
+        elsif paused?
+          paddle_paused_from
+        else
+          processor_subscription.next_payment&.fetch(:date) || Time.current
+        end
+
         PaddlePay::Subscription::User.cancel(processor_id)
         pay_subscription.update(status: :canceled, ends_at: ends_at)
+
+        # Remove payment methods since customer cannot be reused after cancelling
+        Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
       end
@@ -85,6 +95,9 @@ module Pay
       def cancel_now!
         PaddlePay::Subscription::User.cancel(processor_id)
         pay_subscription.update(status: :canceled, ends_at: Time.current)
+
+        # Remove payment methods since customer cannot be reused after cancelling
+        Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
       end
@@ -100,7 +113,7 @@ module Pay
       def pause
         attributes = {pause: true}
         response = PaddlePay::Subscription::User.update(processor_id, attributes)
-        pay_subscription.update(paddle_paused_from: Time.zone.parse(response[:next_payment][:date]))
+        pay_subscription.update(paddle_paused_from: Time.zone.parse(response.dig(:next_payment, :date)))
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
       end

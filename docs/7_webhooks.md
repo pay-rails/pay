@@ -6,7 +6,7 @@ Routes are automatically mounted to `/pay` by default.
 
 We provide a route for confirming Stripe SCA payments at `/pay/payments/:payment_intent_id`
 
-See [Stripe SCA docs](docs/stripe/4_sca.md)
+See [Stripe SCA docs](stripe/4_sca.md)
 
 ## Webhooks
 
@@ -74,6 +74,10 @@ Need to unsubscribe or disable one of the default webhook processors? Simply uns
 ```ruby
 Pay::Webhooks.delegator.unsubscribe "stripe.charge.succeeded"
 ```
+
+## Stripe CLI
+
+The Stripe CLI lets you forward webhooks to your local Rails server during development. See the [Stripe Webhooks](stripe/5_webhooks.md) docs on how to use it.
 
 ## Next
 

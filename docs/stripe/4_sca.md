@@ -28,16 +28,16 @@ When a charge or subscription needs SCA confirmation, Pay will raise a `Pay::Act
 def create
   @user.charge(10_00)
   # or @user.subscribe(plan: "x")
-  
+
 rescue Pay::ActionRequired => e
   # Redirect to the Pay SCA confirmation page
   redirect_to pay.payment_path(e.payment.id)
-  
+
 rescue Pay::Error => e
   # Display any other errors
   flash[:alert] = e.message
   render :new, status: :unprocessable_entity
-end 
+end
 ```
 
 ### Stripe SCA Confirm Page
@@ -54,3 +54,6 @@ If you use the default views for payment confirmations, and also have a Content 
 * `script_src`: `https://cdn.jsdelivr.net` and `https://js.stripe.com`
 * `frame_src`: `https://js.stripe.com`
 
+## Next
+
+See [Webhooks](5_webhooks.md)

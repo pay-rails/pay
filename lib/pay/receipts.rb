@@ -1,7 +1,5 @@
 module Pay
   module Receipts
-    include ActionView::Helpers::NumberHelper
-
     def product
       Pay.application_name
     end
@@ -20,11 +18,11 @@ module Pay
         [I18n.t("pay.receipt.date"), I18n.l(created_at, format: :long)],
         [I18n.t("pay.receipt.account_billed"), "#{customer.customer_name} (#{customer.email})"],
         [I18n.t("pay.receipt.product"), product],
-        [I18n.t("pay.receipt.amount"), number_to_currency(amount / 100.0)],
+        [I18n.t("pay.receipt.amount"), Pay::Currency.format(amount, currency: currency)],
         [I18n.t("pay.receipt.charged_to"), charged_to]
       ]
-      line_items << [I18n.t("pay.receipt.additional_info"), customer.owner.extra_billing_info] if customer.owner.extra_billing_info?
-      line_items << [I18n.t("pay.receipt.refunded"), number_to_currency(amount_refunded / 100.0)] if refunded?
+      line_items << [I18n.t("pay.receipt.additional_info"), customer.owner.extra_billing_info] if customer.owner.try(:extra_billing_info?)
+      line_items << [I18n.t("pay.receipt.refunded"), Pay::Currency.format(amount_refunded, currency: currency)] if refunded?
 
       defaults = {
         id: id,
@@ -51,10 +49,10 @@ module Pay
 
     def invoice_pdf(**options)
       bill_to = [customer.owner.name]
-      bill_to += [customer.owner.extra_billing_info] if customer.owner.extra_billing_info?
+      bill_to += [customer.owner.extra_billing_info] if customer.owner.try(:extra_billing_info?)
       bill_to += [nil, customer.owner.email]
 
-      total = ActionController::Base.helpers.number_to_currency(amount / 100.0)
+      total = Pay::Currency.format(amount, currency: currency)
 
       line_items = [
         ["<b>#{I18n.t("pay.invoice.product")}</b>", nil, "<b>#{I18n.t("pay.invoice.amount")}</b>"],

@@ -18,7 +18,7 @@ module Pay
           return if pay_customer.charges.where(processor_id: event.subscription_payment_id).any?
 
           charge = create_charge(pay_customer, event)
-          notify_user(pay_customer.owner, charge)
+          notify_user(charge)
         end
 
         def create_charge(pay_customer, event)
@@ -42,9 +42,9 @@ module Pay
           charge
         end
 
-        def notify_user(billable, charge)
-          if Pay.send_emails && charge.respond_to?(:receipt)
-            Pay::UserMailer.with(billable: billable, charge: charge).receipt.deliver_later
+        def notify_user(pay_charge)
+          if Pay.send_emails
+            Pay::UserMailer.with(pay_customer: pay_charge.customer, charge: pay_charge).receipt.deliver_later
           end
         end
       end

@@ -1,4 +1,4 @@
-# Stripe Javascript
+# Stripe JavaScript
 
 Here's some example Javascript for handling your payment forms with [Stripe.js](https://stripe.com/docs/stripe-js) and [Hotwire / Turbo](https://hotwired.dev).
 
@@ -35,6 +35,7 @@ A meta tag with `name="stripe-key"` should include the Stripe public key as the 
 
 ```erb
 <%= tag.meta name: "stripe-key", content: Pay::Stripe.public_key %>
+<script src="https://js.stripe.com/v3/" defer></script>
 ```
 
 #### Javascript
@@ -129,7 +130,7 @@ function setupStripe() {
         if (result.error) {
           displayError.textContent = result.error.message
         } else {
-          addHiddenField(form, "card_token", result.setupIntent.payment_method)
+          addHiddenField(form, "payment_method_token", result.setupIntent.payment_method)
           form.submit()
         }
       })
@@ -141,7 +142,7 @@ function setupStripe() {
         if (result.error) {
           displayError.textContent = result.error.message
         } else {
-          addHiddenField(form, "card_token", result.paymentMethod.id)
+          addHiddenField(form, "payment_method_token", result.paymentMethod.id)
           form.submit()
         }
       })
@@ -157,3 +158,7 @@ function addHiddenField(form, name, value) {
   form.appendChild(input)
 }
 ```
+
+## Next
+
+See [Strong Customer Authentication (SCA)](4_sca.md)

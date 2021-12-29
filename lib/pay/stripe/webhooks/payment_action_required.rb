@@ -10,14 +10,13 @@ module Pay
 
           subscription = Pay::Subscription.find_by_processor_and_id(:stripe, object.subscription)
           return if subscription.nil?
-          billable = subscription.customer.owner
 
-          notify_user(billable, event.data.object.payment_intent, subscription)
-        end
-
-        def notify_user(billable, payment_intent_id, subscription)
           if Pay.send_emails
-            Pay::UserMailer.with(billable: billable, payment_intent_id: payment_intent_id, subscription: subscription).payment_action_required.deliver_later
+            Pay::UserMailer.with(
+              pay_customer: subscription.customer,
+              payment_intent_id: event.data.object.payment_intent,
+              subscription: subscription
+            ).payment_action_required.deliver_later
           end
         end
       end

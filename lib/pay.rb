@@ -9,6 +9,7 @@ module Pay
   autoload :NanoId, "pay/nano_id"
   autoload :Payment, "pay/payment"
   autoload :Receipts, "pay/receipts"
+  autoload :Currency, "pay/currency"
 
   # Payment processors
   autoload :Braintree, "pay/braintree"
@@ -52,13 +53,5 @@ module Pay
 
   def self.setup
     yield self
-  end
-
-  def self.receipts_supported?
-    charge_model.respond_to?(:receipt) &&
-      application_name.present? &&
-      business_name &&
-      business_address &&
-      support_email
   end
 end

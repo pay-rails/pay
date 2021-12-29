@@ -20,7 +20,7 @@ They should be formatted like the following:
 stripe:
   private_key: xxxx
   public_key: yyyy
-  signing_secret: 
+  signing_secret:
   - aaaa
   - bbbb
 braintree:
@@ -82,7 +82,7 @@ When enabled, the following emails will be sent when:
 
 - A charge succeeded
 - A charge was refunded
-- A subscription is about to renew
+- A yearly subscription is about to renew
 
 ## Configuration
 
@@ -114,7 +114,7 @@ It is important you set a queue_adapter for this to happen. If you don't, the co
 
 ```ruby
 # config/application.rb
-config.active_job.queue_adapter = :sidekiq	
+config.active_job.queue_adapter = :sidekiq
 ```
 
 ## Next

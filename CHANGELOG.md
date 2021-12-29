@@ -1,6 +1,61 @@
 ### Unreleased
 
 * Ensure that `data` columns are `ActiveRecord::Store` with `text` columns. - @excid3
+
+# 3.0.24
+
+* Make payment method and charges consistent for Fake procsesor - @excid3
+
+### 3.0.23
+
+* Merge Stripe Checkout `session_id` param into `success_url` automatically - @excid3
+
+### 3.0.22
+
+* Update to `@hotwired/stimulus` for payments view - @excid3
+* Update test/dummy app to Pay 3 - @excid3
+
+### 3.0.21
+
+* Add update_customer methods for SyncCustomer job - @excid3
+
+### 3.0.20
+
+* Safely handle receipts for users without `extra_billing_info` - @excid3
+
+### 3.0.19
+
+* Correctly handle cancelling a paused Paddle subscription - @excid3
+
+### 3.0.18
+
+* Add `generic_trial?` to `Pay::Subscription` for checking if fake processor trial - @excid3
+* Charge succeeded should send email even when receipts gem isn't available - @excid3
+* Update mailers to use `Pay::Customer#customer_name` - @excid3
+* Use `pay_customer` instead of `billable` in mailers - @excid3
+* Remove payment methods when cancelling Paddle subscription - @excid3
+
+### 3.0.17
+
+* Convert `paddle_paused_from` to Time - @excid3
+
+### 3.0.16
+
+* Remove hardcoded currency in emails - @excid3
+
+### 3.0.15
+
+* Accept options for `Pay::Currency.format` - @excid3
+
+### 3.0.14
+
+* Add `amount_with_currency` to `Pay::Payment` - @excid3
+
+### 3.0.13
+
+* Add `Pay::Currency` for formatting amounts with currency - @excid3
+* Add `amount_with_currency` and `amount_refunded_with_currency` to `Pay::Charge` - @excid3
+* Safer pay processor lookup when processor is blank - @excid3
 * Store `stripe_account` when syncing Stripe payment methods - @excid3
 
 ### 3.0.12

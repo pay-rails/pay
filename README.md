@@ -2,7 +2,7 @@
 
 # 💳 Pay - Payments engine for Ruby on Rails
 
-[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay)
+[![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay) [![Tuple](https://img.shields.io/badge/Pairing%20with-Tuple-5A67D8)](https://tuple.app)
 
 <img src="docs/images/stripe_partner_badge.svg" height="26px">
 
@@ -23,11 +23,11 @@ Our supported payment processors are:
 - Stripe ([SCA Compatible](https://stripe.com/docs/strong-customer-authentication) using API version `2020-08-27`)
 - Paddle (SCA Compatible & supports PayPal)
 - Braintree (supports PayPal)
-- [Fake Processor](docs/fake_processor.md) (used for generic trials without cards, free subscriptions, testing, etc)
+- [Fake Processor](docs/fake_processor/1_overview.md) (used for generic trials without cards, free subscriptions, testing, etc)
 
 Want to add a new payment provider? Contributions are welcome.
 
-> We make our best attempt to standardize the different payment providers. They function differently so keep that in mind if you plan on doing more complex payments. It would be best to stick witha single payment provider in that case so you don't run into discrepancies.
+> We make our best attempt to standardize the different payment providers. They function differently so keep that in mind if you plan on doing more complex payments. It would be best to stick with a single payment provider in that case so you don't run into discrepancies.
 
 ## 📚 Docs
 
@@ -49,7 +49,7 @@ Want to add a new payment provider? Contributions are welcome.
 * **Marketplaces**
   * [Stripe Connect](docs/marketplaces/stripe_connect.md)
 * **Contributing**
-  * [Adding A Payment Processor](docs/contributing/8_adding_a_payment_processor.md)
+  * [Adding A Payment Processor](docs/contributing/adding_a_payment_processor.md)
 
 ## 🙏 Contributing
 

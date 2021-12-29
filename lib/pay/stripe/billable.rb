@@ -44,6 +44,12 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
+      # Syncs name and email to Stripe::Customer
+      def update_customer!
+        return unless processor_id?
+        ::Stripe::Customer.update(processor_id, {name: customer_name, email: email}, stripe_options)
+      end
+
       def charge(amount, options = {})
         add_payment_method(payment_method_token, default: true) if payment_method_token?
 
@@ -171,8 +177,8 @@ module Pay
       # checkout(mode: "subscription")
       #
       # checkout(line_items: "price_12345", quantity: 2)
-      # checkout(line_items [{ price: "price_123" }, { price: "price_456" }])
-      # checkout(line_items, "price_12345", allow_promotion_codes: true)
+      # checkout(line_items: [{ price: "price_123" }, { price: "price_456" }])
+      # checkout(line_items: "price_12345", allow_promotion_codes: true)
       #
       def checkout(**options)
         customer unless processor_id?
@@ -181,17 +187,22 @@ module Pay
           payment_method_types: ["card"],
           mode: "payment",
           # These placeholder URLs will be replaced in a following step.
-          success_url: options.delete(:success_url) || root_url(session_id: "{CHECKOUT_SESSION_ID}"),
-          cancel_url: options.delete(:cancel_url) || root_url(session_id: "{CHECKOUT_SESSION_ID}")
+          success_url: merge_session_id_param(options.delete(:success_url) || root_url),
+          cancel_url: merge_session_id_param(options.delete(:cancel_url) || root_url)
         }
 
         # Line items are optional
         if (line_items = options.delete(:line_items))
+          quantity = options.delete(:quantity) || 1
+
           args[:line_items] = Array.wrap(line_items).map { |item|
             if item.is_a? Hash
               item
             else
-              {price: item, quantity: options.fetch(:quantity, 1)}
+              {
+                price: item,
+                quantity: quantity
+              }
             end
           }
         end
@@ -233,6 +244,13 @@ module Pay
       # Options for Stripe requests
       def stripe_options
         {stripe_account: stripe_account}.compact
+      end
+
+      # Includes the `session_id` param for Stripe Checkout with existing params (and makes sure the curly braces aren't escaped)
+      def merge_session_id_param(url)
+        uri = URI.parse(url)
+        uri.query = URI.encode_www_form(URI.decode_www_form(uri.query.to_s).to_h.merge("session_id" => "{CHECKOUT_SESSION_ID}").to_a)
+        uri.to_s.gsub("%7BCHECKOUT_SESSION_ID%7D", "{CHECKOUT_SESSION_ID}")
       end
     end
   end

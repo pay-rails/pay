@@ -25,12 +25,13 @@ module Pay
     delegate :email, to: :owner
     delegate_missing_to :pay_processor
 
-    def self.processor_for(name)
+    def self.pay_processor_for(name)
       "Pay::#{name.to_s.classify}::Billable".constantize
     end
 
     def pay_processor
-      @pay_processor ||= self.class.processor_for(processor).new(self)
+      return if processor.blank?
+      @pay_processor ||= self.class.pay_processor_for(processor).new(self)
     end
 
     def update_payment_method(payment_method_id)
@@ -67,6 +68,7 @@ module Pay
     end
 
     def customer_name
+      return owner.pay_customer_name if owner.respond_to?(:pay_customer_name) && owner.pay_customer_name.present?
       owner.respond_to?(:name) ? owner.name : [owner.try(:first_name), owner.try(:last_name)].compact.join(" ")
     end
 

@@ -22,13 +22,13 @@ The `fake_processor` is restricted by default so users can't give themselves fre
 After setting the payment processor, your model will have a `payment_processor` they can use to create charges, subscriptions, etc.
 
 ```ruby
-@user.payment_processor 
+@user.payment_processor
 #=> #<Pay::Customer processor: "stripe", processor_id: "cus_1000">
 ```
 
 This record keeps track of payment processor is active and the ID for the customer on the API. It also is associated with all Charges, Subscriptions, and Payment Methods.
 
-A user might switch between payment processors. For example, they might initially subscribe using Braintree, cancel after a while, and resubscribe using Stripe later on. 
+A user might switch between payment processors. For example, they might initially subscribe using Braintree, cancel after a while, and resubscribe using Stripe later on.
 
 Pay keeps track of these with a `has_many :pay_customers` association.
 
@@ -48,7 +48,7 @@ If you need to access the API object directly from the payment processor like th
 #=> #<Stripe::Customer>
 ```
 
-##### Paddle: 
+##### Paddle:
 
 It is currently not possible to retrieve a Customer object through the Paddle API.
 
