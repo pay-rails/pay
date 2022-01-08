@@ -40,7 +40,6 @@ class SubscriptionsController < ApplicationController
     # Or Subscriptions (https://stripe.com/docs/billing/subscriptions/build-subscription)
     @checkout_session = current_user.payment_processor.checkout(
       mode: 'subscription',
-      payment_method_types: ['card'],
       locale: I18n.locale,
       line_items: [{
         price: 'price_1ILVZaKXBGcbgpbZQ26kgXWG',
@@ -82,7 +81,7 @@ First, create a session in your controller:
 class SubscriptionsController < ApplicationController
   def index
     @portal_session = current_user.payment_processor.billing_portal
-    # 
+    #
   end
 end
 ```
