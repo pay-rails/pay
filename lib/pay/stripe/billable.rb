@@ -184,7 +184,6 @@ module Pay
         customer unless processor_id?
         args = {
           customer: processor_id,
-          payment_method_types: ["card"],
           mode: "payment",
           # These placeholder URLs will be replaced in a following step.
           success_url: merge_session_id_param(options.delete(:success_url) || root_url),

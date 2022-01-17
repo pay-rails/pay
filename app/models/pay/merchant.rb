@@ -16,5 +16,11 @@ module Pay
       return if processor.blank?
       @pay_processor ||= self.class.pay_processor_for(processor).new(self)
     end
+
+    def onboarding_complete?
+      ActiveModel::Type::Boolean.new.cast(
+        (data.presence || {})["onboarding_complete"]
+      )
+    end
   end
 end

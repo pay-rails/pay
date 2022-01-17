@@ -23,7 +23,7 @@ invoice.payment_action_required
 
 customer.subscription.created
 customer.subscription.updated
-customer.subscriptoin.deleted
+customer.subscription.deleted
 customer.updated
 customer.deleted
 
