@@ -17,7 +17,7 @@ module Pay
       def queue_event(event)
         return unless Pay::Webhooks.delegator.listening?("braintree.#{event.kind}")
 
-        record = Pay::Webhook.create(
+        record = Pay::Webhook.create!(
           processor: :braintree,
           event_type: event.kind,
           event: {bt_signature: params[:bt_signature], bt_payload: params[:bt_payload]}
