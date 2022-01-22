@@ -70,7 +70,11 @@ end
 
 **Note:** Pay requires your model to have an `email` attribute. Email is a field that is required by Stripe, Braintree, etc to create a Customer record.
 
-To sync customer names automatically to your payment processor, your model should respond to the `first_name` and `last_name` methods. Pay will sync these over to your Customer objects in Stripe and Braintree anytime they change.
+To sync customer names automatically to your payment processor, your model should respond to one of the following methods. Pay will sync these over to your Customer objects in Stripe and Braintree anytime they change.
+
+* `name`
+* `first_name` _and_ `last_name`
+* `pay_customer_name`
 
 ## Next
 
