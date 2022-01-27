@@ -3,13 +3,28 @@ require "test_helper"
 class Pay::Billable::SyncCustomer::Test < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
-  test "email sync only on updating customer email" do
+  test "customer sync only on updating customer email" do
     assert_no_enqueued_jobs do
       User.create(email: "test@example.com")
     end
 
     assert_enqueued_with(job: Pay::CustomerSyncJob, args: [users(:stripe).payment_processor.id]) do
       users(:stripe).update(email: "test@test.com")
+    end
+  end
+
+  test "customer sync on updating with pay_should_sync_customer? overriden" do
+    assert_no_enqueued_jobs do
+      User.create(email: "test@example.com")
+    end
+
+    assert_enqueued_with(job: Pay::CustomerSyncJob, args: [users(:stripe).payment_processor.id]) do
+      user = users(:stripe)
+      def user.pay_should_sync_customer?
+        true
+      end
+
+      users(:stripe).update(first_name: "whatever")
     end
   end
 
