@@ -22,7 +22,9 @@ module Pay
       Pay::Braintree.setup if defined? ::Braintree
       Pay::Paddle.setup if defined? ::PaddlePay
 
-      Pay::Charge.include Pay::Receipts if defined? ::Receipts::Receipt
+      if Pay.generate_receipts
+        Pay::Charge.include Pay::Receipts
+      end
     end
   end
 end

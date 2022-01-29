@@ -42,4 +42,9 @@ class Pay::Test < ActiveSupport::TestCase
     assert Pay.respond_to?(:default_plan_name)
     assert Pay.respond_to?(:default_plan_name=)
   end
+
+  test "can set generate_receipts" do
+    assert Pay.respond_to?(:generate_receipts)
+    assert Pay.respond_to?(:generate_receipts=)
+  end
 end
