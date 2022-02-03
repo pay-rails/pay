@@ -21,8 +21,6 @@ module Pay
       ::PaddlePay.config.vendor_id = vendor_id
       ::PaddlePay.config.vendor_auth_code = vendor_auth_code
       ::PaddlePay.config.environment = environment
-
-      configure_webhooks
     end
 
     def self.vendor_id

@@ -26,8 +26,6 @@ module Pay
         public_key: public_key,
         private_key: private_key
       )
-
-      configure_webhooks
     end
 
     def self.public_key

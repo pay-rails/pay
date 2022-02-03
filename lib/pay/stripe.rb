@@ -34,8 +34,6 @@ module Pay
 
       # Used by Stripe to identify Pay for support
       ::Stripe.set_app_info("PayRails", partner_id: "pp_partner_IqhY0UExnJYLxg", version: Pay::VERSION, url: "https://github.com/pay-rails/pay")
-
-      configure_webhooks
     end
 
     def self.public_key

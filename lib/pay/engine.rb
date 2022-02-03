@@ -17,11 +17,16 @@ module Pay
       end
     end
 
+    initializer "pay.webhooks" do
+      Pay::Stripe.configure_webhooks if defined? ::Stripe
+      Pay::Braintree.configure_webhooks if defined? ::Braintree
+      Pay::Paddle.configure_webhooks if defined? ::PaddlePay
+    end
+
     config.to_prepare do
       Pay::Stripe.setup if defined? ::Stripe
       Pay::Braintree.setup if defined? ::Braintree
       Pay::Paddle.setup if defined? ::PaddlePay
-
       Pay::Charge.include Pay::Receipts if defined? ::Receipts::Receipt
     end
   end
