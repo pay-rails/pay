@@ -8,7 +8,7 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        after_update :enqeue_sync_email_job, if: :pay_should_sync_customer?
+        after_update :enqeue_customer_sync_job, if: :pay_should_sync_customer?
       end
 
       def pay_should_sync_customer?
@@ -17,8 +17,8 @@ module Pay
 
       private
 
-      def enqeue_sync_email_job
-        if saved_change_to_email?
+      def enqeue_customer_sync_job
+        if pay_should_sync_customer?
           # Queue job to update each payment processor for this customer
           pay_customers.pluck(:id).each do |pay_customer_id|
             CustomerSyncJob.perform_later(pay_customer_id)

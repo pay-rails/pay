@@ -20,9 +20,9 @@ We recommend copying FakeProcessor as the basis for your new payment processor a
 
 Each payment processer can define it's own controller for processing any required webhooks.
 
-For example, `stripe` has [app/controllers/pay/webhooks/stripe_controller.rb](../app/controllers/pay/webhooks/stripe_controller.rb)
+For example, `stripe` has [app/controllers/pay/webhooks/stripe_controller.rb](../../app/controllers/pay/webhooks/stripe_controller.rb)
 
-See also [config/routes.rb](../config/routes.rb) for defining routes.
+See also [config/routes.rb](../../config/routes.rb) for defining routes.
 
 The webhook controller is responsible for verifying the webhook payload for authenticity and then sending to the Pay Webhook Delegator
 
