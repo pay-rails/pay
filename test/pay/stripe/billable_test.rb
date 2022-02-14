@@ -372,9 +372,9 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe customer metdata proc" do
-    User.pay_customer_metadata = ->(user) { {id: user.id} }
+    User.pay_customer_metadata = ->(user) { {user_id: user.id} }
     pay_customer = pay_customers(:stripe)
-    metadata = {id: pay_customer.owner_id}
+    metadata = {user_id: pay_customer.owner_id}
     assert_equal metadata, Pay::Stripe::Billable.new(pay_customer).customer_metadata
     User.pay_customer_metadata = nil
   end
@@ -383,7 +383,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     original_value = User.pay_customer_metadata
     User.pay_customer_metadata = :stripe_metadata
     pay_customer = pay_customers(:stripe)
-    metadata = {id: pay_customer.owner_id}
+    metadata = {user_id: pay_customer.owner_id}
     assert_equal metadata, Pay::Stripe::Billable.new(pay_customer).customer_metadata
     User.pay_customer_metadata = original_value
   end

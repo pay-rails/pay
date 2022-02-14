@@ -4,6 +4,6 @@ class User < ApplicationRecord
   # pay_customer metadata: ->(user) { { id: user.id } }
 
   def stripe_metadata
-    { id: id }
+    { user_id: id }
   end
 end
