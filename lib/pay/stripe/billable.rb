@@ -22,11 +22,25 @@ module Pay
         @pay_customer = pay_customer
       end
 
+      def customer_metadata
+        owner = pay_customer.owner
+        case owner.class.pay_customer_metadata
+        when Symbol
+          owner.send(owner.class.pay_customer_metadata)
+        when Proc
+          owner.class.pay_customer_metadata.call(owner)
+        end
+      end
+
       def customer
         stripe_customer = if processor_id?
           ::Stripe::Customer.retrieve({id: processor_id}, stripe_options)
         else
-          sc = ::Stripe::Customer.create({email: email, name: customer_name}, stripe_options)
+          sc = ::Stripe::Customer.create({
+            email: email,
+            name: customer_name,
+            metadata: customer_metadata
+          }, stripe_options)
           pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
           sc
         end
