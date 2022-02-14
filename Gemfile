@@ -21,6 +21,11 @@ gem "paddle_pay", "~> 0.1.0"
 
 gem "receipts", "~> 1.1", ">= 1.1.2"
 gem "prawn", github: "prawnpdf/prawn"
+if RUBY_VERSION >= "3.1"
+  # net-smtp, net-imap and net-pop were removed from default gems in Ruby 3.1, but is used by the `mail` gem.
+  # So we need to add them as dependencies until `mail` is fixed: https://github.com/mikel/mail/pull/1439
+  gem "net-smtp", require: false
+end
 
 # Test against different databases
 gem "sqlite3", "~> 1.4"
