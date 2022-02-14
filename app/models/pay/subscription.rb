@@ -11,7 +11,7 @@ module Pay
     scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.zone.now) }
     scope :cancelled, -> { where.not(ends_at: nil) }
     scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.zone.now) }
-    scope :active, -> { where(ends_at: nil).or(on_grace_period).or(on_trial) }
+    scope :active, -> { where(status: ["trialing", "active"], ends_at: nil).or(on_grace_period).or(on_trial) }
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
     scope :with_active_customer, -> { joins(:customer).merge(Customer.active) }
