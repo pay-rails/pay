@@ -63,14 +63,14 @@ module Pay
     end
 
     class_methods do
-      def pay_customer(options={})
+      def pay_customer(options = {})
         include Billable::SyncCustomer
         include CustomerExtension
 
         self.pay_customer_metadata = options[:metadata]
       end
 
-      def pay_merchant(options={})
+      def pay_merchant(options = {})
         include MerchantExtension
       end
     end
