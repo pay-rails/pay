@@ -20,6 +20,7 @@ gem "stripe", ">= 2.8"
 gem "paddle_pay", "~> 0.1.0"
 
 gem "receipts", "~> 1.1", ">= 1.1.2"
+gem "prawn", github: "prawnpdf/prawn"
 
 # Test against different databases
 gem "sqlite3", "~> 1.4"
