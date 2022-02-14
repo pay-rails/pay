@@ -19,7 +19,7 @@ gem "braintree", ">= 2.92.0"
 gem "stripe", ">= 2.8"
 gem "paddle_pay", "~> 0.1.0"
 
-gem "receipts"
+gem "receipts", "~> 1.1", ">= 1.1.2"
 
 # Test against different databases
 gem "sqlite3", "~> 1.4"
