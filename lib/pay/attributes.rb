@@ -8,6 +8,8 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
+        cattr_accessor :pay_customer_metadata
+
         has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
         has_many :charges, through: :pay_customers, class_name: "Pay::Charge"
         has_many :subscriptions, through: :pay_customers, class_name: "Pay::Subscription"
@@ -61,12 +63,14 @@ module Pay
     end
 
     class_methods do
-      def pay_customer
+      def pay_customer(options = {})
         include Billable::SyncCustomer
         include CustomerExtension
+
+        self.pay_customer_metadata = options[:metadata]
       end
 
-      def pay_merchant
+      def pay_merchant(options = {})
         include MerchantExtension
       end
     end

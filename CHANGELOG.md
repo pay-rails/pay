@@ -1,5 +1,7 @@
 ### Unreleased
 
+* `pay_customer` now supports a metadata option to save on Stripe::Customers - @excid3
+
 # 3.0.24
 
 * Make payment method and charges consistent for Fake procsesor - @excid3
