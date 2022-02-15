@@ -5,6 +5,7 @@ module Pay
     # Associations
     belongs_to :customer
     has_many :charges
+    has_many :subscription_items, class_name: "Pay::SubscriptionItem", foreign_key: :pay_subscription_id
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
@@ -30,9 +31,16 @@ module Pay
     # Validations
     validates :name, presence: true
     validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
-    validates :processor_plan, presence: true
-    validates :quantity, presence: true, numericality: {only_integer: true, greater_than_or_equal_to: 1}
+    validates :processor_plan, presence: true, allow_nil: true
+    validates :quantity, presence: true, numericality: {
+      only_integer: true,
+      greater_than_or_equal_to: 1,
+      allow_nil: true
+    }
+
     validates :status, presence: true
+
+    accepts_nested_attributes_for :subscription_items, allow_destroy: true
 
     delegate :on_grace_period?,
       :paused?,
