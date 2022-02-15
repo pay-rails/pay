@@ -87,6 +87,7 @@ class User < ApplicationRecord
 
   def stripe_metadata(pay_customer)
     {
+      pay_customer_id: pay_customer.id,
       user_id: id # or pay_customer.owner_id
     }
   end
