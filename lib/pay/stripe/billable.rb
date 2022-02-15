@@ -26,9 +26,9 @@ module Pay
         owner = pay_customer.owner
         case owner.class.pay_customer_metadata
         when Symbol
-          owner.send(owner.class.pay_customer_metadata)
+          owner.send(owner.class.pay_customer_metadata, pay_customer)
         when Proc
-          owner.class.pay_customer_metadata.call(owner)
+          owner.class.pay_customer_metadata.call(pay_customer)
         end
       end
 
