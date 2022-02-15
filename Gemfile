@@ -29,7 +29,7 @@ end
 
 # Test against different databases
 gem "sqlite3", "~> 1.4"
-# gem "mysql2"
+gem "mysql2"
 gem "pg"
 
 # Used for the dummy Rails app integration
