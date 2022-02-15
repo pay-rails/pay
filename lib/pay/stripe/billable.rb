@@ -61,7 +61,15 @@ module Pay
       # Syncs name and email to Stripe::Customer
       def update_customer!
         return unless processor_id?
-        ::Stripe::Customer.update(processor_id, {name: customer_name, email: email}, stripe_options)
+        ::Stripe::Customer.update(
+          processor_id,
+          {
+            email: email,
+            name: customer_name,
+            metadata: customer_metadata
+          },
+          stripe_options
+        )
       end
 
       def charge(amount, options = {})
