@@ -34,8 +34,8 @@ module Pay
     validates :processor_plan, presence: true, allow_nil: true
     validates :quantity, presence: true, numericality: {
       only_integer: true,
-      greater_than_or_equal_to: 1,
-      allow_nil: true
+      allow_nil: true,
+      greater_than_or_equal_to: 1
     }
 
     validates :status, presence: true
