@@ -42,9 +42,9 @@ module Pay
       end
 
       # If no subtotal, we will display the total
-      line_items << [nil, nil, I18n.t("pay.line_items.subtotal"), (subtotal || total)]
+      line_items << [nil, nil, I18n.t("pay.line_items.subtotal"), (subtotal || amount)]
       line_items << [nil, nil, I18n.t("pay.line_items.tax"), tax] if tax
-      line_items << [nil, nil, I18n.t("pay.line_items.total"), total]
+      line_items << [nil, nil, I18n.t("pay.line_items.total"), amount]
       line_items
     end
 
