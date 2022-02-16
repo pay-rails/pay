@@ -94,9 +94,9 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
           created: 1638904425,
           metadata: {},
           price: {
-            id: "large-monthly",
+            id: "large-monthly"
           },
-          quantity: 1,
+          quantity: 1
         },
         {
           id: "si_KjcL6OioIsoeuz",
@@ -104,9 +104,9 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
           created: 1638904425,
           metadata: {},
           price: {
-            id: "personal",
+            id: "personal"
           },
-          quantity: 1,
+          quantity: 1
         }
       ],
       has_more: false,
@@ -174,7 +174,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
             quantity: 1,
             subscription: "123",
             tax_rates: []
-          },
+          }
         ],
         has_more: false,
         total_count: 1,

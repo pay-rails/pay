@@ -105,8 +105,8 @@ class Pay::Charge::Test < ActiveSupport::TestCase
   test "stores line items" do
     charge = pay_charges(:stripe)
     line_items = [
-      {id: "li_1", description: "Item 1", quantity: 1, amount: 100 }.stringify_keys,
-      {id: "li_2", description: "Item 2", quantity: 2, amount: 200 }.stringify_keys,
+      {id: "li_1", description: "Item 1", quantity: 1, amount: 100}.stringify_keys,
+      {id: "li_2", description: "Item 2", quantity: 2, amount: 200}.stringify_keys
     ]
     charge.update!(line_items: line_items)
 

@@ -51,7 +51,7 @@ module Pay
               discount_amounts: line_item.discount_amounts,
               proration: line_item.proration,
               period_start: Time.at(line_item.period.start),
-              period_end: Time.at(line_item.period.end),
+              period_end: Time.at(line_item.period.end)
             }
           end
 
