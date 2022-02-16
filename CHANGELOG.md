@@ -1,6 +1,7 @@
 ### Unreleased
 
-* `pay_customer` now supports a metadata option to save on Stripe::Customers - @excid3
+* `pay_customer` now supports a `metadata` option to save on Stripe::Customers - @excid3
+* `pay_customer` now supports a `default_payment_processor` option to automatically create a Pay::Customer record - @excid3
 
 # 3.0.24
 
