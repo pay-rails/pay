@@ -26,15 +26,29 @@ module Pay
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
 
+        subscription_items = []
+
         attributes = {
           application_fee_percent: object.application_fee_percent,
-          processor_plan: object.plan.id,
+          processor_plan: object.items.first.price.id,
           quantity: object.quantity,
           status: object.status,
           stripe_account: pay_customer.stripe_account,
           trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil),
-          metadata: object.metadata
+          metadata: object.metadata,
+          subscription_items: []
         }
+
+        # Record subscription items to db
+        object.items.auto_paging_each do |subscription_item|
+          attributes[:subscription_items] <<
+          {
+            id: subscription_item.id,
+            metadata: subscription_item.metadata,
+            price: subscription_item.price.id,
+            quantity: subscription_item.quantity,
+          }
+        end
 
         attributes[:ends_at] = if object.ended_at
           # Fully cancelled subscription
@@ -45,6 +59,8 @@ module Pay
         elsif object.cancel_at_period_end
           # Subscriptions cancelling in the future
           Time.at(object.current_period_end)
+        else
+          nil
         end
 
         # Update or create the subscription

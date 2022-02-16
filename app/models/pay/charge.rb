@@ -29,6 +29,12 @@ module Pay
     store_accessor :data, :username # Venmo
     store_accessor :data, :bank
 
+    store_accessor :data, :period_start
+    store_accessor :data, :period_end
+    store_accessor :data, :line_items
+    store_accessor :data, :subtotal
+    store_accessor :data, :tax
+
     # Helpers for payment processors
     %w[braintree stripe paddle fake_processor].each do |processor_name|
       define_method "#{processor_name}?" do
@@ -110,6 +116,10 @@ module Pay
       else
         payment_method_type&.titleize
       end
+    end
+
+    def line_items
+      Array.wrap(super)
     end
   end
 end
