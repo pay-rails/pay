@@ -35,7 +35,6 @@ module Pay
       # Sort by line_items by period_end? oldest to newest
       if line_items.any?
         line_items.each do |li|
-          binding.irb
           items << [li["description"], li["quantity"], Pay::Currency.format(li["unit_amount"], currency: currency), Pay::Currency.format(li["amount"], currency: currency)]
         end
       else
