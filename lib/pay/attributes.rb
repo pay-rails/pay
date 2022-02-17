@@ -8,6 +8,9 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
+        cattr_accessor :pay_customer_metadata
+        cattr_accessor :pay_default_payment_processor
+
         has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
         has_many :charges, through: :pay_customers, class_name: "Pay::Charge"
         has_many :subscriptions, through: :pay_customers, class_name: "Pay::Subscription"
@@ -33,6 +36,16 @@ module Pay
 
         # Return new payment processor
         reload_payment_processor
+      end
+
+      def payment_processor
+        current_processor = super
+
+        if current_processor.blank? && self.class.pay_default_payment_processor.present?
+          set_payment_processor(self.class.pay_default_payment_processor, allow_fake: true)
+        else
+          current_processor
+        end
       end
 
       def cancel_active_pay_subscriptions!
@@ -61,12 +74,15 @@ module Pay
     end
 
     class_methods do
-      def pay_customer
+      def pay_customer(options = {})
         include Billable::SyncCustomer
         include CustomerExtension
+
+        self.pay_customer_metadata = options[:metadata]
+        self.pay_default_payment_processor = options[:default_payment_processor]
       end
 
-      def pay_merchant
+      def pay_merchant(options = {})
         include MerchantExtension
       end
     end
