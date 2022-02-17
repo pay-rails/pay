@@ -22,7 +22,7 @@ module Pay
     end
 
     def pdf_line_items
-      line_items = [
+      items = [
         [
           "<b>#{I18n.t("pay.line_items.description")}</b>",
           "<b>#{I18n.t("pay.line_items.quantity")}</b>",
@@ -33,19 +33,20 @@ module Pay
       # Unit price is stored with the line item
       # Negative amounts shouldn't display quantity
       # Sort by line_items by period_end? oldest to newest
-      if charge.line_items.any?
-        charge.line_items.each do |li|
-          line_items << [li["description"], li["quantity"], Pay::Currency.format(li["unit_amount"], currency: currency), Pay::Currency.format(li["amount"], currency: currency)]
+      if line_items.any?
+        line_items.each do |li|
+          binding.irb
+          items << [li["description"], li["quantity"], Pay::Currency.format(li["unit_amount"], currency: currency), Pay::Currency.format(li["amount"], currency: currency)]
         end
       else
-        line_items << [product, 1, Pay::Currency.format(amount, currency: currency), Pay::Currency.format(amount, currency: currency)]
+        items << [product, 1, Pay::Currency.format(amount, currency: currency), Pay::Currency.format(amount, currency: currency)]
       end
 
       # If no subtotal, we will display the total
-      line_items << [nil, nil, I18n.t("pay.line_items.subtotal"), (subtotal || amount)]
-      line_items << [nil, nil, I18n.t("pay.line_items.tax"), tax] if tax
-      line_items << [nil, nil, I18n.t("pay.line_items.total"), amount]
-      line_items
+      items << [nil, nil, I18n.t("pay.line_items.subtotal"), (subtotal || amount)]
+      items << [nil, nil, I18n.t("pay.line_items.tax"), tax] if tax
+      items << [nil, nil, I18n.t("pay.line_items.total"), amount]
+      items
     end
 
     def receipt_pdf(**options)
