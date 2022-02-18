@@ -30,9 +30,23 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync associates charge with stripe subscription" do
     pay_subscription = @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
-    fake_invoice = ::Stripe::Invoice.construct_from(subscription: "sub_1234", period_start: Time.current, period_end: Time.current, lines: {object: "list", data: [], has_more: false})
+    fake_invoice = ::Stripe::Invoice.construct_from(subscription: "sub_1234", period_start: Time.current, period_end: Time.current, lines: {object: "list", data: [], has_more: false}, subtotal: 21_49, tax: 3_00, total: 24_49)
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_invoice))
     assert_equal pay_subscription, pay_charge.subscription
+  end
+
+  test "sync records tax from invoice" do
+    pay_subscription = @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
+    fake_invoice = ::Stripe::Invoice.construct_from(subscription: "sub_1234", period_start: Time.current, period_end: Time.current, lines: {object: "list", data: [], has_more: false}, subtotal: 21_49, tax: 3_00, total: 24_49)
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_invoice))
+    assert_equal 3_00, pay_charge.tax
+  end
+
+  test "sync records subtotal from invoice" do
+    pay_subscription = @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
+    fake_invoice = ::Stripe::Invoice.construct_from(subscription: "sub_1234", period_start: Time.current, period_end: Time.current, lines: {object: "list", data: [], has_more: false}, subtotal: 21_49, tax: 3_00, total: 24_49)
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_invoice))
+    assert_equal 21_49, pay_charge.subtotal
   end
 
   private
