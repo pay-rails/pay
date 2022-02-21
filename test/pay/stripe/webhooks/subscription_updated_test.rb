@@ -74,4 +74,52 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
     values.reverse_merge!(@event.data.object.to_hash)
     ::Stripe::Subscription.construct_from(values)
   end
+
+  test "subscription with prices is updated" do
+    # @user = User.create!(email: "gob@bluth.com")
+    # @user.set_payment_processor :stripe
+    # @user.payment_processor.processor_id = @event.data.object.customer
+
+    subscription = @pay_customer.subscriptions.create!(
+      processor_id: @event.data.object.id,
+      name: "default",
+      processor_plan: "some-plan",
+      status: "active",
+      subscription_items_attributes: [
+        {
+          processor_id: "si_00000000000001",
+          processor_price: "price_000000000000000000000001",
+          quantity: 1
+        },
+        {
+          processor_id: "si_00000000000002",
+          processor_price: "price_000000000000000000000002",
+          quantity: 1
+        }
+      ]
+    )
+
+    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(
+      processor_id: "sub_00000000000000",
+      items: {
+        data: [
+          {
+            id: "si_00000000000003",
+            price: {
+              id: "price_000000000000000000000003"
+            },
+            quantity: 2
+          }
+        ]
+      }
+    )
+
+    Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
+    subscription.reload
+
+    assert_equal 1, subscription.subscription_items.length
+    subscription = subscription.subscription_items.first
+    assert_equal "price_000000000000000000000003", subscription.processor_price
+    assert_equal 2, subscription.quantity
+  end
 end

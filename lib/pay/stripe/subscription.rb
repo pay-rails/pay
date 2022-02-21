@@ -21,14 +21,23 @@ module Pay
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest subscription details from the API if we already have it
-        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]}, {stripe_account: stripe_account}.compact)
+        object ||= ::Stripe::Subscription.retrieve(
+          {
+            id: subscription_id,
+            expand: [
+              "pending_setup_intent",
+              "latest_invoice.payment_intent", 
+              "latest_invoice.charge.invoice"
+            ]
+          }, { stripe_account: stripe_account }.compact
+        )
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
 
         attributes = {
           application_fee_percent: object.application_fee_percent,
-          processor_plan: object.plan.id,
+          processor_plan: object.plan&.id,
           quantity: object.quantity,
           status: object.status,
           stripe_account: pay_customer.stripe_account,
@@ -50,9 +59,14 @@ module Pay
         # Update or create the subscription
         pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
         if pay_subscription
-          pay_subscription.with_lock { pay_subscription.update!(attributes) }
+          si_attributes = sync_subscription_items_attributes(pay_subscription, object.items.data)
+          pay_subscription.with_lock do
+            pay_subscription.update!(attributes.merge(subscription_items_attributes: si_attributes))
+          end
         else
           pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
+          si_attributes = sync_subscription_items_attributes(pay_subscription, object.items.data)
+          pay_subscription.update(subscription_items_attributes: si_attributes)
         end
 
         # Sync the latest charge if we already have it loaded (like during subscrbe), otherwise, let webhooks take care of creating it
@@ -68,6 +82,28 @@ module Pay
           retry
         else
           raise
+        end
+      end
+
+      def self.sync_subscription_items_attributes(subscription, items_data)
+        return subscription_items_attributes(items_data) if subscription.subscription_items.empty?
+
+        # Destroy all existing subscription items
+        items_to_destroy = subscription.subscription_items.map do |subscription_item|
+          { id: subscription_item.id, _destroy: true }
+        end
+
+        # Rebuild subscription item records based on new items data
+        subscription_items_attributes(items_data) + items_to_destroy
+      end
+
+      def self.subscription_items_attributes(items_data)
+        items_data.map do |subscription_item|
+          {
+            processor_id: subscription_item.id,
+            processor_price: subscription_item.price.id,
+            quantity: subscription_item.quantity
+          }
         end
       end
 

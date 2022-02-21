@@ -93,6 +93,30 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
       trial_end: nil,
       metadata: {
         license_id: 1
+      },
+      items: {
+        object: "list",
+        data: [
+          {
+            id: "si_00000000000000",
+            object: "subscription_item",
+            created: 1466783124,
+            price: {
+              id: "price_000000000000000000000000",
+              object: "price",
+              active: true,
+              billing_scheme: "per_unit",
+              created: 1624895327,
+              currency: "usd",
+              product: "prod_00000000000000",
+              type: "recurring",
+              unit_amount: 15400,
+              unit_amount_decimal: "15400"
+            },
+            quantity: 1,
+            subscription: "123"
+          }
+        ]
       }
     )
     ::Stripe::Subscription.construct_from(values)
