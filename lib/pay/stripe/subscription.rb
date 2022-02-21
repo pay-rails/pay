@@ -26,10 +26,10 @@ module Pay
             id: subscription_id,
             expand: [
               "pending_setup_intent",
-              "latest_invoice.payment_intent", 
+              "latest_invoice.payment_intent",
               "latest_invoice.charge.invoice"
             ]
-          }, { stripe_account: stripe_account }.compact
+          }, {stripe_account: stripe_account}.compact
         )
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
@@ -90,7 +90,7 @@ module Pay
 
         # Destroy all existing subscription items
         items_to_destroy = subscription.subscription_items.map do |subscription_item|
-          { id: subscription_item.id, _destroy: true }
+          {id: subscription_item.id, _destroy: true}
         end
 
         # Rebuild subscription item records based on new items data
