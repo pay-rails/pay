@@ -17,7 +17,7 @@ gem "overcommit"
 
 gem "braintree", ">= 2.92.0"
 gem "stripe", ">= 2.8"
-gem "paddle_pay", "~> 0.1.0"
+gem "paddle_pay", "~> 0.2.0"
 
 gem "receipts", "~> 1.1", ">= 1.1.2"
 gem "prawn", github: "prawnpdf/prawn"
