@@ -173,8 +173,12 @@ module Pay
         ::Stripe::Invoice.upcoming({customer: processor_id}, stripe_options)
       end
 
-      def create_setup_intent
-        ::Stripe::SetupIntent.create({customer: processor_id, usage: :off_session}, stripe_options)
+      def create_setup_intent(options = {})
+        ::Stripe::SetupIntent.create({
+          customer: processor_id,
+          usage: :off_session,
+          payment_method_types: %w[acss_debit au_becs_debit bancontact card card_present eps giropay ideal interac_present p24 sepa_debit sofort]
+        }.merge(options), stripe_options)
       end
 
       def trial_end_date(stripe_sub)

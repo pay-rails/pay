@@ -19,7 +19,7 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
-      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, stripe_account: nil, try: 0, retries: 1)
+      def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest subscription details from the API if we already have it
         object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]}, {stripe_account: stripe_account}.compact)
 
@@ -52,6 +52,9 @@ module Pay
         if pay_subscription
           pay_subscription.with_lock { pay_subscription.update!(attributes) }
         else
+          # Allow setting the subscription name in metadata, otherwise use the default
+          name ||= object.metadata["pay_name"] || Pay.default_product_name
+
           pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
         end
 
