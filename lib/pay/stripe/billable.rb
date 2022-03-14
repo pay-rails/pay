@@ -22,25 +22,28 @@ module Pay
         @pay_customer = pay_customer
       end
 
-      def customer_metadata
+      def customer_fields
         owner = pay_customer.owner
-        case owner.class.pay_customer_metadata
-        when Symbol
-          owner.send(owner.class.pay_customer_metadata, pay_customer)
-        when Proc
-          owner.class.pay_customer_metadata.call(pay_customer)
-        end
+        {
+          email: email,
+          name: customer_name
+        }.merge(
+          case owner.class.pay_customer_fields
+          when Symbol
+            owner.send(owner.class.pay_customer_fields, pay_customer)
+          when Proc
+            owner.class.pay_customer_fields.call(pay_customer)
+          else
+            {}
+          end
+        )
       end
 
       def customer
         stripe_customer = if processor_id?
           ::Stripe::Customer.retrieve({id: processor_id}, stripe_options)
         else
-          sc = ::Stripe::Customer.create({
-            email: email,
-            name: customer_name,
-            metadata: customer_metadata
-          }, stripe_options)
+          sc = ::Stripe::Customer.create(customer_fields, stripe_options)
           pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
           sc
         end
@@ -63,11 +66,7 @@ module Pay
         return unless processor_id?
         ::Stripe::Customer.update(
           processor_id,
-          {
-            email: email,
-            name: customer_name,
-            metadata: customer_metadata
-          },
+          customer_fields,
           stripe_options
         )
       end
@@ -157,7 +156,7 @@ module Pay
       end
 
       def update_email!
-        ::Stripe::Customer.update(processor_id, {email: email, name: customer_name}, stripe_options)
+        ::Stripe::Customer.update(processor_id, customer_fields, stripe_options)
       end
 
       def processor_subscription(subscription_id, options = {})

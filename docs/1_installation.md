@@ -76,24 +76,30 @@ To sync customer names automatically to your payment processor, your model shoul
 * `first_name` _and_ `last_name`
 * `pay_customer_name`
 
-### Metadata
+### Customer fields
 
-Stripe allows you to send over a hash of metadata to store in the Customer record.
+Stripe allows you to send over a hash of fields to store in the Customer record in addition to email and name.
 
 ```ruby
 class User < ApplicationRecord
-  pay_customer metadata: :stripe_metadata
-  # pay_customer metadata: ->(pay_customer) { { user_id: pay_customer.owner_id } }
+  pay_customer fields: :stripe_fields
+  # pay_customer fields: ->(pay_customer) { metadata: { { user_id: pay_customer.owner_id } } }
 
-  def stripe_metadata(pay_customer)
+  def stripe_fields(pay_customer)
     {
-      pay_customer_id: pay_customer.id,
-      user_id: id # or pay_customer.owner_id
+      address: {
+        city: city,
+        country: country
+      },
+      metadata: {
+        pay_customer_id: pay_customer.id,
+        user_id: id # or pay_customer.owner_id
+      }
     }
   end
 ```
 
-Pay will include metadata when creating a Customer and update it when the customer's email is updated.
+Pay will include fields when creating a Customer and update it when the customer is updated.
 
 ## Next
 
