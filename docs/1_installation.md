@@ -88,8 +88,8 @@ class User < ApplicationRecord
   def stripe_fields(pay_customer)
     {
       address: {
-        city: city,
-        country: country
+        city: pay_customer.owner.city,
+        country: pay_customer.owner.country
       },
       metadata: {
         pay_customer_id: pay_customer.id,
