@@ -112,4 +112,24 @@ class Pay::Charge::Test < ActiveSupport::TestCase
 
     assert_equal line_items, charge.reload.line_items
   end
+
+  test "renders receipts" do
+    charge = pay_charges(:stripe)
+    line_items = [
+      {id: "li_1", description: "Item 1", quantity: 1, amount: 100}.stringify_keys,
+      {id: "li_2", description: "Item 2", quantity: 2, amount: 200}.stringify_keys
+    ]
+    charge.update!(line_items: line_items)
+    charge.receipt_pdf.render_file "receipt.pdf"
+  end
+
+  test "renders invoices" do
+    charge = pay_charges(:stripe)
+    line_items = [
+      {id: "li_1", description: "Item 1", quantity: 1, amount: 100}.stringify_keys,
+      {id: "li_2", description: "Item 2", quantity: 2, amount: 200}.stringify_keys
+    ]
+    charge.update!(line_items: line_items, tax: 4_37)
+    charge.invoice_pdf.render_file "invoice.pdf"
+  end
 end
