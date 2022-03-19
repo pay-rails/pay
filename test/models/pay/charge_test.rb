@@ -119,8 +119,8 @@ class Pay::Charge::Test < ActiveSupport::TestCase
       {id: "li_1", description: "Item 1", quantity: 1, amount: 100}.stringify_keys,
       {id: "li_2", description: "Item 2", quantity: 2, amount: 200}.stringify_keys
     ]
-    charge.update!(line_items: line_items)
-    charge.receipt_pdf.render_file "receipt.pdf"
+    charge.update!(line_items: line_items, tax: 4_37)
+    assert charge.receipt
   end
 
   test "renders invoices" do
@@ -130,6 +130,6 @@ class Pay::Charge::Test < ActiveSupport::TestCase
       {id: "li_2", description: "Item 2", quantity: 2, amount: 200}.stringify_keys
     ]
     charge.update!(line_items: line_items, tax: 4_37)
-    charge.invoice_pdf.render_file "invoice.pdf"
+    assert charge.invoice
   end
 end
