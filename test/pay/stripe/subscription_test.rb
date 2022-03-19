@@ -45,6 +45,11 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal({"license_id" => 1}, pay_subscription.metadata)
   end
 
+  test "sync uses name from subscription metadata" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(metadata: {"pay_name" => "test-subscription"}))
+    assert_equal "test-subscription", pay_subscription.name
+  end
+
   test "sync stripe subscription ignores when customer is missing" do
     assert_no_difference "Pay::Subscription.count" do
       Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(customer: "missing"))

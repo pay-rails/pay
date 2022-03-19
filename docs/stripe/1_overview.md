@@ -46,7 +46,8 @@ class SubscriptionsController < ApplicationController
         quantity: 4
       }],
       subscription_data: {
-        trial_period_days: 15
+        trial_period_days: 15,
+        pay_name: "base" # Optional. Overrides the Pay::Subscription name attribute
       },
       success_url: root_url,
       cancel_url: root_url
@@ -81,7 +82,6 @@ First, create a session in your controller:
 class SubscriptionsController < ApplicationController
   def index
     @portal_session = current_user.payment_processor.billing_portal
-    #
   end
 end
 ```
