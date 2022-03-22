@@ -28,13 +28,25 @@ module Pay
 
         attributes = {
           application_fee_percent: object.application_fee_percent,
-          processor_plan: object.plan.id,
+          processor_plan: object.items.first.price.id,
           quantity: object.quantity,
           status: object.status,
           stripe_account: pay_customer.stripe_account,
           trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil),
-          metadata: object.metadata
+          metadata: object.metadata,
+          subscription_items: []
         }
+
+        # Record subscription items to db
+        object.items.auto_paging_each do |subscription_item|
+          attributes[:subscription_items] <<
+            {
+              id: subscription_item.id,
+              metadata: subscription_item.metadata,
+              price: subscription_item.price.id,
+              quantity: subscription_item.quantity
+            }
+        end
 
         attributes[:ends_at] = if object.ended_at
           # Fully cancelled subscription

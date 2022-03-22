@@ -25,6 +25,8 @@ module Pay
     store_accessor :data, :paddle_paused_from
     store_accessor :data, :stripe_account
 
+    store_accessor :data, :subscription_items
+
     attribute :prorate, :boolean, default: true
 
     # Validations
