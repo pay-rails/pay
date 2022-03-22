@@ -61,4 +61,12 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     assert_equal "fake_processor", payment_processor.processor
     User.pay_default_payment_processor = original_value
   end
+
+  test "add payment processor without making it default" do
+    user = users(:stripe)
+    assert_equal "stripe", user.payment_processor.processor
+
+    user.set_payment_processor :fake_processor, allow_fake: true, make_default: false
+    assert_equal "stripe", user.payment_processor.processor
+  end
 end

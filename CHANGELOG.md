@@ -1,6 +1,7 @@
 ### Unreleased
 
 * Add options for `cancel_now!` to support `invoice_now` and `prorate` flags for Stripe - @excid3
+* Adds `make_default` flag to `set_payment_processor` - @excid3
 * Setting `pay_name` in Stripe Subscription metadata will be used as the `name` on the `Pay::Subscription` - @excid3
 * `pay_customer` now supports a `metadata` option to save on Stripe::Customers - @excid3
 * `pay_customer` now supports a `default_payment_processor` option to automatically create a Pay::Customer record - @excid3
