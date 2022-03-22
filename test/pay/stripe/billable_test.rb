@@ -371,21 +371,21 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_equal "wechat_pay", @pay_customer.default_payment_method.type
   end
 
-  test "stripe customer metdata proc" do
+  test "stripe customer fields proc" do
     pay_customer = pay_customers(:stripe)
-    metadata = {user_id: pay_customer.owner_id}
-    User.pay_customer_metadata = ->(pay_customer) { {user_id: pay_customer.owner_id} }
-    assert_equal metadata, Pay::Stripe::Billable.new(pay_customer).customer_metadata
-    User.pay_customer_metadata = nil
+    fields = {metadata: {user_id: pay_customer.owner_id}, email: "stripe@example.org", name: "Stripe User"}
+    User.pay_customer_fields = ->(pay_customer) { {metadata: {user_id: pay_customer.owner_id}} }
+    assert_equal fields, Pay::Stripe::Billable.new(pay_customer).customer_fields
+    User.pay_customer_fields = nil
   end
 
-  test "stripe customer metdata symbol" do
-    original_value = User.pay_customer_metadata
-    User.pay_customer_metadata = :stripe_metadata
+  test "stripe customer fields symbol" do
+    original_value = User.pay_customer_fields
+    User.pay_customer_fields = :stripe_fields
     pay_customer = pay_customers(:stripe)
-    metadata = {user_id: pay_customer.owner_id}
-    assert_equal metadata, Pay::Stripe::Billable.new(pay_customer).customer_metadata
-    User.pay_customer_metadata = original_value
+    fields = {metadata: {user_id: pay_customer.owner_id}, email: "stripe@example.org", name: "Stripe User"}
+    assert_equal fields, Pay::Stripe::Billable.new(pay_customer).customer_fields
+    User.pay_customer_fields = original_value
   end
 
   private

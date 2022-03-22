@@ -8,7 +8,7 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        cattr_accessor :pay_customer_metadata
+        cattr_accessor :pay_customer_fields
         cattr_accessor :pay_default_payment_processor
 
         has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
@@ -78,7 +78,7 @@ module Pay
         include Billable::SyncCustomer
         include CustomerExtension
 
-        self.pay_customer_metadata = options[:metadata]
+        self.pay_customer_fields = options[:fields]
         self.pay_default_payment_processor = options[:default_payment_processor]
       end
 

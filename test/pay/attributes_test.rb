@@ -46,11 +46,11 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     assert account.merchant_processor
   end
 
-  test "pay_customer metadata" do
-    original_value = User.pay_customer_metadata
-    User.pay_customer_metadata = :stripe_metadata
-    assert_equal :stripe_metadata, User.pay_customer_metadata
-    User.pay_customer_metadata = original_value
+  test "pay_customer fields" do
+    original_value = User.pay_customer_fields
+    User.pay_customer_fields = :stripe_metadata
+    assert_equal :stripe_metadata, User.pay_customer_fields
+    User.pay_customer_fields = original_value
   end
 
   test "default_payment_processor option" do
