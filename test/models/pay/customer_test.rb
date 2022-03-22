@@ -18,4 +18,8 @@ class Pay::CustomerTest < ActiveSupport::TestCase
   test "deleted?" do
     assert pay_customers(:deleted).deleted?
   end
+
+  test "update_customer!" do
+    assert pay_customers(:fake).respond_to?(:update_customer!)
+  end
 end
