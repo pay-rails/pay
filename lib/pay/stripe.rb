@@ -28,6 +28,12 @@ module Pay
 
     extend Env
 
+    def self.enabled?
+      return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
+
+      Pay::Engine.version_matches?(required: "~> 5", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 5")
+    end
+
     def self.setup
       ::Stripe.api_key = private_key
       ::Stripe.api_version = "2020-08-27"

@@ -19,6 +19,12 @@ module Pay
 
     extend Env
 
+    def self.enabled?
+      return false unless Pay.enabled_processors.include?(:braintree) && defined?(::Braintree)
+
+      Pay::Engine.version_matches?(required: "~> 4", current: ::Braintree::Version::String) || (raise "[Pay] braintree gem must be version ~> 4")
+    end
+
     def self.setup
       Pay.braintree_gateway = ::Braintree::Gateway.new(
         environment: environment.to_sym,
