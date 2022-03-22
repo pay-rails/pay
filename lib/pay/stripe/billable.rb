@@ -31,12 +31,12 @@ module Pay
             owner.send(owner.class.pay_stripe_customer_attributes, pay_customer)
           when Proc
             owner.class.pay_stripe_customer_attributes.call(pay_customer)
-          end
+        end
 
         # Guard against attributes being returned nil
         attributes ||= {}
 
-        { email: email, name: customer_name }.merge(attributes)
+        {email: email, name: customer_name}.merge(attributes)
       end
 
       # Retrieves a Stripe::Customer object

@@ -24,13 +24,13 @@ module Pay
             owner.send(owner.class.pay_braintree_customer_attributes, pay_customer)
           when Proc
             owner.class.pay_braintree_customer_attributes.call(pay_customer)
-          end
+        end
 
         # Guard against attributes being returned nil
         attributes ||= {}
 
         first_name, last_name = customer_name.split(" ", 2)
-        { email: email, first_name: first_name, last_name: last_name }.merge(attributes)
+        {email: email, first_name: first_name, last_name: last_name}.merge(attributes)
       end
 
       # Retrieve the Braintree::Customer object
