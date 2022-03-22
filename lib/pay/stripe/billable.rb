@@ -22,23 +22,30 @@ module Pay
         @pay_customer = pay_customer
       end
 
+      # Returns a hash of fields for the Stripe::Customer object
       def customer_fields
         owner = pay_customer.owner
         {
           email: email,
           name: customer_name
         }.merge(
-          case owner.class.pay_customer_fields
+          case owner.class.pay_stripe_customer_fields
           when Symbol
-            owner.send(owner.class.pay_customer_fields, pay_customer)
+            owner.send(owner.class.pay_stripe_customer_fields, pay_customer)
           when Proc
-            owner.class.pay_customer_fields.call(pay_customer)
-          else
-            {}
+            owner.class.pay_stripe_customer_fields.call(pay_customer)
           end
         )
       end
 
+      # Retrieves a Stripe::Customer object
+      #
+      # Finds an existing Stripe::Customer if processor_id exists
+      # Creates a new Stripe::Customer using `customer_fields` if empty processor_id
+      #
+      # Updates the default payment method automatically if a payment_method_token is set
+      #
+      # Returns a Stripe::Customer object
       def customer
         stripe_customer = if processor_id?
           ::Stripe::Customer.retrieve({id: processor_id}, stripe_options)
