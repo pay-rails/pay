@@ -15,6 +15,24 @@ module Pay
         @pay_customer = pay_customer
       end
 
+      # Returns a hash of attributes for the Stripe::Customer object
+      def customer_attributes
+        owner = pay_customer.owner
+
+        attributes = case owner.class.pay_braintree_customer_attributes
+          when Symbol
+            owner.send(owner.class.pay_braintree_customer_attributes, pay_customer)
+          when Proc
+            owner.class.pay_braintree_customer_attributes.call(pay_customer)
+          end
+
+        # Guard against attributes being returned nil
+        attributes ||= {}
+
+        first_name, last_name = customer_name.split(" ", 2)
+        { email: email, first_name: first_name, last_name: last_name }.merge(attributes)
+      end
+
       # Retrieve the Braintree::Customer object
       #
       # - If no processor_id is present, creates a Customer.
@@ -30,8 +48,7 @@ module Pay
 
           customer
         else
-          first_name, last_name = customer_name.split(" ", 2)
-          result = gateway.customer.create(email: email, first_name: first_name, last_name: last_name, payment_method_nonce: payment_method_token)
+          result = gateway.customer.create(customer_attributes.merge(payment_method_nonce: payment_method_token))
           raise Pay::Braintree::Error, result unless result.success?
           pay_customer.update!(processor_id: result.customer.id)
 
@@ -51,8 +68,7 @@ module Pay
       # Syncs name and email to Braintree::Customer
       def update_customer!
         return unless processor_id?
-        first_name, last_name = customer_name.split(" ", 2)
-        gateway.customer.update(processor_id, first_name: first_name, last_name: last_name, email: email)
+        gateway.customer.update(processor_id, customer_attributes)
       end
 
       def charge(amount, options = {})
@@ -133,10 +149,6 @@ module Pay
         raise Pay::Braintree::AuthorizationError, e
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
-      end
-
-      def update_email!
-        gateway.customer.update(processor_id, email: email, first_name: try(:first_name), last_name: try(:last_name))
       end
 
       def trial_end_date(subscription)

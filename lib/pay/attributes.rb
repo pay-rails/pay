@@ -8,8 +8,9 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        cattr_accessor :pay_customer_metadata
         cattr_accessor :pay_default_payment_processor
+        cattr_accessor :pay_stripe_customer_attributes
+        cattr_accessor :pay_braintree_customer_attributes
 
         has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
         has_many :charges, through: :pay_customers, class_name: "Pay::Charge"
@@ -78,8 +79,9 @@ module Pay
         include Billable::SyncCustomer
         include CustomerExtension
 
-        self.pay_customer_metadata = options[:metadata]
         self.pay_default_payment_processor = options[:default_payment_processor]
+        self.pay_stripe_customer_attributes = options[:stripe_attributes]
+        self.pay_braintree_customer_attributes = options[:braintree_attributes]
       end
 
       def pay_merchant(options = {})

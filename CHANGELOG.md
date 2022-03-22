@@ -1,10 +1,17 @@
 ### Unreleased
 
-* Requires `receipts` gem `~> 2` if used - @excid3
+* Raise error when dependencies are not supported versions. This makes sure you're using supported versions of libraries with Pay.
+  Currently supported versions:
+    * `stripe ~> 5`
+    * `braintree ~> 4`
+    * `paddle_pay ~> 0.2`
+    * `receipts ~> 2`
+* Replace `update_email!` with `update_customer!` - @excid3
 * Add options for `cancel_now!` to support `invoice_now` and `prorate` flags for Stripe - @excid3
 * Adds `make_default` flag to `set_payment_processor` - @excid3
 * Setting `pay_name` in Stripe Subscription metadata will be used as the `name` on the `Pay::Subscription` - @excid3
-* `pay_customer` now supports a `metadata` option to save on Stripe::Customers - @excid3
+* `pay_customer` now supports a `stripe_attributes:` option to add attributes to Stripe::Customers - @excid3
+* `pay_customer` now supports a `braintree_attributes:` option to add attributes to Braintree::Customers - @excid3
 * `pay_customer` now supports a `default_payment_processor` option to automatically create a Pay::Customer record - @excid3
 
 ### 3.0.24

@@ -76,24 +76,31 @@ To sync customer names automatically to your payment processor, your model shoul
 * `first_name` _and_ `last_name`
 * `pay_customer_name`
 
-### Metadata
+### Customer Attributes
 
-Stripe allows you to send over a hash of metadata to store in the Customer record.
+Stripe allows you to send over a hash of attributes to store in the Customer record in addition to email and name.
 
 ```ruby
 class User < ApplicationRecord
-  pay_customer metadata: :stripe_metadata
-  # pay_customer metadata: ->(pay_customer) { { user_id: pay_customer.owner_id } }
+  pay_customer stripe_attributes: :stripe_attributes
+  # Or using a lambda:
+  # pay_customer stripe_attributes: ->(pay_customer) { metadata: { { user_id: pay_customer.owner_id } } }
 
-  def stripe_metadata(pay_customer)
+  def stripe_attributes(pay_customer)
     {
-      pay_customer_id: pay_customer.id,
-      user_id: id # or pay_customer.owner_id
+      address: {
+        city: pay_customer.owner.city,
+        country: pay_customer.owner.country
+      },
+      metadata: {
+        pay_customer_id: pay_customer.id,
+        user_id: id # or pay_customer.owner_id
+      }
     }
   end
 ```
 
-Pay will include metadata when creating a Customer and update it when the customer's email is updated.
+Pay will include attributes when creating a Customer and update them when the Customer is updated.
 
 ## Next
 
