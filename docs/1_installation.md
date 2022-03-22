@@ -10,16 +10,16 @@ Add these lines to your application's Gemfile:
 gem 'pay', '~> 3.0'
 
 # To use Stripe, also include:
-gem 'stripe', '>= 2.8', '< 6.0'
+gem 'stripe', '>= 5.0', '< 6.0'
 
 # To use Braintree + PayPal, also include:
-gem 'braintree', '>= 4.4', '< 5.0'
+gem 'braintree', '>= 4.6', '< 5.0'
 
 # To use Paddle, also include:
-gem 'paddle_pay', '~> 0.1'
+gem 'paddle_pay', '~> 0.2'
 
-# To use Receipts
-gem 'receipts', '~> 1.1'
+# To use Receipts gem for creating invoice and receipt PDFs, also include:
+gem 'receipts', '~> 2.0'
 ```
 
 And then execute:
