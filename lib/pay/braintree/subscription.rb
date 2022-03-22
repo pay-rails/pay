@@ -27,7 +27,7 @@ module Pay
         gateway.subscription.find(processor_id)
       end
 
-      def cancel
+      def cancel(**options)
         subscription = processor_subscription
 
         if on_trial?
@@ -43,7 +43,7 @@ module Pay
         raise Pay::Braintree::Error, e
       end
 
-      def cancel_now!
+      def cancel_now!(**options)
         gateway.subscription.cancel(processor_subscription.id)
         pay_subscription.update(status: :canceled, ends_at: Time.current)
       rescue ::Braintree::BraintreeError => e

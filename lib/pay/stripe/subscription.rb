@@ -84,15 +84,19 @@ module Pay
         ::Stripe::Subscription.retrieve(options, {stripe_account: stripe_account}.compact)
       end
 
-      def cancel
+      def cancel(**options)
         stripe_sub = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}, stripe_options)
         pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(stripe_sub.current_period_end)))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
-      def cancel_now!
-        ::Stripe::Subscription.delete(processor_id, {}, stripe_options)
+      # Cancels a subscription immediately
+      #
+      # cancel_now!(prorate: true)
+      # cancel_now!(invoice_now: true)
+      def cancel_now!(**options)
+        ::Stripe::Subscription.delete(processor_id, options, stripe_options)
         pay_subscription.update(ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e

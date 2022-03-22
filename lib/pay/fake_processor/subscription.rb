@@ -25,7 +25,7 @@ module Pay
 
       # With trial, sets end to trial end (mimicing Stripe)
       # Without trial, sets can ends_at to end of month
-      def cancel
+      def cancel(**options)
         if pay_subscription.on_trial?
           pay_subscription.update(ends_at: pay_subscription.trial_ends_at)
         else
@@ -33,7 +33,7 @@ module Pay
         end
       end
 
-      def cancel_now!
+      def cancel_now!(**options)
         pay_subscription.update(ends_at: Time.current, status: :canceled)
       end
 

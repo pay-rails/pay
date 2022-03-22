@@ -74,7 +74,7 @@ module Pay
         raise Pay::Paddle::Error, e
       end
 
-      def cancel
+      def cancel(**options)
         ends_at = if on_trial?
           trial_ends_at
         elsif paused?
@@ -92,7 +92,7 @@ module Pay
         raise Pay::Paddle::Error, e
       end
 
-      def cancel_now!
+      def cancel_now!(**options)
         PaddlePay::Subscription::User.cancel(processor_id)
         pay_subscription.update(status: :canceled, ends_at: Time.current)
 
