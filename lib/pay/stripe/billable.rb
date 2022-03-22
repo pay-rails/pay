@@ -22,26 +22,27 @@ module Pay
         @pay_customer = pay_customer
       end
 
-      # Returns a hash of fields for the Stripe::Customer object
-      def customer_fields
+      # Returns a hash of attributes for the Stripe::Customer object
+      def customer_attributes
         owner = pay_customer.owner
-        {
-          email: email,
-          name: customer_name
-        }.merge(
-          case owner.class.pay_stripe_customer_fields
+
+        attributes = case owner.class.pay_stripe_customer_attributes
           when Symbol
-            owner.send(owner.class.pay_stripe_customer_fields, pay_customer)
+            owner.send(owner.class.pay_stripe_customer_attributes, pay_customer)
           when Proc
-            owner.class.pay_stripe_customer_fields.call(pay_customer)
+            owner.class.pay_stripe_customer_attributes.call(pay_customer)
           end
-        )
+
+        # Guard against attributes being returned nil
+        attributes ||= {}
+
+        { email: email, name: customer_name }.merge(attributes)
       end
 
       # Retrieves a Stripe::Customer object
       #
       # Finds an existing Stripe::Customer if processor_id exists
-      # Creates a new Stripe::Customer using `customer_fields` if empty processor_id
+      # Creates a new Stripe::Customer using `customer_attributes` if empty processor_id
       #
       # Updates the default payment method automatically if a payment_method_token is set
       #
@@ -50,7 +51,7 @@ module Pay
         stripe_customer = if processor_id?
           ::Stripe::Customer.retrieve({id: processor_id}, stripe_options)
         else
-          sc = ::Stripe::Customer.create(customer_fields, stripe_options)
+          sc = ::Stripe::Customer.create(customer_attributes, stripe_options)
           pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
           sc
         end
@@ -73,7 +74,7 @@ module Pay
         return unless processor_id?
         ::Stripe::Customer.update(
           processor_id,
-          customer_fields,
+          customer_attributes,
           stripe_options
         )
       end
@@ -160,10 +161,6 @@ module Pay
         pay_customer.reload_default_payment_method if default
 
         pay_payment_method
-      end
-
-      def update_email!
-        ::Stripe::Customer.update(processor_id, customer_fields, stripe_options)
       end
 
       def processor_subscription(subscription_id, options = {})

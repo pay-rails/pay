@@ -79,10 +79,6 @@ module Pay
         pay_payment_method
       end
 
-      def update_email!
-        # pass
-      end
-
       def processor_subscription(subscription_id, options = {})
         pay_customer.subscriptions.find_by(processor_id: subscription_id)
       end

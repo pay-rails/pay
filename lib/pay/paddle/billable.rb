@@ -53,10 +53,6 @@ module Pay
         Pay::Paddle::PaymentMethod.sync(self)
       end
 
-      def update_email!
-        # pass
-      end
-
       def trial_end_date(subscription)
         return unless subscription.state == "trialing"
         Time.zone.parse(subscription.next_payment[:date]).end_of_day

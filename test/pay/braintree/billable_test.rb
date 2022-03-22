@@ -12,6 +12,30 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
     assert_equal "braintree@example.org", customer.email
   end
 
+  test "customer attributes proc" do
+    pay_customer = pay_customers(:braintree)
+    original_value = User.pay_braintree_customer_attributes
+    attributes = {metadata: {foo: :bar}}
+
+    User.pay_braintree_customer_attributes = ->(pay_customer) { attributes }
+    assert attributes <= Pay::Braintree::Billable.new(pay_customer).customer_attributes
+
+    # Clean up
+    User.pay_braintree_customer_attributes = original_value
+  end
+
+  test "braintree customer attributes symbol" do
+    pay_customer = pay_customers(:braintree)
+    original_value = User.pay_braintree_customer_attributes
+
+    User.pay_braintree_customer_attributes = :braintree_attributes
+    expected_value = pay_customer.owner.braintree_attributes(pay_customer)
+    assert expected_value <= Pay::Braintree::Billable.new(pay_customer).customer_attributes
+
+    # Clean up
+    User.pay_braintree_customer_attributes = original_value
+  end
+
   test "braintree can store card" do
     @pay_customer.payment_method_token = "fake-valid-visa-nonce"
     @pay_customer.customer
