@@ -24,26 +24,25 @@ module Pay
     end
 
     config.to_prepare do
-      if defined?(::Stripe) && version_matches?(required: "~> 5", current: ::Stripe::VERSION)
+      if defined?(::Stripe) && Pay::Engine.version_matches?(required: "~> 5", current: ::Stripe::VERSION)
         Pay::Stripe.setup
       else
         raise "[Pay] stripe gem must be version ~> 5"
       end
 
-      if defined?(::Braintree) && version_matches?(required: "~> 4", current: ::Braintree::VERSION)
+      if defined?(::Braintree) && Pay::Engine.version_matches?(required: "~> 4", current: ::Braintree::Version::String)
         Pay::Braintree.setup
       else
         raise "[Pay] braintree gem must be version ~> 4"
       end
 
-      if defined?(::PaddlePay) && version_matches?(required: "~> 0.2", current: ::PaddlePay::VERSION)
+      if defined?(::PaddlePay) && Pay::Engine.version_matches?(required: "~> 0.2", current: ::PaddlePay::VERSION)
         Pay::Paddle.setup
       else
         raise "[Pay] paddle_pay gem must be version ~> 0.2"
       end
 
-
-      if defined?(::Receipts::VERSION) && version_matches?(required: "~> 2", current: ::Receipts::VERSION)
+      if defined?(::Receipts::VERSION) && Pay::Engine.version_matches?(required: "~> 2", current: ::Receipts::VERSION)
         Pay::Charge.include Pay::Receipts
       else
         raise "[Pay] receipts gem must be version ~> 2"
