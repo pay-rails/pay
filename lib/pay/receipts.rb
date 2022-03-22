@@ -13,27 +13,65 @@ module Pay
       receipt_pdf.render
     end
 
-    def receipt_pdf(**options)
-      line_items = [
+    def receipt_details
+      [
+        [I18n.t("pay.receipt.number"), id],
         [I18n.t("pay.receipt.date"), I18n.l(created_at, format: :long)],
-        [I18n.t("pay.receipt.account_billed"), "#{customer.customer_name} (#{customer.email})"],
-        [I18n.t("pay.receipt.product"), product],
-        [I18n.t("pay.receipt.amount"), Pay::Currency.format(amount, currency: currency)],
-        [I18n.t("pay.receipt.charged_to"), charged_to]
+        [I18n.t("pay.receipt.payment_method"), charged_to]
       ]
-      line_items << [I18n.t("pay.receipt.additional_info"), customer.owner.extra_billing_info] if customer.owner.try(:extra_billing_info?)
-      line_items << [I18n.t("pay.receipt.refunded"), Pay::Currency.format(amount_refunded, currency: currency)] if refunded?
+    end
+
+    def pdf_line_items
+      items = [
+        [
+          "<b>#{I18n.t("pay.line_items.description")}</b>",
+          "<b>#{I18n.t("pay.line_items.quantity")}</b>",
+          "<b>#{I18n.t("pay.line_items.unit_price")}</b>",
+          "<b>#{I18n.t("pay.line_items.amount")}</b>"
+        ]
+      ]
+      # Unit price is stored with the line item
+      # Negative amounts shouldn't display quantity
+      # Sort by line_items by period_end? oldest to newest
+      if line_items.any?
+        line_items.each do |li|
+          items << [li["description"], li["quantity"], Pay::Currency.format(li["unit_amount"], currency: currency), Pay::Currency.format(li["amount"], currency: currency)]
+        end
+      else
+        items << [product, 1, Pay::Currency.format(amount, currency: currency), Pay::Currency.format(amount, currency: currency)]
+      end
+
+      # If no subtotal, we will display the total
+      items << [nil, nil, I18n.t("pay.line_items.subtotal"), Pay::Currency.format(subtotal || amount, currency: currency)]
+      items << [nil, nil, I18n.t("pay.line_items.tax"), Pay::Currency.format(tax, currency: currency)] if tax
+      items << [nil, nil, I18n.t("pay.line_items.total"), Pay::Currency.format(amount, currency: currency)]
+      items
+    end
+
+    def receipt_pdf(**options)
+      receipt_line_items = pdf_line_items
+
+      # Include total paid
+      receipt_line_items << [nil, nil, I18n.t("pay.receipt.amount_paid"), Pay::Currency.format(amount, currency: currency)]
+
+      if refunded?
+        receipt_line_items << [nil, nil, I18n.t("pay.receipt.refunded_on"), Pay::Currency.format(amount_refunded, currency: currency)]
+      end
 
       defaults = {
-        id: id,
-        product: product,
+        details: receipt_details,
+        recipient: [
+          customer.customer_name,
+          customer.email,
+          customer.owner.try(:extra_billing_info)
+        ],
         company: {
           name: Pay.business_name,
           address: Pay.business_address,
           email: Pay.support_email,
           logo: Pay.business_logo
         },
-        line_items: line_items
+        line_items: receipt_line_items
       }
 
       ::Receipts::Receipt.new(defaults.deep_merge(options))
@@ -47,41 +85,32 @@ module Pay
       invoice_pdf.render
     end
 
-    def invoice_pdf(**options)
-      bill_to = [customer.owner.name]
-      bill_to += [customer.owner.extra_billing_info] if customer.owner.try(:extra_billing_info?)
-      bill_to += [nil, customer.owner.email]
-
-      total = Pay::Currency.format(amount, currency: currency)
-
-      line_items = [
-        ["<b>#{I18n.t("pay.invoice.product")}</b>", nil, "<b>#{I18n.t("pay.invoice.amount")}</b>"],
-        [product, nil, total],
-        [nil, I18n.t("pay.invoice.subtotal"), total],
-        [nil, I18n.t("pay.invoice.total"), total]
+    def invoice_details
+      [
+        [I18n.t("pay.invoice.number"), id],
+        [I18n.t("pay.invoice.date"), I18n.l(created_at, format: :long)],
+        [I18n.t("pay.invoice.payment_method"), charged_to]
       ]
+    end
 
+    def invoice_pdf(**options)
       defaults = {
-        id: id,
-        issue_date: I18n.l(created_at, format: :long),
-        due_date: I18n.l(created_at, format: :long),
-        status: "<b><color rgb='#5eba7d'>#{I18n.t("pay.receipt.paid").upcase}</color></b>",
-        bill_to: bill_to,
-        product: product,
+        details: invoice_details,
+        recipient: [
+          customer.customer_name,
+          customer.email,
+          customer.owner.try(:extra_billing_info)
+        ],
         company: {
           name: Pay.business_name,
           address: Pay.business_address,
           email: Pay.support_email,
           logo: Pay.business_logo
         },
-        line_items: line_items
+        line_items: pdf_line_items
       }
 
       ::Receipts::Invoice.new(defaults.deep_merge(options))
-    end
-
-    def line_items
-      line_items
     end
   end
 end

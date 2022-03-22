@@ -19,7 +19,7 @@ gem "braintree", ">= 2.92.0"
 gem "stripe", ">= 2.8"
 gem "paddle_pay", "~> 0.2.0"
 
-gem "receipts", "~> 1.1", ">= 1.1.2"
+gem "receipts"
 gem "prawn", github: "prawnpdf/prawn"
 
 # net-smtp, net-imap and net-pop were removed from default gems in Ruby 3.1, but is used by the `mail` gem.
