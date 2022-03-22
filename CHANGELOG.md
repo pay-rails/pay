@@ -1,5 +1,6 @@
 ### Unreleased
 
+* Requires `receipts` gem `~> 2` if used - @excid3
 * Add options for `cancel_now!` to support `invoice_now` and `prorate` flags for Stripe - @excid3
 * Adds `make_default` flag to `set_payment_processor` - @excid3
 * Setting `pay_name` in Stripe Subscription metadata will be used as the `name` on the `Pay::Subscription` - @excid3
@@ -21,7 +22,7 @@
 
 ### 3.0.21
 
-* Add update_customer methods for SyncCustomer job - @excid3
+* Add `update_customer` methods for SyncCustomer job - @excid3
 
 ### 3.0.20
 
