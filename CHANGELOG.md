@@ -1,11 +1,25 @@
 ### Unreleased
 
+* Stripe Tax support
+
+  Using `pay_customer stripe_attributes: :method_name`, you can add an Address to `Stripe::Customer` objects which will be used for calculating taxes.
+  We now record `total_tax_amounts` to `Pay::Charge` records. This includes details for each tax applied to the charge.
+
+  ```ruby
+  @user.payment_processor.subscribe(plan: "growth", automatic_tax: { enabled: true })
+  ```
+
+* Stripe Metered Billing support
+  Removes `quantity` when creating a new subscription (metered billing prices do not allow quantity)
+  Adds `create_usage_record` to `Pay::Subscription` for reporting usage on metered billing plans
+
 * Raise error when dependencies are not supported versions. This makes sure you're using supported versions of libraries with Pay.
   Currently supported versions:
     * `stripe ~> 5`
     * `braintree ~> 4`
     * `paddle_pay ~> 0.2`
     * `receipts ~> 2`
+
 * Replace `update_email!` with `update_customer!` - @excid3
 * Add options for `cancel_now!` to support `invoice_now` and `prorate` flags for Stripe - @excid3
 * Adds `make_default` flag to `set_payment_processor` - @excid3
@@ -13,9 +27,7 @@
 * `pay_customer` now supports a `stripe_attributes:` option to add attributes to Stripe::Customers - @excid3
 * `pay_customer` now supports a `braintree_attributes:` option to add attributes to Braintree::Customers - @excid3
 * `pay_customer` now supports a `default_payment_processor` option to automatically create a Pay::Customer record - @excid3
-* Stripe Metered Billing support
-  Removes `quantity` when creating a new subscription (metered billing prices do not allow quantity)
-  Adds `create_usage_record` to `Pay::Subscription` for reporting usage on metered billing plans
+* Added `enabled_processors` to Pay config. This lets you choose exactly which processors will be enabled. - @cjilbert504
 
 ### 3.0.24
 

@@ -32,8 +32,9 @@ module Pay
     store_accessor :data, :period_start
     store_accessor :data, :period_end
     store_accessor :data, :line_items
-    store_accessor :data, :subtotal
-    store_accessor :data, :tax
+    store_accessor :data, :subtotal # subtotal amount in cents
+    store_accessor :data, :tax # total tax amount in cents
+    store_accessor :data, :total_tax_amounts # array of tax details for each jurisdiction
 
     # Helpers for payment processors
     %w[braintree stripe paddle fake_processor].each do |processor_name|
