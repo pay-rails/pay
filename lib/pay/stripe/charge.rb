@@ -7,7 +7,7 @@ module Pay
 
       def self.sync(charge_id, object: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest charge details from the API if we already have it
-        object ||= ::Stripe::Charge.retrieve({id: charge_id, expand: ["invoice.total_tax_amounts.tax_rate"]}, {stripe_account: stripe_account}.compact)
+        object ||= ::Stripe::Charge.retrieve({id: charge_id, expand: ["invoice.total_discount_amounts.discount", "invoice.total_tax_amounts.tax_rate"]}, {stripe_account: stripe_account}.compact)
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
@@ -28,29 +28,34 @@ module Pay
           exp_year: payment_method.try(:exp_year).to_s,
           bank: payment_method.try(:bank_name) || payment_method.try(:bank), # eps, fpx, ideal, p24, acss_debit, etc
           line_items: [],
-          total_tax_amounts: []
+          total_tax_amounts: [],
+          discounts: [],
         }
 
         # Associate charge with subscription if we can
         if object.invoice
-          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve({id: object.invoice, expand: ["total_tax_amounts.tax_rate"]}, {stripe_account: stripe_account}.compact))
+          invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve({id: object.invoice, expand: ["total_discount_amounts.discount", "total_tax_amounts.tax_rate"]}, {stripe_account: stripe_account}.compact))
           attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: invoice.subscription)
 
           attrs[:period_start] = Time.at(invoice.period_start)
           attrs[:period_end] = Time.at(invoice.period_end)
           attrs[:subtotal] = invoice.subtotal
           attrs[:tax] = invoice.tax
+          attrs[:discounts] = invoice.discounts
           attrs[:total_tax_amounts] = invoice.total_tax_amounts.map(&:to_hash)
+          attrs[:total_discount_amounts] = invoice.total_discount_amounts.map(&:to_hash)
 
           invoice.lines.auto_paging_each do |line_item|
             # Currency is tied to the charge, so storing it would be duplication
             attrs[:line_items] << {
               id: line_item.id,
+              description: line_item.description,
               price_id: line_item.price&.id,
               quantity: line_item.quantity,
               unit_amount: line_item.price&.unit_amount,
               amount: line_item.amount,
-              discount_amounts: line_item.discount_amounts,
+              discounts: line_item.discounts,
+              tax_amounts: line_item.tax_amounts,
               proration: line_item.proration,
               period_start: Time.at(line_item.period.start),
               period_end: Time.at(line_item.period.end)

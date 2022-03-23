@@ -34,6 +34,8 @@ module Pay
     store_accessor :data, :line_items
     store_accessor :data, :subtotal # subtotal amount in cents
     store_accessor :data, :tax # total tax amount in cents
+    store_accessor :data, :discounts # array of discount IDs applied to the Stripe Invoice
+    store_accessor :data, :total_discount_amounts # array of discount details
     store_accessor :data, :total_tax_amounts # array of tax details for each jurisdiction
 
     # Helpers for payment processors

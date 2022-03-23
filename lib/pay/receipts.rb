@@ -30,12 +30,19 @@ module Pay
           "<b>#{I18n.t("pay.line_items.amount")}</b>"
         ]
       ]
+
       # Unit price is stored with the line item
       # Negative amounts shouldn't display quantity
       # Sort by line_items by period_end? oldest to newest
       if line_items.any?
         line_items.each do |li|
           items << [li["description"], li["quantity"], Pay::Currency.format(li["unit_amount"], currency: currency), Pay::Currency.format(li["amount"], currency: currency)]
+
+          Array.wrap(li["discounts"]).each do |discount_id|
+            if (discount = total_discount_amounts.find{ |d| d.dig("discount", "id") == discount_id })
+              items << [discount_description(discount), nil, nil, Pay::Currency.format(-discount["amount"], currency: currency)]
+            end
+          end
         end
       else
         items << [product, 1, Pay::Currency.format(amount, currency: currency), Pay::Currency.format(amount, currency: currency)]
@@ -43,9 +50,39 @@ module Pay
 
       # If no subtotal, we will display the total
       items << [nil, nil, I18n.t("pay.line_items.subtotal"), Pay::Currency.format(subtotal || amount, currency: currency)]
-      items << [nil, nil, I18n.t("pay.line_items.tax"), Pay::Currency.format(tax, currency: currency)] if tax
+
+      # Discounts on the invoice
+      Array.wrap(discounts).each do |discount_id|
+        if (discount = total_discount_amounts.find{ |d| d.dig("discount", "id") == discount_id })
+          items << [nil, nil, discount_description(discount), Pay::Currency.format(-discount["amount"], currency: currency)]
+        end
+      end
+
+      # Tax rates
+      Array.wrap(total_tax_amounts).each do |tax_amount|
+        items << [nil, nil, tax_description(tax_amount), Pay::Currency.format(tax, currency: currency)]
+      end
+
       items << [nil, nil, I18n.t("pay.line_items.total"), Pay::Currency.format(amount, currency: currency)]
       items
+    end
+
+    def discount_description(discount)
+      coupon = discount.dig("discount", "coupon")
+      name = coupon.dig("name")
+
+      if (percent = coupon["percent_off"])
+        I18n.t("pay.line_items.percent_discount", name: name, percent: ActiveSupport::NumberHelper.number_to_rounded(percent, strip_insignificant_zeros: true))
+      else
+        I18n.t("pay.line_items.amount_discount", name: name, amount: Pay::Currency.format(coupon["amount_off"], currency: coupon["currency"]))
+      end
+    end
+
+    def tax_description(tax_amount)
+      tax_rate = tax_amount["tax_rate"]
+      percent = "#{ActiveSupport::NumberHelper.number_to_rounded(tax_rate["percentage"], strip_insignificant_zeros: true)}%"
+      percent += " inclusive" if tax_rate["inclusive"]
+      "#{tax_rate["display_name"]} - #{tax_rate["jurisdiction"]} (#{percent})"
     end
 
     def receipt_pdf(**options)
