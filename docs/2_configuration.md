@@ -103,6 +103,8 @@ Pay.setup do |config|
 
   config.automount_routes = true
   config.routes_path = "/pay" # Only when automount_routes is true
+  # All processors are enabled by default. If a processor is already implemented in your application, you can omit it from this list and the processor will not be set up through the Pay gem.
+  config.enabled_processors = [:stripe, :braintree, :paddle]
 end
 ```
 
@@ -120,4 +122,3 @@ config.active_job.queue_adapter = :sidekiq
 ## Next
 
 See [Customers](3_customers.md)
-
