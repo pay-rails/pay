@@ -19,3 +19,7 @@ If your subscription has multiple SubscriptionItems, you can specify the `subscr
 ```ruby
 pay_subscription.create_usage_record(subscription_item_id: "si_1234", quantity: 99)
 ```
+
+## Next
+
+See [Stripe Tax](5_stripe_tax.md)
