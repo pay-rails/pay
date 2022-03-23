@@ -14,6 +14,17 @@ Stripe introduced Products & Prices to support more payment options. Previously,
 @user.payment_processor.subscribe(plan: "plan_1234")
 ```
 
+Multiple subscription items in a single subscription can be passed in as `items`:
+
+```ruby
+@user.payment_processor.subscribe(
+  items: [
+    {price: "price_1234"},
+    {price: "price_5678"}
+  ]
+)
+```
+
 See: https://stripe.com/docs/api/subscriptions/create
 
 ## Stripe Checkout

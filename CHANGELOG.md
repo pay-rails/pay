@@ -13,6 +13,9 @@
 * `pay_customer` now supports a `stripe_attributes:` option to add attributes to Stripe::Customers - @excid3
 * `pay_customer` now supports a `braintree_attributes:` option to add attributes to Braintree::Customers - @excid3
 * `pay_customer` now supports a `default_payment_processor` option to automatically create a Pay::Customer record - @excid3
+* Stripe Metered Billing support
+  Removes `quantity` when creating a new subscription (metered billing prices do not allow quantity)
+  Adds `create_usage_record` to `Pay::Subscription` for reporting usage on metered billing plans
 
 ### 3.0.24
 

@@ -44,7 +44,7 @@ module Pay
               id: subscription_item.id,
               metadata: subscription_item.metadata,
               price: subscription_item.price.id,
-              quantity: subscription_item.quantity
+              quantity: subscription_item.try(:quantity)
             }
         end
 
@@ -166,6 +166,17 @@ module Pay
         )
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      # Creates a metered billing usage record
+      #
+      # Uses the first subscription_item ID unless `subscription_item_id: "si_1234"` is passed
+      #
+      # create_usage_record(quantity: 4, action: :increment)
+      # create_usage_record(subscription_item_id: "si_1234", quantity: 100, action: :set)
+      def create_usage_record(**options)
+        subscription_item_id = options.fetch(:subscription_item_id, subscription_items.first["id"])
+        ::Stripe::SubscriptionItem.create_usage_record(subscription_item_id, options, stripe_options)
       end
 
       private

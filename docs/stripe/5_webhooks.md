@@ -37,3 +37,6 @@ account.updated
 checkout.session.completed
 checkout.session.async_payment_succeeded
 ```
+## Next
+
+See [Metered Billing](5_metered_billing.md)
