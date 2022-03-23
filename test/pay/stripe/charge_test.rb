@@ -88,8 +88,8 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
       ],
       discounts: ["di_1KgYwKKXBGcbgpbZXaYJPeyI"],
       total_discount_amounts: [
-        {amount: 12450, discount:{id: "di_1KgYwKKXBGcbgpbZXaYJPeyI",object:"discount",checkout_session:nil,coupon:{id:"upI7E8nG",object:"coupon",amount_off:nil,created:1648059609,currency:nil,duration:"forever",duration_in_month:nil,livemode:false,max_redemptions:nil,metadata:{},name:"Half Off",percent_off:50.0,redeem_by:nil,times_redeemed:3,valid:true},customer:"cus_LNFszTN0gcJ4RH",end:nil,invoice:nil,invoice_item:"ii_1KgYwHKXBGcbgpbZVuQ152QU",promotion_code:nil,start:1648060185,subscription:nil}},
-      ],
+        {amount: 12450, discount: {id: "di_1KgYwKKXBGcbgpbZXaYJPeyI", object: "discount", checkout_session: nil, coupon: {id: "upI7E8nG", object: "coupon", amount_off: nil, created: 1648059609, currency: nil, duration: "forever", duration_in_month: nil, livemode: false, max_redemptions: nil, metadata: {}, name: "Half Off", percent_off: 50.0, redeem_by: nil, times_redeemed: 3, valid: true}, customer: "cus_LNFszTN0gcJ4RH", end: nil, invoice: nil, invoice_item: "ii_1KgYwHKXBGcbgpbZVuQ152QU", promotion_code: nil, start: 1648060185, subscription: nil}}
+      ]
     )
     ::Stripe::Invoice.construct_from(values)
   end
