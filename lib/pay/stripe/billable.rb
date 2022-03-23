@@ -70,11 +70,12 @@ module Pay
       end
 
       # Syncs name and email to Stripe::Customer
-      def update_customer!
-        return unless processor_id?
+      # You can also pass in other attributes that will be merged into the default attributes
+      def update_customer!(**attributes)
+        customer unless processor_id?
         ::Stripe::Customer.update(
           processor_id,
-          customer_attributes,
+          customer_attributes.merge(attributes),
           stripe_options
         )
       end

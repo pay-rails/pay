@@ -6,10 +6,10 @@ class User < ApplicationRecord
   def stripe_attributes(pay_customer)
     {
       description: "description",
-      address: {
+      address: { # Used for tax calculations
         country: "us",
         postal_code: "90210"
-      }, # Used for tax calculations
+      },
       metadata: {
         user_id: id # or pay_customer.owner_id
       }

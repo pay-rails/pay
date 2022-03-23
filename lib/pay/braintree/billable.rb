@@ -66,9 +66,10 @@ module Pay
       end
 
       # Syncs name and email to Braintree::Customer
-      def update_customer!
-        return unless processor_id?
-        gateway.customer.update(processor_id, customer_attributes)
+      # You can also pass in other attributes that will be merged into the default attributes
+      def update_customer!(**attributes)
+        customer unless processor_id?
+        gateway.customer.update(processor_id, customer_attributes.merge(attributes))
       end
 
       def charge(amount, options = {})

@@ -53,3 +53,7 @@ Taxes are saved on the `Pay::Charge` model.
 
 * `tax` - the total tax charged
 * `total_tax_amounts` - The tax rates for each jurisidction on the charge
+
+## Next
+
+See [Stripe Checkout & Billing Portal](5_stripe_checkout.md)
