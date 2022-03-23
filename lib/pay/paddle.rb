@@ -17,6 +17,12 @@ module Pay
 
     extend Env
 
+    def self.enabled?
+      return false unless Pay.enabled_processors.include?(:paddle) && defined?(::PaddlePay)
+
+      Pay::Engine.version_matches?(required: "~> 0.2", current: ::PaddlePay::VERSION) || (raise "[Pay] paddle gem must be version ~> 0.2")
+    end
+
     def self.setup
       ::PaddlePay.config.vendor_id = vendor_id
       ::PaddlePay.config.vendor_auth_code = vendor_auth_code

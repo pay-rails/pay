@@ -42,4 +42,45 @@ class Pay::Test < ActiveSupport::TestCase
     assert Pay.respond_to?(:default_plan_name)
     assert Pay.respond_to?(:default_plan_name=)
   end
+
+  test "can configure enabled_processors" do
+    assert Pay.respond_to?(:enabled_processors)
+    assert Pay.respond_to?(:enabled_processors=)
+  end
+
+  test "can enable and disable the stripe processor" do
+    original = Pay.enabled_processors
+
+    Pay.enabled_processors = []
+    refute Pay::Stripe.enabled?
+
+    Pay.enabled_processors = [:stripe]
+    assert Pay::Stripe.enabled?
+
+    Pay.enabled_processors = original
+  end
+
+  test "can enable and disable the braintree processor" do
+    original = Pay.enabled_processors
+
+    Pay.enabled_processors = []
+    refute Pay::Braintree.enabled?
+
+    Pay.enabled_processors = [:braintree]
+    assert Pay::Braintree.enabled?
+
+    Pay.enabled_processors = original
+  end
+
+  test "can enable and disable the paddle processor" do
+    original = Pay.enabled_processors
+
+    Pay.enabled_processors = []
+    refute Pay::Paddle.enabled?
+
+    Pay.enabled_processors = [:paddle]
+    assert Pay::Paddle.enabled?
+
+    Pay.enabled_processors = original
+  end
 end

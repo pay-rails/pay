@@ -51,6 +51,9 @@ module Pay
   mattr_accessor :routes_path
   @@routes_path = "/pay"
 
+  mattr_accessor :enabled_processors
+  @@enabled_processors = [:stripe, :braintree, :paddle]
+
   def self.setup
     yield self
   end
