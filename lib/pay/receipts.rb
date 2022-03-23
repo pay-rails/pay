@@ -39,7 +39,7 @@ module Pay
           items << [li["description"], li["quantity"], Pay::Currency.format(li["unit_amount"], currency: currency), Pay::Currency.format(li["amount"], currency: currency)]
 
           Array.wrap(li["discounts"]).each do |discount_id|
-            if (discount = total_discount_amounts.find{ |d| d.dig("discount", "id") == discount_id })
+            if (discount = total_discount_amounts.find { |d| d.dig("discount", "id") == discount_id })
               items << [discount_description(discount), nil, nil, Pay::Currency.format(-discount["amount"], currency: currency)]
             end
           end
@@ -53,7 +53,7 @@ module Pay
 
       # Discounts on the invoice
       Array.wrap(discounts).each do |discount_id|
-        if (discount = total_discount_amounts.find{ |d| d.dig("discount", "id") == discount_id })
+        if (discount = total_discount_amounts.find { |d| d.dig("discount", "id") == discount_id })
           items << [nil, nil, discount_description(discount), Pay::Currency.format(-discount["amount"], currency: currency)]
         end
       end

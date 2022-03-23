@@ -29,7 +29,7 @@ module Pay
           bank: payment_method.try(:bank_name) || payment_method.try(:bank), # eps, fpx, ideal, p24, acss_debit, etc
           line_items: [],
           total_tax_amounts: [],
-          discounts: [],
+          discounts: []
         }
 
         # Associate charge with subscription if we can
