@@ -54,7 +54,27 @@ module Pay
   mattr_accessor :enabled_processors
   @@enabled_processors = [:stripe, :braintree, :paddle]
 
+  mattr_accessor :emails
+  @@emails = ActiveSupport::OrderedOptions.new
+  @@emails.payment_action_required = true
+  @@emails.receipt = true
+  @@emails.refund = true
+  # This only applies to Stripe, therefor we supply the second argument of price
+  @@emails.subscription_renewing = ->(pay_subscription, price) {
+    (price&.type == "recurring") && (price.recurring&.interval == "year")
+  }
+
   def self.setup
     yield self
+  end
+
+  def self.send_email?(email_option, *remaining_args)
+    config_option = emails.send(email_option)
+
+    if config_option.respond_to?(:call)
+      config_option.call(*remaining_args)
+    else
+      config_option
+    end
   end
 end

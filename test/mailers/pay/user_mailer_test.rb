@@ -9,7 +9,7 @@ class UserMailerTest < ActionMailer::TestCase
   end
 
   test "receipt" do
-    email = Pay::UserMailer.with(pay_customer: @pay_customer, charge: @charge).receipt
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).receipt
 
     assert_equal [@user.email], email.to
     assert_equal I18n.t("pay.user_mailer.receipt.subject"), email.subject
@@ -25,13 +25,13 @@ class UserMailerTest < ActionMailer::TestCase
     @charge.stubs(:filename).returns(filename)
     @charge.stubs(:receipt).returns(receipt)
 
-    email = Pay::UserMailer.with(pay_customer: @pay_customer, charge: @charge).receipt
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).receipt
 
     assert_equal filename, email.attachments.first.filename
   end
 
   test "refund" do
-    email = Pay::UserMailer.with(pay_customer: @pay_customer, charge: @charge).refund
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).refund
 
     assert_equal [@user.email], email.to
     assert_equal I18n.t("pay.user_mailer.refund.subject"), email.subject
@@ -39,7 +39,7 @@ class UserMailerTest < ActionMailer::TestCase
 
   test "subscription_renewing" do
     time = Time.current
-    email = Pay::UserMailer.with(pay_customer: @pay_customer, subscription: Pay::Subscription.new, date: time).subscription_renewing
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_subscription: Pay::Subscription.new, date: time).subscription_renewing
 
     assert_equal [@user.email], email.to
     assert_equal I18n.t("pay.user_mailer.subscription_renewing.subject"), email.subject
@@ -47,7 +47,7 @@ class UserMailerTest < ActionMailer::TestCase
   end
 
   test "payment_action_required" do
-    email = Pay::UserMailer.with(pay_customer: @pay_customer, payment_intent_id: "x", subscription: Pay::Subscription.new).payment_action_required
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, payment_intent_id: "x", pay_subscription: Pay::Subscription.new).payment_action_required
 
     assert_equal [@user.email], email.to
     assert_equal I18n.t("pay.user_mailer.payment_action_required.subject"), email.subject
@@ -57,7 +57,7 @@ class UserMailerTest < ActionMailer::TestCase
   test "receipt with no extra billing info column" do
     team = teams(:one)
     @pay_customer.update!(owner: team)
-    email = Pay::UserMailer.with(pay_customer: @pay_customer, charge: @charge).receipt
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).receipt
 
     assert_equal [team.owner.email], email.to
     assert_equal I18n.t("pay.user_mailer.receipt.subject"), email.subject
@@ -66,7 +66,7 @@ class UserMailerTest < ActionMailer::TestCase
   test "refund with no extra billing info column" do
     team = teams(:one)
     @pay_customer.update!(owner: team)
-    email = Pay::UserMailer.with(pay_customer: @pay_customer, charge: @charge).refund
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).refund
 
     assert_equal [team.owner.email], email.to
     assert_equal I18n.t("pay.user_mailer.refund.subject"), email.subject
