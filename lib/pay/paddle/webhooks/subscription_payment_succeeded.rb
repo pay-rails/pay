@@ -43,7 +43,7 @@ module Pay
         end
 
         def notify_user(pay_charge)
-          if Pay.send_emails
+          if Pay.send_email?(:receipt, pay_charge)
             Pay::UserMailer.with(pay_customer: pay_charge.customer, charge: pay_charge).receipt.deliver_later
           end
         end
