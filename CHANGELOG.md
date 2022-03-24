@@ -28,6 +28,7 @@
 * `pay_customer` now supports a `braintree_attributes:` option to add attributes to Braintree::Customers - @excid3
 * `pay_customer` now supports a `default_payment_processor` option to automatically create a Pay::Customer record - @excid3
 * Added `enabled_processors` to Pay config. This lets you choose exactly which processors will be enabled. - @cjilbert504
+* [Breaking] Replaced `subscription` and `charge` email params to `pay_subscription` and `pay_charge` respectively. - @cjilbert504
 * [Breaking] Replaced `send_emails` with `emails` config. This allows you to customize which emails can be sent independently. - @cjilbert504
 ```ruby
 Pay.setup do |config|
