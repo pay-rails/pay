@@ -13,10 +13,6 @@ module Pay
 
           # Stripe subscription items all have the same interval
           price = event.data.object.lines.data.first.price
-          # return unless price.type == "recurring"
-
-          # interval = price.recurring.interval
-          # return unless interval == "year"
 
           if Pay.send_email?(:subscription_renewing, pay_subscription, price)
             Pay::UserMailer.with(
