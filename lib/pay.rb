@@ -35,10 +35,6 @@ module Pay
   mattr_accessor :business_logo
   mattr_accessor :support_email
 
-  # Email configuration
-  mattr_accessor :send_emails
-  @@send_emails = true
-
   mattr_accessor :automount_routes
   @@automount_routes = true
 
