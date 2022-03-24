@@ -8,11 +8,15 @@ module Pay
       class SignatureVerifier
         def initialize(data)
           @data = data
+          @public_key_file = Pay::Paddle.public_key_file
+          @public_key = Pay::Paddle.public_key
           @public_key_base64 = Pay::Paddle.public_key_base64
         end
 
         def verify
           data = @data
+          public_key = @public_key if @public_key
+          public_key = File.read(@public_key_file) if @public_key_file
           public_key = Base64.decode64(@public_key_base64) if @public_key_base64
           return false unless data && data["p_signature"] && public_key
 

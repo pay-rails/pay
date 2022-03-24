@@ -41,6 +41,14 @@ module Pay
       find_value_by_name(:paddle, :environment) || "production"
     end
 
+    def self.public_key
+      find_value_by_name(:paddle, :public_key)
+    end
+
+    def self.public_key_file
+      find_value_by_name(:paddle, :public_key_file)
+    end
+
     def self.public_key_base64
       find_value_by_name(:paddle, :public_key_base64)
     end
