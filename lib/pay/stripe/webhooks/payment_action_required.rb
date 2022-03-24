@@ -8,14 +8,14 @@ module Pay
 
           object = event.data.object
 
-          subscription = Pay::Subscription.find_by_processor_and_id(:stripe, object.subscription)
-          return if subscription.nil?
+          pay_subscription = Pay::Subscription.find_by_processor_and_id(:stripe, object.subscription)
+          return if pay_subscription.nil?
 
-          if Pay.send_emails
+          if Pay.send_email?(:payment_action_required, pay_subscription)
             Pay::UserMailer.with(
-              pay_customer: subscription.customer,
+              pay_customer: pay_subscription.customer,
               payment_intent_id: event.data.object.payment_intent,
-              subscription: subscription
+              pay_subscription: pay_subscription
             ).payment_action_required.deliver_later
           end
         end

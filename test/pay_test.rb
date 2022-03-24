@@ -83,4 +83,25 @@ class Pay::Test < ActiveSupport::TestCase
 
     Pay.enabled_processors = original
   end
+
+  test "can configure email options with a boolean" do
+    Pay.emails.stub :subscription_renewing, true do
+      assert Pay.send_email?(:subscription_renewing)
+      assert Pay.send_email?(:subscription_renewing, "dummy_subscription")
+    end
+
+    Pay.emails.stub :subscription_renewing, false do
+      refute Pay.send_email?(:subscription_renewing)
+    end
+  end
+
+  test "can configure email options with a lambda" do
+    pay_subscription = pay_subscriptions(:fake)
+
+    custom_lambda = ->(subscription) { assert_equal pay_subscription, subscription }
+
+    Pay.emails.stub :subscription_renewing, -> { custom_lambda } do
+      Pay.send_email?(:subscription_renewing, pay_subscription)
+    end
+  end
 end

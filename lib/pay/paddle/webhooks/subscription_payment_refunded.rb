@@ -6,10 +6,10 @@ module Pay
           pay_charge = Pay::Charge.find_by_processor_and_id(:paddle, event.subscription_payment_id)
           return unless pay_charge.present?
 
-          pay_charge.update(amount_refunded: (event.gross_refund.to_f * 100).to_i)
+          pay_charge.update!(amount_refunded: (event.gross_refund.to_f * 100).to_i)
 
-          if Pay.send_emails
-            Pay::UserMailer.with(pay_customer: pay_charge.customer, charge: pay_charge).refund.deliver_later
+          if Pay.send_email?(:refund, pay_charge)
+            Pay::UserMailer.with(pay_customer: pay_charge.customer, pay_charge: pay_charge).refund.deliver_later
           end
         end
       end

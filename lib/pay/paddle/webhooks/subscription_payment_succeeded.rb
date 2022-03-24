@@ -17,8 +17,8 @@ module Pay
 
           return if pay_customer.charges.where(processor_id: event.subscription_payment_id).any?
 
-          charge = create_charge(pay_customer, event)
-          notify_user(charge)
+          pay_charge = create_charge(pay_customer, event)
+          notify_user(pay_charge)
         end
 
         def create_charge(pay_customer, event)
@@ -33,18 +33,18 @@ module Pay
             metadata: Pay::Paddle.parse_passthrough(event.passthrough).except("owner_sgid")
           }.merge(payment_method_details)
 
-          charge = pay_customer.charges.find_or_initialize_by(processor_id: event.subscription_payment_id)
-          charge.update!(attributes)
+          pay_charge = pay_customer.charges.find_or_initialize_by(processor_id: event.subscription_payment_id)
+          pay_charge.update!(attributes)
 
           # Update customer's payment method
           Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: payment_method_details)
 
-          charge
+          pay_charge
         end
 
         def notify_user(pay_charge)
-          if Pay.send_emails
-            Pay::UserMailer.with(pay_customer: pay_charge.customer, charge: pay_charge).receipt.deliver_later
+          if Pay.send_email?(:receipt, pay_charge)
+            Pay::UserMailer.with(pay_customer: pay_charge.customer, pay_charge: pay_charge).receipt.deliver_later
           end
         end
       end

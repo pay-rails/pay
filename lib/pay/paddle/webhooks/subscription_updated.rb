@@ -3,33 +3,33 @@ module Pay
     module Webhooks
       class SubscriptionUpdated
         def call(event)
-          subscription = Pay::Subscription.find_by_processor_and_id(:paddle, event["subscription_id"])
+          pay_subscription = Pay::Subscription.find_by_processor_and_id(:paddle, event["subscription_id"])
 
-          return if subscription.nil?
+          return if pay_subscription.nil?
 
           case event["status"]
           when "deleted"
-            subscription.status = "canceled"
-            subscription.ends_at = Time.zone.parse(event["next_bill_date"]) || Time.current if subscription.ends_at.blank?
+            pay_subscription.status = "canceled"
+            pay_subscription.ends_at = Time.zone.parse(event["next_bill_date"]) || Time.current if pay_subscription.ends_at.blank?
           when "trialing"
-            subscription.status = "trialing"
-            subscription.trial_ends_at = Time.zone.parse(event["next_bill_date"])
+            pay_subscription.status = "trialing"
+            pay_subscription.trial_ends_at = Time.zone.parse(event["next_bill_date"])
           when "active"
-            subscription.status = "active"
-            subscription.paddle_paused_from = Time.zone.parse(event["paused_from"]) if event["paused_from"].present?
+            pay_subscription.status = "active"
+            pay_subscription.paddle_paused_from = Time.zone.parse(event["paused_from"]) if event["paused_from"].present?
           else
-            subscription.status = event["status"]
+            pay_subscription.status = event["status"]
           end
 
-          subscription.quantity = event["new_quantity"]
-          subscription.processor_plan = event["subscription_plan_id"]
-          subscription.paddle_update_url = event["update_url"]
-          subscription.paddle_cancel_url = event["cancel_url"]
+          pay_subscription.quantity = event["new_quantity"]
+          pay_subscription.processor_plan = event["subscription_plan_id"]
+          pay_subscription.paddle_update_url = event["update_url"]
+          pay_subscription.paddle_cancel_url = event["cancel_url"]
 
           # If user was on trial, their subscription ends at the end of the trial
-          subscription.ends_at = subscription.trial_ends_at if subscription.on_trial?
+          pay_subscription.ends_at = pay_subscription.trial_ends_at if pay_subscription.on_trial?
 
-          subscription.save!
+          pay_subscription.save!
         end
       end
     end

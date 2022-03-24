@@ -1,5 +1,18 @@
 ### Unreleased
 
+* [Breaking] Replaced `subscription` and `charge` email params to `pay_subscription` and `pay_charge` respectively. - @cjilbert504
+* [Breaking] Replaced `send_emails` with `emails` config. This allows you to customize which emails can be sent independently. - @cjilbert504
+```ruby
+Pay.setup do |config|
+  # Set value to boolean
+  config.emails.receipt = true
+  # Or set value to a lambda that returns a boolean
+  config.emails.subscription_renewing = ->(pay_subscription, price) {
+    (price&.type == "recurring") && (price.recurring&.interval == "year")
+  }
+end
+```
+
 * Stripe Tax support
 
   Using `pay_customer stripe_attributes: :method_name`, you can add an Address to `Stripe::Customer` objects which will be used for calculating taxes.
@@ -383,4 +396,3 @@ end
 ### 1.0.0.beta2 - 2019-03-11
 
 * Check ENV first when looking up keys to allow for overrides
-
