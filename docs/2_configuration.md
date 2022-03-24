@@ -111,6 +111,7 @@ Pay.setup do |config|
   # This example for subscription_renewing only applies to Stripe, therefor we supply the second argument of price
   config.emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
+  }
 end
 ```
 
