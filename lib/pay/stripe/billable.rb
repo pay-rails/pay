@@ -155,11 +155,12 @@ module Pay
 
         attributes = Pay::Stripe::PaymentMethod.extract_attributes(payment_method).merge(default: default)
 
-        pay_customer.payment_methods.update_all(default: false) if default
+        # Ignore the payment method if it's already in the database
+        pay_customer.payment_methods.where.not(id: pay_payment_method.id).update_all(default: false) if default
         pay_payment_method.update!(attributes)
 
         # Reload the Rails association
-        pay_customer.reload_default_payment_method if default
+        pay_customer.reload_default_payment_method
 
         pay_payment_method
       end
