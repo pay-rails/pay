@@ -40,4 +40,4 @@ checkout.session.async_payment_succeeded
 
 ## Next
 
-See [Metered Billing](5_metered_billing.md)
+See [Metered Billing](6_metered_billing.md)
