@@ -56,4 +56,4 @@ Taxes are saved on the `Pay::Charge` model.
 
 ## Next
 
-See [Stripe Checkout & Billing Portal](5_stripe_checkout.md)
+See [Stripe Checkout & Billing Portal](8_stripe_checkout.md)
