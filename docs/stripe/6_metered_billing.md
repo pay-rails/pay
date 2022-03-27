@@ -22,4 +22,4 @@ pay_subscription.create_usage_record(subscription_item_id: "si_1234", quantity: 
 
 ## Next
 
-See [Stripe Tax](5_stripe_tax.md)
+See [Stripe Tax](7_stripe_tax.md)
