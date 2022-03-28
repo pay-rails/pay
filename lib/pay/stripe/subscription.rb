@@ -29,7 +29,7 @@ module Pay
         attributes = {
           application_fee_percent: object.application_fee_percent,
           processor_plan: object.items.first.price.id,
-          quantity: object.quantity,
+          quantity: object.items.first.try(:quantity) || 0,
           status: object.status,
           stripe_account: pay_customer.stripe_account,
           trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil),
@@ -39,13 +39,7 @@ module Pay
 
         # Record subscription items to db
         object.items.auto_paging_each do |subscription_item|
-          attributes[:subscription_items] <<
-            {
-              id: subscription_item.id,
-              metadata: subscription_item.metadata,
-              price: subscription_item.price.id,
-              quantity: subscription_item.try(:quantity)
-            }
+          attributes[:subscription_items] << subscription_item.to_hash.slice(:id, :price, :metadata, :quantity)
         end
 
         attributes[:ends_at] = if object.ended_at
@@ -114,8 +108,17 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
-      def change_quantity(quantity)
-        ::Stripe::Subscription.update(processor_id, {quantity: quantity}, stripe_options)
+      # This updates a SubscriptionItem's quantity in Stripe
+      #
+      # For a subscription with a single item, we can update the subscription directly if no SubscriptionItem ID is available
+      # Otherwise a SubscriptionItem ID is required so Stripe knows which entry to update
+      def change_quantity(quantity, **options)
+        subscription_item_id = options.fetch(:subscription_item_id, subscription_items.first["id"])
+        if subscription_item_id
+          ::Stripe::SubscriptionItem.update(subscription_item_id, options.merge(quantity: quantity), stripe_options)
+        else
+          ::Stripe::Subscription.update(processor_id, options.merge(quantity: quantity), stripe_options)
+        end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
