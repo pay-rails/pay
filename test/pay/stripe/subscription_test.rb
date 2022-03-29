@@ -89,7 +89,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
-  test "multiple subscription items" do
+  test "syncing multiple subscription items" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(items: {
       object: "list",
       data: [
@@ -119,7 +119,33 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
       url: "/v1/subscription_items?subscription=sub_1K496iKXBGcbgpbZSrTl9uTg"
     }))
 
-    pay_subscription
+    assert_equal 2, pay_subscription.subscription_items.length
+  end
+
+  test "subscription with a metered billing subscription item should have a quantity of 0" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(quantity: nil, items: {
+      object: "list",
+      data: [
+        ::Stripe::Subscription.construct_from(
+          id: "si_KjcLsWCXBgVRuU",
+          object: "subscription_item",
+          created: 1638904425,
+          metadata: {},
+          price: {
+            id: "large-monthly",
+            recurring: {
+              aggregate_usage: "sum",
+              interval: "month",
+              interval_count: 1,
+              usage_type: "metered"
+            },
+          }
+        )
+      ],
+      has_more: false
+    }))
+
+    assert_equal 0, pay_subscription.quantity
   end
 
   private
