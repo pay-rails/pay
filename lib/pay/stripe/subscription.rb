@@ -91,6 +91,12 @@ module Pay
         ::Stripe::Subscription.retrieve(options, {stripe_account: stripe_account}.compact)
       end
 
+      # Returns a SetupIntent or PaymentIntent client secret for the subscription
+      def client_secret
+        stripe_sub = subscription
+        stripe_sub&.pending_setup_intent&.client_secret || stripe_sub&.latest_invoice&.payment_intent&.client_secret
+      end
+
       def cancel(**options)
         stripe_sub = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}, stripe_options)
         pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(stripe_sub.current_period_end)))
