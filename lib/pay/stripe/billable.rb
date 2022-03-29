@@ -181,7 +181,7 @@ module Pay
       def create_setup_intent(options = {})
         ::Stripe::SetupIntent.create({
           customer: processor_id,
-          usage: :off_session,
+          usage: :off_session
         }.merge(options), stripe_options)
       end
 
