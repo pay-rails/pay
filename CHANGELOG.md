@@ -13,6 +13,8 @@ Pay.setup do |config|
 end
 ```
 
+* Numericality validation on `Pay::Subscription` has been updated from being `greater_than_or_equal_to: 1` to `greater_than_or_equal_to: 0`. This is because metered billing subscriptions do not have a quantity.
+
 * Stripe Tax support
 
   Using `pay_customer stripe_attributes: :method_name`, you can add an Address to `Stripe::Customer` objects which will be used for calculating taxes.
