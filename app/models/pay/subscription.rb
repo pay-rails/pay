@@ -33,7 +33,7 @@ module Pay
     validates :name, presence: true
     validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
     validates :processor_plan, presence: true
-    validates :quantity, presence: true, numericality: {only_integer: true, greater_than_or_equal_to: 1}
+    validates :quantity, presence: true, numericality: {only_integer: true, greater_than_or_equal_to: 0}
     validates :status, presence: true
 
     delegate :on_grace_period?,
