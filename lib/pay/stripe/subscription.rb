@@ -16,6 +16,7 @@ module Pay
         :quantity,
         :quantity?,
         :stripe_account,
+        :subscription_items,
         :trial_ends_at,
         to: :pay_subscription
 
