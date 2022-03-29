@@ -41,12 +41,8 @@ module Pay
     end
 
     def subscribed?(name: Pay.default_product_name, processor_plan: nil)
-      subscription = subscription(name: name)
-
-      return false if subscription.nil?
-      return subscription.active? if processor_plan.nil?
-
-      subscription.active? && subscription.processor_plan == processor_plan
+      query = {name: name, processor_plan: processor_plan}.compact
+      subscriptions.active.where(query).exists?
     end
 
     def on_trial?(name: Pay.default_product_name, plan: nil)
