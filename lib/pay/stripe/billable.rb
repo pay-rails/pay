@@ -182,7 +182,6 @@ module Pay
         ::Stripe::SetupIntent.create({
           customer: processor_id,
           usage: :off_session,
-          payment_method_types: %w[acss_debit au_becs_debit bancontact card card_present eps giropay ideal interac_present p24 sepa_debit sofort]
         }.merge(options), stripe_options)
       end
 
