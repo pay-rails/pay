@@ -73,7 +73,8 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     user = users(:stripe)
     assert_equal "stripe", user.payment_processor.processor
 
-    user.set_payment_processor :fake_processor, allow_fake: true, make_default: false
+    result = user.add_payment_processor :fake_processor, allow_fake: true
+    assert_not_equal "stripe", result.processor
     assert_equal "stripe", user.payment_processor.processor
   end
 end

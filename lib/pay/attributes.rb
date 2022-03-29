@@ -26,17 +26,25 @@ module Pay
       # - Finds or creates a Pay::Customer for the process and marks it as default
       # - Removes the default flag from all other Pay::Customers
       # - Removes the default flag from all Pay::PaymentMethods
-      def set_payment_processor(processor_name, allow_fake: false, make_default: true, **attributes)
+      def set_payment_processor(processor_name, allow_fake: false, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
         ActiveRecord::Base.transaction do
-          pay_customers.update_all(default: false) if make_default
+          pay_customers.update_all(default: false)
           pay_customer = pay_customers.active.where(processor: processor_name).first_or_initialize
-          pay_customer.update!(attributes.merge(default: true)) if make_default
+          pay_customer.update!(attributes.merge(default: true))
         end
 
         # Return new payment processor
         reload_payment_processor
+      end
+
+      def add_payment_processor(processor_name, allow_fake: false, **attributes)
+        raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
+
+        pay_customer = pay_customers.active.where(processor: processor_name).first_or_initialize
+        pay_customer.update!(attributes)
+        pay_customer
       end
 
       def payment_processor

@@ -37,7 +37,7 @@ end
 
 * Replace `update_email!` with `update_customer!` - @excid3
 * Add options for `cancel_now!` to support `invoice_now` and `prorate` flags for Stripe - @excid3
-* Adds `make_default` flag to `set_payment_processor` - @excid3
+* Adds `add_payment_processor` to add a payment processor without making it the default - @excid3
 * Setting `pay_name` in Stripe Subscription metadata will be used as the `name` on the `Pay::Subscription` - @excid3
 * `pay_customer` now supports a `stripe_attributes:` option to add attributes to Stripe::Customers - @excid3
 * `pay_customer` now supports a `braintree_attributes:` option to add attributes to Braintree::Customers - @excid3
