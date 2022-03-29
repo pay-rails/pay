@@ -123,7 +123,7 @@ module Pay
         subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name)
 
         # No trial, payment method requires SCA
-        if subscription.incomplete?
+        if options[:payment_behavior].to_s != "default_incomplete" && subscription.incomplete?
           Pay::Payment.new(stripe_sub.latest_invoice.payment_intent).validate
         end
 
