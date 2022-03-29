@@ -189,6 +189,17 @@ module Pay
         ::Stripe::SubscriptionItem.create_usage_record(subscription_item_id, options, stripe_options)
       end
 
+      # Returns usage record summaries for a subscription item
+      def usage_record_summaries(**options)
+        subscription_item_id = options.fetch(:subscription_item_id, subscription_items.first["id"])
+        ::Stripe::SubscriptionItem.list_usage_record_summaries(subscription_item_id, options, stripe_options)
+      end
+
+      # Returns an upcoming invoice for a subscription
+      def upcoming_invoice(**options)
+        ::Stripe::Invoice.upcoming(options.merge(subscription: processor_id), stripe_options)
+      end
+
       private
 
       # Options for Stripe requests
