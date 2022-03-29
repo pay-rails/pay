@@ -18,4 +18,8 @@ class Pay::Currency::Test < ActiveSupport::TestCase
   test "options" do
     assert_equal "$15", Pay::Currency.format(15_39, currency: nil, precision: 0)
   end
+
+  test "additional precision" do
+    assert_equal "$0.008", Pay::Currency.format(0.8, currency: nil)
+  end
 end

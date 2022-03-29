@@ -23,9 +23,9 @@ module Pay
 
     def format_amount(amount, **options)
       number_to_currency(
-        amount.to_i / subunit_to_unit.to_f,
+        amount / subunit_to_unit.to_f,
         {
-          precision: precision,
+          precision: precision + additional_precision(amount),
           unit: unit,
           separator: separator,
           delimiter: delimiter,
@@ -41,6 +41,17 @@ module Pay
     # If 1000, returns 3
     def precision
       subunit_to_unit.digits.count - 1
+    end
+
+    # If amount is 0.8, we want to display $0.008
+    def additional_precision(amount)
+      if amount.is_a? Float
+        amount.to_s.split(".").last.length
+      elsif amount.is_a? BigDecimal
+        amount.to_s("F").split(".").last.length
+      else
+        0
+      end
     end
 
     def unit
