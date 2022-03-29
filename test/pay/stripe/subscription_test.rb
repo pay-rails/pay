@@ -138,7 +138,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
               interval: "month",
               interval_count: 1,
               usage_type: "metered"
-            },
+            }
           }
         )
       ],
