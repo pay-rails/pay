@@ -45,13 +45,8 @@ module Pay
 
     # If amount is 0.8, we want to display $0.008
     def additional_precision(amount)
-      if amount.is_a? Float
-        amount.to_s.split(".").last.length
-      elsif amount.is_a? BigDecimal
-        amount.to_s("F").split(".").last.length
-      else
-        0
-      end
+      _, decimals = amount.to_s.split(".")
+      decimals&.length || 0
     end
 
     def unit
