@@ -36,12 +36,7 @@ module Pay
     validates :quantity, presence: true, numericality: {only_integer: true, greater_than_or_equal_to: 0}
     validates :status, presence: true
 
-    delegate :on_grace_period?,
-      :paused?,
-      :pause,
-      :cancel,
-      :cancel_now!,
-      to: :payment_processor
+    delegate_missing_to :payment_processor
 
     # Helper methods for payment processors
     %w[braintree stripe paddle fake_processor].each do |processor_name|
