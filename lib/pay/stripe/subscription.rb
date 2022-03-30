@@ -35,11 +35,16 @@ module Pay
           stripe_account: pay_customer.stripe_account,
           trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil),
           metadata: object.metadata,
-          subscription_items: []
+          subscription_items: [],
+          metered: false
         }
 
         # Record subscription items to db
         object.items.auto_paging_each do |subscription_item|
+          if !attributes[:metered] && (subscription_item.to_hash.dig(:price, :recurring, :usage_type) == "metered")
+            attributes[:metered] = true
+          end
+
           attributes[:subscription_items] << subscription_item.to_hash.slice(:id, :price, :metadata, :quantity)
         end
 

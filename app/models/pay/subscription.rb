@@ -24,7 +24,7 @@ module Pay
     store_accessor :data, :paddle_cancel_url
     store_accessor :data, :paddle_paused_from
     store_accessor :data, :stripe_account
-
+    store_accessor :data, :metered
     store_accessor :data, :subscription_items
 
     attribute :prorate, :boolean, default: true
@@ -45,6 +45,15 @@ module Pay
       end
 
       scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
+    end
+
+    def self.with_metered_items
+      # where("data->>'metered' = 'true'") # works on postgres
+      where("data->>'metered' = ?", true)
+    end
+
+    def metered_items?
+      metered
     end
 
     def self.find_by_processor_and_id(processor, processor_id)
