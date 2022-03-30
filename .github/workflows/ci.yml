@@ -23,6 +23,8 @@ jobs:
       BUNDLE_PATH_RELATIVE_TO_CWD: true
 
     steps:
+      - name: SQLite3 version
+        run: sqlite3 --version
       - uses: actions/checkout@master
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -55,7 +57,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12
+        image: postgres:14
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
