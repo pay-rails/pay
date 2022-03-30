@@ -49,7 +49,7 @@ module Pay
 
     def self.with_metered_items
       # where("data->>'metered' = 'true'") # works on postgres
-      where("data->'$.metered' = :type", type: "true")
+      where("data->>'metered' = ?", true)
     end
 
     def metered_items?
