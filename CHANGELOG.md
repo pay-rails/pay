@@ -27,6 +27,8 @@ end
 * Stripe Metered Billing support
   Removes `quantity` when creating a new subscription (metered billing prices do not allow quantity)
   Adds `create_usage_record` to `Pay::Subscription` for reporting usage on metered billing plans
+  Adds `metered_items?` helper to `Pay::Subscription` to easily check if a subscription has any metered billing items
+  Adds `Pay::Subscription.with_metered_items` method to query for subscriptions with metered billing items
 
 * Raise error when dependencies are not supported versions. This makes sure you're using supported versions of libraries with Pay.
   Currently supported versions:
