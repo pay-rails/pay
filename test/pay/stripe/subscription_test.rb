@@ -123,7 +123,31 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "subscription with a metered billing subscription item should have a quantity of 0" do
-    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(quantity: nil, items: {
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription_with_metered_item)
+
+    assert_equal 0, pay_subscription.quantity
+  end
+
+  test "#meterd returns true if subscription has metered subscription items" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription_with_metered_item)
+
+    assert pay_subscription.metered
+  end
+
+  test "#meterd returns false if subscription does not have metered subscription items" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+
+    refute pay_subscription.metered
+  end
+
+  test ".with_metered_items returns all subscriptions that have a metered billing subscription item associated" do
+    assert_equal [pay_subscriptions(:stripe_with_items)], Pay::Subscription.with_metered_items.to_a
+  end
+
+  private
+
+  def fake_stripe_subscription_with_metered_item
+    fake_stripe_subscription(quantity: nil, items: {
       object: "list",
       data: [
         ::Stripe::Subscription.construct_from(
@@ -143,12 +167,8 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
         )
       ],
       has_more: false
-    }))
-
-    assert_equal 0, pay_subscription.quantity
+    })
   end
-
-  private
 
   def fake_stripe_subscription(**values)
     values.reverse_merge!(
