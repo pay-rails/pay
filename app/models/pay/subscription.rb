@@ -48,8 +48,17 @@ module Pay
     end
 
     def self.with_metered_items
-      # where("data->>'metered' = 'true'") # works on postgres
-      where("data->>'metered' = ?", true)
+      case Pay::Adapter.current_adapter
+      when "sqlite3"
+        where("json_extract(data, '$.\"metered\"') = true")
+        # For SQLite 3.38+ we could use the arrows
+        # where("data->'metered' = ?", "true")
+      when "mysql2"
+        where("data->'$.\"metered\"' = true")
+      when "postgresql", "postgis"
+        # Single quotes are important for json keys apparently
+        where("data->'metered' = 'true')
+      end
     end
 
     def metered_items?
