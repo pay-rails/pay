@@ -27,10 +27,10 @@ module Pay
         owner = pay_customer.owner
 
         attributes = case owner.class.pay_stripe_customer_attributes
-          when Symbol
-            owner.send(owner.class.pay_stripe_customer_attributes, pay_customer)
-          when Proc
-            owner.class.pay_stripe_customer_attributes.call(pay_customer)
+        when Symbol
+          owner.send(owner.class.pay_stripe_customer_attributes, pay_customer)
+        when Proc
+          owner.class.pay_stripe_customer_attributes.call(pay_customer)
         end
 
         # Guard against attributes being returned nil

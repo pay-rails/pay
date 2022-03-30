@@ -20,10 +20,10 @@ module Pay
         owner = pay_customer.owner
 
         attributes = case owner.class.pay_braintree_customer_attributes
-          when Symbol
-            owner.send(owner.class.pay_braintree_customer_attributes, pay_customer)
-          when Proc
-            owner.class.pay_braintree_customer_attributes.call(pay_customer)
+        when Symbol
+          owner.send(owner.class.pay_braintree_customer_attributes, pay_customer)
+        when Proc
+          owner.class.pay_braintree_customer_attributes.call(pay_customer)
         end
 
         # Guard against attributes being returned nil
@@ -187,44 +187,44 @@ module Pay
 
       def save_payment_method(payment_method, default:)
         attributes = case payment_method
-                     when ::Braintree::CreditCard, ::Braintree::ApplePayCard, ::Braintree::GooglePayCard, ::Braintree::SamsungPayCard, ::Braintree::VisaCheckoutCard
-                       {
-                         payment_method_type: :card,
-                         brand: payment_method.card_type,
-                         last4: payment_method.last_4,
-                         exp_month: payment_method.expiration_month,
-                         exp_year: payment_method.expiration_year
-                       }
+        when ::Braintree::CreditCard, ::Braintree::ApplePayCard, ::Braintree::GooglePayCard, ::Braintree::SamsungPayCard, ::Braintree::VisaCheckoutCard
+          {
+            payment_method_type: :card,
+            brand: payment_method.card_type,
+            last4: payment_method.last_4,
+            exp_month: payment_method.expiration_month,
+            exp_year: payment_method.expiration_year
+          }
 
-                     when ::Braintree::PayPalAccount
-                       {
-                         payment_method_type: :paypal,
-                         brand: "PayPal",
-                         email: payment_method.email
-                       }
-                     when ::Braintree::VenmoAccount
-                       {
-                         payment_method_type: :venmo,
-                         brand: "Venmo",
-                         username: payment_method.username
-                       }
-                     when ::Braintree::UsBankAccount
-                       {
-                         payment_method_type: "us_bank_account",
-                         bank: payment_method.bank_name,
-                         last4: payment_method.last_4
-                       }
-                     else
-                       {
-                         payment_method_type: payment_method.class.name.demodulize.underscore,
-                         brand: payment_method.try(:card_type),
-                         last4: payment_method.try(:last_4),
-                         exp_month: payment_method.try(:expiration_month),
-                         exp_year: payment_method.try(:expiration_year),
-                         bank: payment_method.try(:bank_name),
-                         username: payment_method.try(:username),
-                         email: payment_method.try(:email)
-                       }
+        when ::Braintree::PayPalAccount
+          {
+            payment_method_type: :paypal,
+            brand: "PayPal",
+            email: payment_method.email
+          }
+        when ::Braintree::VenmoAccount
+          {
+            payment_method_type: :venmo,
+            brand: "Venmo",
+            username: payment_method.username
+          }
+        when ::Braintree::UsBankAccount
+          {
+            payment_method_type: "us_bank_account",
+            bank: payment_method.bank_name,
+            last4: payment_method.last_4
+          }
+        else
+          {
+            payment_method_type: payment_method.class.name.demodulize.underscore,
+            brand: payment_method.try(:card_type),
+            last4: payment_method.try(:last_4),
+            exp_month: payment_method.try(:expiration_month),
+            exp_year: payment_method.try(:expiration_year),
+            bank: payment_method.try(:bank_name),
+            username: payment_method.try(:username),
+            email: payment_method.try(:email)
+          }
         end
 
         pay_payment_method = pay_customer.payment_methods.where(processor_id: payment_method.token).first_or_initialize

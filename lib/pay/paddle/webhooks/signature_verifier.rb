@@ -63,53 +63,53 @@ module Pay
         def serialize(var, assoc = false)
           s = ""
           case var
-            when Array
-              s << "a:#{var.size}:{"
-              if assoc && var.first.is_a?(Array) && (var.first.size == 2)
-                var.each do |k, v|
-                  s << serialize(k, assoc) << serialize(v, assoc)
-                end
-              else
-                var.each_with_index do |v, i|
-                  s << "i:#{i};#{serialize(v, assoc)}"
-                end
-              end
-              s << "}"
-            when Hash
-              s << "a:#{var.size}:{"
+          when Array
+            s << "a:#{var.size}:{"
+            if assoc && var.first.is_a?(Array) && (var.first.size == 2)
               var.each do |k, v|
-                s << "#{serialize(k, assoc)}#{serialize(v, assoc)}"
+                s << serialize(k, assoc) << serialize(v, assoc)
               end
-              s << "}"
-            when Struct
-              # encode as Object with same name
-              s << "O:#{var.class.to_s.bytesize}:\"#{var.class.to_s.downcase}\":#{var.members.length}:{"
-              var.members.each do |member|
-                s << "#{serialize(member, assoc)}#{serialize(var[member], assoc)}"
-              end
-              s << "}"
-            when String, Symbol
-              s << "s:#{var.to_s.bytesize}:\"#{var}\";"
-            when Integer
-              s << "i:#{var};"
-            when Float
-              s << "d:#{var};"
-            when NilClass
-              s << "N;"
-            when FalseClass, TrueClass
-              s << "b:#{var ? 1 : 0};"
             else
-              if var.respond_to?(:to_assoc)
-                v = var.to_assoc
-                # encode as Object with same name
-                s << "O:#{var.class.to_s.bytesize}:\"#{var.class.to_s.downcase}\":#{v.length}:{"
-                v.each do |k, v|
-                  s << "#{serialize(k.to_s, assoc)}#{serialize(v, assoc)}"
-                end
-                s << "}"
-              else
-                raise TypeError, "Unable to serialize type #{var.class}"
+              var.each_with_index do |v, i|
+                s << "i:#{i};#{serialize(v, assoc)}"
               end
+            end
+            s << "}"
+          when Hash
+            s << "a:#{var.size}:{"
+            var.each do |k, v|
+              s << "#{serialize(k, assoc)}#{serialize(v, assoc)}"
+            end
+            s << "}"
+          when Struct
+            # encode as Object with same name
+            s << "O:#{var.class.to_s.bytesize}:\"#{var.class.to_s.downcase}\":#{var.members.length}:{"
+            var.members.each do |member|
+              s << "#{serialize(member, assoc)}#{serialize(var[member], assoc)}"
+            end
+            s << "}"
+          when String, Symbol
+            s << "s:#{var.to_s.bytesize}:\"#{var}\";"
+          when Integer
+            s << "i:#{var};"
+          when Float
+            s << "d:#{var};"
+          when NilClass
+            s << "N;"
+          when FalseClass, TrueClass
+            s << "b:#{var ? 1 : 0};"
+          else
+            if var.respond_to?(:to_assoc)
+              v = var.to_assoc
+              # encode as Object with same name
+              s << "O:#{var.class.to_s.bytesize}:\"#{var.class.to_s.downcase}\":#{v.length}:{"
+              v.each do |k, v|
+                s << "#{serialize(k.to_s, assoc)}#{serialize(v, assoc)}"
+              end
+              s << "}"
+            else
+              raise TypeError, "Unable to serialize type #{var.class}"
+            end
           end
           s
         end
