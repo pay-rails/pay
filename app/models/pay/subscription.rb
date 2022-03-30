@@ -57,7 +57,7 @@ module Pay
         where("data->'$.\"metered\"' = true")
       when "postgresql", "postgis"
         # Single quotes are important for json keys apparently
-        where("data->'metered' = 'true')
+        where("data->'metered' = 'true'")
       end
     end
 
