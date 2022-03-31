@@ -45,6 +45,7 @@ end
 * `pay_customer` now supports a `braintree_attributes:` option to add attributes to Braintree::Customers - @excid3
 * `pay_customer` now supports a `default_payment_processor` option to automatically create a Pay::Customer record - @excid3
 * Added `enabled_processors` to Pay config. This lets you choose exactly which processors will be enabled. - @cjilbert504
+* Add `sync!` method to Pay::Subscription instances - @excid3
 
 ### 3.0.24
 

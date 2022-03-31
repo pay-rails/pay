@@ -77,6 +77,10 @@ module Pay
       @payment_processor ||= self.class.pay_processor_for(customer.processor).new(self)
     end
 
+    def sync!
+      self.class.pay_processor_for(customer.processor).sync(processor_id)
+    end
+
     def no_prorate
       self.prorate = false
     end
