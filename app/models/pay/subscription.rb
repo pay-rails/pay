@@ -62,7 +62,7 @@ module Pay
     end
 
     def metered_items?
-      metered
+      !!metered
     end
 
     def self.find_by_processor_and_id(processor, processor_id)
