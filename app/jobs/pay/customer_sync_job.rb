@@ -1,7 +1,5 @@
 module Pay
   class CustomerSyncJob < ApplicationJob
-    queue_as :default
-
     def perform(pay_customer_id)
       Pay::Customer.find(pay_customer_id).update_customer!
     rescue ActiveRecord::RecordNotFound
