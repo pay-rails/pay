@@ -165,15 +165,15 @@ module Pay
       # pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now)
       def pause(**options)
         attributes = {pause_collection: options.reverse_merge(behavior: "mark_uncollectible")}
-        stripe_sub = ::Stripe::Subscription.update(processor_id, attributes, stripe_options)
+        @stripe_subscription = ::Stripe::Subscription.update(processor_id, attributes, stripe_options)
         pay_subscription.update(
-          pause_behavior: stripe_sub.pause_collection&.behavior,
-          pause_resumes_at: (stripe_sub.pause_collection&.resumes_at ? Time.at(stripe_sub.pause_collection&.resumes_at) : nil)
+          pause_behavior: @stripe_subscription.pause_collection&.behavior,
+          pause_resumes_at: (@stripe_subscription.pause_collection&.resumes_at ? Time.at(@stripe_subscription.pause_collection&.resumes_at) : nil)
         )
       end
 
       def unpause
-        ::Stripe::Subscription.update(processor_id, {pause_collection: nil}, stripe_options)
+        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {pause_collection: nil}, stripe_options)
         pay_subscription.update(pause_behavior: nil, pause_resumes_at: nil)
       end
 
@@ -185,7 +185,7 @@ module Pay
         if paused?
           unpause
         else
-          ::Stripe::Subscription.update(
+          @stripe_subscription = ::Stripe::Subscription.update(
             processor_id,
             {
               plan: processor_plan,
