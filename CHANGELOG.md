@@ -37,6 +37,7 @@ end
     * `paddle_pay ~> 0.2`
     * `receipts ~> 2`
 
+* Stripe Subscriptons can now be paused and resumed - @excid3
 * Replace `update_email!` with `update_customer!` - @excid3
 * Add options for `cancel_now!` to support `invoice_now` and `prorate` flags for Stripe - @excid3
 * Adds `add_payment_processor` to add a payment processor without making it the default - @excid3

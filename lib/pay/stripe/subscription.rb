@@ -19,6 +19,8 @@ module Pay
         :stripe_account,
         :subscription_items,
         :trial_ends_at,
+        :pause_behavior,
+        :pause_resumes_at,
         to: :pay_subscription
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
@@ -36,7 +38,9 @@ module Pay
           stripe_account: pay_customer.stripe_account,
           metadata: object.metadata,
           subscription_items: [],
-          metered: false
+          metered: false,
+          pause_behavior: object.pause_collection&.behavior,
+          pause_resumes_at: (object.pause_collection&.resumes_at ? Time.at(object.pause_collection&.resumes_at) : nil)
         }
 
         # Subscriptions that have ended should have their trial ended at the same time
@@ -150,27 +154,47 @@ module Pay
       end
 
       def paused?
-        false
+        pause_behavior.present?
       end
 
-      def pause
-        raise NotImplementedError, "Stripe does not support pausing subscriptions"
+      # Pauses a Stripe subscription
+      #
+      # pause(behavior: "mark_uncollectible")
+      # pause(behavior: "keep_as_draft")
+      # pause(behavior: "void")
+      # pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now)
+      def pause(**options)
+        attributes = {pause_collection: options.reverse_merge(behavior: "mark_uncollectible")}
+        stripe_sub = ::Stripe::Subscription.update(processor_id, attributes, stripe_options)
+        pay_subscription.update(
+          pause_behavior: stripe_sub.pause_collection&.behavior,
+          pause_resumes_at: (stripe_sub.pause_collection&.resumes_at ? Time.at(stripe_sub.pause_collection&.resumes_at) : nil)
+        )
+      end
+
+      def unpause
+        ::Stripe::Subscription.update(processor_id, {pause_collection: nil}, stripe_options)
+        pay_subscription.update(pause_behavior: nil, pause_resumes_at: nil)
       end
 
       def resume
-        unless on_grace_period?
+        unless on_grace_period? || paused?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end
 
-        ::Stripe::Subscription.update(
-          processor_id,
-          {
-            plan: processor_plan,
-            trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
-            cancel_at_period_end: false
-          },
-          stripe_options
-        )
+        if paused?
+          unpause
+        else
+          ::Stripe::Subscription.update(
+            processor_id,
+            {
+              plan: processor_plan,
+              trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
+              cancel_at_period_end: false
+            },
+            stripe_options
+          )
+        end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
