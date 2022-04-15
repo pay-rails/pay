@@ -39,7 +39,7 @@ module Pay
           subscription_items: [],
           metered: false,
           pause_behavior: object.pause_collection&.behavior,
-          pause_resumes_at: (object.pause_collection&.resumes_at ? Time.at(object.pause_collection&.resumes_at) : nil),
+          pause_resumes_at: (object.pause_collection&.resumes_at ? Time.at(object.pause_collection&.resumes_at) : nil)
         }
 
         # Subscriptions that have ended should have their trial ended at the same time
@@ -158,11 +158,11 @@ module Pay
       # pause(behavior: "void")
       # pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now)
       def pause(**options)
-        attributes = { pause_collection: options.reverse_merge(behavior: "mark_uncollectible") }
+        attributes = {pause_collection: options.reverse_merge(behavior: "mark_uncollectible")}
         stripe_sub = ::Stripe::Subscription.update(processor_id, attributes, stripe_options)
         pay_subscription.update(
           pause_behavior: stripe_sub.pause_collection&.behavior,
-          pause_resumes_at: (stripe_sub.pause_collection&.resumes_at ? Time.at(stripe_sub.pause_collection&.resumes_at) : nil),
+          pause_resumes_at: (stripe_sub.pause_collection&.resumes_at ? Time.at(stripe_sub.pause_collection&.resumes_at) : nil)
         )
       end
 
