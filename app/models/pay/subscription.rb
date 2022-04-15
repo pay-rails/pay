@@ -26,6 +26,8 @@ module Pay
     store_accessor :data, :stripe_account
     store_accessor :data, :metered
     store_accessor :data, :subscription_items
+    store_accessor :data, :pause_behavior
+    store_accessor :data, :pause_resumes_at
 
     attribute :prorate, :boolean, default: true
 
@@ -154,6 +156,12 @@ module Pay
     def paddle_paused_from
       if (timestamp = super)
         Time.zone.parse(timestamp)
+      end
+    end
+
+    def pause_resumes_at
+      if (resumes_at = super)
+        Time.zone.parse(resumes_at)
       end
     end
 
