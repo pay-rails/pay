@@ -33,11 +33,15 @@ module Pay
           quantity: object.items.first.try(:quantity) || 0,
           status: object.status,
           stripe_account: pay_customer.stripe_account,
-          trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil),
           metadata: object.metadata,
           subscription_items: [],
           metered: false
         }
+
+        # Subscriptions that have ended should have their trial ended at the same time
+        if object.trial_end
+          attributes[:trial_ends_at] = object.ended_at ? Time.at(object.ended_at) : Time.at(object.trial_end)
+        end
 
         # Record subscription items to db
         object.items.auto_paging_each do |subscription_item|
