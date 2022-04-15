@@ -1,6 +1,7 @@
 module Pay
   module Stripe
     class Subscription
+      attr_accessor :stripe_subscription
       attr_reader :pay_subscription
 
       delegate :active?,
@@ -74,6 +75,9 @@ module Pay
           pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
         end
 
+        # Cache the Stripe subscription on the Pay::Subscription that we return
+        pay_subscription.stripe_subscription = object
+
         # Sync the latest charge if we already have it loaded (like during subscrbe), otherwise, let webhooks take care of creating it
         if (charge = object.try(:latest_invoice).try(:charge)) && charge.try(:status) == "succeeded"
           Pay::Stripe::Charge.sync(charge.id, object: charge)
@@ -97,7 +101,7 @@ module Pay
       def subscription(**options)
         options[:id] = processor_id
         options[:expand] ||= ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]
-        ::Stripe::Subscription.retrieve(options, {stripe_account: stripe_account}.compact)
+        @stripe_subscription ||= ::Stripe::Subscription.retrieve(options, {stripe_account: stripe_account}.compact)
       end
 
       # Returns a SetupIntent or PaymentIntent client secret for the subscription
@@ -107,8 +111,8 @@ module Pay
       end
 
       def cancel(**options)
-        stripe_sub = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}, stripe_options)
-        pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(stripe_sub.current_period_end)))
+        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}, stripe_options)
+        pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(@stripe_subscription.current_period_end)))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -118,7 +122,7 @@ module Pay
       # cancel_now!(prorate: true)
       # cancel_now!(invoice_now: true)
       def cancel_now!(**options)
-        ::Stripe::Subscription.delete(processor_id, options, stripe_options)
+        @stripe_subscription = ::Stripe::Subscription.delete(processor_id, options, stripe_options)
         pay_subscription.update(ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -132,9 +136,11 @@ module Pay
         subscription_item_id = options.fetch(:subscription_item_id, subscription_items.first["id"])
         if subscription_item_id
           ::Stripe::SubscriptionItem.update(subscription_item_id, options.merge(quantity: quantity), stripe_options)
+          @stripe_subscription = nil
         else
-          ::Stripe::Subscription.update(processor_id, options.merge(quantity: quantity), stripe_options)
+          @stripe_subscription = ::Stripe::Subscription.update(processor_id, options.merge(quantity: quantity), stripe_options)
         end
+        true
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -172,7 +178,7 @@ module Pay
       def swap(plan)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
-        ::Stripe::Subscription.update(
+        @stripe_subscription = ::Stripe::Subscription.update(
           processor_id,
           {
             cancel_at_period_end: false,
