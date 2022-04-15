@@ -219,6 +219,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
       metadata: {
         license_id: 1
       },
+      pause_collection: nil,
       items: {
         object: "list",
         data: [
