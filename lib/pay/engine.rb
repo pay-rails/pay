@@ -28,10 +28,12 @@ module Pay
       Pay::Braintree.setup if Pay::Braintree.enabled?
       Pay::Paddle.setup if Pay::Paddle.enabled?
 
-      if defined?(::Receipts::VERSION) && Pay::Engine.version_matches?(required: "~> 2", current: ::Receipts::VERSION)
-        Pay::Charge.include Pay::Receipts
-      else
-        raise "[Pay] receipts gem must be version ~> 2"
+      if defined?(::Receipts::VERSION)
+        if Pay::Engine.version_matches?(required: "~> 2", current: ::Receipts::VERSION)
+          Pay::Charge.include Pay::Receipts
+        else
+          raise "[Pay] receipts gem must be version ~> 2"
+        end
       end
     end
 
