@@ -117,7 +117,7 @@ module Pay
         opts[:customer] = customer.id
 
         # Create subscription on Stripe
-        stripe_sub = ::Stripe::Subscription.create(opts, stripe_options)
+        stripe_sub = ::Stripe::Subscription.create(opts.merge(Pay::Stripe::Subscription.expand_options), stripe_options)
 
         # Save Pay::Subscription
         subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name)
