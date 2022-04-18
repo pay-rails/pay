@@ -52,6 +52,11 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_equal "sales_tax", pay_charge.total_tax_amounts.first.dig("tax_rate", "tax_type")
   end
 
+  test "sync records stripe receipt_url" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
+    assert_equal "https://pay.stripe.com/receipts/test_receipt", pay_charge.stripe_receipt_url
+  end
+
   private
 
   def fake_stripe_invoice(**values)
@@ -115,7 +120,8 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
       },
       metadata: {
         license_id: 1
-      }
+      },
+      receipt_url: "https://pay.stripe.com/receipts/test_receipt"
     )
     ::Stripe::Charge.construct_from(values)
   end
