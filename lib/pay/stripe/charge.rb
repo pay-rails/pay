@@ -20,6 +20,7 @@ module Pay
           created_at: Time.at(object.created),
           currency: object.currency,
           stripe_account: pay_customer.stripe_account,
+          stripe_receipt_url: object.receipt_url,
           metadata: object.metadata,
           payment_method_type: object.payment_method_details.type,
           brand: payment_method.try(:brand)&.capitalize,

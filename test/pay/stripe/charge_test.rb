@@ -115,7 +115,8 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
       },
       metadata: {
         license_id: 1
-      }
+      },
+      receipt_url: "https://pay.stripe.com/receipts/test_receipt"
     )
     ::Stripe::Charge.construct_from(values)
   end
