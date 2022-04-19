@@ -87,7 +87,6 @@ module Pay
         args = {
           amount: amount,
           confirm: true,
-          confirmation_method: :automatic,
           currency: "usd",
           customer: processor_id,
           payment_method: payment_method&.processor_id
@@ -266,6 +265,10 @@ module Pay
           return_url: options.delete(:return_url) || root_url
         }
         ::Stripe::BillingPortal::Session.create(args.merge(options), stripe_options)
+      end
+
+      def authorize(amount, options = {})
+        charge(amount, options.merge(capture_method: :manual))
       end
 
       private

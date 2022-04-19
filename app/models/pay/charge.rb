@@ -30,6 +30,8 @@ module Pay
     store_accessor :data, :username # Venmo
     store_accessor :data, :bank
 
+    store_accessor :data, :amount_captured
+    store_accessor :data, :payment_intent_id
     store_accessor :data, :period_start
     store_accessor :data, :period_end
     store_accessor :data, :line_items
@@ -48,6 +50,8 @@ module Pay
       scope processor_name, -> { where(processor: processor_name) }
     end
 
+    delegate :capture, to: :payment_processor
+
     def self.find_by_processor_and_id(processor, processor_id)
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})
     end
@@ -62,6 +66,10 @@ module Pay
 
     def processor_charge
       payment_processor.charge
+    end
+
+    def captured?
+      amount_captured > 0
     end
 
     def refund!(refund_amount = nil)

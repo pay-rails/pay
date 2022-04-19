@@ -412,6 +412,23 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_nil @pay_subscription.pause_resumes_at
   end
 
+  test "stripe can authorize a charge" do
+    @pay_customer.payment_method_token = payment_method
+    charge = @pay_customer.authorize(29_00)
+    assert_equal Pay::Charge, charge.class
+    assert_equal 0, charge.amount_captured
+  end
+
+  test "stripe can capture an authorized charge" do
+    @pay_customer.payment_method_token = payment_method
+    charge = @pay_customer.authorize(29_00)
+    assert_equal 0, charge.amount_captured
+
+    charge = charge.capture
+    assert charge.captured?
+    assert_equal 29_00, charge.amount_captured
+  end
+
   private
 
   def payment_method

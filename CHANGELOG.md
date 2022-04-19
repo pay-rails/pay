@@ -40,6 +40,12 @@ end
 * Stripe.max_network_retries is now set to 2 by default. - @excid3
   This adds idempotency keys automatically to each request so that they can be safely retried.
 * Stripe Subscriptons can now be paused and resumed - @excid3
+* Separate authorize and capture is now supported on Stripe - @excid3
+  ```ruby
+  pay_charge = pay_customer.authorize(75_00)
+  pay_charge.capture
+  pay_charge.capture(amount_to_capture: 50_00) # or with an amount
+  ```
 * Store `stripe_receipt_url` on Pay::Charge - @mguidetti
 * Replace `update_email!` with `update_customer!` - @excid3
 * Add options for `cancel_now!` to support `invoice_now` and `prorate` flags for Stripe - @excid3
