@@ -3,7 +3,12 @@ module Pay
     class Charge
       attr_reader :pay_charge
 
-      delegate :processor_id, :stripe_account, to: :pay_charge
+      delegate :amount,
+        :amount_captured,
+        :payment_intent_id,
+        :processor_id,
+        :stripe_account,
+        to: :pay_charge
 
       def self.sync(charge_id, object: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest charge details from the API if we already have it
@@ -15,22 +20,24 @@ module Pay
         payment_method = object.payment_method_details.send(object.payment_method_details.type)
         attrs = {
           amount: object.amount,
+          amount_captured: object.amount_captured,
           amount_refunded: object.amount_refunded,
           application_fee_amount: object.application_fee_amount,
+          bank: payment_method.try(:bank_name) || payment_method.try(:bank), # eps, fpx, ideal, p24, acss_debit, etc
+          brand: payment_method.try(:brand)&.capitalize,
           created_at: Time.at(object.created),
           currency: object.currency,
-          stripe_account: pay_customer.stripe_account,
-          stripe_receipt_url: object.receipt_url,
-          metadata: object.metadata,
-          payment_method_type: object.payment_method_details.type,
-          brand: payment_method.try(:brand)&.capitalize,
-          last4: payment_method.try(:last4).to_s,
+          discounts: [],
           exp_month: payment_method.try(:exp_month).to_s,
           exp_year: payment_method.try(:exp_year).to_s,
-          bank: payment_method.try(:bank_name) || payment_method.try(:bank), # eps, fpx, ideal, p24, acss_debit, etc
+          last4: payment_method.try(:last4).to_s,
           line_items: [],
-          total_tax_amounts: [],
-          discounts: []
+          metadata: object.metadata,
+          payment_intent_id: object.payment_intent,
+          payment_method_type: object.payment_method_details.type,
+          stripe_account: pay_customer.stripe_account,
+          stripe_receipt_url: object.receipt_url,
+          total_tax_amounts: []
         }
 
         # Associate charge with subscription if we can
@@ -108,6 +115,16 @@ module Pay
         pay_charge.update(amount_refunded: amount_to_refund)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      # https://stripe.com/docs/payments/capture-later
+      #
+      # capture
+      # capture(amount_to_capture: 15_00)
+      def capture(**options)
+        raise Pay::Stripe::Error, "no payment_intent_id on charge" unless payment_intent_id.present?
+        ::Stripe::PaymentIntent.capture(payment_intent_id, options, stripe_options)
+        self.class.sync(processor_id)
       end
 
       private

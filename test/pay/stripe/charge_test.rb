@@ -104,11 +104,13 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
       id: "ch_123",
       customer: "cus_1234",
       amount: 19_00,
+      amount_captured: 19_00,
       amount_refunded: nil,
       application_fee_amount: 0,
       created: 1546332337,
       currency: "usd",
       invoice: nil,
+      payment_intent: "pm_1234",
       payment_method_details: {
         card: {
           exp_month: 1,
