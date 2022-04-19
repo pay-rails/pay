@@ -34,7 +34,12 @@ module Pay
       end
 
       def cancel_now!(**options)
-        pay_subscription.update(ends_at: Time.current, status: :canceled)
+        ends_at = Time.current
+        pay_subscription.update(
+          status: :canceled,
+          trial_ends_at: (ends_at if pay_subscription.trial_ends_at?),
+          ends_at: ends_at
+        )
       end
 
       def on_grace_period?
