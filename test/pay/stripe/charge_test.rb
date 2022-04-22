@@ -61,6 +61,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   def fake_stripe_invoice(**values)
     values.reverse_merge!(
+      id: "in_1234",
       subscription: "sub_1234",
       period_start: Time.current,
       period_end: Time.current,
