@@ -34,6 +34,11 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_equal pay_subscription, pay_charge.subscription
   end
 
+  test "sync records stripe invoice ID" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
+    assert_equal "in_1234", pay_charge.invoice_id
+  end
+
   test "sync records tax from invoice" do
     @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
