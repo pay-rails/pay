@@ -43,6 +43,7 @@ module Pay
         # Associate charge with subscription if we can
         if object.invoice
           invoice = (object.invoice.is_a?(::Stripe::Invoice) ? object.invoice : ::Stripe::Invoice.retrieve({id: object.invoice, expand: ["total_discount_amounts.discount", "total_tax_amounts.tax_rate"]}, {stripe_account: stripe_account}.compact))
+          attrs[:invoice_id] = invoice.id
           attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: invoice.subscription)
 
           attrs[:period_start] = Time.at(invoice.period_start)

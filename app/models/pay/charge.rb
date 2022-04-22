@@ -31,6 +31,7 @@ module Pay
     store_accessor :data, :bank
 
     store_accessor :data, :amount_captured
+    store_accessor :data, :invoice_id
     store_accessor :data, :payment_intent_id
     store_accessor :data, :period_start
     store_accessor :data, :period_end
