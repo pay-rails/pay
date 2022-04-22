@@ -51,7 +51,7 @@ module Pay
         stripe_customer = if processor_id?
           ::Stripe::Customer.retrieve({id: processor_id, expand: ["tax"]}, stripe_options)
         else
-          sc = ::Stripe::Customer.create(customer_attributes, stripe_options)
+          sc = ::Stripe::Customer.create(customer_attributes.merge(expand: ["tax"]), stripe_options)
           pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
           sc
         end
