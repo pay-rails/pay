@@ -3,7 +3,7 @@ require "pay/engine"
 require "pay/errors"
 require "pay/adapter"
 
-require 'active_support/dependencies'
+require "active_support/dependencies"
 
 module Pay
   autoload :Attributes, "pay/attributes"
@@ -65,7 +65,7 @@ module Pay
   def self.mailer=(value)
     @@mailer_ref = -> { ActiveSupport::Inflector.safe_constantize(value) }
   end
-  self.mailer = 'Pay::UserMailer'
+  self.mailer = "Pay::UserMailer"
 
   def self.mailer
     @@mailer_ref&.call

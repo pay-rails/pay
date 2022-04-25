@@ -110,9 +110,9 @@ class Pay::Test < ActiveSupport::TestCase
   end
 
   test "can configure mailer and retrieve correct class" do
-    Pay.mailer = 'ApplicationMailer'
+    Pay.mailer = "ApplicationMailer"
     assert_equal(Pay.mailer, ApplicationMailer)
 
-    Pay.mailer = 'Pay::UserMailer' # clean up for other tests
+    Pay.mailer = "Pay::UserMailer" # clean up for other tests
   end
 end
