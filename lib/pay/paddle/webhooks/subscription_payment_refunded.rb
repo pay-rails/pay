@@ -9,7 +9,7 @@ module Pay
           pay_charge.update!(amount_refunded: (event.gross_refund.to_f * 100).to_i)
 
           if Pay.send_email?(:refund, pay_charge)
-            Pay::UserMailer.with(pay_customer: pay_charge.customer, pay_charge: pay_charge).refund.deliver_later
+            Pay.mailer.with(pay_customer: pay_charge.customer, pay_charge: pay_charge).refund.deliver_later
           end
         end
       end
