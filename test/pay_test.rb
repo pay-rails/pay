@@ -104,4 +104,15 @@ class Pay::Test < ActiveSupport::TestCase
       Pay.send_email?(:subscription_renewing, pay_subscription)
     end
   end
+
+  test "can retrieve Pay::UserMail as default mailer" do
+    assert_equal(Pay.mailer, Pay::UserMailer)
+  end
+
+  test "can configure mailer and retrieve correct class" do
+    Pay.mailer = 'ApplicationMailer'
+    assert_equal(Pay.mailer, ApplicationMailer)
+
+    Pay.mailer = 'Pay::UserMailer' # clean up for other tests
+  end
 end
