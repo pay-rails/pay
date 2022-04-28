@@ -51,7 +51,7 @@ module Pay
       scope processor_name, -> { where(processor: processor_name) }
     end
 
-    delegate :capture, to: :payment_processor
+    delegate :capture, :credit_note!, :credit_notes, to: :payment_processor
 
     def self.find_by_processor_and_id(processor, processor_id)
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})

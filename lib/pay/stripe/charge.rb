@@ -5,6 +5,8 @@ module Pay
 
       delegate :amount,
         :amount_captured,
+        :invoice_id,
+        :line_items,
         :payment_intent_id,
         :processor_id,
         :stripe_account,
@@ -106,16 +108,39 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
+      # Issues a CreditNote if there's an invoice, otherwise uses a Refund
+      # This allows Tax to be handled properly
+      #
+      # https://stripe.com/docs/api/credit_notes/create
       # https://stripe.com/docs/api/refunds/create
       #
       # refund!
       # refund!(5_00)
       # refund!(5_00, refund_application_fee: true)
       def refund!(amount_to_refund, **options)
-        ::Stripe::Refund.create(options.merge(charge: processor_id, amount: amount_to_refund), stripe_options)
-        pay_charge.update(amount_refunded: amount_to_refund)
+        if invoice_id.present?
+          description = options.delete(:description) || I18n.t("refund")
+          lines = [{type: :custom_line_item, description: description, quantity: 1, unit_amount: amount_to_refund}]
+          credit_note!(**options.merge(refund_amount: amount_to_refund, lines: lines))
+        else
+          ::Stripe::Refund.create(options.merge(charge: processor_id, amount: amount_to_refund), stripe_options)
+        end
+        pay_charge.update!(amount_refunded: amount_to_refund)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      # Adds a credit note to a Stripe Invoice
+      def credit_note!(**options)
+        raise Pay::Stripe::Error, "no Stripe invoice_id on Pay::Charge" if invoice_id.blank?
+        ::Stripe::CreditNote.create({invoice: invoice_id}.merge(options), stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
+      end
+
+      def credit_notes(**options)
+        raise Pay::Stripe::Error, "no Stripe invoice_id on Pay::Charge" if invoice_id.blank?
+        ::Stripe::CreditNote.list({invoice: invoice_id}.merge(options), stripe_options)
       end
 
       # https://stripe.com/docs/payments/capture-later
@@ -126,6 +151,8 @@ module Pay
         raise Pay::Stripe::Error, "no payment_intent_id on charge" unless payment_intent_id.present?
         ::Stripe::PaymentIntent.capture(payment_intent_id, options, stripe_options)
         self.class.sync(processor_id)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       private

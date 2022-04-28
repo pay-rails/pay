@@ -431,6 +431,16 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_equal 29_00, charge.amount_captured
   end
 
+  test "stripe can issue credit note for a refund for Stripe tax" do
+    @pay_customer.payment_method_token = payment_method
+    pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
+    pay_subscription.charges.last.refund!(5_00)
+    pay_subscription.payment_processor.reload!
+    invoice = pay_subscription.subscription.latest_invoice
+    assert_equal 5_00, invoice.post_payment_credit_notes_amount
+    assert_equal 5_00, pay_subscription.charges.last.amount_refunded
+  end
+
   private
 
   def payment_method

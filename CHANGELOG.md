@@ -36,7 +36,10 @@ end
     * `braintree ~> 4`
     * `paddle_pay ~> 0.2`
     * `receipts ~> 2`
-
+* Add `credit_note!` to Stripe charges - @excid3
+* `refund!` now issues a Stripe::CreditNote if an invoice is present - @excid3
+  > Refunds of charges associated with an Invoice don’t reduce your overall tax liability and don’t show up in Stripe Tax reporting. https://stripe.com/docs/tax/faq#how-do-refunds-work
+  > In most cases, you should use credit notes instead of refunds. Credit notes reduce your overall tax liability and show up in Stripe Tax reporting. https://stripe.com/docs/tax/faq#how-do-you-handle-credit-notes
 * Stripe.max_network_retries is now set to 2 by default. - @excid3
   This adds idempotency keys automatically to each request so that they can be safely retried.
 * Stripe Subscriptons can now be paused and resumed - @excid3

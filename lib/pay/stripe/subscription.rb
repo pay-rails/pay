@@ -112,6 +112,10 @@ module Pay
         @stripe_subscription ||= ::Stripe::Subscription.retrieve(options.merge(expand_options), {stripe_account: stripe_account}.compact)
       end
 
+      def reload!
+        @stripe_subscription = nil
+      end
+
       # Returns a SetupIntent or PaymentIntent client secret for the subscription
       def client_secret
         stripe_sub = subscription
