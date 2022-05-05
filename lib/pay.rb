@@ -71,6 +71,15 @@ module Pay
     @@mailer_ref&.call
   end
 
+  def self.parent_mailer=(value)
+    @@parent_mailer = -> { ActiveSupport::Inflector.safe_constantize(value) }
+  end
+  self.parent_mailer = "Pay::ApplicationMailer"
+
+  def self.parent_mailer
+    @@parent_mailer&.call
+  end
+
   def self.setup
     yield self
   end
