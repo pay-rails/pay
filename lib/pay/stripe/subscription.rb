@@ -45,7 +45,7 @@ module Pay
 
         # Subscriptions that have ended should have their trial ended at the same time
         if object.trial_end
-          attributes[:trial_ends_at] = object.ended_at ? Time.at(object.ended_at) : Time.at(object.trial_end)
+          attributes[:trial_ends_at] = Time.at(object.ended_at || object.trial_end)
         end
 
         # Record subscription items to db

@@ -31,7 +31,7 @@ module Pay
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
 
-      Pay::Engine.version_matches?(required: "~> 5", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 5")
+      Pay::Engine.version_matches?(required: "~> 6", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 6")
     end
 
     def self.setup
