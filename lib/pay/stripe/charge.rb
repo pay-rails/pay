@@ -16,6 +16,9 @@ module Pay
         # Skip loading the latest charge details from the API if we already have it
         object ||= ::Stripe::Charge.retrieve({id: charge_id, expand: ["invoice.total_discount_amounts.discount", "invoice.total_tax_amounts.tax_rate"]}, {stripe_account: stripe_account}.compact)
 
+        # Ignore charges without a Customer
+        return if object.customer.blank?
+
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
 
