@@ -17,6 +17,14 @@ This creates a `Pay::Customer` record in the database that keeps track of the pa
 
 The `fake_processor` is restricted by default so users can't give themselves free access to your application.
 
+Alternatively, you can set a default processor for all users.
+
+```ruby
+class User < ApplicationRecord
+  pay_customer default_payment_processor: :stripe
+end
+```
+
 ## Payment Processor Associations
 
 After setting the payment processor, your model will have a `payment_processor` they can use to create charges, subscriptions, etc.
