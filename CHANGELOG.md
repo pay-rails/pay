@@ -1,5 +1,7 @@
 ### Unreleased
 
+### 4.0.1
+
 * Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504 @kyleschmolze
 * Add configuration options for mailer - @excid3 @le-doude @cjilbert504
 
