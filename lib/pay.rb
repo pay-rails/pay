@@ -3,6 +3,8 @@ require "pay/engine"
 require "pay/errors"
 require "pay/adapter"
 
+require "active_support/dependencies"
+
 module Pay
   autoload :Attributes, "pay/attributes"
   autoload :Env, "pay/env"
@@ -59,6 +61,24 @@ module Pay
   @@emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
+
+  def self.mailer=(value)
+    @@mailer_ref = -> { ActiveSupport::Inflector.safe_constantize(value) }
+  end
+  self.mailer = "Pay::UserMailer"
+
+  def self.mailer
+    @@mailer_ref&.call
+  end
+
+  def self.parent_mailer=(value)
+    @@parent_mailer = -> { ActiveSupport::Inflector.safe_constantize(value) }
+  end
+  self.parent_mailer = "Pay::ApplicationMailer"
+
+  def self.parent_mailer
+    @@parent_mailer&.call
+  end
 
   def self.setup
     yield self

@@ -15,7 +15,7 @@ module Pay
           price = event.data.object.lines.data.first.price
 
           if Pay.send_email?(:subscription_renewing, pay_subscription, price)
-            Pay::UserMailer.with(
+            Pay.mailer.with(
               pay_customer: pay_subscription.customer,
               pay_subscription: pay_subscription,
               date: Time.zone.at(event.data.object.next_payment_attempt)
