@@ -68,6 +68,30 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_not_nil pay_subscription.ends_at
   end
 
+  test "sync stripe subscription has nil trial_ends_at without trial" do
+    fake_subscription = fake_stripe_subscription(ended_at: 1488987924)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
+    assert_nil pay_subscription.trial_ends_at
+  end
+
+  test "sync stripe subscription sets trial_ends_at with trial" do
+    fake_subscription = fake_stripe_subscription(trial_end: 1488987924)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
+    assert_equal 1488987924, pay_subscription.trial_ends_at.to_i
+  end
+
+  test "sync stripe subscription sets trial_ends_at when subscription canceled after trial end" do
+    fake_subscription = fake_stripe_subscription(trial_end: 1488987924, ended_at: 1650479887)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
+    assert_equal 1650479887, pay_subscription.trial_ends_at.to_i
+  end
+
+  test "sync stripe subscription sets trial_ends_at to ended_at when subscription canceled before trial end" do
+    fake_subscription = fake_stripe_subscription(trial_end: 1650479887, ended_at: 1488987924)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
+    assert_equal 1488987924, pay_subscription.trial_ends_at.to_i
+  end
+
   test "it will throw an error if the passed argument is not a string" do
     Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
 
@@ -128,13 +152,13 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal 0, pay_subscription.quantity
   end
 
-  test "#meterd returns true if subscription has metered subscription items" do
+  test "#metered returns true if subscription has metered subscription items" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription_with_metered_item)
 
     assert pay_subscription.metered
   end
 
-  test "#meterd returns false if subscription does not have metered subscription items" do
+  test "#metered returns false if subscription does not have metered subscription items" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
 
     refute pay_subscription.metered
@@ -195,6 +219,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
       metadata: {
         license_id: 1
       },
+      pause_collection: nil,
       items: {
         object: "list",
         data: [

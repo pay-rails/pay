@@ -15,7 +15,7 @@ module Pay
 
     def receipt_details
       [
-        [I18n.t("pay.receipt.number"), id],
+        [I18n.t("pay.receipt.number"), receipt_number],
         [I18n.t("pay.receipt.date"), I18n.l(created_at, format: :long)],
         [I18n.t("pay.receipt.payment_method"), charged_to]
       ]
@@ -124,7 +124,7 @@ module Pay
 
     def invoice_details
       [
-        [I18n.t("pay.invoice.number"), id],
+        [I18n.t("pay.invoice.number"), invoice_number],
         [I18n.t("pay.invoice.date"), I18n.l(created_at, format: :long)],
         [I18n.t("pay.invoice.payment_method"), charged_to]
       ]
@@ -148,6 +148,14 @@ module Pay
       }
 
       ::Receipts::Invoice.new(defaults.deep_merge(options))
+    end
+
+    def invoice_number
+      id
+    end
+
+    def receipt_number
+      invoice_number
     end
   end
 end

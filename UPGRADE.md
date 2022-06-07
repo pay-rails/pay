@@ -112,10 +112,10 @@ end
 As Pay is working to setup the payment processors that you have enabled it performs a version check on each to ensure that you are using a compatible version.
 
 Pay depends on the following payment processor gem versions:
-- `stripe ~> 5`
-- `braintree ~> 4`
+- `stripe ~> 6.0`
+- `braintree ~> 4.7`
 - `paddle_pay ~> 0.2`
-- `receipts ~> 2`
+- `receipts ~> 2.0`
 
 If you are using a non-compatible version Pay will raise an error message to notify you of the incompatibility so that it can be addressed before proceeding.
 

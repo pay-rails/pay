@@ -28,10 +28,21 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     end
   end
 
+  test "sync stripe charge ignores when customer is nil" do
+    assert_no_difference "Pay::Charge.count" do
+      Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(customer: nil))
+    end
+  end
+
   test "sync associates charge with stripe subscription" do
     pay_subscription = @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
     assert_equal pay_subscription, pay_charge.subscription
+  end
+
+  test "sync records stripe invoice ID" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
+    assert_equal "in_1234", pay_charge.invoice_id
   end
 
   test "sync records tax from invoice" do
@@ -52,6 +63,11 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_equal "sales_tax", pay_charge.total_tax_amounts.first.dig("tax_rate", "tax_type")
   end
 
+  test "sync records stripe receipt_url" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
+    assert_equal "https://pay.stripe.com/receipts/test_receipt", pay_charge.stripe_receipt_url
+  end
+
   test "performing multiple refunds increments total refund amount" do
     @pay_customer.update(processor_id: nil)
     @pay_customer.payment_method_token = payment_method
@@ -65,6 +81,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   def fake_stripe_invoice(**values)
     values.reverse_merge!(
+      id: "in_1234",
       subscription: "sub_1234",
       period_start: Time.current,
       period_end: Time.current,
@@ -108,11 +125,13 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
       id: "ch_123",
       customer: "cus_1234",
       amount: 19_00,
+      amount_captured: 19_00,
       amount_refunded: nil,
       application_fee_amount: 0,
       created: 1546332337,
       currency: "usd",
       invoice: nil,
+      payment_intent: "pm_1234",
       payment_method_details: {
         card: {
           exp_month: 1,
@@ -124,7 +143,8 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
       },
       metadata: {
         license_id: 1
-      }
+      },
+      receipt_url: "https://pay.stripe.com/receipts/test_receipt"
     )
     ::Stripe::Charge.construct_from(values)
   end

@@ -1,6 +1,7 @@
 module Pay
   module Stripe
     class Subscription
+      attr_accessor :stripe_subscription
       attr_reader :pay_subscription
 
       delegate :active?,
@@ -18,11 +19,13 @@ module Pay
         :stripe_account,
         :subscription_items,
         :trial_ends_at,
+        :pause_behavior,
+        :pause_resumes_at,
         to: :pay_subscription
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest subscription details from the API if we already have it
-        object ||= ::Stripe::Subscription.retrieve({id: subscription_id, expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]}, {stripe_account: stripe_account}.compact)
+        object ||= ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
@@ -33,11 +36,17 @@ module Pay
           quantity: object.items.first.try(:quantity) || 0,
           status: object.status,
           stripe_account: pay_customer.stripe_account,
-          trial_ends_at: (object.trial_end ? Time.at(object.trial_end) : nil),
           metadata: object.metadata,
           subscription_items: [],
-          metered: false
+          metered: false,
+          pause_behavior: object.pause_collection&.behavior,
+          pause_resumes_at: (object.pause_collection&.resumes_at ? Time.at(object.pause_collection&.resumes_at) : nil)
         }
+
+        # Subscriptions that have ended should have their trial ended at the same time
+        if object.trial_end
+          attributes[:trial_ends_at] = Time.at(object.ended_at || object.trial_end)
+        end
 
         # Record subscription items to db
         object.items.auto_paging_each do |subscription_item|
@@ -70,6 +79,9 @@ module Pay
           pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
         end
 
+        # Cache the Stripe subscription on the Pay::Subscription that we return
+        pay_subscription.stripe_subscription = object
+
         # Sync the latest charge if we already have it loaded (like during subscrbe), otherwise, let webhooks take care of creating it
         if (charge = object.try(:latest_invoice).try(:charge)) && charge.try(:status) == "succeeded"
           Pay::Stripe::Charge.sync(charge.id, object: charge)
@@ -86,14 +98,22 @@ module Pay
         end
       end
 
+      # Common expand options for all requests that create, retrieve, or update a Stripe Subscription
+      def self.expand_options
+        {expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]}
+      end
+
       def initialize(pay_subscription)
         @pay_subscription = pay_subscription
       end
 
       def subscription(**options)
         options[:id] = processor_id
-        options[:expand] ||= ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]
-        ::Stripe::Subscription.retrieve(options, {stripe_account: stripe_account}.compact)
+        @stripe_subscription ||= ::Stripe::Subscription.retrieve(options.merge(expand_options), {stripe_account: stripe_account}.compact)
+      end
+
+      def reload!
+        @stripe_subscription = nil
       end
 
       # Returns a SetupIntent or PaymentIntent client secret for the subscription
@@ -103,8 +123,8 @@ module Pay
       end
 
       def cancel(**options)
-        stripe_sub = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}, stripe_options)
-        pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(stripe_sub.current_period_end)))
+        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}.merge(expand_options), stripe_options)
+        pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(@stripe_subscription.current_period_end)))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -114,7 +134,7 @@ module Pay
       # cancel_now!(prorate: true)
       # cancel_now!(invoice_now: true)
       def cancel_now!(**options)
-        ::Stripe::Subscription.delete(processor_id, options, stripe_options)
+        @stripe_subscription = ::Stripe::Subscription.delete(processor_id, options.merge(expand_options), stripe_options)
         pay_subscription.update(ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -128,9 +148,11 @@ module Pay
         subscription_item_id = options.fetch(:subscription_item_id, subscription_items.first["id"])
         if subscription_item_id
           ::Stripe::SubscriptionItem.update(subscription_item_id, options.merge(quantity: quantity), stripe_options)
+          @stripe_subscription = nil
         else
-          ::Stripe::Subscription.update(processor_id, options.merge(quantity: quantity), stripe_options)
+          @stripe_subscription = ::Stripe::Subscription.update(processor_id, options.merge(quantity: quantity).merge(expand_options), stripe_options)
         end
+        true
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -140,27 +162,47 @@ module Pay
       end
 
       def paused?
-        false
+        pause_behavior.present?
       end
 
-      def pause
-        raise NotImplementedError, "Stripe does not support pausing subscriptions"
+      # Pauses a Stripe subscription
+      #
+      # pause(behavior: "mark_uncollectible")
+      # pause(behavior: "keep_as_draft")
+      # pause(behavior: "void")
+      # pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now)
+      def pause(**options)
+        attributes = {pause_collection: options.reverse_merge(behavior: "mark_uncollectible")}
+        @stripe_subscription = ::Stripe::Subscription.update(processor_id, attributes.merge(expand_options), stripe_options)
+        pay_subscription.update(
+          pause_behavior: @stripe_subscription.pause_collection&.behavior,
+          pause_resumes_at: (@stripe_subscription.pause_collection&.resumes_at ? Time.at(@stripe_subscription.pause_collection&.resumes_at) : nil)
+        )
+      end
+
+      def unpause
+        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {pause_collection: nil}.merge(expand_options), stripe_options)
+        pay_subscription.update(pause_behavior: nil, pause_resumes_at: nil)
       end
 
       def resume
-        unless on_grace_period?
+        unless on_grace_period? || paused?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end
 
-        ::Stripe::Subscription.update(
-          processor_id,
-          {
-            plan: processor_plan,
-            trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
-            cancel_at_period_end: false
-          },
-          stripe_options
-        )
+        if paused?
+          unpause
+        else
+          @stripe_subscription = ::Stripe::Subscription.update(
+            processor_id,
+            {
+              plan: processor_plan,
+              trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
+              cancel_at_period_end: false
+            }.merge(expand_options),
+            stripe_options
+          )
+        end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -168,7 +210,7 @@ module Pay
       def swap(plan)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
-        ::Stripe::Subscription.update(
+        @stripe_subscription = ::Stripe::Subscription.update(
           processor_id,
           {
             cancel_at_period_end: false,
@@ -176,7 +218,7 @@ module Pay
             proration_behavior: (prorate ? "create_prorations" : "none"),
             trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             quantity: quantity
-          },
+          }.merge(expand_options),
           stripe_options
         )
       rescue ::Stripe::StripeError => e
@@ -210,6 +252,10 @@ module Pay
       # Options for Stripe requests
       def stripe_options
         {stripe_account: stripe_account}.compact
+      end
+
+      def expand_options
+        self.class.expand_options
       end
     end
   end

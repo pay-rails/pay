@@ -31,7 +31,7 @@ module Pay
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
 
-      Pay::Engine.version_matches?(required: "~> 5", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 5")
+      Pay::Engine.version_matches?(required: "~> 6", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 6")
     end
 
     def self.setup
@@ -40,6 +40,11 @@ module Pay
 
       # Used by Stripe to identify Pay for support
       ::Stripe.set_app_info("PayRails", partner_id: "pp_partner_IqhY0UExnJYLxg", version: Pay::VERSION, url: "https://github.com/pay-rails/pay")
+
+      # Automatically retry requests that fail
+      # This automatically includes idempotency keys in the request to guarantee that retires are safe
+      # https://github.com/stripe/stripe-ruby#configuring-automatic-retries
+      ::Stripe.max_network_retries = 2
     end
 
     def self.public_key

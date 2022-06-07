@@ -1,3 +1,3 @@
 module Pay
-  VERSION = "3.0.24"
+  VERSION = "4.0.0"
 end

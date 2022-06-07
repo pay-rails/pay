@@ -38,7 +38,7 @@ module Pay
           refresh_url: refresh_url,
           return_url: return_url,
           type: type
-        })
+        }.merge(options))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end

@@ -72,12 +72,13 @@ The details saved will vary depending upon the payment method used.
 @charge.bank #=> Bank name
 ```
 
-## Paddle
+## Receipt URL
 
-Paddle provides a receipt URL for each payment.
+Paddle and Stripe provide a receipt URL for each payment.
 
 ```ruby
 @charge.paddle_receipt_url
+@charge.stripe_receipt_url
 ```
 
 ## Next
