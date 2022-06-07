@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504
+
 * [Breaking] Replaced `subscription` and `charge` email params to `pay_subscription` and `pay_charge` respectively. - @cjilbert504
 * [Breaking] Replaced `send_emails` with `emails` config. This allows you to customize which emails can be sent independently. - @cjilbert504
 ```ruby

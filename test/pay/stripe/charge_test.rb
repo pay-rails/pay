@@ -52,6 +52,15 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_equal "sales_tax", pay_charge.total_tax_amounts.first.dig("tax_rate", "tax_type")
   end
 
+  test "performing multiple refunds increments total refund amount" do
+    @pay_customer.update(processor_id: nil)
+    @pay_customer.payment_method_token = payment_method
+    charge = @pay_customer.charge(30_00)
+    charge.refund!(10_00)
+    charge.refund!(5_00)
+    assert_equal 15_00, charge.amount_refunded
+  end
+
   private
 
   def fake_stripe_invoice(**values)
@@ -118,5 +127,9 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
       }
     )
     ::Stripe::Charge.construct_from(values)
+  end
+   
+  def payment_method
+    @payment_method ||= "pm_card_visa"
   end
 end
