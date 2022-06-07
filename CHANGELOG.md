@@ -1,6 +1,6 @@
 ### Unreleased
 
-* Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504
+* Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504 @kyleschmolze
 
 ### 4.0.0
 
