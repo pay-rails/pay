@@ -1,6 +1,16 @@
 ### Unreleased
 
 * Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504 @kyleschmolze
+* Add configuration options for mailer - @excid3 @le-doude @cjilbert504
+
+```ruby
+Pay.setup do |config|
+  # Change parent mailer for Pay::UserMailer
+  config.parent_mailer = "MyCustomMailer"
+
+  # Change the mailer for Pay
+  config.mailer = "MyCustomMailer"
+```
 
 ### 4.0.0
 

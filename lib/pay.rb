@@ -62,23 +62,19 @@ module Pay
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
 
+  @@mailer = "Pay::UserMailer"
+
   def self.mailer=(value)
-    @@mailer_ref = -> { ActiveSupport::Inflector.safe_constantize(value) }
+    @@mailer = value
+    @@mailer_ref = nil
   end
-  self.mailer = "Pay::UserMailer"
 
   def self.mailer
-    @@mailer_ref&.call
+    @@mailer_ref ||= @@mailer&.constantize
   end
 
-  def self.parent_mailer=(value)
-    @@parent_mailer = -> { ActiveSupport::Inflector.safe_constantize(value) }
-  end
-  self.parent_mailer = "Pay::ApplicationMailer"
-
-  def self.parent_mailer
-    @@parent_mailer&.call
-  end
+  mattr_accessor :parent_mailer
+  @@parent_mailer = "Pay::ApplicationMailer"
 
   def self.setup
     yield self

@@ -48,6 +48,23 @@ class Pay::Test < ActiveSupport::TestCase
     assert Pay.respond_to?(:enabled_processors=)
   end
 
+  test "parent_mailer config" do
+    assert Pay.respond_to?(:parent_mailer=)
+    assert Pay.respond_to?(:parent_mailer)
+    assert_equal "Pay::ApplicationMailer", Pay.parent_mailer
+  end
+
+  test "mailer config" do
+    assert Pay.respond_to?(:mailer=)
+    assert Pay.respond_to?(:mailer)
+
+    Pay.mailer = "Pay::ApplicationMailer"
+    assert_equal Pay::ApplicationMailer, Pay.mailer
+
+    Pay.mailer = "Pay::UserMailer"
+    assert_equal Pay::UserMailer, Pay.mailer
+  end
+
   test "can enable and disable the stripe processor" do
     original = Pay.enabled_processors
 
