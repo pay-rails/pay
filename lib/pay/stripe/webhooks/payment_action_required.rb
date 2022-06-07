@@ -12,7 +12,7 @@ module Pay
           return if pay_subscription.nil?
 
           if Pay.send_email?(:payment_action_required, pay_subscription)
-            Pay::UserMailer.with(
+            Pay.mailer.with(
               pay_customer: pay_subscription.customer,
               payment_intent_id: event.data.object.payment_intent,
               pay_subscription: pay_subscription
