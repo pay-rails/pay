@@ -148,7 +148,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     )
     ::Stripe::Charge.construct_from(values)
   end
-   
+
   def payment_method
     @payment_method ||= "pm_card_visa"
   end
