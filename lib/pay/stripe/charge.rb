@@ -128,7 +128,7 @@ module Pay
         else
           ::Stripe::Refund.create(options.merge(charge: processor_id, amount: amount_to_refund), stripe_options)
         end
-        pay_charge.update!(amount_refunded: amount_to_refund)
+        pay_charge.update!(amount_refunded: pay_charge.amount_refunded + amount_to_refund)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
