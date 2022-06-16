@@ -7,7 +7,7 @@ Pay's installation is pretty straightforward. We'll add the gems, add some migra
 Add these lines to your application's Gemfile:
 
 ```ruby
-gem "pay", "~> 3.0"
+gem "pay", "~> 4.0"
 
 # To use Stripe, also include:
 gem "stripe", "~> 6.0"
