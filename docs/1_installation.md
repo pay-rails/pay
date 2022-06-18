@@ -70,11 +70,13 @@ end
 
 **Note:** Pay requires your model to have an `email` attribute. Email is a field that is required by Stripe, Braintree, etc to create a Customer record.
 
-To sync customer names automatically to your payment processor, your model should respond to one of the following methods. Pay will sync these over to your Customer objects in Stripe and Braintree anytime they change.
+For pay to also send the customer's name to your payment processor, your model should respond to one of the following methods.
 
 * `name`
 * `first_name` _and_ `last_name`
 * `pay_customer_name`
+
+Name _will not_ sync automatically. See the section below _Syncing attributes_.
 
 ### Customer Attributes
 
@@ -101,6 +103,27 @@ class User < ApplicationRecord
 ```
 
 Pay will include attributes when creating a Customer and update them when the Customer is updated.
+
+### Syncing attributes
+
+By adding `pay_customer` to your model, the `Pay::Billable::SyncCustomer` concern will be included. It's responsible for syncing your customer's data with your payment processor in an `after_commit` callback if the method `pay_should_sync_customer?` returns `true`.
+
+By default, `pay_should_sync_customer?` will respond with `saved_change_to_email?`, which means Pay will automatically sync your customer with your payment processor when it's e-mail changes.
+
+If you want to automatically sync whenever any other attribute changes, override `pay_should_sync_customer?` in your model. For instance, if you want to sync when your model's name changes, or you are using `stripe_attributes` above to send Stripe the customer's address, it might be a good idea to also sync when these attributes change:
+
+```rb
+class User < ApplicationRecord
+  
+  def pay_should_sync_customer?
+    # super will invoke Pay's default (e-mail changed)
+    super || self.saved_change_to_address? || self.saved_change_to_name?
+  end
+  
+end
+```
+
+[ActiveRecord Dirty](https://api.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Dirty.html) is your friend here.
 
 ## Next
 
