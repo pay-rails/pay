@@ -8,7 +8,7 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        after_update :enqeue_customer_sync_job, if: :pay_should_sync_customer?
+        after_commit :enqeue_customer_sync_job, if: :pay_should_sync_customer?
       end
 
       def pay_should_sync_customer?
