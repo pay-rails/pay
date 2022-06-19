@@ -23,7 +23,7 @@ module Pay
     private
 
     def to
-      "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>"
+      email_address_with_name(params[:pay_customer].email, params[:pay_customer].customer_name)
     end
   end
 end
