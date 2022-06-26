@@ -190,8 +190,11 @@ module Pay
       end
 
       # Syncs a customer's subscriptions from Stripe to the database
-      def sync_subscriptions
-        subscriptions = ::Stripe::Subscription.list({customer: customer}, stripe_options)
+      def sync_subscriptions(**options)
+
+        options = options.merge(customer: customer)
+
+        subscriptions = ::Stripe::Subscription.list(options, stripe_options)
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id)
         end
