@@ -272,5 +272,4 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     subscription.update(trial_ends_at: 14.days.from_now)
     refute subscription.generic_trial?
   end
-
 end

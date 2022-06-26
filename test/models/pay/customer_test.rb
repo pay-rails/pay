@@ -24,9 +24,8 @@ class Pay::CustomerTest < ActiveSupport::TestCase
   end
 
   test "subscription should be consistent regardless of loaded subscriptions or not" do
-
     # This test assures a consistent pay_customer#subscription regardless of
-    # pay_customer#subscriptions being previously loaded or not. 
+    # pay_customer#subscriptions being previously loaded or not.
 
     # Before the introduction of the scope `-> { order({ id: :asc }) }` in
     # Customer.has_many(:subscriptions), calling customer#subscription was
@@ -34,7 +33,7 @@ class Pay::CustomerTest < ActiveSupport::TestCase
 
     # That happened because in Postgres, if an order clause is not specified,
     # the results return in non-deterministic order
-    # (https://stackoverflow.com/questions/6585574/postgres-default-sort-by-id-worldship). 
+    # (https://stackoverflow.com/questions/6585574/postgres-default-sort-by-id-worldship).
 
     # Psql will give the impression of returning records in ascending primary
     # key (ID) order, but it turns out if you update a previously created
@@ -65,7 +64,5 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     @pay_customer.subscriptions.load
 
     assert_equal @pay_customer.subscription, subscription_2
-
   end
-
 end
