@@ -70,6 +70,18 @@ class ActiveSupport::TestCase
     end
   end
 
+  def create_subscription(options = {})
+    defaults = {
+      name: "default",
+      processor_id: rand(1..999_999_999),
+      processor_plan: "default",
+      quantity: "1",
+      status: :active
+    }
+
+    @pay_customer.subscriptions.create! defaults.merge(options)
+  end
+
   def assert_indexed_selects
     subscriber = ActiveSupport::Notifications.subscribe "sql.active_record" do |name, started, finished, unique_id, data|
       if data[:sql].starts_with? "SELECT"

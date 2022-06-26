@@ -2,7 +2,7 @@ module Pay
   class Customer < Pay::ApplicationRecord
     belongs_to :owner, polymorphic: true
     has_many :charges, dependent: :destroy
-    has_many :subscriptions, dependent: :destroy
+    has_many :subscriptions, -> { order({ id: :asc }) }, dependent: :destroy
     has_many :payment_methods, dependent: :destroy
     has_one :default_payment_method, -> { where(default: true) }, class_name: "Pay::PaymentMethod"
 

@@ -273,17 +273,4 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute subscription.generic_trial?
   end
 
-  private
-
-  def create_subscription(options = {})
-    defaults = {
-      name: "default",
-      processor_id: rand(1..999_999_999),
-      processor_plan: "default",
-      quantity: "1",
-      status: :active
-    }
-
-    @pay_customer.subscriptions.create! defaults.merge(options)
-  end
 end
