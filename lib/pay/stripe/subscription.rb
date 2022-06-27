@@ -20,7 +20,7 @@ module Pay
         :subscription_items,
         :trial_ends_at,
         :pause_behavior,
-        :pause_resumes_at
+        :pause_resumes_at,
         to: :pay_subscription
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
@@ -209,6 +209,7 @@ module Pay
 
       def swap(plan)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
+
         @stripe_subscription = ::Stripe::Subscription.update(
           processor_id,
           {
