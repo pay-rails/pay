@@ -20,8 +20,7 @@ module Pay
         :subscription_items,
         :trial_ends_at,
         :pause_behavior,
-        :pause_resumes_at,
-        :data,
+        :pause_resumes_at
         to: :pay_subscription
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
@@ -210,30 +209,16 @@ module Pay
 
       def swap(plan)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
-        if data["metered"] == true #check to see if the current plan is metered.  If so, quantity may not be passed to Stripe as a parameter.
-          @stripe_subscription = ::Stripe::Subscription.update(
-            processor_id,
-            {
-              cancel_at_period_end: false,
-              plan: plan,
-              proration_behavior: (prorate ? "create_prorations" : "none"),
-              trial_end: (on_trial? ? trial_ends_at.to_i : "now")
-            }.merge(expand_options),
-            stripe_options
-          )
-        else #if the current plan is not metered, pass quantity as an option.
-          @stripe_subscription = ::Stripe::Subscription.update(
-            processor_id,
-            {
-              cancel_at_period_end: false,
-              plan: plan,
-              proration_behavior: (prorate ? "create_prorations" : "none"),
-              trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
-              quantity: quantity
-            }.merge(expand_options),
-            stripe_options
-          )
-        end
+        @stripe_subscription = ::Stripe::Subscription.update(
+          processor_id,
+          {
+            cancel_at_period_end: false,
+            plan: plan,
+            proration_behavior: (prorate ? "create_prorations" : "none"),
+            trial_end: (on_trial? ? trial_ends_at.to_i : "now")
+          }.merge(expand_options),
+          stripe_options
+        )
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
