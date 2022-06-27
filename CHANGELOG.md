@@ -16,18 +16,53 @@ Pay.setup do |config|
 
 ### 4.0.0
 
-* [Breaking] Replaced `subscription` and `charge` email params to `pay_subscription` and `pay_charge` respectively. - @cjilbert504
-* [Breaking] Replaced `send_emails` with `emails` config. This allows you to customize which emails can be sent independently. - @cjilbert504
-```ruby
-Pay.setup do |config|
-  # Set value to boolean
-  config.emails.receipt = true
-  # Or set value to a lambda that returns a boolean
-  config.emails.subscription_renewing = ->(pay_subscription, price) {
-    (price&.type == "recurring") && (price.recurring&.interval == "year")
-  }
-end
-```
+#### Breaking Changes
+
+
+
+[Breaking] Replaced `subscription` and `charge` email params to `pay_subscription` and `pay_charge` respectively. - @cjilbert504
+
+  **Have you created custom Pay Views?**
+
+    *No action required if you have not generated custom Pay Views.*
+
+    If you have created custom Pay Views (most likley with the [custom views generator](https://github.com/pay-rails/pay/blob/master/docs/2_configuration.md#generators))
+
+    You'll need to replace all references to:
+      `params[:charge]` with `params[:pay_charge]`; and
+      `params[:subscription]` with `params[:pay_subscription]`
+
+[Breaking] Replaced `send_emails` with `emails` config. This allows you to customize which emails can be sent independently. - @cjilbert504
+
+  **Have your turned off emails by explicitly setting '`config.send_emails`?** 
+
+    *No action required if you have not explicitly set `config.send_emails` (which defaults to true).*
+
+    If you've turned off email sending using `config.send_emails`, you'll need to change the following:
+      config.send_emails = false
+    to:
+      config.emails.receipt = false
+
+    As below the new 'email' config now allows finer grain control on which emails are sent or not.
+
+#### Non-Breaking Changes
+
+
+* New `emails` config [discussed above] now allows you to customize which emails can be sent independently. - @cjilbert504
+
+  ```ruby
+  Pay.setup do |config|
+    # Set value to boolean
+    config.emails.receipt = true # default
+    config.emails.refund = true # default
+    config.emails.payment_action_required = true # default
+
+    # Or set value to a lambda that returns a boolean
+    config.emails.subscription_renewing = ->(pay_subscription, price) {
+      (price&.type == "recurring") && (price.recurring&.interval == "year")
+    }
+  end
+  ```
 
 * Numericality validation on `Pay::Subscription` has been updated from being `greater_than_or_equal_to: 1` to `greater_than_or_equal_to: 0`. This is because metered billing subscriptions do not have a quantity.
 
