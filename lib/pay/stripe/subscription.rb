@@ -21,6 +21,7 @@ module Pay
         :trial_ends_at,
         :pause_behavior,
         :pause_resumes_at,
+        :data,
         to: :pay_subscription
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
