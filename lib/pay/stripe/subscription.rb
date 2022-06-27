@@ -216,8 +216,7 @@ module Pay
             cancel_at_period_end: false,
             plan: plan,
             proration_behavior: (prorate ? "create_prorations" : "none"),
-            trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
-            quantity: quantity
+            trial_end: (on_trial? ? trial_ends_at.to_i : "now")
           }.merge(expand_options),
           stripe_options
         )
