@@ -23,7 +23,10 @@ module Pay
     private
 
     def to
-      email_address_with_name(params[:pay_customer].email, params[:pay_customer].customer_name)
+      Mail::Address.new.tap do |builder|
+        builder.address = params[:pay_customer].email
+        builder.display_name = params[:pay_customer].customer_name
+      end.to_s
     end
   end
 end
