@@ -15,8 +15,14 @@ module Pay
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
 
-        default_payment_method_id = pay_customer.customer.invoice_settings.default_payment_method
-        default = (id == default_payment_method_id)
+        # Avoid repeated API calls.
+        stripe_customer = pay_customer.customer
+
+        default_payment_method_id = stripe_customer.invoice_settings.default_payment_method
+
+        default_source_id = stripe_customer.default_source
+
+        default = [default_payment_method_id, default_source_id].include?(id)
 
         attributes = extract_attributes(object).merge(default: default, stripe_account: stripe_account)
 
