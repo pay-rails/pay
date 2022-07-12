@@ -9,8 +9,11 @@ module Pay
           # Couldn't find user, we can skip
           return unless pay_customer.present?
 
+          customer = pay_customer.customer
+          payment_method_id = customer.invoice_settings.default_payment_method || customer.default_source
+
           # Sync default card
-          if (payment_method_id = pay_customer.customer.invoice_settings.default_payment_method)
+          if payment_method_id
             Pay::Stripe::PaymentMethod.sync(payment_method_id, stripe_account: event.try(:account))
 
           else
