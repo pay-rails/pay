@@ -51,7 +51,7 @@ module Pay
         stripe_customer = if processor_id?
           ::Stripe::Customer.retrieve({id: processor_id, expand: ["tax"]}, stripe_options)
         else
-          sc = ::Stripe::Customer.create(customer_attributes, stripe_options)
+          sc = ::Stripe::Customer.create(customer_attributes.merge(expand: ["tax"]), stripe_options)
           pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
           sc
         end
@@ -87,7 +87,6 @@ module Pay
         args = {
           amount: amount,
           confirm: true,
-          confirmation_method: :automatic,
           currency: "usd",
           customer: processor_id,
           payment_method: payment_method&.processor_id
@@ -266,6 +265,10 @@ module Pay
           return_url: options.delete(:return_url) || root_url
         }
         ::Stripe::BillingPortal::Session.create(args.merge(options), stripe_options)
+      end
+
+      def authorize(amount, options = {})
+        charge(amount, options.merge(capture_method: :manual))
       end
 
       private

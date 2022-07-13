@@ -396,20 +396,49 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can pause and resume a subscription" do
+    travel_to_cassette do
+      @pay_customer.payment_method_token = payment_method
+      @pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
+
+      @pay_subscription.pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now.to_i)
+
+      assert @pay_subscription.paused?
+      assert_equal "mark_uncollectible", @pay_subscription.pause_behavior
+      assert @pay_subscription.pause_resumes_at > 21.days.from_now
+
+      @pay_subscription.resume
+
+      refute @pay_subscription.paused?
+      assert_nil @pay_subscription.pause_behavior
+      assert_nil @pay_subscription.pause_resumes_at
+    end
+  end
+
+  test "stripe can authorize a charge" do
     @pay_customer.payment_method_token = payment_method
-    @pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
+    charge = @pay_customer.authorize(29_00)
+    assert_equal Pay::Charge, charge.class
+    assert_equal 0, charge.amount_captured
+  end
 
-    @pay_subscription.pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now.to_i)
+  test "stripe can capture an authorized charge" do
+    @pay_customer.payment_method_token = payment_method
+    charge = @pay_customer.authorize(29_00)
+    assert_equal 0, charge.amount_captured
 
-    assert @pay_subscription.paused?
-    assert_equal "mark_uncollectible", @pay_subscription.pause_behavior
-    assert @pay_subscription.pause_resumes_at > 21.days.from_now
+    charge = charge.capture
+    assert charge.captured?
+    assert_equal 29_00, charge.amount_captured
+  end
 
-    @pay_subscription.resume
-
-    refute @pay_subscription.paused?
-    assert_nil @pay_subscription.pause_behavior
-    assert_nil @pay_subscription.pause_resumes_at
+  test "stripe can issue credit note for a refund for Stripe tax" do
+    @pay_customer.payment_method_token = payment_method
+    pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
+    pay_subscription.charges.last.refund!(5_00)
+    pay_subscription.payment_processor.reload!
+    invoice = pay_subscription.subscription.latest_invoice
+    assert_equal 5_00, invoice.post_payment_credit_notes_amount
+    assert_equal 5_00, pay_subscription.charges.last.amount_refunded
   end
 
   private

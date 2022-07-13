@@ -94,7 +94,7 @@ class FulfillCheckout
   def call(event)
     object = event.data.object
 
-    return object.payment_status != "paid"
+    return if object.payment_status != "paid"
 
     # Handle fulfillment
   end

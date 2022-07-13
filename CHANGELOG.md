@@ -1,5 +1,21 @@
 ### Unreleased
 
+### 4.0.1
+
+* Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504 @kyleschmolze
+* Add configuration options for mailer - @excid3 @le-doude @cjilbert504
+
+```ruby
+Pay.setup do |config|
+  # Change parent mailer for Pay::UserMailer
+  config.parent_mailer = "MyCustomMailer"
+
+  # Change the mailer for Pay
+  config.mailer = "MyCustomMailer"
+```
+
+### 4.0.0
+
 * [Breaking] Replaced `subscription` and `charge` email params to `pay_subscription` and `pay_charge` respectively. - @cjilbert504
 * [Breaking] Replaced `send_emails` with `emails` config. This allows you to customize which emails can be sent independently. - @cjilbert504
 ```ruby
@@ -32,14 +48,24 @@ end
 
 * Raise error when dependencies are not supported versions. This makes sure you're using supported versions of libraries with Pay.
   Currently supported versions:
-    * `stripe ~> 5`
-    * `braintree ~> 4`
+    * `stripe ~> 6.0`
+    * `braintree ~> 4.7`
     * `paddle_pay ~> 0.2`
-    * `receipts ~> 2`
-
+    * `receipts ~> 2.0`
+* Add `credit_note!` to Stripe charges - @excid3
+* `refund!` now issues a Stripe::CreditNote if an invoice is present - @excid3
+  > Refunds of charges associated with an Invoice don’t reduce your overall tax liability and don’t show up in Stripe Tax reporting. https://stripe.com/docs/tax/faq#how-do-refunds-work
+  > In most cases, you should use credit notes instead of refunds. Credit notes reduce your overall tax liability and show up in Stripe Tax reporting. https://stripe.com/docs/tax/faq#how-do-you-handle-credit-notes
 * Stripe.max_network_retries is now set to 2 by default. - @excid3
   This adds idempotency keys automatically to each request so that they can be safely retried.
 * Stripe Subscriptons can now be paused and resumed - @excid3
+* Separate authorize and capture is now supported on Stripe - @excid3
+  ```ruby
+  pay_charge = pay_customer.authorize(75_00)
+  pay_charge.capture
+  pay_charge.capture(amount_to_capture: 50_00) # or with an amount
+  ```
+* Store `stripe_receipt_url` on Pay::Charge - @mguidetti
 * Replace `update_email!` with `update_customer!` - @excid3
 * Add options for `cancel_now!` to support `invoice_now` and `prorate` flags for Stripe - @excid3
 * Adds `add_payment_processor` to add a payment processor without making it the default - @excid3
@@ -49,6 +75,7 @@ end
 * `pay_customer` now supports a `default_payment_processor` option to automatically create a Pay::Customer record - @excid3
 * Added `enabled_processors` to Pay config. This lets you choose exactly which processors will be enabled. - @cjilbert504
 * Add `sync!` method to Pay::Subscription instances - @excid3
+* Ignore Stripe charges that don't have a customer ID - @excid3
 
 ### 3.0.24
 

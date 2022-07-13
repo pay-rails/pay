@@ -18,8 +18,9 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
     @pay_customer.subscribe(trial_period_days: 0)
     @subscription = @pay_customer.subscription
     @subscription.cancel_now!
-    assert @subscription.ends_at <= Time.zone.now
+    assert @subscription.ends_at <= Time.current
     assert_equal "canceled", @subscription.status
+    assert_nil @subscription.trial_ends_at
   end
 
   test "braintree resume on grace period" do
@@ -33,6 +34,15 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
       assert_nil @subscription.ends_at
       assert_equal "active", @subscription.status
     end
+  end
+
+  test "braintree cancel_now! on trial" do
+    @pay_customer.subscribe(trial_period_days: 14)
+    @subscription = @pay_customer.subscription
+    @subscription.cancel_now!
+    assert @subscription.ends_at <= Time.current
+    assert_equal "canceled", @subscription.status
+    assert_equal @subscription.ends_at, @subscription.trial_ends_at
   end
 
   test "braintree processor subscription" do

@@ -45,7 +45,7 @@ module Pay
 
         # Subscriptions that have ended should have their trial ended at the same time
         if object.trial_end
-          attributes[:trial_ends_at] = object.ended_at ? Time.at(object.ended_at) : Time.at(object.trial_end)
+          attributes[:trial_ends_at] = Time.at(object.ended_at || object.trial_end)
         end
 
         # Record subscription items to db
@@ -110,6 +110,10 @@ module Pay
       def subscription(**options)
         options[:id] = processor_id
         @stripe_subscription ||= ::Stripe::Subscription.retrieve(options.merge(expand_options), {stripe_account: stripe_account}.compact)
+      end
+
+      def reload!
+        @stripe_subscription = nil
       end
 
       # Returns a SetupIntent or PaymentIntent client secret for the subscription

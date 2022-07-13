@@ -113,7 +113,7 @@ Braintree and Paddle require payment methods before creating a subscription.
 You can also check for a specific subscription or plan:
 
 ```ruby
-@user.payment_processor.subscribed?(name: "default", plan: "monthly")
+@user.payment_processor.subscribed?(name: "default", processor_plan: "monthly")
 ```
 
 ## Checking Customer Trial Status
@@ -143,7 +143,7 @@ For paid features of your app, you'll often want to check if the user is on tria
 You can also check for a specific subscription or plan:
 
 ```ruby
-@user.payment_processor.on_trial_or_subscribed?(name: "default", plan: "annual")
+@user.payment_processor.on_trial_or_subscribed?(name: "default", processor_plan: "annual")
 ```
 
 ## Subscription API

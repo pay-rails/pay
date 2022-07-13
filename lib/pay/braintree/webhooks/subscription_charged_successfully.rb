@@ -15,7 +15,7 @@ module Pay
           pay_charge = Pay::Braintree::Billable.new(pay_customer).save_transaction(subscription.transactions.first)
 
           if pay_charge && Pay.send_email?(:receipt, pay_charge)
-            Pay::UserMailer.with(pay_customer: pay_customer, pay_charge: pay_charge).receipt.deliver_later
+            Pay.mailer.with(pay_customer: pay_customer, pay_charge: pay_charge).receipt.deliver_later
           end
         end
       end

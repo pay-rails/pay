@@ -1,5 +1,5 @@
 module Pay
-  class UserMailer < ApplicationMailer
+  class UserMailer < Pay.parent_mailer.constantize
     def receipt
       if params[:pay_charge].respond_to? :receipt
         attachments[params[:pay_charge].filename] = params[:pay_charge].receipt
