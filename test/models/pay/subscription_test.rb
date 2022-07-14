@@ -122,6 +122,16 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription5
   end
 
+  test "not_paused scope" do
+    subscription1 = create_subscription
+    subscription1.pause_behavior = true
+    subscription1.save
+
+    subscriptions = Pay::Subscription.not_paused
+
+    refute_includes subscriptions, subscription1
+  end
+
   test "with_active_customer scope" do
     subscription = create_subscription
 
@@ -192,6 +202,14 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     @subscription.ends_at = 5.minutes.ago
     @subscription.trial_ends_at = nil
     refute @subscription.active?
+  end
+
+  test "active_and_paused?" do
+    subscription1 = pay_subscriptions(:stripe)
+    subscription1.pause_behavior = true
+    subscription1.save
+
+    assert subscription1.active_and_paused?
   end
 
   test "cancel" do
