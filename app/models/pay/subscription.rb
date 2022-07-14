@@ -12,6 +12,7 @@ module Pay
     scope :cancelled, -> { where.not(ends_at: nil) }
     scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.zone.now) }
     scope :active, -> { where(status: ["trialing", "active"], ends_at: nil).or(on_grace_period).or(on_trial) }
+    scope :not_paused, -> { where("data->>'pause_behavior' IS NULL") }
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
     scope :with_active_customer, -> { joins(:customer).merge(Customer.active) }
@@ -109,6 +110,10 @@ module Pay
 
     def active?
       ["trialing", "active"].include?(status) && (ends_at.nil? || on_grace_period? || on_trial?)
+    end
+
+    def active_and_paused?
+      active? && paused?
     end
 
     def past_due?
