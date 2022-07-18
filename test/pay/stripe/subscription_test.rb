@@ -80,10 +80,10 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal 1488987924, pay_subscription.trial_ends_at.to_i
   end
 
-  test "sync stripe subscription sets trial_ends_at when subscription canceled after trial end" do
+  test "sync stripe subscription does not set trial_ends_at when subscription canceled after trial end" do
     fake_subscription = fake_stripe_subscription(trial_end: 1488987924, ended_at: 1650479887)
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
-    assert_equal 1650479887, pay_subscription.trial_ends_at.to_i
+    assert_equal 1488987924, pay_subscription.trial_ends_at.to_i
   end
 
   test "sync stripe subscription sets trial_ends_at to ended_at when subscription canceled before trial end" do
