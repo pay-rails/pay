@@ -12,8 +12,6 @@ module Pay
     scope :cancelled, -> { where.not(ends_at: nil) }
     scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.zone.now) }
     scope :active, -> { where(status: ["trialing", "active"], ends_at: nil).or(on_grace_period).or(on_trial) }
-    scope :not_paused, -> { where("data->>'pause_behavior' IS NULL") }
-    # scope :not_paused, -> { where("json_extract(pay_subscriptions.data, '$.pause_behavior') IS NULL") }
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
     scope :with_active_customer, -> { joins(:customer).merge(Customer.active) }
@@ -49,6 +47,15 @@ module Pay
       end
 
       scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
+    end
+
+    def self.not_paused
+      case Pay::Adapter.current_adapter
+      when "postgresql", "postgis"
+       where("data->>'pause_behavior' IS NULL") 
+      when "mysql2", "sqlite3"
+        where("json_extract(pay_subscriptions.data, '$.pause_behavior') IS NULL") 
+      end
     end
 
     def self.with_metered_items
@@ -113,7 +120,7 @@ module Pay
       ["trialing", "active"].include?(status) && (ends_at.nil? || on_grace_period? || on_trial?)
     end
 
-    def active_and_paused?
+    def active_but_paused?
       active? && paused?
     end
 
