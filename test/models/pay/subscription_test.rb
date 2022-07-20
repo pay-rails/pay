@@ -122,12 +122,12 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription5
   end
 
-  test "not_paused scope" do
+  test "active_without_paused scope" do
     subscription1 = create_subscription
     subscription1.pause_behavior = true
     subscription1.save
 
-    subscriptions = Pay::Subscription.not_paused
+    subscriptions = Pay::Subscription.active_without_paused
 
     refute_includes subscriptions, subscription1
   end

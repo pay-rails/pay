@@ -49,7 +49,7 @@ module Pay
       scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
     end
 
-    def self.not_paused
+    def self.active_without_paused
       case Pay::Adapter.current_adapter
       when "postgresql", "postgis"
         active.where("data->>'pause_behavior' IS NULL")
