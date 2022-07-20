@@ -204,12 +204,12 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute @subscription.active?
   end
 
-  test "active_and_paused?" do
+  test "active_but_paused?" do
     subscription1 = pay_subscriptions(:stripe)
     subscription1.pause_behavior = true
     subscription1.save
 
-    assert subscription1.active_and_paused?
+    assert subscription1.active_but_paused?
   end
 
   test "cancel" do
