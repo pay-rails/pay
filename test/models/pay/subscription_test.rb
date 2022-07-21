@@ -204,7 +204,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute @subscription.active?
   end
 
-u test "cancel" do
+  test "cancel" do
     @subscription.cancel
     assert @subscription.ends_at?
   end
