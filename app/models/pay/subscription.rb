@@ -120,10 +120,6 @@ module Pay
       ["trialing", "active"].include?(status) && (ends_at.nil? || on_grace_period? || on_trial?)
     end
 
-    def active_but_paused?
-      active? && paused?
-    end
-
     def past_due?
       status == "past_due"
     end
