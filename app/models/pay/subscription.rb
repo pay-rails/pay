@@ -52,9 +52,9 @@ module Pay
     def self.active_without_paused
       case Pay::Adapter.current_adapter
       when "postgresql", "postgis"
-        active.where("data->>'pause_behavior' IS NULL")
+        active.where("data->>'pause_behavior' IS NULL").and(where("data->>'paddle_paused_from' IS NULL"))
       when "mysql2", "sqlite3"
-        active.where("json_extract(pay_subscriptions.data, '$.pause_behavior') IS NULL")
+        active.where("data->>'$.pause_behavior' IS NULL").and(where("data->>'$.paddle_paused_from' IS NULL"))
       end
     end
 

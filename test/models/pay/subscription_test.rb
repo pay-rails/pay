@@ -122,14 +122,30 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription5
   end
 
-  test "active_without_paused scope" do
-    subscription1 = create_subscription
-    subscription1.pause_behavior = true
-    subscription1.save
+  test "active_without_paused scope does not include records with pause_behavior set" do
+    subscription1 = create_subscription(pause_behavior: "void")
 
     subscriptions = Pay::Subscription.active_without_paused
 
     refute_includes subscriptions, subscription1
+  end
+
+  test "active_without_paused scope does not include records with paddle_paused_from set" do
+    subscription1 = create_subscription(paddle_paused_from: 1.days.ago)
+
+    subscriptions = Pay::Subscription.active_without_paused
+
+    refute_includes subscriptions, subscription1
+  end
+
+  test "active_without_paused with multiple paused subscriptions from various processors" do
+    subscription1 = create_subscription(pause_behavior: "void")
+    subscription2 = create_subscription(paddle_paused_from: 1.days.ago)
+
+    subscriptions = Pay::Subscription.active_without_paused
+
+    refute_includes subscriptions, subscription1
+    refute_includes subscriptions, subscription2
   end
 
   test "with_active_customer scope" do
