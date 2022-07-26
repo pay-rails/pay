@@ -23,7 +23,7 @@ module Pay
           return if object.client_reference_id.nil?
 
           # If there is a client reference ID, make sure we have a Pay::Customer record
-          owner = client_id.start_with?("gid://") ? GlobalID::Locator.locate(client_id) : GlobalID::Locator.locate_signed(client_id)
+          owner = GlobalID::Locator.locate_signed(client_id)
           owner.add_payment_processor(:stripe, processor_id: object.customer)
         rescue
         end

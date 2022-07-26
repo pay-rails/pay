@@ -1,5 +1,16 @@
 ### Unreleased
 
+* Support `client_reference_id` on Stripe Checkout Sessions - @excid3 @cjilbert504
+  This is helpful when using the Stripe Pricing Table or any Checkout Session. Requires a Signed GlobalID as the value to prevent tampering.
+
+```ruby
+::Stripe::Checkout::Session.create(
+  mode: "payment",
+  client_reference_id: current_user.to_sgid,
+  ...
+)
+```
+
 ### 4.0.1
 
 * Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504 @kyleschmolze
