@@ -23,9 +23,10 @@ module Pay
           return if object.client_reference_id.nil?
 
           # If there is a client reference ID, make sure we have a Pay::Customer record
-          owner = GlobalID::Locator.locate_signed(client_id)
-          owner.add_payment_processor(:stripe, processor_id: object.customer)
+          owner = GlobalID::Locator.locate_signed(object.client_reference_id)
+          owner&.add_payment_processor(:stripe, processor_id: object.customer)
         rescue
+          Rails.logger.debug "[Pay] Unable to locate record with SGID: #{object.client_reference_id}"
         end
       end
     end
