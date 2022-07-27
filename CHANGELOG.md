@@ -11,6 +11,8 @@
 )
 ```
 
+* Stripe `checkout.session.completed` now syncs payment intents - @excid3
+
 ### 4.0.1
 
 * Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504 @kyleschmolze
