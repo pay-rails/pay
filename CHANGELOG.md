@@ -1,5 +1,7 @@
 ### Unreleased
 
+### 4.0.2
+
 * Support `client_reference_id` on Stripe Checkout Sessions - @excid3 @cjilbert504
   This is helpful when using the Stripe Pricing Table or any Checkout Session. Requires a Signed GlobalID as the value to prevent tampering.
 
