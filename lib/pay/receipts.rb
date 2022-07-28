@@ -93,7 +93,7 @@ module Pay
       receipt_line_items << [nil, nil, I18n.t("pay.receipt.amount_paid"), Pay::Currency.format(amount, currency: currency)]
 
       if refunded?
-        receipt_line_items << [nil, nil, I18n.t("pay.receipt.refunded_on"), Pay::Currency.format(amount_refunded, currency: currency)]
+        receipt_line_items << [nil, nil, I18n.t("pay.receipt.refunded"), Pay::Currency.format(amount_refunded, currency: currency)]
       end
 
       defaults = {
