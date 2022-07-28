@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Expand Stripe discounts and taxes when loading a subscription - @excid3
+
 ### 4.1.0
 
 * Store Stripe refunds on the Charge - @excid3
