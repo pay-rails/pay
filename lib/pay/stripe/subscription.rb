@@ -100,7 +100,15 @@ module Pay
 
       # Common expand options for all requests that create, retrieve, or update a Stripe Subscription
       def self.expand_options
-        {expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge"]}
+        {
+          expand: [
+            "pending_setup_intent",
+            "latest_invoice.payment_intent",
+            "latest_invoice.charge",
+            "latest_invoice.total_discount_amounts.discount",
+            "latest_invoice.total_tax_amounts.tax_rate"
+          ]
+        }
       end
 
       def initialize(pay_subscription)
