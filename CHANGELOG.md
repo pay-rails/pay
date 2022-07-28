@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Fix tax amounts and skip $0 tax lines in Stripe receipts - @excid3
+
 ### 4.0.2
 
 * Support `client_reference_id` on Stripe Checkout Sessions - @excid3 @cjilbert504

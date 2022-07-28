@@ -60,7 +60,8 @@ module Pay
 
       # Tax rates
       Array.wrap(total_tax_amounts).each do |tax_amount|
-        items << [nil, nil, tax_description(tax_amount), Pay::Currency.format(tax, currency: currency)]
+        next if tax_amount["amount"].zero?
+        items << [nil, nil, tax_description(tax_amount), Pay::Currency.format(tax_amount["amount"], currency: currency)]
       end
 
       items << [nil, nil, I18n.t("pay.line_items.total"), Pay::Currency.format(amount, currency: currency)]
