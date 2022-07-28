@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Fix recording first charge for a subscription - @excid3
+
 ### 4.0.3
 
 * Fix tax amounts and skip $0 tax lines in Stripe receipts - @excid3
