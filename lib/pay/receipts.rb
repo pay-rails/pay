@@ -86,16 +86,29 @@ module Pay
       "#{tax_rate["display_name"]} - #{tax_rate["jurisdiction"]} (#{percent})"
     end
 
-    def receipt_pdf(**options)
-      receipt_line_items = pdf_line_items
+    def receipt_line_items
+      line_items = pdf_line_items
 
       # Include total paid
-      receipt_line_items << [nil, nil, I18n.t("pay.receipt.amount_paid"), Pay::Currency.format(amount, currency: currency)]
+      line_items << [nil, nil, I18n.t("pay.receipt.amount_paid"), Pay::Currency.format(amount, currency: currency)]
 
       if refunded?
-        receipt_line_items << [nil, nil, I18n.t("pay.receipt.refunded"), Pay::Currency.format(amount_refunded, currency: currency)]
+        # If we have a list of individual refunds, add each entry
+        if refunds&.any?
+          refunds.each do |refund|
+            next unless refund["status"] == "succeeded"
+            refunded_at = Time.at(refund["created"]).to_date
+            line_items << [nil, nil, I18n.t("pay.receipt.refunded_on", date: I18n.l(refunded_at, format: :long)), Pay::Currency.format(refund["amount"], currency: refund["currency"])]
+          end
+        else
+          line_items << [nil, nil, I18n.t("pay.receipt.refunded"), Pay::Currency.format(amount_refunded, currency: currency)]
+        end
       end
 
+      line_items
+    end
+
+    def receipt_pdf(**options)
       defaults = {
         details: receipt_details,
         recipient: [

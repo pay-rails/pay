@@ -22,6 +22,9 @@ module Pay
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
         return unless pay_customer
 
+        refunds = []
+        object.refunds.auto_paging_each{ |refund| refunds << refund }
+
         payment_method = object.payment_method_details.send(object.payment_method_details.type)
         attrs = {
           amount: object.amount,
@@ -42,7 +45,8 @@ module Pay
           payment_method_type: object.payment_method_details.type,
           stripe_account: pay_customer.stripe_account,
           stripe_receipt_url: object.receipt_url,
-          total_tax_amounts: []
+          total_tax_amounts: [],
+          refunds: refunds.sort_by!{ |r| r["created"] }
         }
 
         # Associate charge with subscription if we can
@@ -75,7 +79,6 @@ module Pay
               period_end: Time.at(line_item.period.end)
             }
           end
-
         # Charges without invoices
         else
           attrs[:period_start] = Time.at(object.created)

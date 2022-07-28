@@ -1,5 +1,10 @@
 ### Unreleased
 
+* Store Stripe refunds on the Charge - @excid3
+* Include line for each refund in the receipt - @excid3
+
+### 4.0.4
+
 * Fix recording first charge for a subscription - @excid3
 
 ### 4.0.3

@@ -77,6 +77,21 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_equal 15_00, charge.amount_refunded
   end
 
+  test "sync stripe charge with multiple refunds" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(refunds: {
+      object: "list",
+      data: [
+        {id: "re_1", object: "refund", amount: 500, balance_transaction: "txn_3LQOJoKXBGcbgpbZ1z7g9uuP", charge: "ch_3LQOJoKXBGcbgpbZ1ZhroS8X", created:1658982465, currency: "usd", metadata: {}, payment_intent: "pi_3LQOJoKXBGcbgpbZ1Jej1QhS", reason: "requested_by_customer", receipt_number: "3727-4811", source_transfer_reversal: nil, status: "succeeded", transfer_reversal: nil},
+        {id: "re_2", object: "refund", amount: 500, balance_transaction: "txn_3LQOJoKXBGcbgpbZ1z7g9uuP", charge: "ch_3LQOJoKXBGcbgpbZ1ZhroS8X", created:1658982465, currency: "usd", metadata: {}, payment_intent: "pi_3LQOJoKXBGcbgpbZ1Jej1QhS", reason: "requested_by_customer", receipt_number: "3727-4811", source_transfer_reversal: nil, status: "succeeded", transfer_reversal: nil},
+      ],
+      has_more: false,
+      total_count: 1,
+      url: "/v1/charges/ch_fake/refunds"
+    }))
+
+    assert_equal 2, pay_charge.refunds.length
+  end
+
   private
 
   def fake_stripe_invoice(**values)
@@ -143,6 +158,13 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
       },
       metadata: {
         license_id: 1
+      },
+      refunds: {
+        object: "list",
+        data: [],
+        has_more: false,
+        total_count: 0,
+        url: ""
       },
       receipt_url: "https://pay.stripe.com/receipts/test_receipt"
     )
