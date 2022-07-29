@@ -253,7 +253,7 @@ You can set this to another option as shown below.
 ```ruby
 @user.payment_processor.subscription.pause
 ```
-##### Resuming a Paused Subscription
+#### Resuming a Paused Subscription
 
 ```ruby
 @user.payment_processor.subscription.resume
