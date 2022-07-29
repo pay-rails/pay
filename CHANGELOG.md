@@ -1,5 +1,7 @@
 ### Unreleased
 
+### 4.1.1
+
 * Expand Stripe discounts and taxes when loading a subscription - @excid3
 
 ### 4.1.0
