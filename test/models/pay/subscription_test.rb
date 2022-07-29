@@ -105,7 +105,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription2
     refute_includes subscriptions, subscription3
   end
-  
+
   test "active scope should include active subscriptions" do
     active_subscription = create_subscription
 
