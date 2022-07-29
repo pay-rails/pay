@@ -107,13 +107,14 @@ module Pay
       end
 
       def paused?
-        status == "paused"
+        # paddle_paused_from.present?
+        pay_subscription.status == "paused"
       end
 
       def pause
         attributes = {pause: true}
         response = PaddlePay::Subscription::User.update(processor_id, attributes)
-        pay_subscription.update(paddle_paused_from: Time.zone.parse(response.dig(:next_payment, :date)))
+        pay_subscription.update(status: :paused, paddle_paused_from: Time.zone.parse(response.dig(:next_payment, :date)))
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
       end

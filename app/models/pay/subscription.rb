@@ -58,6 +58,7 @@ module Pay
       when "mysql2"
         active.where("data->>'$.pause_behavior' IS NULL AND status != 'paused'")
       when "sqlite3"
+        # sqlite 3.38 supports ->> syntax, however, sqlite 3.37 is what ships with Ubuntu 22.04.
         active.where("json_extract(data, '$.pause_behavior') IS NULL AND status != 'paused'")
       end
     end

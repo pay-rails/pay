@@ -44,9 +44,9 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
     assert subscription.on_grace_period?
   end
 
-  test "paddle paused subscription is not active" do
+  test "paddle paused subscription is active" do
     @pay_customer.subscription.update!(status: :paused)
-    assert_not @pay_customer.subscription.active?
+    assert @pay_customer.subscription.active?
   end
 
   test "paddle paused subscription is not canceled" do
@@ -80,7 +80,7 @@ class Pay::Paddle::Subscription::Test < ActiveSupport::TestCase
 
   test "paddle cancel paused subscription" do
     subscription = @pay_customer.subscription
-    subscription.update(paddle_paused_from: "Sat, 04 Jul 2020 00:00:00.000000000 UTC +00:00")
+    subscription.update(status: :paused, paddle_paused_from: "Sat, 04 Jul 2020 00:00:00.000000000 UTC +00:00")
     assert_nil subscription.processor_subscription.next_payment
     assert_difference "@pay_customer.payment_methods.count", -1 do
       subscription.cancel
