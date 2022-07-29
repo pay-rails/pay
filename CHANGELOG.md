@@ -1,5 +1,10 @@
 ### Unreleased
 
+* Add `"paused"` into `.active` scope and `#active?` on `Pay::Subscription`. Stripe considers paused subscriptions to be active, so adding `"paused"` allows paused subscriptions for other processors act the same. - @cjilbert504 @excid3
+* Add `active_without_paused` scope on `Pay::Subsctiption`. This filters out paused subscriptions from the `active` scope. - @cjilbert504 @GALTdea
+* Add `status: :paused` to update call in `Pay::Paddle::Subscription#pause`. - @cjilbert504 @excid3
+* Change `#paused?` in `Pay::Paddle::Subscription` to check `pay_subscription.status` instead of `#paddle_paused_from`. - @cjilbert504 @excid3
+
 ### 4.0.1
 
 * Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504 @kyleschmolze
