@@ -1,9 +1,13 @@
 ### Unreleased
 
-* Add `"paused"` into `.active` scope and `#active?` on `Pay::Subscription`. Stripe considers paused subscriptions to be active, so adding `"paused"` allows paused subscriptions for other processors act the same. - @cjilbert504 @excid3
+* ℹ️  Add `"paused"` into `.active` scope and `#active?` on `Pay::Subscription`.
+    Stripe marks paused subscriptions with `status: :active` and  `pause_behavior` not null.
+    Paddle marks paused subscriptions with `status: :paused`.
+    This change allows Pay to treat them both the same. - @cjilbert504 @excid3
 * Add `active_without_paused` scope on `Pay::Subsctiption`. This filters out paused subscriptions from the `active` scope. - @cjilbert504 @GALTdea
 * Add `status: :paused` to update call in `Pay::Paddle::Subscription#pause`. - @cjilbert504 @excid3
-* Change `#paused?` in `Pay::Paddle::Subscription` to check `pay_subscription.status` instead of `#paddle_paused_from`. - @cjilbert504 @excid3
+* Change `#paused?` in `Pay::Paddle::Subscription` to check `pay_subscription.status == "paused"` instead of `#paddle_paused_from`. - @cjilbert504 @excid3
+    If webhooks have not been utilized, you should run query for any `Pay::Subscriptions` where `status: :active` and `paddle_paused_from` is not null and update to `status: "paused"`.
 
 ### 4.0.1
 
