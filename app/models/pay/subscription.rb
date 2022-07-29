@@ -11,7 +11,9 @@ module Pay
     scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.zone.now) }
     scope :cancelled, -> { where.not(ends_at: nil) }
     scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.zone.now) }
-    scope :active, -> { where(status: ["trialing", "active"], ends_at: nil).or(on_grace_period).or(on_trial) }
+    # Stripe considers paused subscriptions to be active, therefore we reflect that in this scope and
+    # make it consistent across all processors
+    scope :active, -> { where(status: ["trialing", "active", "paused"], ends_at: nil).or(on_grace_period).or(on_trial) }
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
     scope :with_active_customer, -> { joins(:customer).merge(Customer.active) }
@@ -52,9 +54,9 @@ module Pay
     def self.active_without_paused
       case Pay::Adapter.current_adapter
       when "postgresql", "postgis"
-        active.where("data->>'pause_behavior' IS NULL").and(where("data->>'paddle_paused_from' IS NULL"))
+        active.where("data->>'pause_behavior' IS NULL AND status != 'paused'")
       when "mysql2", "sqlite3"
-        active.where("data->>'$.pause_behavior' IS NULL").and(where("data->>'$.paddle_paused_from' IS NULL"))
+        active.where("data->>'$.pause_behavior' IS NULL AND status != 'paused'")
       end
     end
 
@@ -117,7 +119,7 @@ module Pay
     end
 
     def active?
-      ["trialing", "active"].include?(status) && (ends_at.nil? || on_grace_period? || on_trial?)
+      ["trialing", "active", "paused"].include?(status) && (ends_at.nil? || on_grace_period? || on_trial?)
     end
 
     def past_due?

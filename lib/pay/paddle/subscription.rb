@@ -107,7 +107,7 @@ module Pay
       end
 
       def paused?
-        paddle_paused_from.present?
+        status == "paused"
       end
 
       def pause
