@@ -41,6 +41,8 @@ module Pay
     store_accessor :data, :discounts # array of discount IDs applied to the Stripe Invoice
     store_accessor :data, :total_discount_amounts # array of discount details
     store_accessor :data, :total_tax_amounts # array of tax details for each jurisdiction
+    store_accessor :data, :credit_notes # array of credit notes for the Stripe Invoice
+    store_accessor :data, :refunds # array of refunds
 
     # Helpers for payment processors
     %w[braintree stripe paddle fake_processor].each do |processor_name|

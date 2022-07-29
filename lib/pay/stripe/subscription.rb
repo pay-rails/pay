@@ -84,7 +84,7 @@ module Pay
 
         # Sync the latest charge if we already have it loaded (like during subscrbe), otherwise, let webhooks take care of creating it
         if (charge = object.try(:latest_invoice).try(:charge)) && charge.try(:status) == "succeeded"
-          Pay::Stripe::Charge.sync(charge.id, object: charge)
+          Pay::Stripe::Charge.sync(charge.id, stripe_account: pay_subscription.stripe_account)
         end
 
         pay_subscription
@@ -100,7 +100,15 @@ module Pay
 
       # Common expand options for all requests that create, retrieve, or update a Stripe Subscription
       def self.expand_options
-        {expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]}
+        {
+          expand: [
+            "pending_setup_intent",
+            "latest_invoice.payment_intent",
+            "latest_invoice.charge",
+            "latest_invoice.total_discount_amounts.discount",
+            "latest_invoice.total_tax_amounts.tax_rate"
+          ]
+        }
       end
 
       def initialize(pay_subscription)

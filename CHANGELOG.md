@@ -9,6 +9,38 @@
 * Change `#paused?` in `Pay::Paddle::Subscription` to check `pay_subscription.status == "paused"` instead of `#paddle_paused_from`. - @cjilbert504 @excid3
     If webhooks have not been utilized, you should run query for any `Pay::Subscriptions` where `status: :active` and `paddle_paused_from` is not null and update to `status: "paused"`.
 
+### 4.1.1
+
+* Expand Stripe discounts and taxes when loading a subscription - @excid3
+
+### 4.1.0
+
+* Store Stripe refunds on the Charge - @excid3
+* Include line for each refund in the receipt - @excid3
+
+### 4.0.4
+
+* Fix recording first charge for a subscription - @excid3
+
+### 4.0.3
+
+* Fix tax amounts and skip $0 tax lines in Stripe receipts - @excid3
+
+### 4.0.2
+
+* Support `client_reference_id` on Stripe Checkout Sessions - @excid3 @cjilbert504
+  This is helpful when using the Stripe Pricing Table or any Checkout Session. Requires a Signed GlobalID as the value to prevent tampering.
+
+```ruby
+::Stripe::Checkout::Session.create(
+  mode: "payment",
+  client_reference_id: current_user.to_sgid,
+  ...
+)
+```
+
+* Stripe `checkout.session.completed` now syncs payment intents - @excid3
+
 ### 4.0.1
 
 * Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504 @kyleschmolze
