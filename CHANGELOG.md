@@ -1,5 +1,7 @@
 ### Unreleased
 
+### 4.2.0
+
 * ℹ️  Add `"paused"` into `.active` scope and `#active?` on `Pay::Subscription`.
     Stripe marks paused subscriptions with `status: :active` and  `pause_behavior` not null.
     Paddle marks paused subscriptions with `status: :paused`.
