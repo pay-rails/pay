@@ -1,5 +1,15 @@
 ### Unreleased
 
+### 5.0.1
+
+* Fix typo in Stripe API version - @excid3
+
+### 5.0.0
+
+* Upgrade to Stripe API `2022-08-01` and `stripe` rubygem v7 - @excid3
+
+### 4.2.1
+
 * Ensure Customer is created before creating a setup intent - @excid3 @cjilbert504
 
 ### 4.2.0
