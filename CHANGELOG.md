@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Ensure Customer is created before creating a setup intent - @excid3 @cjilbert504
+
 ### 4.2.0
 
 * ℹ️  Add `"paused"` into `.active` scope and `#active?` on `Pay::Subscription`.

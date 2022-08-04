@@ -178,6 +178,7 @@ module Pay
       end
 
       def create_setup_intent(options = {})
+        customer unless processor_id?
         ::Stripe::SetupIntent.create({
           customer: processor_id,
           usage: :off_session
