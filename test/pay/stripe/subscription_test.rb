@@ -168,6 +168,11 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal [pay_subscriptions(:stripe_with_items)], Pay::Subscription.with_metered_items.to_a
   end
 
+  test "metered_subscription_item" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription_with_metered_item)
+    assert_equal "metered", pay_subscription.metered_subscription_item.dig("price", "recurring", "usage_type")
+  end
+
   private
 
   def fake_stripe_subscription_with_metered_item

@@ -8,7 +8,7 @@ module Pay
 
     scope :active, -> { where(deleted_at: nil) }
     scope :deleted, -> { where.not(deleted_at: nil) }
-    scope :not_fake_processor, ->{ where.not(processor: :fake_processor) }
+    scope :not_fake_processor, -> { where.not(processor: :fake_processor) }
 
     validates :processor, presence: true
     validates :processor_id, allow_blank: true, uniqueness: {scope: :processor, case_sensitive: true}

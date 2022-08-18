@@ -1,5 +1,6 @@
 ### Unreleased
 
+* Add `metered_subscription_item` to Pay::Subscriptions to easily retrieve the metered subscription item for Stripe subscriptions - @excid3
 * Add `not_fake_processor` scope to Pay::Customer - @excid3
 
 ### 5.0.1
