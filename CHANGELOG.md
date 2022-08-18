@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Add `not_fake_processor` scope to Pay::Customer - @excid3
+
 ### 5.0.1
 
 * Fix typo in Stripe API version - @excid3

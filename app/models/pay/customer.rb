@@ -8,6 +8,7 @@ module Pay
 
     scope :active, -> { where(deleted_at: nil) }
     scope :deleted, -> { where.not(deleted_at: nil) }
+    scope :not_fake_processor, ->{ where.not(processor: :fake_processor) }
 
     validates :processor, presence: true
     validates :processor_id, allow_blank: true, uniqueness: {scope: :processor, case_sensitive: true}
@@ -22,6 +23,14 @@ module Pay
 
     delegate :email, to: :owner
     delegate_missing_to :pay_processor
+
+    %w[stripe braintree paddle fake_processor].each do |processor_name|
+      scope processor_name, -> { where(processor: processor_name) }
+
+      define_method "#{processor_name}?" do
+        processor == processor_name
+      end
+    end
 
     def self.pay_processor_for(name)
       "Pay::#{name.to_s.classify}::Billable".constantize
@@ -82,14 +91,6 @@ module Pay
 
       # If these match, consider it a generic trial
       subscription.trial_ends_at == subscription.ends_at
-    end
-
-    %w[stripe braintree paddle fake_processor].each do |processor_name|
-      scope processor_name, -> { where(processor: processor_name) }
-
-      define_method "#{processor_name}?" do
-        processor == processor_name
-      end
     end
   end
 end
