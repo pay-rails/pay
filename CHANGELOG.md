@@ -1,5 +1,11 @@
 ### Unreleased
 
+### 5.0.3
+
+* Old Pay::Subscription records may have `nil` or `[]` for subscription_items. In those cases, we will set the quantity on the Stripe Subscription directly - @excid3
+
+### 5.0.2
+
 * Add `metered_subscription_item` to Pay::Subscriptions to easily retrieve the metered subscription item for Stripe subscriptions - @excid3
 * Add `not_fake_processor` scope to Pay::Customer - @excid3
 

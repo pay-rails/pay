@@ -153,7 +153,7 @@ module Pay
       # For a subscription with a single item, we can update the subscription directly if no SubscriptionItem ID is available
       # Otherwise a SubscriptionItem ID is required so Stripe knows which entry to update
       def change_quantity(quantity, **options)
-        subscription_item_id = options.fetch(:subscription_item_id, subscription_items.first["id"])
+        subscription_item_id = options.fetch(:subscription_item_id, subscription_items&.first&.dig("id"))
         if subscription_item_id
           ::Stripe::SubscriptionItem.update(subscription_item_id, options.merge(quantity: quantity), stripe_options)
           @stripe_subscription = nil

@@ -15,6 +15,20 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal 5, subscription.quantity
   end
 
+  test "change stripe subscription quantity with nil subscription items" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription.update!(subscription_items: nil)
+    ::Stripe::Subscription.stubs(:update)
+    assert pay_subscription.change_quantity(5)
+  end
+
+  test "change stripe subscription quantity with [] subscription items" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription.update!(subscription_items: [])
+    ::Stripe::Subscription.stubs(:update)
+    assert pay_subscription.change_quantity(5)
+  end
+
   test "sync returns Pay::Subscription" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     assert pay_subscription.is_a?(Pay::Subscription)
