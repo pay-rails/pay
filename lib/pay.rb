@@ -55,6 +55,7 @@ module Pay
   mattr_accessor :emails
   @@emails = ActiveSupport::OrderedOptions.new
   @@emails.payment_action_required = true
+  @@emails.payment_failed = true
   @@emails.receipt = true
   @@emails.refund = true
   # This only applies to Stripe, therefor we supply the second argument of price

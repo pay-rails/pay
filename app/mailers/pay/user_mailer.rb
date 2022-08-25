@@ -20,6 +20,10 @@ module Pay
       mail to: to
     end
 
+    def payment_failed
+      mail to: to
+    end
+
     private
 
     def to
