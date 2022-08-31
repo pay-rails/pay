@@ -75,10 +75,8 @@ module Pay
           # If pause behavior is changing to `void`, record the pause start date
           # Any other pause status (or no pause at all) should have nil for start
           if pay_subscription.pause_behavior != attributes[:pause_behavior]
-            if attributes[:pause_behavior] == "void"
-              attributes[:pause_starts_at] = Time.at(object.current_period_end)
-            else
-              attributes[:pause_starts_at] = nil
+            attributes[:pause_starts_at] = if attributes[:pause_behavior] == "void"
+              Time.at(object.current_period_end)
             end
           end
 
