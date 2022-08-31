@@ -5,11 +5,12 @@ module Pay
 
       delegate :active?,
         :canceled?,
+        :on_grace_period?,
+        :on_trial?,
         :ends_at,
         :name,
-        :on_trial?,
         :owner,
-        :paddle_paused_from,
+        :pause_starts_at,
         :processor_id,
         :processor_plan,
         :processor_subscription,
@@ -78,7 +79,7 @@ module Pay
         ends_at = if on_trial?
           trial_ends_at
         elsif paused?
-          paddle_paused_from
+          pause_starts_at
         else
           processor_subscription.next_payment&.fetch(:date) || Time.current
         end
@@ -102,10 +103,6 @@ module Pay
         raise Pay::Paddle::Error, e
       end
 
-      def on_grace_period?
-        canceled? && Time.current < ends_at || paused? && Time.current < paddle_paused_from
-      end
-
       def paused?
         pay_subscription.status == "paused"
       end
@@ -113,7 +110,7 @@ module Pay
       def pause
         attributes = {pause: true}
         response = PaddlePay::Subscription::User.update(processor_id, attributes)
-        pay_subscription.update(status: :paused, paddle_paused_from: Time.zone.parse(response.dig(:next_payment, :date)))
+        pay_subscription.update(status: :paused, pause_starts_at: Time.zone.parse(response.dig(:next_payment, :date)))
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
       end
@@ -125,7 +122,7 @@ module Pay
 
         attributes = {pause: false}
         PaddlePay::Subscription::User.update(processor_id, attributes)
-        pay_subscription.update(status: :active, paddle_paused_from: nil)
+        pay_subscription.update(status: :active, pause_starts_at: nil)
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
       end

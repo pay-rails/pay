@@ -8,14 +8,16 @@ module Pay
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
-    scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.zone.now) }
+    scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.current) }
     scope :cancelled, -> { where.not(ends_at: nil) }
-    scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.zone.now) }
-    # Stripe considers paused subscriptions to be active, therefore we reflect that in this scope and
-    # make it consistent across all processors
-    scope :active, -> { where(status: ["trialing", "active", "paused"], ends_at: nil).or(on_grace_period).or(on_trial) }
+    scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.current) }
+    scope :active, -> { where(status: ["trialing", "active"], ends_at: nil).pause_not_started.or(on_grace_period).or(on_trial) }
+    scope :paused, -> { where(status: "paused").or(where("pause_starts_at <= ?", Time.current)) }
+    scope :pause_not_started, -> { where("pause_starts_at IS NULL OR pause_starts_at > ?", Time.current) }
+    scope :active_or_paused, -> { active.or(paused) }
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
+    scope :metered, -> { where(metered: true) }
     scope :with_active_customer, -> { joins(:customer).merge(Customer.active) }
     scope :with_deleted_customer, -> { joins(:customer).merge(Customer.deleted) }
 
@@ -24,12 +26,8 @@ module Pay
 
     store_accessor :data, :paddle_update_url
     store_accessor :data, :paddle_cancel_url
-    store_accessor :data, :paddle_paused_from
     store_accessor :data, :stripe_account
-    store_accessor :data, :metered
     store_accessor :data, :subscription_items
-    store_accessor :data, :pause_behavior
-    store_accessor :data, :pause_resumes_at
 
     attribute :prorate, :boolean, default: true
 
@@ -49,36 +47,6 @@ module Pay
       end
 
       scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
-    end
-
-    def self.active_without_paused
-      case Pay::Adapter.current_adapter
-      when "postgresql", "postgis"
-        active.where("data->>'pause_behavior' IS NULL AND status != 'paused'")
-      when "mysql2"
-        active.where("data->>'$.pause_behavior' IS NULL AND status != 'paused'")
-      when "sqlite3"
-        # sqlite 3.38 supports ->> syntax, however, sqlite 3.37 is what ships with Ubuntu 22.04.
-        active.where("json_extract(data, '$.pause_behavior') IS NULL AND status != 'paused'")
-      end
-    end
-
-    def self.with_metered_items
-      case Pay::Adapter.current_adapter
-      when "sqlite3"
-        where("json_extract(data, '$.\"metered\"') = true")
-        # For SQLite 3.38+ we could use the arrows
-        # where("data->'metered' = ?", "true")
-      when "mysql2"
-        where("data->'$.\"metered\"' = true")
-      when "postgresql", "postgis"
-        # Single quotes are important for json keys apparently
-        where("data->>'metered' = 'true'")
-      end
-    end
-
-    def metered_items?
-      !!metered
     end
 
     def self.find_by_processor_and_id(processor, processor_id)
@@ -121,8 +89,21 @@ module Pay
       canceled?
     end
 
+    def on_grace_period?
+      (ends_at? && Time.current < ends_at) ||
+        ((status == "paused" || pause_behavior == "void") && will_pause?)
+    end
+
+    def will_pause?
+      pause_starts_at? && Time.current < pause_starts_at
+    end
+
+    def pause_active?
+      (status == "paused" || pause_behavior == "void") && (pause_starts_at.nil? || pause_starts_at >= Time.current)
+    end
+
     def active?
-      ["trialing", "active", "paused"].include?(status) && (ends_at.nil? || on_grace_period? || on_trial?)
+      ["trialing", "active"].include?(status) && (!(canceled? || paused?) || on_trial? || on_grace_period?)
     end
 
     def past_due?
@@ -165,18 +146,6 @@ module Pay
 
     def latest_payment
       processor_subscription(expand: ["latest_invoice.payment_intent"]).latest_invoice.payment_intent
-    end
-
-    def paddle_paused_from
-      if (timestamp = super)
-        Time.zone.parse(timestamp)
-      end
-    end
-
-    def pause_resumes_at
-      if (resumes_at = super)
-        Time.zone.parse(resumes_at)
-      end
     end
 
     private

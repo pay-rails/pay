@@ -108,78 +108,82 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
 
   test "active scope should include active subscriptions" do
     active_subscription = create_subscription
-
     subscriptions = Pay::Subscription.active
-
     assert_includes subscriptions, active_subscription
   end
 
   test "active scope should include subscriptions on a grace period" do
     grace_period_subscription = create_subscription(ends_at: 7.days.from_now)
-
     subscriptions = Pay::Subscription.active
-
     assert_includes subscriptions, grace_period_subscription
   end
 
   test "active scope should include trialing subscriptions" do
     trialing_subscription = create_subscription(trial_ends_at: 7.days.from_now)
-
     subscriptions = Pay::Subscription.active
-
     assert_includes subscriptions, trialing_subscription
   end
 
-  test "active scope should include paused subscriptions" do
+  test "active scope should not include paused subscriptions" do
     paused_subscription = create_subscription(status: "paused")
-
     subscriptions = Pay::Subscription.active
+    refute_includes subscriptions, paused_subscription
+  end
 
+  test "active_or_paused scope should include paused subscriptions" do
+    paused_subscription = create_subscription(status: "paused")
+    paused_subscription2 = create_subscription(status: "active", pause_behavior: "void", pause_starts_at: 1.day.from_now)
+    subscriptions = Pay::Subscription.active_or_paused
     assert_includes subscriptions, paused_subscription
+    assert_includes subscriptions, paused_subscription2
   end
 
   test "active scope should not include ended subscriptions" do
     ended_subscription = create_subscription(ends_at: 7.days.ago)
-
     subscriptions = Pay::Subscription.active
-
     refute_includes subscriptions, ended_subscription
   end
 
   test "active scope should not include ended trial subscriptions" do
     trial_ended_subscription = create_subscription(ends_at: 8.days.ago, trial_ends_at: 7.days.ago)
-
     subscriptions = Pay::Subscription.active
-
     refute_includes subscriptions, trial_ended_subscription
   end
 
-  test "active_without_paused scope does not include Stripe paused subscription" do
-    subscription1 = create_subscription(pause_behavior: "void")
-
-    subscriptions = Pay::Subscription.active_without_paused
-
-    refute_includes subscriptions, subscription1
+  test "active scope does not include Stripe paused subscription" do
+    subscription = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.ago)
+    subscriptions = Pay::Subscription.active
+    refute_includes subscriptions, subscription
   end
 
-  test "active_without_paused scope does not include Paddle paused subscriptions" do
-    subscription1 = create_subscription(status: "paused")
-
-    subscriptions = Pay::Subscription.active_without_paused
-
-    refute_includes subscriptions, subscription1
+  test "active scope does not include Paddle paused subscriptions" do
+    subscription = create_paddle_subscription(status: "paused")
+    subscriptions = Pay::Subscription.active
+    refute_includes subscriptions, subscription
   end
 
-  test "active_without_paused scope with multiple paused subscriptions from various processors" do
+  test "active scope with multiple paused subscriptions from various processors" do
     active_subscription = create_subscription
-    paused_subscription1 = create_subscription(pause_behavior: "void")
-    paused_subscription2 = create_subscription(status: "paused")
+    paused_subscription1 = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.ago)
+    paused_subscription2 = create_paddle_subscription(status: "paused")
 
-    subscriptions = Pay::Subscription.active_without_paused
+    subscriptions = Pay::Subscription.active
 
     assert_includes subscriptions, active_subscription
     refute_includes subscriptions, paused_subscription1
     refute_includes subscriptions, paused_subscription2
+  end
+
+  test "paused scope includes Stripe paused subscription" do
+    subscription = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.ago)
+    subscriptions = Pay::Subscription.paused
+    assert_includes subscriptions, subscription
+  end
+
+  test "paused scope includes Paddle paused subscription" do
+    subscription = create_paddle_subscription(status: "paused")
+    subscriptions = Pay::Subscription.paused
+    assert_includes subscriptions, subscription
   end
 
   test "with_active_customer scope" do
@@ -345,5 +349,29 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     }
 
     @pay_customer.subscriptions.create! defaults.merge(options)
+  end
+
+  def create_stripe_subscription(options = {})
+    defaults = {
+      name: "default",
+      processor_id: rand(1..999_999_999),
+      processor_plan: "default",
+      quantity: "1",
+      status: :active
+    }
+
+    pay_customers(:stripe).subscriptions.create! defaults.merge(options)
+  end
+
+  def create_paddle_subscription(options = {})
+    defaults = {
+      name: "default",
+      processor_id: rand(1..999_999_999),
+      processor_plan: "default",
+      quantity: "1",
+      status: :active
+    }
+
+    pay_customers(:paddle).subscriptions.create! defaults.merge(options)
   end
 end

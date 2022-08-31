@@ -179,12 +179,72 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test ".with_metered_items returns all subscriptions that have a metered billing subscription item associated" do
-    assert_equal [pay_subscriptions(:stripe_with_items)], Pay::Subscription.with_metered_items.to_a
+    assert_equal [pay_subscriptions(:stripe_with_items)], Pay::Subscription.metered.to_a
   end
 
   test "metered_subscription_item" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription_with_metered_item)
     assert_equal "metered", pay_subscription.metered_subscription_item.dig("price", "recurring", "usage_type")
+  end
+
+  test "stripe syncs pause_collection resumes_at to pause_resumes_at" do
+    freeze_time
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "void", resumes_at: 30.days.from_now}, current_period_end: 1.day.from_now))
+    assert_equal pay_subscription.pause_resumes_at, 30.days.from_now
+  end
+
+  test "stripe pause_behavior void sets pause_starts_at" do
+    freeze_time
+    # First sync the subscription, then sync as paused
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "void", resumes_at: nil}, current_period_end: 1.day.from_now))
+    assert_equal pay_subscription.pause_starts_at, 1.day.from_now
+  end
+
+  test "stripe pause_behavior mark_uncollectible does not set pause_starts_at" do
+    # First sync the subscription, then sync as paused
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "mark_uncollectible", resumes_at: nil}, current_period_end: 1.day.from_now))
+    assert_nil pay_subscription.pause_starts_at
+  end
+
+  test "stripe pause_behavior keep_as_draft does not set pause_starts_at" do
+    # First sync the subscription, then sync as paused
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "keep_as_draft", resumes_at: nil}, current_period_end: 1.day.from_now))
+    assert_nil pay_subscription.pause_starts_at
+  end
+
+  test "stripe pause_behavior void grace period" do
+    # First sync the subscription, then sync as paused
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "void", resumes_at: nil}, current_period_end: 1.day.from_now))
+    assert pay_subscription.on_grace_period?
+    assert pay_subscription.active?
+  end
+
+  test "stripe pause_behavior void after grace period" do
+    # First sync the subscription, then sync as paused
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "void", resumes_at: nil}, current_period_end: 1.day.ago))
+    refute pay_subscription.on_grace_period?
+    refute pay_subscription.active?
+  end
+
+  test "stripe pause_behavior mark_uncollectible after grace period" do
+    # First sync the subscription, then sync as paused
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "mark_uncollectible", resumes_at: nil}, current_period_end: 1.day.from_now))
+    refute pay_subscription.on_grace_period?
+    assert pay_subscription.active?
+  end
+
+  test "stripe pause_behavior keep_as_draft after grace period" do
+    # First sync the subscription, then sync as paused
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "keep_as_draft", resumes_at: nil}, current_period_end: 1.day.from_now))
+    refute pay_subscription.on_grace_period?
+    assert pay_subscription.active?
   end
 
   private

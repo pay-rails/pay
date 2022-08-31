@@ -4,8 +4,9 @@ module Pay
       attr_reader :pay_subscription
 
       delegate :active?,
-        :customer,
         :canceled?,
+        :on_grace_period?,
+        :customer,
         :ends_at,
         :name,
         :on_trial?,
@@ -53,10 +54,6 @@ module Pay
         )
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
-      end
-
-      def on_grace_period?
-        canceled? && Time.current < ends_at
       end
 
       def paused?

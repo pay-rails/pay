@@ -3,9 +3,11 @@ module Pay
     class Subscription
       attr_reader :pay_subscription
 
-      delegate :canceled?,
-        :ends_at,
+      delegate :active?,
+        :canceled?,
+        :on_grace_period?,
         :on_trial?,
+        :ends_at,
         :owner,
         :processor_subscription,
         :processor_id,
@@ -40,10 +42,6 @@ module Pay
           trial_ends_at: (ends_at if pay_subscription.trial_ends_at?),
           ends_at: ends_at
         )
-      end
-
-      def on_grace_period?
-        canceled? && Time.current < ends_at
       end
 
       def paused?

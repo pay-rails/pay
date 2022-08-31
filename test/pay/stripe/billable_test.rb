@@ -400,10 +400,10 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
       @pay_customer.payment_method_token = payment_method
       @pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
 
-      @pay_subscription.pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now.to_i)
+      @pay_subscription.pause(behavior: "void", resumes_at: 1.month.from_now.to_i)
 
       assert @pay_subscription.paused?
-      assert_equal "mark_uncollectible", @pay_subscription.pause_behavior
+      assert_equal "void", @pay_subscription.pause_behavior
       assert @pay_subscription.pause_resumes_at > 21.days.from_now
 
       @pay_subscription.resume

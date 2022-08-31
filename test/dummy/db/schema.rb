@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2017_02_05_000000) do
-
+ActiveRecord::Schema[7.0].define(version: 2022_08_31_153001) do
   create_table "accounts", force: :cascade do |t|
     t.string "email"
     t.string "merchant_processor"
@@ -19,17 +18,17 @@ ActiveRecord::Schema.define(version: 2017_02_05_000000) do
   end
 
   create_table "pay_charges", force: :cascade do |t|
-    t.bigint "customer_id", null: false
-    t.bigint "subscription_id"
+    t.integer "customer_id", null: false
+    t.integer "subscription_id"
     t.string "processor_id", null: false
-    t.bigint "amount", null: false
+    t.integer "amount", null: false
     t.string "currency"
-    t.bigint "application_fee_amount"
-    t.bigint "amount_refunded"
+    t.integer "application_fee_amount"
+    t.integer "amount_refunded"
     t.json "metadata"
     t.json "data"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["customer_id", "processor_id"], name: "index_pay_charges_on_customer_id_and_processor_id", unique: true
     t.index ["subscription_id"], name: "index_pay_charges_on_subscription_id"
   end
@@ -42,8 +41,8 @@ ActiveRecord::Schema.define(version: 2017_02_05_000000) do
     t.boolean "default"
     t.json "data"
     t.datetime "deleted_at"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["owner_type", "owner_id", "deleted_at", "default"], name: "pay_customer_owner_index"
     t.index ["processor", "processor_id"], name: "index_pay_customers_on_processor_and_processor_id", unique: true
   end
@@ -55,45 +54,51 @@ ActiveRecord::Schema.define(version: 2017_02_05_000000) do
     t.string "processor_id"
     t.boolean "default"
     t.json "data"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["owner_type", "owner_id", "processor"], name: "index_pay_merchants_on_owner_type_and_owner_id_and_processor"
   end
 
   create_table "pay_payment_methods", force: :cascade do |t|
-    t.bigint "customer_id", null: false
+    t.integer "customer_id", null: false
     t.string "processor_id", null: false
     t.boolean "default"
     t.string "type"
     t.json "data"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["customer_id", "processor_id"], name: "index_pay_payment_methods_on_customer_id_and_processor_id", unique: true
   end
 
   create_table "pay_subscriptions", force: :cascade do |t|
-    t.bigint "customer_id", null: false
+    t.integer "customer_id", null: false
     t.string "name", null: false
     t.string "processor_id", null: false
     t.string "processor_plan", null: false
-    t.bigint "quantity", default: 1, null: false
+    t.integer "quantity", default: 1, null: false
     t.string "status", null: false
     t.datetime "trial_ends_at"
     t.datetime "ends_at"
     t.decimal "application_fee_percent", precision: 8, scale: 2
     t.json "metadata"
     t.json "data"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "metered"
+    t.string "pause_behavior"
+    t.datetime "pause_starts_at"
+    t.datetime "pause_resumes_at"
     t.index ["customer_id", "processor_id"], name: "index_pay_subscriptions_on_customer_id_and_processor_id", unique: true
+    t.index ["metered"], name: "index_pay_subscriptions_on_metered"
+    t.index ["pause_starts_at"], name: "index_pay_subscriptions_on_pause_starts_at"
   end
 
   create_table "pay_webhooks", force: :cascade do |t|
     t.string "processor"
     t.string "event_type"
     t.json "event"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "teams", force: :cascade do |t|

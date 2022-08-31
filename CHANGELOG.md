@@ -1,5 +1,18 @@
 ### Unreleased
 
+* [Breaking] `paddle_paused_from` is now `pause_starts_at:datetime` column
+* Adds `pause_behavior:string` column
+* Adds `pause_resumes_at:datetime` column
+* Adds `metered:boolean` column for easier querying / indexing
+
+* [Breaking] `active` scope no longer includes paused subscriptions
+* Adds `active_or_paused` scope to retrieve active or paused subscriptions
+
+* [Breaking] Stripe paused subscriptions have changed:
+  `pause_behavior=void` subscriptions are now considered `active?` until the end of the current period. This is intended for not providing services for a certain period of time.
+  `pause_behavior=mark_uncollectible` is considered active. This is intended for offering services for free.
+  `pause_behavior=keep_as_draft` is considered active. This is intended for offering serivces for free but collecting payments later.
+
 ### 5.0.3
 
 * Old Pay::Subscription records may have `nil` or `[]` for subscription_items. In those cases, we will set the quantity on the Stripe Subscription directly - @excid3

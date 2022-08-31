@@ -6,6 +6,7 @@ module Pay
 
       delegate :active?,
         :canceled?,
+        :on_grace_period?,
         :ends_at,
         :name,
         :on_trial?,
@@ -71,11 +72,20 @@ module Pay
         # Update or create the subscription
         pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
         if pay_subscription
+          # If pause behavior is changing to `void`, record the pause start date
+          # Any other pause status (or no pause at all) should have nil for start
+          if pay_subscription.pause_behavior != attributes[:pause_behavior]
+            if attributes[:pause_behavior] == "void"
+              attributes[:pause_starts_at] = Time.at(object.current_period_end)
+            else
+              attributes[:pause_starts_at] = nil
+            end
+          end
+
           pay_subscription.with_lock { pay_subscription.update!(attributes) }
         else
           # Allow setting the subscription name in metadata, otherwise use the default
           name ||= object.metadata["pay_name"] || Pay.default_product_name
-
           pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
         end
 
@@ -165,12 +175,8 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
-      def on_grace_period?
-        canceled? && Time.current < ends_at
-      end
-
       def paused?
-        pause_behavior.present?
+        pause_behavior == "void"
       end
 
       # Pauses a Stripe subscription
@@ -179,18 +185,32 @@ module Pay
       # pause(behavior: "keep_as_draft")
       # pause(behavior: "void")
       # pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now)
+      #
+      # `void` - If you can’t provide your services for a certain period of time, you can void invoices that are created by your subscriptions so that your customers aren’t charged.
+      # `keep_as_draft` - If you want to temporarily offer your services for free and collect payments later
+      # `mark_uncollectible` - If you want to offer your services for free
+      #
+      # pause_behavior of `void` is considered active until the end of the current period and not active after that. The current_period_end is stored as `pause_starts_at`
+      # Other pause_behaviors do not set `pause_starts_at` because they are used for offering free services
       def pause(**options)
-        attributes = {pause_collection: options.reverse_merge(behavior: "mark_uncollectible")}
+        attributes = {pause_collection: options.reverse_merge(behavior: "void")}
         @stripe_subscription = ::Stripe::Subscription.update(processor_id, attributes.merge(expand_options), stripe_options)
+        behavior = @stripe_subscription.pause_collection&.behavior
         pay_subscription.update(
-          pause_behavior: @stripe_subscription.pause_collection&.behavior,
-          pause_resumes_at: (@stripe_subscription.pause_collection&.resumes_at ? Time.at(@stripe_subscription.pause_collection&.resumes_at) : nil)
+          pause_behavior: behavior,
+          pause_resumes_at: (@stripe_subscription.pause_collection&.resumes_at ? Time.at(@stripe_subscription.pause_collection&.resumes_at) : nil),
+          pause_starts_at: (behavior == "void" ? Time.at(@stripe_subscription.current_period_end) : nil)
         )
       end
 
+      # Unpauses a subscription
       def unpause
         @stripe_subscription = ::Stripe::Subscription.update(processor_id, {pause_collection: nil}.merge(expand_options), stripe_options)
-        pay_subscription.update(pause_behavior: nil, pause_resumes_at: nil)
+        pay_subscription.update(
+          pause_behavior: nil,
+          pause_resumes_at: nil,
+          pause_starts_at: nil
+        )
       end
 
       def resume

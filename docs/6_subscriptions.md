@@ -235,7 +235,13 @@ paused if you wish to limit any feature access within your application.
 
 ##### Pause a Stripe Subscription
 
+Stripe subscriptions have several behaviors.
+* `behavior: void` will put the subscription on a grace period until the end of the current period.
+* `behavior: keep_as_draft` will pause the subscription invoices but the subscription is still active. Use this to delay payments until later.
+* `behavior: mark_uncollectible` will pause the subscription invoices but the subscription is still active. Use this to provide free access temporarily.
+
 Calling pause with no arguments will set `behavior: "mark_uncollectible"` by default.
+
 ```ruby
 @user.payment_processor.subscription.pause
 ```
@@ -250,9 +256,12 @@ You can set this to another option as shown below.
 
 ##### Pause a Paddle Subscription
 
+Paddle will pause payments at the end of the period. The status remains `active` until the period ends with a `paused_from` value to denote when the subscription pause will take effect. When the status becomes `paused` the subscription is no longer active.
+
 ```ruby
 @user.payment_processor.subscription.pause
 ```
+
 #### Resuming a Paused Subscription
 
 ```ruby
