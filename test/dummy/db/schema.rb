@@ -18,13 +18,13 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
   end
 
   create_table "pay_charges", force: :cascade do |t|
-    t.integer "customer_id", null: false
-    t.integer "subscription_id"
+    t.bigint "customer_id", null: false
+    t.bigint "subscription_id"
     t.string "processor_id", null: false
-    t.integer "amount", null: false
+    t.bigint "amount", null: false
     t.string "currency"
-    t.integer "application_fee_amount"
-    t.integer "amount_refunded"
+    t.bigint "application_fee_amount"
+    t.bigint "amount_refunded"
     t.json "metadata"
     t.json "data"
     t.datetime "created_at", null: false
@@ -60,7 +60,7 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
   end
 
   create_table "pay_payment_methods", force: :cascade do |t|
-    t.integer "customer_id", null: false
+    t.bigint "customer_id", null: false
     t.string "processor_id", null: false
     t.boolean "default"
     t.string "type"
@@ -71,11 +71,11 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
   end
 
   create_table "pay_subscriptions", force: :cascade do |t|
-    t.integer "customer_id", null: false
+    t.bigint "customer_id", null: false
     t.string "name", null: false
     t.string "processor_id", null: false
     t.string "processor_plan", null: false
-    t.integer "quantity", default: 1, null: false
+    t.bigint "quantity", default: 1, null: false
     t.string "status", null: false
     t.datetime "trial_ends_at"
     t.datetime "ends_at"
