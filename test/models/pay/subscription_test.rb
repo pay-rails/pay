@@ -130,14 +130,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, paused_subscription
   end
 
-  test "active_or_paused scope should include paused subscriptions" do
-    paused_subscription = create_subscription(status: "paused")
-    paused_subscription2 = create_subscription(status: "active", pause_behavior: "void", pause_starts_at: 1.day.from_now)
-    subscriptions = Pay::Subscription.active_or_paused
-    assert_includes subscriptions, paused_subscription
-    assert_includes subscriptions, paused_subscription2
-  end
-
   test "active scope should not include ended subscriptions" do
     ended_subscription = create_subscription(ends_at: 7.days.ago)
     subscriptions = Pay::Subscription.active
@@ -148,6 +140,24 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     trial_ended_subscription = create_subscription(ends_at: 8.days.ago, trial_ends_at: 7.days.ago)
     subscriptions = Pay::Subscription.active
     refute_includes subscriptions, trial_ended_subscription
+  end
+
+  test "active scope includes future Stripe paused subscription" do
+    subscription = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.from_now)
+    subscriptions = Pay::Subscription.active
+    assert_includes subscriptions, subscription
+  end
+
+  test "active scope includes Stripe paused keep_as_draft subscription" do
+    subscription = create_stripe_subscription(pause_behavior: "keep_as_draft")
+    subscriptions = Pay::Subscription.active
+    assert_includes subscriptions, subscription
+  end
+
+  test "active scope includes Stripe paused mark_uncollectible subscription" do
+    subscription = create_stripe_subscription(pause_behavior: "mark_uncollectible")
+    subscriptions = Pay::Subscription.active
+    assert_includes subscriptions, subscription
   end
 
   test "active scope does not include Stripe paused subscription" do
@@ -180,10 +190,24 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_includes subscriptions, subscription
   end
 
+  test "paused scope does not include future Stripe paused subscription" do
+    subscription = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.from_now)
+    subscriptions = Pay::Subscription.paused
+    refute_includes subscriptions, subscription
+  end
+
   test "paused scope includes Paddle paused subscription" do
     subscription = create_paddle_subscription(status: "paused")
     subscriptions = Pay::Subscription.paused
     assert_includes subscriptions, subscription
+  end
+
+  test "active_or_paused scope should include paused subscriptions" do
+    paused_subscription = create_subscription(status: "paused")
+    paused_subscription2 = create_subscription(status: "active", pause_behavior: "void", pause_starts_at: 1.day.from_now)
+    subscriptions = Pay::Subscription.active_or_paused
+    assert_includes subscriptions, paused_subscription
+    assert_includes subscriptions, paused_subscription2
   end
 
   test "with_active_customer scope" do
