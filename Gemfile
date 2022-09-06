@@ -22,10 +22,6 @@ gem "paddle_pay", "~> 0.2.0"
 gem "receipts"
 gem "prawn", github: "prawnpdf/prawn"
 
-# net-smtp, net-imap and net-pop were removed from default gems in Ruby 3.1, but is used by the `mail` gem.
-# So we need to add them as dependencies until `mail` is fixed: https://github.com/mikel/mail/pull/1439
-gem "net-smtp", require: false
-
 # Test against different databases
 gem "sqlite3", "~> 1.4"
 gem "mysql2"
@@ -42,6 +38,6 @@ gem "turbo-rails"
 gem "stimulus-rails"
 
 # Ruby 3.1+ drops these built-in gems
-gem "net-imap"
-gem "net-pop"
-gem "net-smtp"
+gem "net-imap", require: false
+gem "net-pop", require: false
+gem "net-smtp", require: false
