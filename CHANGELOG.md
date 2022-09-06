@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Fix non-deterministic subscription - @feliperaul @excid3
+
 ### 5.0.3
 
 * Old Pay::Subscription records may have `nil` or `[]` for subscription_items. In those cases, we will set the quantity on the Stripe Subscription directly - @excid3
