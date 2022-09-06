@@ -34,6 +34,9 @@ gem "pg"
 # Used for the dummy Rails app integration
 gem "puma"
 gem "standard"
-gem "turbolinks"
 gem "web-console", group: :development
-gem "webpacker"
+
+gem "sprockets-rails"
+gem "importmap-rails"
+gem "turbo-rails"
+gem "stimulus-rails"
