@@ -109,11 +109,6 @@ module Pay
           off_session: true
         }.merge(options)
 
-        # Inherit trial from plan unless trial override was specified
-        unless opts[:trial_end] || opts[:trial_period_days]
-          opts[:trial_from_plan] = true
-        end
-
         # Load the Stripe customer to verify it exists and update payment method if needed
         opts[:customer] = customer.id
 
