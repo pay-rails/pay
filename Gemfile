@@ -16,15 +16,11 @@ gem "appraisal"
 gem "overcommit"
 
 gem "braintree", ">= 2.92.0"
-gem "stripe", "~> 6.2"
+gem "stripe", "~> 7.0"
 gem "paddle_pay", "~> 0.2.0"
 
 gem "receipts"
 gem "prawn", github: "prawnpdf/prawn"
-
-# net-smtp, net-imap and net-pop were removed from default gems in Ruby 3.1, but is used by the `mail` gem.
-# So we need to add them as dependencies until `mail` is fixed: https://github.com/mikel/mail/pull/1439
-gem "net-smtp", require: false
 
 # Test against different databases
 gem "sqlite3", "~> 1.4"
@@ -34,6 +30,14 @@ gem "pg"
 # Used for the dummy Rails app integration
 gem "puma"
 gem "standard"
-gem "turbolinks"
 gem "web-console", group: :development
-gem "webpacker"
+
+gem "sprockets-rails"
+gem "importmap-rails"
+gem "turbo-rails"
+gem "stimulus-rails"
+
+# Ruby 3.1+ drops these built-in gems
+gem "net-imap", require: false
+gem "net-pop", require: false
+gem "net-smtp", require: false

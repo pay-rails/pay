@@ -104,7 +104,7 @@ module Pay
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         quantity = options.delete(:quantity)
         opts = {
-          expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"],
+          expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge"],
           items: [plan: plan, quantity: quantity],
           off_session: true
         }.merge(options)
@@ -178,6 +178,7 @@ module Pay
       end
 
       def create_setup_intent(options = {})
+        customer unless processor_id?
         ::Stripe::SetupIntent.create({
           customer: processor_id,
           usage: :off_session

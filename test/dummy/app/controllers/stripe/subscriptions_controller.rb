@@ -21,7 +21,7 @@ module Stripe
       redirect_to pay.payment_path(e.payment.id)
     rescue Pay::Error => e
       flash[:alert] = e.message
-      render :new
+      render :new, status: :unprocessable_entity
     end
 
     def edit

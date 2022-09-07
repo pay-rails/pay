@@ -18,7 +18,7 @@ class Braintree::ChargesController < ApplicationController
     redirect_to braintree_charge_path(charge)
   rescue Pay::Error => e
     flash[:alert] = e.message
-    render :new
+    render :new, status: :unprocessable_entity
   end
 
   def refund

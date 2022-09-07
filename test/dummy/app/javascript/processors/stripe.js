@@ -1,4 +1,4 @@
-document.addEventListener("turbolinks:load", () => {
+document.addEventListener("turbo:load", () => {
   let cardElement = document.querySelector("#card-element")
 
   if (cardElement !== null) { setupStripe() }

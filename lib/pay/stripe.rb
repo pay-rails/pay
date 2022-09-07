@@ -31,12 +31,12 @@ module Pay
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
 
-      Pay::Engine.version_matches?(required: "~> 6", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 6")
+      Pay::Engine.version_matches?(required: "~> 7", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 7")
     end
 
     def self.setup
       ::Stripe.api_key = private_key
-      ::Stripe.api_version = "2020-08-27"
+      ::Stripe.api_version = "2022-08-01"
 
       # Used by Stripe to identify Pay for support
       ::Stripe.set_app_info("PayRails", partner_id: "pp_partner_IqhY0UExnJYLxg", version: Pay::VERSION, url: "https://github.com/pay-rails/pay")

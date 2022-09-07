@@ -15,6 +15,20 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal 5, subscription.quantity
   end
 
+  test "change stripe subscription quantity with nil subscription items" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription.update!(subscription_items: nil)
+    ::Stripe::Subscription.stubs(:update)
+    assert pay_subscription.change_quantity(5)
+  end
+
+  test "change stripe subscription quantity with [] subscription items" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    pay_subscription.update!(subscription_items: [])
+    ::Stripe::Subscription.stubs(:update)
+    assert pay_subscription.change_quantity(5)
+  end
+
   test "sync returns Pay::Subscription" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     assert pay_subscription.is_a?(Pay::Subscription)
@@ -166,6 +180,11 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test ".with_metered_items returns all subscriptions that have a metered billing subscription item associated" do
     assert_equal [pay_subscriptions(:stripe_with_items)], Pay::Subscription.with_metered_items.to_a
+  end
+
+  test "metered_subscription_item" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription_with_metered_item)
+    assert_equal "metered", pay_subscription.metered_subscription_item.dig("price", "recurring", "usage_type")
   end
 
   private

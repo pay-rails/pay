@@ -174,12 +174,6 @@ Individual subscriptions provide similar helper methods to check their state.
 @user.payment_processor.subscription.active? #=> true or false
 ```
 
-#### Checking if a Subscription is Paused
-
-```ruby
-@user.payment_processor.subscription.paused? #=> true or false
-```
-
 #### Cancel a Subscription (At End of Billing Cycle)
 
 ```ruby
@@ -200,12 +194,6 @@ In addition to the API, Paddle provides a subscription [Cancel URL](https://deve
 @user.payment_processor.subscription.cancel_now!
 ```
 
-#### Pause a Subscription (Paddle only)
-
-```ruby
-@user.payment_processor.subscription.pause
-```
-
 #### Swap a Subscription to another Plan
 
 If a user wishes to change subscription plans, you can pass in the Plan or Price ID into the `swap` method:
@@ -218,25 +206,57 @@ Braintree does not allow this via their API, so we cancel and create a new subsc
 
 #### Resume a Subscription
 
-A user may wish to resume their canceled (or paused) subscription. You can resume a subscription with:
+A user may wish to resume their canceled subscription during the grace period. You can resume a subscription with:
 
 ```ruby
 @user.payment_processor.subscription.resume
 ```
-
-##### Stripe or Braintree Subscription (on Grace Period)
-
-With Stripe or Braintree, a subscription on grace period may be resumed:
-
-##### Paddle (Paused)
-
-With Paddle, you may resume a paused subscription:
 
 #### Retrieving the raw Subscription object from the Processor
 
 ```ruby
 @user.payment_processor.subscription.processor_subscription
 #=> #<Stripe::Subscription>
+```
+
+## Paused Subscriptions
+
+Stripe and Paddle allow you to pause subscriptions. These subscriptions are considered to be active. This allows the subscriptions
+to be displayed to your users so they can resume the subscription when ready. You will need to check if the subscription is
+paused if you wish to limit any feature access within your application.
+
+#### Checking if a Subscription is Paused
+
+```ruby
+@user.payment_processor.subscription.paused? #=> true or false
+```
+
+#### Pause a Subscription (Stripe and Paddle only)
+
+##### Pause a Stripe Subscription
+
+Calling pause with no arguments will set `behavior: "mark_uncollectible"` by default.
+```ruby
+@user.payment_processor.subscription.pause
+```
+
+You can set this to another option as shown below.
+```ruby
+@user.payment_processor.subscription.pause(behavior: "mark_uncollectible")
+@user.payment_processor.subscription.pause(behavior: "keep_as_draft")
+@user.payment_processor.subscription.pause(behavior: "void")
+@user.payment_processor.subscription.pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now)
+```
+
+##### Pause a Paddle Subscription
+
+```ruby
+@user.payment_processor.subscription.pause
+```
+#### Resuming a Paused Subscription
+
+```ruby
+@user.payment_processor.subscription.resume
 ```
 
 ## Manually syncing subscriptions

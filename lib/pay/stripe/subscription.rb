@@ -84,7 +84,7 @@ module Pay
 
         # Sync the latest charge if we already have it loaded (like during subscrbe), otherwise, let webhooks take care of creating it
         if (charge = object.try(:latest_invoice).try(:charge)) && charge.try(:status) == "succeeded"
-          Pay::Stripe::Charge.sync(charge.id, object: charge)
+          Pay::Stripe::Charge.sync(charge.id, stripe_account: pay_subscription.stripe_account)
         end
 
         pay_subscription
@@ -100,7 +100,15 @@ module Pay
 
       # Common expand options for all requests that create, retrieve, or update a Stripe Subscription
       def self.expand_options
-        {expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"]}
+        {
+          expand: [
+            "pending_setup_intent",
+            "latest_invoice.payment_intent",
+            "latest_invoice.charge",
+            "latest_invoice.total_discount_amounts.discount",
+            "latest_invoice.total_tax_amounts.tax_rate"
+          ]
+        }
       end
 
       def initialize(pay_subscription)
@@ -134,7 +142,7 @@ module Pay
       # cancel_now!(prorate: true)
       # cancel_now!(invoice_now: true)
       def cancel_now!(**options)
-        @stripe_subscription = ::Stripe::Subscription.delete(processor_id, options.merge(expand_options), stripe_options)
+        @stripe_subscription = ::Stripe::Subscription.cancel(processor_id, options.merge(expand_options), stripe_options)
         pay_subscription.update(ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -145,7 +153,7 @@ module Pay
       # For a subscription with a single item, we can update the subscription directly if no SubscriptionItem ID is available
       # Otherwise a SubscriptionItem ID is required so Stripe knows which entry to update
       def change_quantity(quantity, **options)
-        subscription_item_id = options.fetch(:subscription_item_id, subscription_items.first["id"])
+        subscription_item_id = options.fetch(:subscription_item_id, subscription_items&.first&.dig("id"))
         if subscription_item_id
           ::Stripe::SubscriptionItem.update(subscription_item_id, options.merge(quantity: quantity), stripe_options)
           @stripe_subscription = nil
@@ -232,14 +240,21 @@ module Pay
       # create_usage_record(quantity: 4, action: :increment)
       # create_usage_record(subscription_item_id: "si_1234", quantity: 100, action: :set)
       def create_usage_record(**options)
-        subscription_item_id = options.fetch(:subscription_item_id, subscription_items.first["id"])
+        subscription_item_id = options.fetch(:subscription_item_id, metered_subscription_item&.dig("id"))
         ::Stripe::SubscriptionItem.create_usage_record(subscription_item_id, options, stripe_options)
       end
 
       # Returns usage record summaries for a subscription item
       def usage_record_summaries(**options)
-        subscription_item_id = options.fetch(:subscription_item_id, subscription_items.first["id"])
+        subscription_item_id = options.fetch(:subscription_item_id, metered_subscription_item&.dig("id"))
         ::Stripe::SubscriptionItem.list_usage_record_summaries(subscription_item_id, options, stripe_options)
+      end
+
+      # Returns the first metered subscription item
+      def metered_subscription_item
+        subscription_items.find do |subscription_item|
+          subscription_item.dig("price", "recurring", "usage_type") == "metered"
+        end
       end
 
       # Returns an upcoming invoice for a subscription
