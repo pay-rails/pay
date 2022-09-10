@@ -70,6 +70,18 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
+  test "sync stripe subscription sets current_period_start" do
+    fake_subscription = fake_stripe_subscription(current_period_start: 1488987924)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
+    assert_not_nil pay_subscription.current_period_start
+  end
+
+  test "sync stripe subscription sets current_period_end" do
+    fake_subscription = fake_stripe_subscription(current_period_end: 1488987924)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
+    assert_not_nil pay_subscription.current_period_end
+  end
+
   test "sync stripe subscription sets ends_at when canceling at period end" do
     fake_subscription = fake_stripe_subscription(cancel_at_period_end: true)
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
