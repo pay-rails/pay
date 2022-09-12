@@ -46,7 +46,7 @@ module Pay
     end
 
     def subscription(name: Pay.default_product_name)
-      subscriptions.loaded? ? subscriptions.reverse.detect { |s| s.name == name } : subscriptions.for_name(name).last
+      subscriptions.order(id: :desc).for_name(name).first
     end
 
     def subscribed?(name: Pay.default_product_name, processor_plan: nil)

@@ -109,9 +109,6 @@ module Pay
           off_session: true
         }.merge(options)
 
-        # Inherit trial from plan unless trial override was specified
-        opts[:trial_from_plan] = true unless opts[:trial_period_days]
-
         # Load the Stripe customer to verify it exists and update payment method if needed
         opts[:customer] = customer.id
 
@@ -190,9 +187,10 @@ module Pay
         stripe_sub.trial_end.present? ? Time.at(stripe_sub.trial_end) : nil
       end
 
-      # Syncs a customer's subscriptions from Stripe to the database
-      def sync_subscriptions
-        subscriptions = ::Stripe::Subscription.list({customer: customer}, stripe_options)
+      # Syncs a customer's subscriptions from Stripe to the database.
+      # Note that by default canceled subscriptions are NOT returned by Stripe. In order to include them, use `sync_subscriptions(status: "all")`.
+      def sync_subscriptions(**options)
+        subscriptions = ::Stripe::Subscription.list(options.merge(customer: customer), stripe_options)
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id)
         end

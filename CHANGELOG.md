@@ -12,6 +12,7 @@
   `pause_behavior=void` subscriptions are now considered `active?` until the end of the current period. This is intended for not providing services for a certain period of time.
   `pause_behavior=mark_uncollectible` is considered active. This is intended for offering services for free.
   `pause_behavior=keep_as_draft` is considered active. This is intended for offering serivces for free but collecting payments later.
+* Fix non-deterministic subscription - @feliperaul @excid3
 
 ### 5.0.3
 
