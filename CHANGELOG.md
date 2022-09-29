@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Prepend Pay webhook listeners so they run before user-defined webhook listeners - @excid3 @cjilbert504
+  This is important because a user might define a webhook listener that expects a subscription to be deleted and if the Pay webhook hasn't run yet, the subscription would not be canceled when the user-defined webhook runs.
 * Fix Webhook delegator unsubscribe - @excid3 @cjilbert504
 * Fix non-deterministic subscription - @feliperaul @excid3
 
