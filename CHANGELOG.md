@@ -1,5 +1,15 @@
 ### Unreleased
 
+* [Breaking] Stripe subscriptions now `always_invoice` when swapping plans. Previously, swap would use `proration_behavior: "create_prorations"`. This caused some confusion when users upgraded plans and weren't charged until the next period. The default will now automatically invoice immediately.
+* Remove `off_session: true` default for Stripe `subscribe`. - @excid3
+  Removing this allows Stripe to attach the PaymentMethod to the Customer once confirmed. You can still pass this option in when subscribing if needed. New subscriptions typically are initiated by users, which shouldn't provide this parameter as true.
+* Add `Pay::Stripe::PaymentMethod.sync_payment_intent` to sync PaymentMethod from PaymentIntent objects
+* Add `Pay::Stripe::PaymentMethod.sync_setup_intent` to sync PaymentMethod from SetupIntent objects
+* Add `Pay::Subscription#retry_failed_payment` for retrying `past_due` subscriptions with failed payments
+* Fix `swap` from always setting status to `active`. Failed swaps with Stripe will be set to `past_due`.
+
+### 5.0.4
+
 * Prepend Pay webhook listeners so they run before user-defined webhook listeners - @excid3 @cjilbert504
   This is important because a user might define a webhook listener that expects a subscription to be deleted and if the Pay webhook hasn't run yet, the subscription would not be canceled when the user-defined webhook runs.
 * Fix Webhook delegator unsubscribe - @excid3 @cjilbert504

@@ -37,7 +37,7 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
   test "subscription is updated with cancel_at_period_end = true and on_trial? = true" do
     subscription = @pay_customer.subscriptions.create!(processor_id: @event.data.object.id, name: "default", processor_plan: "some-plan", status: "active")
     trial_end = 3.days.from_now.beginning_of_day
-    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: true, current_period_end: trial_end, ended_at: nil, trial_end: trial_end, cancel_at: nil)
+    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: true, current_period_end: trial_end.to_i, ended_at: nil, trial_end: trial_end.to_i, cancel_at: nil)
 
     Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
 
@@ -47,7 +47,7 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
   test "subscription is updated with ended_at set" do
     subscription = @pay_customer.subscriptions.create!(processor_id: @event.data.object.id, name: "default", processor_plan: "some-plan", status: "active")
     sub_end = 3.days.ago.beginning_of_day
-    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: false, ended_at: sub_end, cancel_at: nil)
+    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: false, ended_at: sub_end.to_i, cancel_at: nil)
 
     Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
     assert_equal sub_end, subscription.reload.ends_at
@@ -56,7 +56,7 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
   test "subscription is updated with cancel_at set" do
     subscription = @pay_customer.subscriptions.create!(processor_id: @event.data.object.id, name: "default", processor_plan: "some-plan", status: "active")
     sub_cancel = 3.days.ago.beginning_of_day
-    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(ended_at: nil, cancel_at: sub_cancel)
+    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(ended_at: nil, cancel_at: sub_cancel.to_i)
 
     Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
     assert_equal sub_cancel, subscription.reload.ends_at

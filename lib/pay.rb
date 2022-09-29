@@ -61,6 +61,8 @@ module Pay
   @@emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
+  @@emails.subscription_trial_will_end = true
+  @@emails.subscription_trial_ended = true
 
   @@mailer = "Pay::UserMailer"
 
@@ -75,6 +77,20 @@ module Pay
 
   mattr_accessor :parent_mailer
   @@parent_mailer = "Pay::ApplicationMailer"
+
+  # Should return a hash of arguments for the `mail` call in UserMailer
+  mattr_accessor :mail_arguments
+  @@mail_arguments = ->(mailer, params) {
+    {
+      to: Pay.mail_to.call(mailer, params)
+    }
+  }
+
+  # Should return String or Array of email recipients
+  mattr_accessor :mail_to
+  @@mail_to = ->(mailer, params) {
+    "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>"
+  }
 
   def self.setup
     yield self

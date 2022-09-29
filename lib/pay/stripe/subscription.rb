@@ -43,9 +43,15 @@ module Pay
           pause_resumes_at: (object.pause_collection&.resumes_at ? Time.at(object.pause_collection&.resumes_at) : nil)
         }
 
-        # Subscriptions that have ended should have their trial ended at the same time
+        # Subscriptions that have ended should have their trial ended at the
+        # same time if they were still on trial (if you cancel a
+        # subscription, your are cancelling your trial as well at the same
+        # instant). This avoids canceled subscriptions responding `true`
+        # to #on_trial? due to the `trial_ends_at` being left set in the
+        # future.
         if object.trial_end
-          attributes[:trial_ends_at] = Time.at(object.ended_at || object.trial_end)
+          trial_ended_at = [object.ended_at, object.trial_end].compact.min
+          attributes[:trial_ends_at] = Time.at(trial_ended_at)
         end
 
         # Record subscription items to db
@@ -215,20 +221,24 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
-      def swap(plan)
+      def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
+
+        proration_behavior = options.delete(:proration_behavior) || (prorate ? "always_invoice" : "none")
 
         @stripe_subscription = ::Stripe::Subscription.update(
           processor_id,
           {
             cancel_at_period_end: false,
             plan: plan,
-            proration_behavior: (prorate ? "create_prorations" : "none"),
+            proration_behavior: proration_behavior,
             trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             quantity: quantity
           }.merge(expand_options),
           stripe_options
         )
+
+        pay_subscription.sync!(object: @stripe_subscription)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -260,6 +270,11 @@ module Pay
       # Returns an upcoming invoice for a subscription
       def upcoming_invoice(**options)
         ::Stripe::Invoice.upcoming(options.merge(subscription: processor_id), stripe_options)
+      end
+
+      # Retries the latest invoice for a Past Due subscription
+      def retry_failed_payment
+        subscription.latest_invoice.pay
       end
 
       private

@@ -5,25 +5,33 @@ module Pay
         attachments[params[:pay_charge].filename] = params[:pay_charge].receipt
       end
 
-      mail to: to
+      mail mail_arguments
     end
 
     def refund
-      mail to: to
+      mail mail_arguments
     end
 
     def subscription_renewing
-      mail to: to
+      mail mail_arguments
     end
 
     def payment_action_required
-      mail to: to
+      mail mail_arguments
+    end
+
+    def subscription_trial_will_end
+      mail mail_arguments
+    end
+
+    def subscription_trial_ended
+      mail mail_arguments
     end
 
     private
 
-    def to
-      "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>"
+    def mail_arguments
+      Pay.mail_arguments.call(mailer_name, params)
     end
   end
 end

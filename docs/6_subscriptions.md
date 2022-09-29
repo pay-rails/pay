@@ -12,7 +12,7 @@ To subscribe a user, you can call the `subscribe` method.
 @user.payment_processor.subscribe(name: "default", plan: "monthly")
 ```
 
-You can pass additional options to go directly to the payment processor's API. For example, the `quantity` option to subscribe to a plan with for per-seat pricing.
+You can pass additional options to go directly to the payment processor's API. For example, the `quantity` option to subscribe to a plan with per-seat pricing.
 
 ```ruby
 @user.payment_processor.subscribe(name: "default", plan: "monthly", quantity: 3)

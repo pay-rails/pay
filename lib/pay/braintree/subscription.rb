@@ -55,6 +55,10 @@ module Pay
         raise Pay::Braintree::Error, e
       end
 
+      def change_quantity(quantity, **options)
+        raise NotImplementedError, "Braintree does not support setting quantity on subscriptions"
+      end
+
       def on_grace_period?
         canceled? && Time.current < ends_at
       end
@@ -96,7 +100,7 @@ module Pay
         raise Pay::Braintree::Error, e
       end
 
-      def swap(plan)
+      def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
         if on_grace_period? && processor_plan == plan
@@ -128,8 +132,23 @@ module Pay
           }
         })
         raise Error, "Braintree failed to swap plans: #{result.message}" unless result.success?
+
+        pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
+      end
+
+      # Retries the latest invoice for a Past Due subscription
+      def retry_failed_payment
+        result = gateway.subscription.retry_charge(
+          processor_id,
+          nil, # amount if different
+          true # submit for settlement
+        )
+
+        if result.success?
+          pay_subscription.update(status: :active)
+        end
       end
 
       private
