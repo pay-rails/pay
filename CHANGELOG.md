@@ -1,5 +1,6 @@
 ### Unreleased
 
+* Fix Webhook delegator unsubscribe - @excid3 @cjilbert504
 * Fix non-deterministic subscription - @feliperaul @excid3
 
 ### 5.0.3

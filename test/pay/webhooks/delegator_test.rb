@@ -44,7 +44,7 @@ class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
     delegator.subscribe "stripe.test_event", ->(event) {}
     assert delegator.backend.notifier.listening?("pay.stripe.test_event")
     delegator.unsubscribe "stripe.test_event"
-    assert delegator.backend.notifier.listening?("pay.stripe.test_event")
+    assert_not delegator.backend.notifier.listening?("pay.stripe.test_event")
   end
 
   test "supports multiple subscriptions for the same event" do
