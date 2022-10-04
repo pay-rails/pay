@@ -106,7 +106,6 @@ module Pay
         opts = {
           expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge"],
           items: [plan: plan, quantity: quantity],
-          off_session: true
         }.merge(options)
 
         # Load the Stripe customer to verify it exists and update payment method if needed

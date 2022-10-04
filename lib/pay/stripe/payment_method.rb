@@ -9,6 +9,22 @@ module Pay
         @pay_payment_method = pay_payment_method
       end
 
+      # Syncs a PaymentIntent's payment method to the database
+      def self.sync_payment_intent(id)
+        payment_intent = ::Stripe::PaymentIntent.retrieve({id: id, expand: ["payment_method"]})
+        payment_method = payment_intent.payment_method
+        return unless payment_method
+        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method)
+      end
+
+      # Syncs a SetupIntent's payment method to the database
+      def self.sync_setup_intent(id)
+        setup_intent = ::Stripe::SetupIntent.retrieve({id: id, expand: ["payment_method"]})
+        payment_method = setup_intent.payment_method
+        return unless payment_method
+        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method)
+      end
+
       def self.sync(id, object: nil, stripe_account: nil, try: 0, retries: 1)
         object ||= ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
 

@@ -1,5 +1,10 @@
 ### Unreleased
 
+* Remove `off_session: true` default for Stripe `subscribe`. - @excid3
+  Removing this allows Stripe to attach the PaymentMethod to the Customer once confirmed. You can still pass this option in when subscribing if needed. New subscriptions typically are initiated by users, which shouldn't provide this parameter as true.
+* Add `Pay::Stripe::PaymentMethod.sync_payment_intent` to sync PaymentMethod from PaymentIntent objects
+* Add `Pay::Stripe::PaymentMethod.sync_setup_intent` to sync PaymentMethod from SetupIntent objects
+
 ### 5.0.4
 
 * Prepend Pay webhook listeners so they run before user-defined webhook listeners - @excid3 @cjilbert504
