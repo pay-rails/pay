@@ -135,8 +135,8 @@ class Pay::Test < ActiveSupport::TestCase
 
   test "can configure mail_arguments" do
     old_mail_arguments = Pay.mail_arguments
-    Pay.mail_arguments = ->(mailer, params) { { to: "to", cc: "cc" } }
-    assert_equal({ to: "to", cc: "cc" }, Pay.mail_arguments.call("pay/receipt", {}))
+    Pay.mail_arguments = ->(mailer, params) { {to: "to", cc: "cc"} }
+    assert_equal({to: "to", cc: "cc"}, Pay.mail_arguments.call("pay/receipt", {}))
   ensure
     Pay.mail_arguments = old_mail_arguments
   end
