@@ -97,7 +97,7 @@ Pay.setup do |config|
   config.business_name = "Business Name"
   config.business_address = "1600 Pennsylvania Avenue NW"
   config.application_name = "My App"
-  config.support_email = "helpme@example.com"
+  config.support_email = "Business Name <support@example.com>"
 
   config.default_product_name = "default"
   config.default_plan_name = "default"
