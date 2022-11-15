@@ -76,6 +76,20 @@ module Pay
   mattr_accessor :parent_mailer
   @@parent_mailer = "Pay::ApplicationMailer"
 
+  # Should return a hash of arguments for the `mail` call in UserMailer
+  mattr_accessor :mail_arguments
+  @@mail_arguments = ->(mailer, params) {
+    {
+      to: Pay.mail_recipient.call(mailer, params)
+    }
+  }
+
+  # Should return String or Array of email recipients
+  mattr_accessor :mail_recipient
+  @@mail_recipient = ->(mailer, params) {
+    "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>"
+  }
+
   def self.setup
     yield self
   end
