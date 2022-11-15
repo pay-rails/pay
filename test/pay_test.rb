@@ -141,11 +141,11 @@ class Pay::Test < ActiveSupport::TestCase
     Pay.mail_arguments = old_mail_arguments
   end
 
-  test "can configure mail_recipient" do
-    old_mail_recipient = Pay.mail_recipient
-    Pay.mail_recipient = ->(mailer, params) { "user@example.org" }
-    assert_equal "user@example.org", Pay.mail_recipient.call("pay/receipt", {})
+  test "can configure mail_to" do
+    old_mail_to = Pay.mail_to
+    Pay.mail_to = ->(mailer, params) { "user@example.org" }
+    assert_equal "user@example.org", Pay.mail_to.call("pay/receipt", {})
   ensure
-    Pay.mail_recipient = old_mail_recipient
+    Pay.mail_to = old_mail_to
   end
 end
