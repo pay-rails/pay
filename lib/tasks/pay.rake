@@ -26,6 +26,6 @@ def sync_default_payment_method(pay_customer, retries: 2)
   rescue
     sleep 0.5
     try += 1
-    try <= retries ? retry : raise
+    (try <= retries) ? retry : raise
   end
 end
