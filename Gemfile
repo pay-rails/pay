@@ -16,7 +16,7 @@ gem "appraisal"
 gem "overcommit"
 
 gem "braintree", ">= 2.92.0"
-gem "stripe", "~> 7.0"
+gem "stripe", "~> 8.0"
 gem "paddle_pay", "~> 0.2"
 
 gem "receipts"
