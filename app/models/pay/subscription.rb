@@ -137,8 +137,8 @@ module Pay
       past_due? || incomplete?
     end
 
-    def change_quantity(quantity)
-      payment_processor.change_quantity(quantity)
+    def change_quantity(quantity, **options)
+      payment_processor.change_quantity(quantity, **options)
       update(quantity: quantity)
     end
 

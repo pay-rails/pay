@@ -102,6 +102,10 @@ module Pay
         raise Pay::Paddle::Error, e
       end
 
+      def change_quantity(quantity, **options)
+        raise NotImplementedError, "Paddle does not support setting quantity on subscriptions"
+      end
+
       def on_grace_period?
         canceled? && Time.current < ends_at || paused? && Time.current < paddle_paused_from
       end

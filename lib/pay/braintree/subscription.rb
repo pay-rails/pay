@@ -55,6 +55,10 @@ module Pay
         raise Pay::Braintree::Error, e
       end
 
+      def change_quantity(quantity, **options)
+        raise NotImplementedError, "Braintree does not support setting quantity on subscriptions"
+      end
+
       def on_grace_period?
         canceled? && Time.current < ends_at
       end
