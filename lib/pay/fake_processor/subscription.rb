@@ -43,7 +43,7 @@ module Pay
       end
 
       def change_quantity(quantity, **options)
-        raise NotImplementedError, "Fake Processor does not support setting quantity on subscriptions"
+        pay_subscription.update(quantity: quantity)
       end
 
       def on_grace_period?
@@ -64,7 +64,7 @@ module Pay
         end
       end
 
-      def swap(plan)
+      def swap(plan, **options)
       end
     end
   end

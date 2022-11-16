@@ -215,15 +215,17 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
-      def swap(plan)
+      def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
+
+        proration_behavior = options.delete(:proration_behavior) || (prorate ? "create_prorations" : "none")
 
         @stripe_subscription = ::Stripe::Subscription.update(
           processor_id,
           {
             cancel_at_period_end: false,
             plan: plan,
-            proration_behavior: (prorate ? "create_prorations" : "none"),
+            proration_behavior: proration_behavior,
             trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             quantity: quantity
           }.merge(expand_options),

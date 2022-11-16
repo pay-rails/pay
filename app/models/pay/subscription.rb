@@ -148,9 +148,9 @@ module Pay
       self
     end
 
-    def swap(plan)
+    def swap(plan, **options)
       raise ArgumentError, "plan must be a string. Got `#{plan.inspect}` instead." unless plan.is_a?(String)
-      payment_processor.swap(plan)
+      payment_processor.swap(plan, **options)
       update(processor_plan: plan, ends_at: nil, status: :active)
     end
 

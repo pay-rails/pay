@@ -134,7 +134,7 @@ module Pay
         raise Pay::Paddle::Error, e
       end
 
-      def swap(plan)
+      def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
         attributes = {plan_id: plan, prorate: prorate}
