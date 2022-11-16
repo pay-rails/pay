@@ -218,7 +218,7 @@ module Pay
       def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
-        proration_behavior = options.delete(:proration_behavior) || (prorate ? "create_prorations" : "none")
+        proration_behavior = options.delete(:proration_behavior) || (prorate ? "always_invoice" : "none")
 
         @stripe_subscription = ::Stripe::Subscription.update(
           processor_id,
