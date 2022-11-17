@@ -97,7 +97,7 @@ Pay.setup do |config|
   config.business_name = "Business Name"
   config.business_address = "1600 Pennsylvania Avenue NW"
   config.application_name = "My App"
-  config.support_email = "helpme@example.com"
+  config.support_email = "Business Name <support@example.com>"
 
   config.default_product_name = "default"
   config.default_plan_name = "default"
@@ -114,6 +114,16 @@ Pay.setup do |config|
   config.emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
+
+  # Customize who receives emails. Useful when adding additional recipients other than the Pay::Customer. This defaults to the pay customer's email address.
+  # config.mail_to = ->(mailer, params) { "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>" }
+
+  # Customize mail() arguments. By default, only includes { to: }. Useful when you want to add cc, bcc, customize the mail subject, etc.
+  # config.mail_arguments = ->(mailer, params) {
+  #   {
+  #     to: Pay.mail_recipients.call(mailer, params)
+  #   }
+  # }
 end
 ```
 

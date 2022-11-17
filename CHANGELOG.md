@@ -1,22 +1,22 @@
 ### Unreleased
 
 * [Breaking] `paddle_paused_from` is now `pause_starts_at:datetime` column
-* Adds `pause_behavior:string` column
-* Adds `pause_resumes_at:datetime` column
-* Adds `metered:boolean` column for easier querying / indexing
-
 * [Breaking] `active` scope no longer includes paused subscriptions
-* Adds `active_or_paused` scope to retrieve active or paused subscriptions
-
 * [Breaking] Stripe paused subscriptions have changed:
   `pause_behavior=void` subscriptions are now considered `active?` until the end of the current period. This is intended for not providing services for a certain period of time.
   `pause_behavior=mark_uncollectible` is considered active. This is intended for offering services for free.
   `pause_behavior=keep_as_draft` is considered active. This is intended for offering serivces for free but collecting payments later.
-
+* [Breaking] Stripe subscriptions now `always_invoice` when swapping plans. Previously, swap would use `proration_behavior: "create_prorations"`. This caused some confusion when users upgraded plans and weren't charged until the next period. The default will now automatically invoice immediately.
+* Adds `pause_behavior:string` column
+* Adds `pause_resumes_at:datetime` column
+* Adds `metered:boolean` column for easier querying / indexing
+* Adds `active_or_paused` scope to retrieve active or paused subscriptions
 * Remove `off_session: true` default for Stripe `subscribe`. - @excid3
   Removing this allows Stripe to attach the PaymentMethod to the Customer once confirmed. You can still pass this option in when subscribing if needed. New subscriptions typically are initiated by users, which shouldn't provide this parameter as true.
 * Add `Pay::Stripe::PaymentMethod.sync_payment_intent` to sync PaymentMethod from PaymentIntent objects
 * Add `Pay::Stripe::PaymentMethod.sync_setup_intent` to sync PaymentMethod from SetupIntent objects
+* Add `Pay::Subscription#retry_failed_payment` for retrying `past_due` subscriptions with failed payments
+* Fix `swap` from always setting status to `active`. Failed swaps with Stripe will be set to `past_due`.
 
 ### 5.0.4
 

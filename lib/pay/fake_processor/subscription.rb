@@ -44,6 +44,14 @@ module Pay
         )
       end
 
+      def change_quantity(quantity, **options)
+        pay_subscription.update(quantity: quantity)
+      end
+
+      def on_grace_period?
+        canceled? && Time.current < ends_at
+      end
+
       def paused?
         pay_subscription.status == "paused"
       end
@@ -58,10 +66,13 @@ module Pay
         end
       end
 
-      def swap(plan)
+      def swap(plan, **options)
+        pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
       end
 
-      def change_quantity(quantity)
+      # Retries the latest invoice for a Past Due subscription
+      def retry_failed_payment
+        pay_subscription.update(status: :active)
       end
     end
   end

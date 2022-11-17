@@ -77,6 +77,8 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.string "processor_plan", null: false
     t.bigint "quantity", default: 1, null: false
     t.string "status", null: false
+    t.datetime "current_period_start"
+    t.datetime "current_period_end"
     t.datetime "trial_ends_at"
     t.datetime "ends_at"
     t.decimal "application_fee_percent", precision: 8, scale: 2
