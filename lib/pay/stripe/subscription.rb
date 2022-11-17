@@ -207,7 +207,7 @@ module Pay
         pay_subscription.update(
           pause_behavior: behavior,
           pause_resumes_at: (@stripe_subscription.pause_collection&.resumes_at ? Time.at(@stripe_subscription.pause_collection&.resumes_at) : nil),
-          pause_starts_at: (behavior == "void" ? Time.at(@stripe_subscription.current_period_end) : nil)
+          pause_starts_at: ((behavior == "void") ? Time.at(@stripe_subscription.current_period_end) : nil)
         )
       end
 
