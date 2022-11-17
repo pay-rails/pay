@@ -5,6 +5,8 @@
   Removing this allows Stripe to attach the PaymentMethod to the Customer once confirmed. You can still pass this option in when subscribing if needed. New subscriptions typically are initiated by users, which shouldn't provide this parameter as true.
 * Add `Pay::Stripe::PaymentMethod.sync_payment_intent` to sync PaymentMethod from PaymentIntent objects
 * Add `Pay::Stripe::PaymentMethod.sync_setup_intent` to sync PaymentMethod from SetupIntent objects
+* Add `Pay::Subscription#retry_failed_payment` for retrying `past_due` subscriptions with failed payments
+* Fix `swap` from always setting status to `active`. Failed swaps with Stripe will be set to `past_due`.
 
 ### 5.0.4
 
