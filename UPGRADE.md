@@ -2,6 +2,24 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## **Pay 5.0 to 6.0**
+This version adds support for accessing the start and end of the current billing period of a subscription. This currently only works with Stripe subscriptions.
+- Adds `current_period_start` and `current_period_end` to `Pay::Subscription`
+
+To upgrade you must add and run the following database migration.
+
+```ruby
+class UpgradeToPayVersion6 < ActiveRecord::Migration[6.0]
+  def change
+    add_column :pay_subscriptions, :current_period_start, :datetime
+    add_column :pay_subscriptions, :current_period_end, :datetime
+  end
+end
+```
+
+Stripe subscriptions created before this upgrade will gain the `current_period_start` and `current_period_end` attributes the next time they are synced. You can manually sync a Stripe subscription by running `Pay::Stripe::Subscription.sync("STRIPE_SUBSCRIPTION_ID")`
+
+
 ## **Pay 3.0 to 4.0**
 
 This is a major change to add Stripe tax support, Stripe metered billing, new configuration options for payment processors and emails, syncing additional customer attributes to Stripe and Braintree, and improving the architecture of Pay.
