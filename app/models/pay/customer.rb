@@ -92,5 +92,10 @@ module Pay
       # If these match, consider it a generic trial
       subscription.trial_ends_at == subscription.ends_at
     end
+
+    # Attempts to pay all past_due subscriptions
+    def retry_past_due_subscriptions!
+      subscriptions.past_due.each(&:retry_failed_payment)
+    end
   end
 end

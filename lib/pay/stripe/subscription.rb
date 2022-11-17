@@ -231,6 +231,8 @@ module Pay
           }.merge(expand_options),
           stripe_options
         )
+
+        pay_subscription.sync!(object: @stripe_subscription)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -262,6 +264,11 @@ module Pay
       # Returns an upcoming invoice for a subscription
       def upcoming_invoice(**options)
         ::Stripe::Invoice.upcoming(options.merge(subscription: processor_id), stripe_options)
+      end
+
+      # Retries the latest invoice for a Past Due subscription
+      def retry_failed_payment
+        subscription.latest_invoice.pay
       end
 
       private

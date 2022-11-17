@@ -132,8 +132,23 @@ module Pay
           }
         })
         raise Error, "Braintree failed to swap plans: #{result.message}" unless result.success?
+
+        pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
+      end
+
+      # Retries the latest invoice for a Past Due subscription
+      def retry_failed_payment
+        result = gateway.subscription.retry_charge(
+          processor_id,
+          nil, # amount if different
+          true # submit for settlement
+        )
+
+        if result.success?
+          pay_subscription.update(status: :active)
+        end
       end
 
       private

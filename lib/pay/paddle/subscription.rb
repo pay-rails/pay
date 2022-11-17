@@ -140,8 +140,14 @@ module Pay
         attributes = {plan_id: plan, prorate: prorate}
         attributes[:quantity] = quantity if quantity?
         PaddlePay::Subscription::User.update(processor_id, attributes)
+
+        pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
+      end
+
+      # Retries the latest invoice for a Past Due subscription
+      def retry_failed_payment
       end
     end
   end

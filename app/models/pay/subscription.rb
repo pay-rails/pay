@@ -93,8 +93,9 @@ module Pay
       @payment_processor ||= self.class.pay_processor_for(customer.processor).new(self)
     end
 
-    def sync!
-      self.class.pay_processor_for(customer.processor).sync(processor_id)
+    def sync!(**options)
+      self.class.pay_processor_for(customer.processor).sync(processor_id, **options)
+      reload
     end
 
     def no_prorate
@@ -151,7 +152,6 @@ module Pay
     def swap(plan, **options)
       raise ArgumentError, "plan must be a string. Got `#{plan.inspect}` instead." unless plan.is_a?(String)
       payment_processor.swap(plan, **options)
-      update(processor_plan: plan, ends_at: nil, status: :active)
     end
 
     def swap_and_invoice(plan)
