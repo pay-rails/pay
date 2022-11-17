@@ -21,6 +21,8 @@ module Pay
         :trial_ends_at,
         :pause_behavior,
         :pause_resumes_at,
+        :current_period_start,
+        :current_period_end,
         to: :pay_subscription
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
@@ -40,7 +42,9 @@ module Pay
           subscription_items: [],
           metered: false,
           pause_behavior: object.pause_collection&.behavior,
-          pause_resumes_at: (object.pause_collection&.resumes_at ? Time.at(object.pause_collection&.resumes_at) : nil)
+          pause_resumes_at: (object.pause_collection&.resumes_at ? Time.at(object.pause_collection&.resumes_at) : nil),
+          current_period_start: (object.current_period_start ? Time.at(object.current_period_start) : nil),
+          current_period_end: (object.current_period_end ? Time.at(object.current_period_end) : nil),
         }
 
         # Subscriptions that have ended should have their trial ended at the
