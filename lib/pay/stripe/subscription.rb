@@ -43,9 +43,15 @@ module Pay
           pause_resumes_at: (object.pause_collection&.resumes_at ? Time.at(object.pause_collection&.resumes_at) : nil)
         }
 
-        # Subscriptions that have ended should have their trial ended at the same time
+        # Subscriptions that have ended should have their trial ended at the
+        # same time if they were still on trial (if you cancel a
+        # subscription, your are cancelling your trial as well at the same
+        # instant). This avoids canceled subscriptions responding `true`
+        # to #on_trial? due to the `trial_ends_at` being left set in the
+        # future.
         if object.trial_end
-          attributes[:trial_ends_at] = Time.at(object.ended_at || object.trial_end)
+          trial_ended_at = [object.ended_at, object.trial_end].compact.min
+          attributes[:trial_ends_at] = Time.at(trial_ended_at)
         end
 
         # Record subscription items to db
