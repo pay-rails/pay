@@ -71,4 +71,20 @@ class UserMailerTest < ActionMailer::TestCase
     assert_equal [team.owner.email], email.to
     assert_equal I18n.t("pay.user_mailer.refund.subject"), email.subject
   end
+
+  test "subscription_trial_will_end" do
+    email = Pay::UserMailer.with(pay_customer: @pay_customer).subscription_trial_will_end
+
+    assert_equal [@user.email], email.to
+    assert_equal I18n.t("pay.user_mailer.subscription_trial_will_end.subject"), email.subject
+    assert_includes email.body.decoded, "Your Test Business trial is ending soon"
+  end
+
+  test "subscription_trial_ended" do
+    email = Pay::UserMailer.with(pay_customer: @pay_customer).subscription_trial_ended
+
+    assert_equal [@user.email], email.to
+    assert_equal I18n.t("pay.user_mailer.subscription_trial_ended.subject"), email.subject
+    assert_includes email.body.decoded, "Your Test Business trial has ended"
+  end
 end
