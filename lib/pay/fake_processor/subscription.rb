@@ -3,9 +3,11 @@ module Pay
     class Subscription
       attr_reader :pay_subscription
 
-      delegate :canceled?,
-        :ends_at,
+      delegate :active?,
+        :canceled?,
+        :on_grace_period?,
         :on_trial?,
+        :ends_at,
         :owner,
         :processor_subscription,
         :processor_id,

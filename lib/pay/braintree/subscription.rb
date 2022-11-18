@@ -4,8 +4,9 @@ module Pay
       attr_reader :pay_subscription
 
       delegate :active?,
-        :customer,
         :canceled?,
+        :on_grace_period?,
+        :customer,
         :ends_at,
         :name,
         :on_trial?,
