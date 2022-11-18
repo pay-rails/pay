@@ -78,8 +78,16 @@ module Pay
       fake_processor? && trial_ends_at?
     end
 
+    def has_trial?
+      trial_ends_at?
+    end
+
     def on_trial?
-      trial_ends_at? && Time.zone.now < trial_ends_at
+      trial_ends_at? && trial_ends_at.after?(Time.current)
+    end
+
+    def trial_ended?
+      trial_ends_at? && trial_ends_at.before?(Time.current)
     end
 
     def canceled?

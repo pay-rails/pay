@@ -245,6 +245,29 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute @subscription.on_trial?
   end
 
+  test "#trial_ended? where a subscriptions trial_ends_at is in the past should return true" do
+    @subscription.trial_ends_at = 5.days.ago
+    assert @subscription.trial_ended?
+  end
+
+  test "#trial_ended? where a subscriptions trial_ends_at is in the future should return false" do
+    @subscription.trial_ends_at = 5.days.from_now
+    refute @subscription.trial_ended?
+  end
+
+  test "#has_trial? should return true if a subscriptions trial_ends_at is truthy" do
+    @subscription.trial_ends_at = 5.days.from_now
+    assert @subscription.has_trial?
+
+    @subscription.trial_ends_at = 5.days.ago
+    assert @subscription.has_trial?
+  end
+
+  test "#has_trial? should return false if a subscriptions trial_ends_at is nil" do
+    @subscription.trial_ends_at = nil
+    refute @subscription.has_trial?
+  end
+
   test "cancelled" do
     @subscription.ends_at = 1.week.ago
     assert @subscription.cancelled?
