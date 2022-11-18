@@ -70,6 +70,12 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
+  test "sync stripe subscription sets created_at" do
+    fake_subscription = fake_stripe_subscription(created: 1488987924)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
+    assert_equal 1488987924, pay_subscription.created_at.to_i
+  end
+
   test "sync stripe subscription sets current_period_start" do
     fake_subscription = fake_stripe_subscription(current_period_start: 1488987924)
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)

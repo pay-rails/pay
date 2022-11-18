@@ -35,6 +35,7 @@ module Pay
 
         attributes = {
           application_fee_percent: object.application_fee_percent,
+          created_at: Time.at(object.created),
           processor_plan: object.items.first.price.id,
           quantity: object.items.first.try(:quantity) || 0,
           status: object.status,
