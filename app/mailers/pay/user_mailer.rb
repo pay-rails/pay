@@ -20,6 +20,14 @@ module Pay
       mail mail_arguments
     end
 
+    def subscription_trial_will_end
+      mail mail_arguments
+    end
+
+    def subscription_trial_ended
+      mail mail_arguments
+    end
+
     private
 
     def mail_arguments

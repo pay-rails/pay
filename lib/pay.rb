@@ -61,6 +61,8 @@ module Pay
   @@emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
+  @@emails.subscription_trial_will_end = true
+  @@emails.subscription_trial_ended = true
 
   @@mailer = "Pay::UserMailer"
 
