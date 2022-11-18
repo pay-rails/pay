@@ -87,7 +87,14 @@ module Pay
   # Should return String or Array of email recipients
   mattr_accessor :mail_to
   @@mail_to = ->(mailer, params) {
-    "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>"
+    if ActionMailer::Base.respond_to?(:email_address_with_name)
+      ActionMailer::Base.email_address_with_name(params[:pay_customer].email, params[:pay_customer].customer_name)
+    else
+      Mail::Address.new.tap do |builder|
+        builder.address = params[:pay_customer].email
+        builder.display_name = params[:pay_customer].customer_name.presence
+      end.to_s
+    end
   }
 
   def self.setup
