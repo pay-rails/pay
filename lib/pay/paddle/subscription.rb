@@ -5,11 +5,12 @@ module Pay
 
       delegate :active?,
         :canceled?,
+        :on_grace_period?,
+        :on_trial?,
         :ends_at,
         :name,
-        :on_trial?,
         :owner,
-        :paddle_paused_from,
+        :pause_starts_at,
         :processor_id,
         :processor_plan,
         :processor_subscription,
@@ -78,7 +79,7 @@ module Pay
         ends_at = if on_trial?
           trial_ends_at
         elsif paused?
-          paddle_paused_from
+          pause_starts_at
         else
           processor_subscription.next_payment&.fetch(:date) || Time.current
         end
@@ -102,18 +103,22 @@ module Pay
         raise Pay::Paddle::Error, e
       end
 
+      def change_quantity(quantity, **options)
+        raise NotImplementedError, "Paddle does not support setting quantity on subscriptions"
+      end
+
       def on_grace_period?
         canceled? && Time.current < ends_at || paused? && Time.current < paddle_paused_from
       end
 
       def paused?
-        paddle_paused_from.present?
+        pay_subscription.status == "paused"
       end
 
       def pause
         attributes = {pause: true}
         response = PaddlePay::Subscription::User.update(processor_id, attributes)
-        pay_subscription.update(paddle_paused_from: Time.zone.parse(response.dig(:next_payment, :date)))
+        pay_subscription.update(status: :paused, pause_starts_at: Time.zone.parse(response.dig(:next_payment, :date)))
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
       end
@@ -125,19 +130,25 @@ module Pay
 
         attributes = {pause: false}
         PaddlePay::Subscription::User.update(processor_id, attributes)
-        pay_subscription.update(status: :active, paddle_paused_from: nil)
+        pay_subscription.update(status: :active, pause_starts_at: nil)
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
       end
 
-      def swap(plan)
+      def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
         attributes = {plan_id: plan, prorate: prorate}
         attributes[:quantity] = quantity if quantity?
         PaddlePay::Subscription::User.update(processor_id, attributes)
+
+        pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
       rescue ::PaddlePay::PaddlePayError => e
         raise Pay::Paddle::Error, e
+      end
+
+      # Retries the latest invoice for a Past Due subscription
+      def retry_failed_payment
       end
     end
   end

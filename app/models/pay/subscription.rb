@@ -8,12 +8,16 @@ module Pay
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
-    scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.zone.now) }
+    scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.current) }
     scope :cancelled, -> { where.not(ends_at: nil) }
-    scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.zone.now) }
-    scope :active, -> { where(status: ["trialing", "active"], ends_at: nil).or(on_grace_period).or(on_trial) }
+    scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.current) }
+    scope :active, -> { where(status: ["trialing", "active"], ends_at: nil).pause_not_started.or(on_grace_period).or(on_trial) }
+    scope :paused, -> { where(status: "paused").or(where("pause_starts_at <= ?", Time.current)) }
+    scope :pause_not_started, -> { where("pause_starts_at IS NULL OR pause_starts_at > ?", Time.current) }
+    scope :active_or_paused, -> { active.or(paused) }
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
+    scope :metered, -> { where(metered: true) }
     scope :with_active_customer, -> { joins(:customer).merge(Customer.active) }
     scope :with_deleted_customer, -> { joins(:customer).merge(Customer.deleted) }
 
@@ -22,12 +26,8 @@ module Pay
 
     store_accessor :data, :paddle_update_url
     store_accessor :data, :paddle_cancel_url
-    store_accessor :data, :paddle_paused_from
     store_accessor :data, :stripe_account
-    store_accessor :data, :metered
     store_accessor :data, :subscription_items
-    store_accessor :data, :pause_behavior
-    store_accessor :data, :pause_resumes_at
 
     attribute :prorate, :boolean, default: true
 
@@ -49,24 +49,6 @@ module Pay
       scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
     end
 
-    def self.with_metered_items
-      case Pay::Adapter.current_adapter
-      when "sqlite3"
-        where("json_extract(data, '$.\"metered\"') = true")
-        # For SQLite 3.38+ we could use the arrows
-        # where("data->'metered' = ?", "true")
-      when "mysql2"
-        where("data->'$.\"metered\"' = true")
-      when "postgresql", "postgis"
-        # Single quotes are important for json keys apparently
-        where("data->>'metered' = 'true'")
-      end
-    end
-
-    def metered_items?
-      !!metered
-    end
-
     def self.find_by_processor_and_id(processor, processor_id)
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})
     end
@@ -79,8 +61,9 @@ module Pay
       @payment_processor ||= self.class.pay_processor_for(customer.processor).new(self)
     end
 
-    def sync!
-      self.class.pay_processor_for(customer.processor).sync(processor_id)
+    def sync!(**options)
+      self.class.pay_processor_for(customer.processor).sync(processor_id, **options)
+      reload
     end
 
     def no_prorate
@@ -107,8 +90,21 @@ module Pay
       canceled?
     end
 
+    def on_grace_period?
+      (ends_at? && Time.current < ends_at) ||
+        ((status == "paused" || pause_behavior == "void") && will_pause?)
+    end
+
+    def will_pause?
+      pause_starts_at? && Time.current < pause_starts_at
+    end
+
+    def pause_active?
+      (status == "paused" || pause_behavior == "void") && (pause_starts_at.nil? || pause_starts_at >= Time.current)
+    end
+
     def active?
-      ["trialing", "active"].include?(status) && (ends_at.nil? || on_grace_period? || on_trial?)
+      ["trialing", "active"].include?(status) && (!(canceled? || paused?) || on_trial? || on_grace_period?)
     end
 
     def past_due?
@@ -123,8 +119,8 @@ module Pay
       past_due? || incomplete?
     end
 
-    def change_quantity(quantity)
-      payment_processor.change_quantity(quantity)
+    def change_quantity(quantity, **options)
+      payment_processor.change_quantity(quantity, **options)
       update(quantity: quantity)
     end
 
@@ -134,10 +130,9 @@ module Pay
       self
     end
 
-    def swap(plan)
+    def swap(plan, **options)
       raise ArgumentError, "plan must be a string. Got `#{plan.inspect}` instead." unless plan.is_a?(String)
-      payment_processor.swap(plan)
-      update(processor_plan: plan, ends_at: nil, status: :active)
+      payment_processor.swap(plan, **options)
     end
 
     def swap_and_invoice(plan)
@@ -151,18 +146,6 @@ module Pay
 
     def latest_payment
       processor_subscription(expand: ["latest_invoice.payment_intent"]).latest_invoice.payment_intent
-    end
-
-    def paddle_paused_from
-      if (timestamp = super)
-        Time.zone.parse(timestamp)
-      end
-    end
-
-    def pause_resumes_at
-      if (resumes_at = super)
-        Time.zone.parse(resumes_at)
-      end
     end
 
     private

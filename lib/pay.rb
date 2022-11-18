@@ -76,6 +76,27 @@ module Pay
   mattr_accessor :parent_mailer
   @@parent_mailer = "Pay::ApplicationMailer"
 
+  # Should return a hash of arguments for the `mail` call in UserMailer
+  mattr_accessor :mail_arguments
+  @@mail_arguments = ->(mailer, params) {
+    {
+      to: Pay.mail_to.call(mailer, params)
+    }
+  }
+
+  # Should return String or Array of email recipients
+  mattr_accessor :mail_to
+  @@mail_to = ->(mailer, params) {
+    if ActionMailer::Base.respond_to?(:email_address_with_name)
+      ActionMailer::Base.email_address_with_name(params[:pay_customer].email, params[:pay_customer].customer_name)
+    else
+      Mail::Address.new.tap do |builder|
+        builder.address = params[:pay_customer].email
+        builder.display_name = params[:pay_customer].customer_name.presence
+      end.to_s
+    end
+  }
+
   def self.setup
     yield self
   end

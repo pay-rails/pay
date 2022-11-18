@@ -1,5 +1,95 @@
 ### Unreleased
 
+* [Breaking] `paddle_paused_from` is now `pause_starts_at:datetime` column
+* [Breaking] `active` scope no longer includes paused subscriptions
+* [Breaking] Stripe paused subscriptions have changed:
+  `pause_behavior=void` subscriptions are now considered `active?` until the end of the current period. This is intended for not providing services for a certain period of time.
+  `pause_behavior=mark_uncollectible` is considered active. This is intended for offering services for free.
+  `pause_behavior=keep_as_draft` is considered active. This is intended for offering serivces for free but collecting payments later.
+* [Breaking] Stripe subscriptions now `always_invoice` when swapping plans. Previously, swap would use `proration_behavior: "create_prorations"`. This caused some confusion when users upgraded plans and weren't charged until the next period. The default will now automatically invoice immediately.
+* Adds `pause_behavior:string` column
+* Adds `pause_resumes_at:datetime` column
+* Adds `metered:boolean` column for easier querying / indexing
+* Adds `active_or_paused` scope to retrieve active or paused subscriptions
+* Remove `off_session: true` default for Stripe `subscribe`. - @excid3
+  Removing this allows Stripe to attach the PaymentMethod to the Customer once confirmed. You can still pass this option in when subscribing if needed. New subscriptions typically are initiated by users, which shouldn't provide this parameter as true.
+* Add `Pay::Stripe::PaymentMethod.sync_payment_intent` to sync PaymentMethod from PaymentIntent objects
+* Add `Pay::Stripe::PaymentMethod.sync_setup_intent` to sync PaymentMethod from SetupIntent objects
+* Add `Pay::Subscription#retry_failed_payment` for retrying `past_due` subscriptions with failed payments
+* Fix `swap` from always setting status to `active`. Failed swaps with Stripe will be set to `past_due`.
+
+### 5.0.4
+
+* Prepend Pay webhook listeners so they run before user-defined webhook listeners - @excid3 @cjilbert504
+  This is important because a user might define a webhook listener that expects a subscription to be deleted and if the Pay webhook hasn't run yet, the subscription would not be canceled when the user-defined webhook runs.
+* Fix Webhook delegator unsubscribe - @excid3 @cjilbert504
+
+* Fix non-deterministic subscription - @feliperaul @excid3
+
+### 5.0.3
+
+* Old Pay::Subscription records may have `nil` or `[]` for subscription_items. In those cases, we will set the quantity on the Stripe Subscription directly - @excid3
+
+### 5.0.2
+
+* Add `metered_subscription_item` to Pay::Subscriptions to easily retrieve the metered subscription item for Stripe subscriptions - @excid3
+* Add `not_fake_processor` scope to Pay::Customer - @excid3
+
+### 5.0.1
+
+* Fix typo in Stripe API version - @excid3
+
+### 5.0.0
+
+* Upgrade to Stripe API `2022-08-01` and `stripe` rubygem v7 - @excid3
+
+### 4.2.1
+
+* Ensure Customer is created before creating a setup intent - @excid3 @cjilbert504
+
+### 4.2.0
+
+* ℹ️  Add `"paused"` into `.active` scope and `#active?` on `Pay::Subscription`.
+    Stripe marks paused subscriptions with `status: :active` and  `pause_behavior` not null.
+    Paddle marks paused subscriptions with `status: :paused`.
+    This change allows Pay to treat them both the same. - @cjilbert504 @excid3
+* Add `active_without_paused` scope on `Pay::Subsctiption`. This filters out paused subscriptions from the `active` scope. - @cjilbert504 @GALTdea
+* Add `status: :paused` to update call in `Pay::Paddle::Subscription#pause`. - @cjilbert504 @excid3
+* Change `#paused?` in `Pay::Paddle::Subscription` to check `pay_subscription.status == "paused"` instead of `#paddle_paused_from`. - @cjilbert504 @excid3
+    If webhooks have not been utilized, you should run query for any `Pay::Subscriptions` where `status: :active` and `paddle_paused_from` is not null and update to `status: "paused"`.
+
+### 4.1.1
+
+* Expand Stripe discounts and taxes when loading a subscription - @excid3
+
+### 4.1.0
+
+* Store Stripe refunds on the Charge - @excid3
+* Include line for each refund in the receipt - @excid3
+
+### 4.0.4
+
+* Fix recording first charge for a subscription - @excid3
+
+### 4.0.3
+
+* Fix tax amounts and skip $0 tax lines in Stripe receipts - @excid3
+
+### 4.0.2
+
+* Support `client_reference_id` on Stripe Checkout Sessions - @excid3 @cjilbert504
+  This is helpful when using the Stripe Pricing Table or any Checkout Session. Requires a Signed GlobalID as the value to prevent tampering.
+
+```ruby
+::Stripe::Checkout::Session.create(
+  mode: "payment",
+  client_reference_id: current_user.to_sgid,
+  ...
+)
+```
+
+* Stripe `checkout.session.completed` now syncs payment intents - @excid3
+
 ### 4.0.1
 
 * Update `refund!` method in `stripe/charge.rb` to handle multiple refunds on the same charge. - @cjilbert504 @kyleschmolze

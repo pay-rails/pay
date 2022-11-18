@@ -104,13 +104,9 @@ module Pay
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         quantity = options.delete(:quantity)
         opts = {
-          expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge.invoice"],
-          items: [plan: plan, quantity: quantity],
-          off_session: true
+          expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge"],
+          items: [plan: plan, quantity: quantity]
         }.merge(options)
-
-        # Inherit trial from plan unless trial override was specified
-        opts[:trial_from_plan] = true unless opts[:trial_period_days]
 
         # Load the Stripe customer to verify it exists and update payment method if needed
         opts[:customer] = customer.id
@@ -178,6 +174,7 @@ module Pay
       end
 
       def create_setup_intent(options = {})
+        customer unless processor_id?
         ::Stripe::SetupIntent.create({
           customer: processor_id,
           usage: :off_session
@@ -189,9 +186,10 @@ module Pay
         stripe_sub.trial_end.present? ? Time.at(stripe_sub.trial_end) : nil
       end
 
-      # Syncs a customer's subscriptions from Stripe to the database
-      def sync_subscriptions
-        subscriptions = ::Stripe::Subscription.list({customer: customer}, stripe_options)
+      # Syncs a customer's subscriptions from Stripe to the database.
+      # Note that by default canceled subscriptions are NOT returned by Stripe. In order to include them, use `sync_subscriptions(status: "all")`.
+      def sync_subscriptions(**options)
+        subscriptions = ::Stripe::Subscription.list(options.merge(customer: customer), stripe_options)
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id)
         end
