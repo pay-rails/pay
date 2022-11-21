@@ -12,21 +12,25 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
     Pay.emails.subscription_trial_will_end = true # Default is true, setting here for clarity
     ::Stripe::Subscription.expects(:retrieve).returns(@trial_will_end_event.data.object)
 
-    create_subscription(processor_id: @trial_will_end_event.data.object.items.data.first.subscription, trial_ends_at: 3.days.from_now)
-    mailer = Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_will_end_event)
+    travel_to Time.at(1667761895) do
+      create_subscription(processor_id: @trial_will_end_event.data.object.items.data.first.subscription, trial_ends_at: 3.days.from_now)
+      mailer = Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_will_end_event)
 
-    assert mailer.arguments.include?("subscription_trial_will_end")
-    assert_enqueued_emails 1
+      assert mailer.arguments.include?("subscription_trial_will_end")
+      assert_enqueued_emails 1
+    end
   end
 
   test "trial subscription ending soon customer should not receive trial will end email if setting is disabled" do
     Pay.emails.subscription_trial_will_end = false
     ::Stripe::Subscription.expects(:retrieve).returns(@trial_will_end_event.data.object)
 
-    create_subscription(processor_id: @trial_will_end_event.data.object.items.data.first.subscription, trial_ends_at: 3.days.from_now)
-    Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_will_end_event)
+    travel_to Time.at(1667761895) do
+      create_subscription(processor_id: @trial_will_end_event.data.object.items.data.first.subscription, trial_ends_at: 3.days.from_now)
+      Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_will_end_event)
 
-    assert_enqueued_emails 0
+      assert_enqueued_emails 0
+    end
   end
 
   test "trial subscription ended immediately customer should receive trial ended email if setting is enabled" do
