@@ -57,10 +57,7 @@ module Pay
         end
 
         if payment_method_token?
-          payment_method = ::Stripe::PaymentMethod.attach(payment_method_token, {customer: stripe_customer.id}, stripe_options)
-          pay_payment_method = save_payment_method(payment_method, default: false)
-          pay_payment_method.make_default!
-
+          add_payment_method(payment_method_token, default: true)
           pay_customer.payment_method_token = nil
         end
 
@@ -89,13 +86,14 @@ module Pay
           confirm: true,
           currency: "usd",
           customer: processor_id,
+          expand: ["latest_charge.refunds"],
           payment_method: payment_method&.processor_id
         }.merge(options)
 
         payment_intent = ::Stripe::PaymentIntent.create(args, stripe_options)
         Pay::Payment.new(payment_intent).validate
 
-        charge = payment_intent.charges.first
+        charge = payment_intent.latest_charge
         Pay::Stripe::Charge.sync(charge.id, object: charge)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e

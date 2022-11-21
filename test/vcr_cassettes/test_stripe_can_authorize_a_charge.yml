@@ -5,23 +5,25 @@ http_interactions:
     uri: https://api.stripe.com/v1/customers
     body:
       encoding: UTF-8
-      string: email=stripe%40example.org&name=Stripe+User
+      string: email=stripe%40example.org&name=Stripe+User&expand[0]=tax
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.52.0 PayRails/3.0.24 (https://github.com/pay-rails/pay)
+      - Stripe/v1 RubyBindings/8.0.0 PayRails/5.0.4 (https://github.com/pay-rails/pay)
       Authorization:
-      - Bearer <STRIPE_PRIVATE_KEY>
+      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_6WIcKjFw7cmLF4","request_duration_ms":308}}'
       Idempotency-Key:
-      - 3a00e0ed-c125-4fba-8f49-722e36895c88
+      - 8efeaf32-a82e-4dc9-8966-3d1c116dc8e9
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"3.0.24"},"bindings_version":"5.52.0","lang":"ruby","lang_version":"3.1.2
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"5.0.4"},"bindings_version":"8.0.0","lang":"ruby","lang_version":"3.1.2
         p20 (2022-04-12)","platform":"x86_64-darwin21","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 21.4.0 Darwin Kernel Version 21.4.0: Fri Mar 18 00:45:05
-        PDT 2022; root:xnu-8020.101.4~15/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+        Chriss-iMac.localdomain 22.1.0 Darwin Kernel Version 22.1.0: Sun Oct  9 20:14:54
+        PDT 2022; root:xnu-8792.41.9~2/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -34,11 +36,11 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 19 Apr 2022 19:05:46 GMT
+      - Mon, 21 Nov 2022 23:00:42 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '616'
+      - '746'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
@@ -54,76 +56,79 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Idempotency-Key:
-      - 3a00e0ed-c125-4fba-8f49-722e36895c88
+      - 8efeaf32-a82e-4dc9-8966-3d1c116dc8e9
       Original-Request:
-      - req_UAeq1PkJE4TTb8
+      - req_1arUkZ2gnwmAis
       Request-Id:
-      - req_UAeq1PkJE4TTb8
+      - req_1arUkZ2gnwmAis
       Stripe-Should-Retry:
       - 'false'
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
+      - max-age=63072000; includeSubDomains; preload
     body:
       encoding: UTF-8
-      string: |
+      string: |-
         {
-          "id": "cus_LXRForAnlrBUVV",
+          "id": "cus_MqPosbYNaYS0u4",
           "object": "customer",
           "address": null,
           "balance": 0,
-          "created": 1650395146,
+          "created": 1669071642,
           "currency": null,
           "default_source": null,
           "delinquent": false,
           "description": null,
           "discount": null,
           "email": "stripe@example.org",
-          "invoice_prefix": "DD5E36E1",
+          "invoice_prefix": "5C1D9977",
           "invoice_settings": {
             "custom_fields": null,
             "default_payment_method": null,
-            "footer": null
+            "footer": null,
+            "rendering_options": null
           },
           "livemode": false,
-          "metadata": {
-          },
+          "metadata": {},
           "name": "Stripe User",
           "next_invoice_sequence": 1,
           "phone": null,
-          "preferred_locales": [
-
-          ],
+          "preferred_locales": [],
           "shipping": null,
+          "tax": {
+            "automatic_tax": "unrecognized_location",
+            "ip_address": null,
+            "location": null
+          },
           "tax_exempt": "none",
           "test_clock": null
         }
-  recorded_at: Tue, 19 Apr 2022 19:05:46 GMT
+  recorded_at: Mon, 21 Nov 2022 23:00:42 GMT
 - request:
     method: post
     uri: https://api.stripe.com/v1/payment_methods/pm_card_visa/attach
     body:
       encoding: UTF-8
-      string: customer=cus_LXRForAnlrBUVV
+      string: customer=cus_MqPosbYNaYS0u4
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.52.0 PayRails/3.0.24 (https://github.com/pay-rails/pay)
+      - Stripe/v1 RubyBindings/8.0.0 PayRails/5.0.4 (https://github.com/pay-rails/pay)
       Authorization:
-      - Bearer <STRIPE_PRIVATE_KEY>
+      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_UAeq1PkJE4TTb8","request_duration_ms":517}}'
+      - '{"last_request_metrics":{"request_id":"req_1arUkZ2gnwmAis","request_duration_ms":346}}'
       Idempotency-Key:
-      - c89c630e-1637-420d-8655-82bd510e3e57
+      - 74080f32-6ed3-4245-b2f3-1302fc32ba05
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"3.0.24"},"bindings_version":"5.52.0","lang":"ruby","lang_version":"3.1.2
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"5.0.4"},"bindings_version":"8.0.0","lang":"ruby","lang_version":"3.1.2
         p20 (2022-04-12)","platform":"x86_64-darwin21","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 21.4.0 Darwin Kernel Version 21.4.0: Fri Mar 18 00:45:05
-        PDT 2022; root:xnu-8020.101.4~15/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+        Chriss-iMac.localdomain 22.1.0 Darwin Kernel Version 22.1.0: Sun Oct  9 20:14:54
+        PDT 2022; root:xnu-8792.41.9~2/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -136,11 +141,11 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 19 Apr 2022 19:05:47 GMT
+      - Mon, 21 Nov 2022 23:00:43 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '943'
+      - '940'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
@@ -156,22 +161,22 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Idempotency-Key:
-      - c89c630e-1637-420d-8655-82bd510e3e57
+      - 74080f32-6ed3-4245-b2f3-1302fc32ba05
       Original-Request:
-      - req_bTPX3exoIHuYlp
+      - req_Nigpzuuz5njrZn
       Request-Id:
-      - req_bTPX3exoIHuYlp
+      - req_Nigpzuuz5njrZn
       Stripe-Should-Retry:
       - 'false'
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
+      - max-age=63072000; includeSubDomains; preload
     body:
       encoding: UTF-8
-      string: |
+      string: |-
         {
-          "id": "pm_1KqMMxKXBGcbgpbZjS4e73Xo",
+          "id": "pm_1M6iylKXBGcbgpbZVxRHsXAO",
           "object": "payment_method",
           "billing_details": {
             "address": {
@@ -194,7 +199,7 @@ http_interactions:
               "cvc_check": null
             },
             "country": "US",
-            "exp_month": 4,
+            "exp_month": 11,
             "exp_year": 2023,
             "fingerprint": "w4XDzQOFakih5EZM",
             "funding": "credit",
@@ -211,38 +216,37 @@ http_interactions:
             },
             "wallet": null
           },
-          "created": 1650395147,
-          "customer": "cus_LXRForAnlrBUVV",
+          "created": 1669071643,
+          "customer": "cus_MqPosbYNaYS0u4",
           "livemode": false,
-          "metadata": {
-          },
+          "metadata": {},
           "type": "card"
         }
-  recorded_at: Tue, 19 Apr 2022 19:05:47 GMT
+  recorded_at: Mon, 21 Nov 2022 23:00:43 GMT
 - request:
     method: post
-    uri: https://api.stripe.com/v1/customers/cus_LXRForAnlrBUVV
+    uri: https://api.stripe.com/v1/customers/cus_MqPosbYNaYS0u4
     body:
       encoding: UTF-8
-      string: invoice_settings[default_payment_method]=pm_1KqMMxKXBGcbgpbZjS4e73Xo
+      string: invoice_settings[default_payment_method]=pm_1M6iylKXBGcbgpbZVxRHsXAO
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.52.0 PayRails/3.0.24 (https://github.com/pay-rails/pay)
+      - Stripe/v1 RubyBindings/8.0.0 PayRails/5.0.4 (https://github.com/pay-rails/pay)
       Authorization:
-      - Bearer <STRIPE_PRIVATE_KEY>
+      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_bTPX3exoIHuYlp","request_duration_ms":1261}}'
+      - '{"last_request_metrics":{"request_id":"req_Nigpzuuz5njrZn","request_duration_ms":951}}'
       Idempotency-Key:
-      - 9a2cac43-4cc0-4515-9461-fc99979c4c61
+      - ac793221-ab4c-4906-95c6-590d3bd93088
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"3.0.24"},"bindings_version":"5.52.0","lang":"ruby","lang_version":"3.1.2
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"5.0.4"},"bindings_version":"8.0.0","lang":"ruby","lang_version":"3.1.2
         p20 (2022-04-12)","platform":"x86_64-darwin21","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 21.4.0 Darwin Kernel Version 21.4.0: Fri Mar 18 00:45:05
-        PDT 2022; root:xnu-8020.101.4~15/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+        Chriss-iMac.localdomain 22.1.0 Darwin Kernel Version 22.1.0: Sun Oct  9 20:14:54
+        PDT 2022; root:xnu-8792.41.9~2/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -255,11 +259,11 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 19 Apr 2022 19:05:48 GMT
+      - Mon, 21 Nov 2022 23:00:44 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '641'
+      - '664'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
@@ -275,76 +279,74 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Idempotency-Key:
-      - 9a2cac43-4cc0-4515-9461-fc99979c4c61
+      - ac793221-ab4c-4906-95c6-590d3bd93088
       Original-Request:
-      - req_ocNKWkGS53t1fC
+      - req_LlBFBt40i4lX2D
       Request-Id:
-      - req_ocNKWkGS53t1fC
+      - req_LlBFBt40i4lX2D
       Stripe-Should-Retry:
       - 'false'
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
+      - max-age=63072000; includeSubDomains; preload
     body:
       encoding: UTF-8
-      string: |
+      string: |-
         {
-          "id": "cus_LXRForAnlrBUVV",
+          "id": "cus_MqPosbYNaYS0u4",
           "object": "customer",
           "address": null,
           "balance": 0,
-          "created": 1650395146,
+          "created": 1669071642,
           "currency": null,
           "default_source": null,
           "delinquent": false,
           "description": null,
           "discount": null,
           "email": "stripe@example.org",
-          "invoice_prefix": "DD5E36E1",
+          "invoice_prefix": "5C1D9977",
           "invoice_settings": {
             "custom_fields": null,
-            "default_payment_method": "pm_1KqMMxKXBGcbgpbZjS4e73Xo",
-            "footer": null
+            "default_payment_method": "pm_1M6iylKXBGcbgpbZVxRHsXAO",
+            "footer": null,
+            "rendering_options": null
           },
           "livemode": false,
-          "metadata": {
-          },
+          "metadata": {},
           "name": "Stripe User",
           "next_invoice_sequence": 1,
           "phone": null,
-          "preferred_locales": [
-
-          ],
+          "preferred_locales": [],
           "shipping": null,
           "tax_exempt": "none",
           "test_clock": null
         }
-  recorded_at: Tue, 19 Apr 2022 19:05:48 GMT
+  recorded_at: Mon, 21 Nov 2022 23:00:44 GMT
 - request:
     method: post
     uri: https://api.stripe.com/v1/payment_methods/pm_card_visa/attach
     body:
       encoding: UTF-8
-      string: customer=cus_LXRForAnlrBUVV
+      string: customer=cus_MqPosbYNaYS0u4
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.52.0 PayRails/3.0.24 (https://github.com/pay-rails/pay)
+      - Stripe/v1 RubyBindings/8.0.0 PayRails/5.0.4 (https://github.com/pay-rails/pay)
       Authorization:
-      - Bearer <STRIPE_PRIVATE_KEY>
+      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_ocNKWkGS53t1fC","request_duration_ms":597}}'
+      - '{"last_request_metrics":{"request_id":"req_LlBFBt40i4lX2D","request_duration_ms":311}}'
       Idempotency-Key:
-      - e57f44a2-88fe-4886-ac85-aa939c8d6b9b
+      - 5891c00e-6bcc-401c-a7b2-1dd753f4183b
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"3.0.24"},"bindings_version":"5.52.0","lang":"ruby","lang_version":"3.1.2
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"5.0.4"},"bindings_version":"8.0.0","lang":"ruby","lang_version":"3.1.2
         p20 (2022-04-12)","platform":"x86_64-darwin21","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 21.4.0 Darwin Kernel Version 21.4.0: Fri Mar 18 00:45:05
-        PDT 2022; root:xnu-8020.101.4~15/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+        Chriss-iMac.localdomain 22.1.0 Darwin Kernel Version 22.1.0: Sun Oct  9 20:14:54
+        PDT 2022; root:xnu-8792.41.9~2/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -357,11 +359,11 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 19 Apr 2022 19:05:49 GMT
+      - Mon, 21 Nov 2022 23:00:45 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '943'
+      - '940'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
@@ -377,22 +379,22 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Idempotency-Key:
-      - e57f44a2-88fe-4886-ac85-aa939c8d6b9b
+      - 5891c00e-6bcc-401c-a7b2-1dd753f4183b
       Original-Request:
-      - req_21qjZTBDMqCESC
+      - req_cGsqcdj87w1UF7
       Request-Id:
-      - req_21qjZTBDMqCESC
+      - req_cGsqcdj87w1UF7
       Stripe-Should-Retry:
       - 'false'
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
+      - max-age=63072000; includeSubDomains; preload
     body:
       encoding: UTF-8
-      string: |
+      string: |-
         {
-          "id": "pm_1KqMMyKXBGcbgpbZD9vaUoF8",
+          "id": "pm_1M6iymKXBGcbgpbZ7eDqcEYE",
           "object": "payment_method",
           "billing_details": {
             "address": {
@@ -415,7 +417,7 @@ http_interactions:
               "cvc_check": null
             },
             "country": "US",
-            "exp_month": 4,
+            "exp_month": 11,
             "exp_year": 2023,
             "fingerprint": "w4XDzQOFakih5EZM",
             "funding": "credit",
@@ -432,38 +434,37 @@ http_interactions:
             },
             "wallet": null
           },
-          "created": 1650395148,
-          "customer": "cus_LXRForAnlrBUVV",
+          "created": 1669071644,
+          "customer": "cus_MqPosbYNaYS0u4",
           "livemode": false,
-          "metadata": {
-          },
+          "metadata": {},
           "type": "card"
         }
-  recorded_at: Tue, 19 Apr 2022 19:05:49 GMT
+  recorded_at: Mon, 21 Nov 2022 23:00:45 GMT
 - request:
     method: post
-    uri: https://api.stripe.com/v1/customers/cus_LXRForAnlrBUVV
+    uri: https://api.stripe.com/v1/customers/cus_MqPosbYNaYS0u4
     body:
       encoding: UTF-8
-      string: invoice_settings[default_payment_method]=pm_1KqMMyKXBGcbgpbZD9vaUoF8
+      string: invoice_settings[default_payment_method]=pm_1M6iymKXBGcbgpbZ7eDqcEYE
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.52.0 PayRails/3.0.24 (https://github.com/pay-rails/pay)
+      - Stripe/v1 RubyBindings/8.0.0 PayRails/5.0.4 (https://github.com/pay-rails/pay)
       Authorization:
-      - Bearer <STRIPE_PRIVATE_KEY>
+      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_21qjZTBDMqCESC","request_duration_ms":1023}}'
+      - '{"last_request_metrics":{"request_id":"req_cGsqcdj87w1UF7","request_duration_ms":888}}'
       Idempotency-Key:
-      - 952cef96-1c8f-44a0-8fc9-7da032910cc6
+      - 19664dfb-c770-4329-a1b9-3d4ab618add3
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"3.0.24"},"bindings_version":"5.52.0","lang":"ruby","lang_version":"3.1.2
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"5.0.4"},"bindings_version":"8.0.0","lang":"ruby","lang_version":"3.1.2
         p20 (2022-04-12)","platform":"x86_64-darwin21","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 21.4.0 Darwin Kernel Version 21.4.0: Fri Mar 18 00:45:05
-        PDT 2022; root:xnu-8020.101.4~15/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+        Chriss-iMac.localdomain 22.1.0 Darwin Kernel Version 22.1.0: Sun Oct  9 20:14:54
+        PDT 2022; root:xnu-8792.41.9~2/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -476,11 +477,11 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 19 Apr 2022 19:05:50 GMT
+      - Mon, 21 Nov 2022 23:00:45 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '641'
+      - '664'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
@@ -496,76 +497,74 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Idempotency-Key:
-      - 952cef96-1c8f-44a0-8fc9-7da032910cc6
+      - 19664dfb-c770-4329-a1b9-3d4ab618add3
       Original-Request:
-      - req_96cRwrnD2EVaPm
+      - req_zpJ7U3wiQEXnbz
       Request-Id:
-      - req_96cRwrnD2EVaPm
+      - req_zpJ7U3wiQEXnbz
       Stripe-Should-Retry:
       - 'false'
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
+      - max-age=63072000; includeSubDomains; preload
     body:
       encoding: UTF-8
-      string: |
+      string: |-
         {
-          "id": "cus_LXRForAnlrBUVV",
+          "id": "cus_MqPosbYNaYS0u4",
           "object": "customer",
           "address": null,
           "balance": 0,
-          "created": 1650395146,
+          "created": 1669071642,
           "currency": null,
           "default_source": null,
           "delinquent": false,
           "description": null,
           "discount": null,
           "email": "stripe@example.org",
-          "invoice_prefix": "DD5E36E1",
+          "invoice_prefix": "5C1D9977",
           "invoice_settings": {
             "custom_fields": null,
-            "default_payment_method": "pm_1KqMMyKXBGcbgpbZD9vaUoF8",
-            "footer": null
+            "default_payment_method": "pm_1M6iymKXBGcbgpbZ7eDqcEYE",
+            "footer": null,
+            "rendering_options": null
           },
           "livemode": false,
-          "metadata": {
-          },
+          "metadata": {},
           "name": "Stripe User",
           "next_invoice_sequence": 1,
           "phone": null,
-          "preferred_locales": [
-
-          ],
+          "preferred_locales": [],
           "shipping": null,
           "tax_exempt": "none",
           "test_clock": null
         }
-  recorded_at: Tue, 19 Apr 2022 19:05:49 GMT
+  recorded_at: Mon, 21 Nov 2022 23:00:45 GMT
 - request:
     method: post
     uri: https://api.stripe.com/v1/payment_intents
     body:
       encoding: UTF-8
-      string: amount=2900&confirm=true&currency=usd&customer=cus_LXRForAnlrBUVV&payment_method=pm_1KqMMyKXBGcbgpbZD9vaUoF8&capture_method=manual
+      string: amount=2900&confirm=true&currency=usd&customer=cus_MqPosbYNaYS0u4&expand[0]=latest_charge.refunds&payment_method=pm_1M6iymKXBGcbgpbZ7eDqcEYE&capture_method=manual
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.52.0 PayRails/3.0.24 (https://github.com/pay-rails/pay)
+      - Stripe/v1 RubyBindings/8.0.0 PayRails/5.0.4 (https://github.com/pay-rails/pay)
       Authorization:
-      - Bearer <STRIPE_PRIVATE_KEY>
+      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/x-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_96cRwrnD2EVaPm","request_duration_ms":390}}'
+      - '{"last_request_metrics":{"request_id":"req_zpJ7U3wiQEXnbz","request_duration_ms":332}}'
       Idempotency-Key:
-      - f96a7bef-1f74-40ab-83dd-2f893da2e54d
+      - 81a7e48a-8f04-4a3f-ba29-a99fff8d6637
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"3.0.24"},"bindings_version":"5.52.0","lang":"ruby","lang_version":"3.1.2
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"5.0.4"},"bindings_version":"8.0.0","lang":"ruby","lang_version":"3.1.2
         p20 (2022-04-12)","platform":"x86_64-darwin21","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 21.4.0 Darwin Kernel Version 21.4.0: Fri Mar 18 00:45:05
-        PDT 2022; root:xnu-8020.101.4~15/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+        Chriss-iMac.localdomain 22.1.0 Darwin Kernel Version 22.1.0: Sun Oct  9 20:14:54
+        PDT 2022; root:xnu-8792.41.9~2/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -578,11 +577,11 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 19 Apr 2022 19:05:51 GMT
+      - Mon, 21 Nov 2022 23:00:46 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '4470'
+      - '3911'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
@@ -598,29 +597,27 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Idempotency-Key:
-      - f96a7bef-1f74-40ab-83dd-2f893da2e54d
+      - 81a7e48a-8f04-4a3f-ba29-a99fff8d6637
       Original-Request:
-      - req_qdSFkISImo3R3U
+      - req_qJY1YaVw5bpdLU
       Request-Id:
-      - req_qdSFkISImo3R3U
+      - req_qJY1YaVw5bpdLU
       Stripe-Should-Retry:
       - 'false'
       Stripe-Version:
-      - '2020-08-27'
+      - '2022-11-15'
       Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
+      - max-age=63072000; includeSubDomains; preload
     body:
       encoding: UTF-8
-      string: |
+      string: |-
         {
-          "id": "pi_3KqMN0KXBGcbgpbZ1ZJ9p6aF",
+          "id": "pi_3M6iynKXBGcbgpbZ1f7SzhWv",
           "object": "payment_intent",
           "amount": 2900,
           "amount_capturable": 2900,
           "amount_details": {
-            "tip": {
-              "amount": null
-            }
+            "tip": {}
           },
           "amount_received": 0,
           "application": null,
@@ -629,127 +626,114 @@ http_interactions:
           "canceled_at": null,
           "cancellation_reason": null,
           "capture_method": "manual",
-          "charges": {
-            "object": "list",
-            "data": [
-              {
-                "id": "ch_3KqMN0KXBGcbgpbZ1xSqhvJs",
-                "object": "charge",
-                "amount": 2900,
-                "amount_captured": 0,
-                "amount_refunded": 0,
-                "application": null,
-                "application_fee": null,
-                "application_fee_amount": null,
-                "balance_transaction": null,
-                "billing_details": {
-                  "address": {
-                    "city": null,
-                    "country": null,
-                    "line1": null,
-                    "line2": null,
-                    "postal_code": null,
-                    "state": null
-                  },
-                  "email": null,
-                  "name": null,
-                  "phone": null
-                },
-                "calculated_statement_descriptor": "PAY RAILS",
-                "captured": false,
-                "created": 1650395150,
-                "currency": "usd",
-                "customer": "cus_LXRForAnlrBUVV",
-                "description": null,
-                "destination": null,
-                "dispute": null,
-                "disputed": false,
-                "failure_balance_transaction": null,
-                "failure_code": null,
-                "failure_message": null,
-                "fraud_details": {
-                },
-                "invoice": null,
-                "livemode": false,
-                "metadata": {
-                },
-                "on_behalf_of": null,
-                "order": null,
-                "outcome": {
-                  "network_status": "approved_by_network",
-                  "reason": null,
-                  "risk_level": "normal",
-                  "risk_score": 30,
-                  "seller_message": "Payment complete.",
-                  "type": "authorized"
-                },
-                "paid": true,
-                "payment_intent": "pi_3KqMN0KXBGcbgpbZ1ZJ9p6aF",
-                "payment_method": "pm_1KqMMyKXBGcbgpbZD9vaUoF8",
-                "payment_method_details": {
-                  "card": {
-                    "brand": "visa",
-                    "checks": {
-                      "address_line1_check": null,
-                      "address_postal_code_check": null,
-                      "cvc_check": null
-                    },
-                    "country": "US",
-                    "exp_month": 4,
-                    "exp_year": 2023,
-                    "fingerprint": "w4XDzQOFakih5EZM",
-                    "funding": "credit",
-                    "installments": null,
-                    "last4": "4242",
-                    "mandate": null,
-                    "network": "visa",
-                    "three_d_secure": null,
-                    "wallet": null
-                  },
-                  "type": "card"
-                },
-                "receipt_email": null,
-                "receipt_number": null,
-                "receipt_url": "https://pay.stripe.com/receipts/acct_1E4bfnKXBGcbgpbZ/ch_3KqMN0KXBGcbgpbZ1xSqhvJs/rcpt_LXRFtTf3NpWElI40s8wYbZV4kp5rXgQ",
-                "refunded": false,
-                "refunds": {
-                  "object": "list",
-                  "data": [
-
-                  ],
-                  "has_more": false,
-                  "total_count": 0,
-                  "url": "/v1/charges/ch_3KqMN0KXBGcbgpbZ1xSqhvJs/refunds"
-                },
-                "review": null,
-                "shipping": null,
-                "source": null,
-                "source_transfer": null,
-                "statement_descriptor": null,
-                "statement_descriptor_suffix": null,
-                "status": "succeeded",
-                "transfer_data": null,
-                "transfer_group": null
-              }
-            ],
-            "has_more": false,
-            "total_count": 1,
-            "url": "/v1/charges?payment_intent=pi_3KqMN0KXBGcbgpbZ1ZJ9p6aF"
-          },
-          "client_secret": "pi_3KqMN0KXBGcbgpbZ1ZJ9p6aF_secret_NCxficqe4t9JCAdKtVxAFzl4e",
+          "client_secret": "pi_3M6iynKXBGcbgpbZ1f7SzhWv_secret_ldnv8C3MXQMjnBnHy0D7cV4uE",
           "confirmation_method": "automatic",
-          "created": 1650395150,
+          "created": 1669071645,
           "currency": "usd",
-          "customer": "cus_LXRForAnlrBUVV",
+          "customer": "cus_MqPosbYNaYS0u4",
           "description": null,
           "invoice": null,
           "last_payment_error": null,
-          "livemode": false,
-          "metadata": {
+          "latest_charge": {
+            "id": "ch_3M6iynKXBGcbgpbZ1zmbuwL9",
+            "object": "charge",
+            "amount": 2900,
+            "amount_captured": 0,
+            "amount_refunded": 0,
+            "application": null,
+            "application_fee": null,
+            "application_fee_amount": null,
+            "balance_transaction": null,
+            "billing_details": {
+              "address": {
+                "city": null,
+                "country": null,
+                "line1": null,
+                "line2": null,
+                "postal_code": null,
+                "state": null
+              },
+              "email": null,
+              "name": null,
+              "phone": null
+            },
+            "calculated_statement_descriptor": "PAY RAILS",
+            "captured": false,
+            "created": 1669071646,
+            "currency": "usd",
+            "customer": "cus_MqPosbYNaYS0u4",
+            "description": null,
+            "destination": null,
+            "dispute": null,
+            "disputed": false,
+            "failure_balance_transaction": null,
+            "failure_code": null,
+            "failure_message": null,
+            "fraud_details": {},
+            "invoice": null,
+            "livemode": false,
+            "metadata": {},
+            "on_behalf_of": null,
+            "order": null,
+            "outcome": {
+              "network_status": "approved_by_network",
+              "reason": null,
+              "risk_level": "normal",
+              "risk_score": 52,
+              "seller_message": "Payment complete.",
+              "type": "authorized"
+            },
+            "paid": true,
+            "payment_intent": "pi_3M6iynKXBGcbgpbZ1f7SzhWv",
+            "payment_method": "pm_1M6iymKXBGcbgpbZ7eDqcEYE",
+            "payment_method_details": {
+              "card": {
+                "brand": "visa",
+                "checks": {
+                  "address_line1_check": null,
+                  "address_postal_code_check": null,
+                  "cvc_check": null
+                },
+                "country": "US",
+                "exp_month": 11,
+                "exp_year": 2023,
+                "fingerprint": "w4XDzQOFakih5EZM",
+                "funding": "credit",
+                "installments": null,
+                "last4": "4242",
+                "mandate": null,
+                "network": "visa",
+                "three_d_secure": null,
+                "wallet": null
+              },
+              "type": "card"
+            },
+            "receipt_email": null,
+            "receipt_number": null,
+            "receipt_url": "https://pay.stripe.com/receipts/payment/CAcaFwoVYWNjdF8xRTRiZm5LWEJHY2JncGJaKJ6G8JsGMgY-dCnwz7s6LBYhKmSIb00vHmjLfFIWYWTzL8o6c2CQp-KpRxudOsBrRCuF85UAPNaZJ_v2",
+            "refunded": false,
+            "refunds": {
+              "object": "list",
+              "data": [],
+              "has_more": false,
+              "total_count": 0,
+              "url": "/v1/charges/ch_3M6iynKXBGcbgpbZ1zmbuwL9/refunds"
+            },
+            "review": null,
+            "shipping": null,
+            "source": null,
+            "source_transfer": null,
+            "statement_descriptor": null,
+            "statement_descriptor_suffix": null,
+            "status": "succeeded",
+            "transfer_data": null,
+            "transfer_group": null
           },
+          "livemode": false,
+          "metadata": {},
           "next_action": null,
           "on_behalf_of": null,
-          "payment_method": "pm_1KqMMyKXBGcbgpbZD9vaUoF8",
+          "payment_method": "pm_1M6iymKXBGcbgpbZ7eDqcEYE",
           "payment_method_options": {
             "card": {
               "installments": null,
@@ -773,5 +757,5 @@ http_interactions:
           "transfer_data": null,
           "transfer_group": null
         }
-  recorded_at: Tue, 19 Apr 2022 19:05:51 GMT
+  recorded_at: Mon, 21 Nov 2022 23:00:46 GMT
 recorded_with: VCR 6.1.0
