@@ -1,5 +1,10 @@
+ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
+
 ### Unreleased
 
+### 6.0.0
+
+* [Breaking] Require Stripe 8.x
 * [Breaking] `paddle_paused_from` is now `pause_starts_at:datetime` column
 * [Breaking] `active` scope no longer includes paused subscriptions
 * [Breaking] Stripe paused subscriptions have changed:

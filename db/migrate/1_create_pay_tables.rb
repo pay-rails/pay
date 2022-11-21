@@ -43,12 +43,18 @@ class CreatePayTables < ActiveRecord::Migration[6.0]
       t.datetime :current_period_end
       t.datetime :trial_ends_at
       t.datetime :ends_at
+      t.boolean :metered
+      t.string :pause_behavior
+      t.datetime :pause_starts_at
+      t.datetime :pause_resumes_at
       t.decimal :application_fee_percent, precision: 8, scale: 2
       t.public_send Pay::Adapter.json_column_type, :metadata
       t.public_send Pay::Adapter.json_column_type, :data
       t.timestamps
     end
     add_index :pay_subscriptions, [:customer_id, :processor_id], unique: true
+    add_index :pay_subscriptions, [:metered]
+    add_index :pay_subscriptions, [:pause_starts_at]
 
     create_table :pay_charges do |t|
       t.belongs_to :customer, foreign_key: {to_table: :pay_customers}, null: false, index: false
