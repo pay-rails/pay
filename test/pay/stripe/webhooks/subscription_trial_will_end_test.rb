@@ -12,7 +12,7 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
     Pay.emails.subscription_trial_will_end = true # Default is true, setting here for clarity
     ::Stripe::Subscription.expects(:retrieve).returns(@trial_will_end_event.data.object)
 
-    travel_to Time.at(1667761895) do
+    travel_to trial_start_date do
       create_subscription(processor_id: @trial_will_end_event.data.object.items.data.first.subscription, trial_ends_at: 3.days.from_now)
       mailer = Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_will_end_event)
 
@@ -25,7 +25,7 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
     Pay.emails.subscription_trial_will_end = false
     ::Stripe::Subscription.expects(:retrieve).returns(@trial_will_end_event.data.object)
 
-    travel_to Time.at(1667761895) do
+    travel_to trial_start_date do
       create_subscription(processor_id: @trial_will_end_event.data.object.items.data.first.subscription, trial_ends_at: 3.days.from_now)
       Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_will_end_event)
 
@@ -58,5 +58,9 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
 
   def create_subscription(processor_id:, trial_ends_at:)
     @pay_customer.subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active", trial_ends_at: trial_ends_at)
+  end
+
+  def trial_start_date
+    Time.at(@trial_will_end_event.data.object.trial_start)
   end
 end
