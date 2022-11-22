@@ -41,6 +41,14 @@ module Pay
         pay_payment_method = pay_customer.payment_methods.where(processor_id: object.id).first_or_initialize
         pay_payment_method.update!(attributes)
         pay_payment_method
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
+        end
       end
 
       # Extracts payment method details from a Stripe::PaymentMethod object

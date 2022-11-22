@@ -107,7 +107,7 @@ module Pay
         end
 
         pay_subscription
-      rescue ActiveRecord::RecordInvalid
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
         try += 1
         if try <= retries
           sleep 0.1
