@@ -2,6 +2,12 @@
 
 ### Unreleased
 
+### 6.0.1
+
+* Handle ActiveRecord::RecordNotUnique error during sync and retry
+* Add retries to Stripe PaymentMethod.sync
+* Fix deprecation warning in tests #735
+
 ### 6.0.0
 
 * [Breaking] Require Stripe 8.x
