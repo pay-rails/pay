@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 6.0.3
+
+* Validate PaymentIntent on `swap` and `retry_failed_payment`
+
 ### 6.0.2
 
 * Retrieve PaymentIntent via API to ensure it always matches the Pay Stripe API verison
