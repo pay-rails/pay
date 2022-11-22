@@ -261,6 +261,11 @@ module Pay
           stripe_options
         )
 
+        # Validate that swap was successful and handle SCA if needed
+        if (payment_intent = @stripe_subscription.latest_invoice.payment_intent)
+          Pay::Payment.new(payment_intent).validate
+        end
+
         pay_subscription.sync!(object: @stripe_subscription)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -295,9 +300,12 @@ module Pay
         ::Stripe::Invoice.upcoming(options.merge(subscription: processor_id), stripe_options)
       end
 
-      # Retries the latest invoice for a Past Due subscription
+      # Retries the latest invoice for a Past Due subscription and attempts to pay it
       def retry_failed_payment
-        subscription.latest_invoice.pay
+        payment_intent = ::Stripe::PaymentIntent.confirm(subscription.latest_invoice.payment_intent.id)
+        Pay::Payment.new(payment_intent).validate
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       private
