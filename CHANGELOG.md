@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 6.0.2
+
+* Retrieve PaymentIntent via API to ensure it always matches the Pay Stripe API verison
+
 ### 6.0.1
 
 * Handle ActiveRecord::RecordNotUnique error during sync and retry
