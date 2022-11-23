@@ -225,9 +225,10 @@ module Pay
           }
         end
 
-        cancel_now!
-
+        # If subscribe fails we will raise a Pay::Braintree::Error and not cancel the current subscription
         customer.subscribe(**options.merge(name: name, plan: plan.id))
+
+        cancel_now!
       end
     end
   end
