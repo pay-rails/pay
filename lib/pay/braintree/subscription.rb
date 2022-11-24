@@ -217,7 +217,7 @@ module Pay
               add: [
                 {
                   inherited_from_id: "plan-credit",
-                  amount: discount.amount,
+                  amount: discount.amount.round(2),
                   number_of_billing_cycles: discount.number_of_billing_cycles
                 }
               ]
