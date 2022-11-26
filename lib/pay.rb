@@ -80,15 +80,16 @@ module Pay
 
   # Should return a hash of arguments for the `mail` call in UserMailer
   mattr_accessor :mail_arguments
-  @@mail_arguments = ->(mailer, params) {
+  @@mail_arguments = -> {
     {
-      to: Pay.mail_to.call(mailer, params)
+      to: instance_exec(&Pay.mail_to),
+      subject: default_i18n_subject(application: Pay.application_name)
     }
   }
 
   # Should return String or Array of email recipients
   mattr_accessor :mail_to
-  @@mail_to = ->(mailer, params) {
+  @@mail_to = -> {
     if ActionMailer::Base.respond_to?(:email_address_with_name)
       ActionMailer::Base.email_address_with_name(params[:pay_customer].email, params[:pay_customer].customer_name)
     else
