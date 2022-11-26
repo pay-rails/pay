@@ -77,7 +77,7 @@ class UserMailerTest < ActionMailer::TestCase
 
     assert_equal [@user.email], email.to
     assert_equal I18n.t("pay.user_mailer.subscription_trial_will_end.subject", application: Pay.application_name), email.subject
-    assert_includes email.body.decoded, "Your Test Business trial is ending soon"
+    assert_includes email.body.decoded, "trial is ending soon"
   end
 
   test "subscription_trial_ended" do
@@ -85,6 +85,6 @@ class UserMailerTest < ActionMailer::TestCase
 
     assert_equal [@user.email], email.to
     assert_equal I18n.t("pay.user_mailer.subscription_trial_ended.subject", application: Pay.application_name), email.subject
-    assert_includes email.body.decoded, "Your Test Business trial has ended"
+    assert_includes email.body.decoded, "trial has ended"
   end
 end
