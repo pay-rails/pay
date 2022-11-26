@@ -1,4 +1,4 @@
-We have processed your <%= Pay.application_name %> refund.<br/>
+We have processed your <%= link_to Pay.application_name, root_url %> refund.<br/>
 Please allow up to 7 business days for your refund to appear in your account<br/>
 <br/>
 Questions? Please reply to this email.<br/>
@@ -17,6 +17,5 @@ Date: <%= l params[:pay_charge].created_at %><br/>
 <% end %>
 <br/>
 <br/>
-<%= Pay.business_name %><br/>
-<%= simple_format Pay.business_address %>
+<%= simple_format [Pay.business_name, Pay.business_address].join("\n") %>
 ------------------------------------<br/>
