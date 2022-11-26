@@ -217,7 +217,7 @@ module Pay
               add: [
                 {
                   inherited_from_id: "plan-credit",
-                  amount: discount.amount,
+                  amount: discount.amount.round(2),
                   number_of_billing_cycles: discount.number_of_billing_cycles
                 }
               ]
@@ -225,9 +225,10 @@ module Pay
           }
         end
 
-        cancel_now!
-
+        # If subscribe fails we will raise a Pay::Braintree::Error and not cancel the current subscription
         customer.subscribe(**options.merge(name: name, plan: plan.id))
+
+        cancel_now!
       end
     end
   end

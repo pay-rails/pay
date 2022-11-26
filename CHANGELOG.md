@@ -4,6 +4,10 @@
 
 * Switch `business_name` to `application_name` to receipt & mailers
   The business name is included on receipts & refunds, but emails should show the application name instead in case a business has multiple applications / products
+* Use `instance_exec` for `mail_arguments` and `mail_to` so lambda/proc has access to all mailer features
+* Swapping Braintree subscriptions previously had a bug where if a user had an existing plan and was attempting to switch to a new plan, we would cancel their current plan before subscribing them to the new plan.
+  If subscribing to the new plan failed however, the user would then no longer have any plan at all. This has now been resolved by attempting to subscribe to the new plan first, which if fails will raise an error and
+  preserve the users current plan.
 
 ### 6.0.3
 
