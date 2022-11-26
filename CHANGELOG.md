@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* Switch `business_name` to `application_name` to receipt & mailers
+  The business name is included on receipts & refunds, but emails should show the application name instead in case a business has multiple applications / products
+
 ### 6.0.3
 
 * Validate PaymentIntent on `swap` and `retry_failed_payment`
