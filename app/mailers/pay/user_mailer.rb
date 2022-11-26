@@ -31,7 +31,7 @@ module Pay
     private
 
     def mail_arguments
-      instance_exec &Pay.mail_arguments
+      instance_exec(&Pay.mail_arguments)
     end
   end
 end
