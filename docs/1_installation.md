@@ -81,6 +81,7 @@ Name _will not_ sync automatically. See the section below _Syncing attributes_.
 ### Customer Attributes
 
 Stripe allows you to send over a hash of attributes to store in the Customer record in addition to email and name.
+For more information about the different attributes Stripe accepts for a customer visit the Stripe API documentation [here](https://stripe.com/docs/api/customers/object).
 
 ```ruby
 class User < ApplicationRecord
