@@ -16,4 +16,13 @@ class Pay::Stripe::Webhooks::CheckoutSessionCompletedTest < ActiveSupport::TestC
       Pay::Stripe::Webhooks::CheckoutSessionCompleted.new.call(event)
     end
   end
+
+  test "checkout session completed syncs latest charge" do
+    event = stripe_event("checkout.session.completed", overrides: {"object" => {"payment_intent" => "pi_1234", "latest_charge" => "ch_1234", "subscription" => nil}})
+    ::Stripe::PaymentIntent.expects(:retrieve).returns(OpenStruct.new(id: "pi_1234", latest_charge: OpenStruct.new(id: "ch_1234")))
+    Pay::Stripe::Charge.expects(:sync)
+    assert_no_difference "Pay::Customer.count" do
+      Pay::Stripe::Webhooks::CheckoutSessionCompleted.new.call(event)
+    end
+  end
 end
