@@ -3,6 +3,7 @@
 ### Unreleased
 
 * Cast `Pay.support_email` to `Mail::Address` instead of string. This allows us to easily parse out the address, name, etc for use in Receipts and other places.
+* Update Stripe `checkout_session.completed` webhook to sync `latest_charge` for compatibility with Stripe API `2022-11-15` changes
 
 # 6.1.0
 
