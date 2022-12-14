@@ -37,6 +37,10 @@ module Pay
   mattr_accessor :business_logo
   mattr_accessor :support_email
 
+  def self.support_email=(value)
+    @@support_email = value.is_a?(Mail::Address) ? value : Mail::Address.new(value)
+  end
+
   mattr_accessor :automount_routes
   @@automount_routes = true
 

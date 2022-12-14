@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Cast `Pay.support_email` to `Mail::Address` instead of string. This allows us to easily parse out the address, name, etc for use in Receipts and other places.
+
 # 6.1.0
 
 * Swapping Braintree subscriptions previously had a bug where if a user had an existing plan and was attempting to switch to a new plan, we would cancel their current plan before subscribing them to the new plan.
