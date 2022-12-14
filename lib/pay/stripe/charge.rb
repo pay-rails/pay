@@ -125,7 +125,7 @@ module Pay
       # refund!(5_00, refund_application_fee: true)
       def refund!(amount_to_refund, **options)
         if invoice_id.present?
-          description = options.delete(:description) || I18n.t("refund")
+          description = options.delete(:description) || I18n.t("pay.refund")
           lines = [{type: :custom_line_item, description: description, quantity: 1, unit_amount: amount_to_refund}]
           credit_note!(**options.merge(refund_amount: amount_to_refund, lines: lines))
         else

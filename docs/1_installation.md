@@ -81,6 +81,7 @@ Name _will not_ sync automatically. See the section below _Syncing attributes_.
 ### Customer Attributes
 
 Stripe allows you to send over a hash of attributes to store in the Customer record in addition to email and name.
+For more information about the different attributes Stripe accepts for a customer visit the Stripe API documentation [here](https://stripe.com/docs/api/customers/object).
 
 ```ruby
 class User < ApplicationRecord
@@ -106,7 +107,7 @@ Pay will include attributes when creating a Customer and update them when the Cu
 
 ### Syncing attributes
 
-By adding `pay_customer` to your model, the `Pay::Billable::SyncCustomer` concern will be included. It's responsible for syncing your customer's data with your payment processor in an `after_commit` callback if the method `pay_should_sync_customer?` returns `true`.
+By adding `pay_customer` to your model, the `Pay::Billable::SyncCustomer` concern will be included. It's responsible for syncing your customer's data from your application to the payment processor in an `after_commit` callback if the method `pay_should_sync_customer?` returns `true`.
 
 By default, `pay_should_sync_customer?` will respond with `saved_change_to_email?`, which means Pay will automatically sync your customer with your payment processor when it's e-mail changes.
 
