@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 6.1.2
+
+* Fix `refunds` missing on checkout session completed event.
+
 ### 6.1.1
 
 * Cast `Pay.support_email` to `Mail::Address` instead of string. This allows us to easily parse out the address, name, etc for use in Receipts and other places.
