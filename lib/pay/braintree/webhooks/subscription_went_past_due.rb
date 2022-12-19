@@ -8,10 +8,7 @@ module Pay
           subscription = event.subscription
           return if subscription.nil?
 
-          pay_subscription = Pay::Subscription.find_by_processor_and_id(:braintree, subscription.id)
-          return unless pay_subscription.present?
-
-          pay_subscription.update!(status: :past_due)
+          Pay::Braintree::Subscription.sync(subscription.id)
         end
       end
     end
