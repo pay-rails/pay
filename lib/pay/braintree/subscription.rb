@@ -20,6 +20,43 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
+      def self.sync(subscription_id, object: nil, name: nil, try: 0, retries: 1)
+        object ||= Pay.braintree_gateway.subscription.find(subscription_id)
+
+        # Retrieve Pay::Customer
+        payment_method = Pay.braintree_gateway.payment_method.find(object.payment_method_token)
+        pay_customer = Pay::Customer.find_by(processor: :braintree, processor_id: payment_method.customer_id)
+        return unless pay_customer
+
+        attributes = {
+          created_at: object.created_at,
+          current_period_end: object.billing_period_end_date,
+          current_period_start: object.billing_period_start_date,
+          ends_at: (object.updated_at if object.status == "Canceled"),
+          processor_plan: object.plan_id,
+          status: object.status.underscore,
+          trial_ends_at: (object.created_at + object.trial_duration.send(object.trial_duration_unit) if object.trial_period)
+        }
+
+        pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
+        if pay_subscription
+          pay_subscription.with_lock { pay_subscription.update!(attributes) }
+        else
+          name ||= Pay.default_product_name
+          pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
+        end
+
+        pay_subscription
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
+        end
+      end
+
       def initialize(pay_subscription)
         @pay_subscription = pay_subscription
       end

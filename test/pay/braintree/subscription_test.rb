@@ -66,4 +66,48 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
     assert_equal "yearly", @pay_customer.subscription.processor_subscription.plan_id
     assert_equal "active", @pay_customer.subscription.status
   end
+
+  test "braintree sync active subscription" do
+    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 0)
+    processor_id = pay_subscription.processor_id
+
+    pay_subscription.delete
+
+    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+    assert pay_subscription.active?
+  end
+
+  test "braintree sync subscription with trial" do
+    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
+    processor_id = pay_subscription.processor_id
+
+    pay_subscription.delete
+
+    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+    assert pay_subscription.active?
+    assert pay_subscription.on_trial?
+  end
+
+  test "braintree sync canceled subscription" do
+    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 0)
+    processor_id = pay_subscription.processor_id
+
+    pay_subscription.cancel_now!
+    pay_subscription.delete
+
+    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+    refute pay_subscription.active?
+  end
+
+  test "braintree sync canceled subscription with trial" do
+    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
+    processor_id = pay_subscription.processor_id
+
+    pay_subscription.cancel_now!
+    pay_subscription.delete
+
+    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+    refute pay_subscription.active?
+    assert_not_nil pay_subscription.trial_ends_at
+  end
 end

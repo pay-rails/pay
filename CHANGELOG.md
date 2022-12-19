@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* Add `Pay::Braintree::Subscription.sync`
+* Switch Braintree webhooks to use `sync`
+
 ### 6.1.2
 
 * Fix `refunds` missing on checkout session completed event.
