@@ -268,6 +268,7 @@ module Pay
           {
             payment_method_type: :paypal,
             brand: "PayPal",
+            email: transaction.paypal_details.payer_email,
             last4: transaction.paypal_details.payer_email,
             exp_month: nil,
             exp_year: nil
@@ -277,6 +278,7 @@ module Pay
           {
             payment_method_type: :venmo,
             brand: "Venmo",
+            username: transaction.venmo_account_details.username,
             last4: transaction.venmo_account_details.username,
             exp_month: nil,
             exp_year: nil
