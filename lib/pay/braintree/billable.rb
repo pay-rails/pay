@@ -108,7 +108,7 @@ module Pay
         result = gateway.subscription.create(subscription_options)
         raise Pay::Braintree::Error, result unless result.success?
 
-        pay_customer.subscriptions.create!(
+        subscription = pay_customer.subscriptions.create!(
           name: name,
           processor_id: result.subscription.id,
           processor_plan: plan,
@@ -117,6 +117,12 @@ module Pay
           ends_at: nil,
           metadata: metadata
         )
+
+        if (charge = result.subscription.transactions.first)
+          save_transaction(charge)
+        end
+
+        subscription
       rescue ::Braintree::AuthorizationError => e
         raise Pay::Braintree::AuthorizationError, e
       rescue ::Braintree::BraintreeError => e

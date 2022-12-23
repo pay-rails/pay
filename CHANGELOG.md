@@ -5,6 +5,8 @@
 * Add `Pay::Braintree::Subscription.sync`
 * Add `Pay::Braintree::Charge.sync`
 * Switch Braintree webhooks to use `sync`
+* Automatically save first charge when subscribing with Braintree
+* Add `email` for PayPal charges and `username` for Venmo charges on Braintree
 
 ### 6.1.2
 
