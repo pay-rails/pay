@@ -71,6 +71,8 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 0)
     processor_id = pay_subscription.processor_id
 
+    # Remove charges and delete record without canceling / callbacks
+    pay_subscription.charges.destroy_all
     pay_subscription.delete
 
     pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
@@ -81,6 +83,8 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
     processor_id = pay_subscription.processor_id
 
+    # Remove charges and delete record without canceling / callbacks
+    pay_subscription.charges.destroy_all
     pay_subscription.delete
 
     pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
@@ -92,6 +96,8 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 0)
     processor_id = pay_subscription.processor_id
 
+    # Remove charges and delete record without canceling / callbacks
+    pay_subscription.charges.destroy_all
     pay_subscription.cancel_now!
     pay_subscription.delete
 
