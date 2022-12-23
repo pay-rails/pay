@@ -3,6 +3,7 @@
 ### Unreleased
 
 * Add `Pay::Braintree::Subscription.sync`
+* Add `Pay::Braintree::Charge.sync`
 * Switch Braintree webhooks to use `sync`
 
 ### 6.1.2
