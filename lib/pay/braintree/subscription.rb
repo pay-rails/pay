@@ -32,11 +32,16 @@ module Pay
           created_at: object.created_at,
           current_period_end: object.billing_period_end_date,
           current_period_start: object.billing_period_start_date,
-          ends_at: (object.updated_at if object.status == "Canceled"),
           processor_plan: object.plan_id,
           status: object.status.underscore,
           trial_ends_at: (object.created_at + object.trial_duration.send(object.trial_duration_unit) if object.trial_period)
         }
+
+        # Set ends at to paid through date
+        # On trial, paid through date is nil, so fallback to updated_at
+        if object.status == "Canceled"
+          attributes[:ends_at] = object.paid_through_date&.end_of_day || object.updated_at
+        end
 
         pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
         if pay_subscription

@@ -93,27 +93,33 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree sync canceled subscription" do
-    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 0)
-    processor_id = pay_subscription.processor_id
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+      pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 0)
+      processor_id = pay_subscription.processor_id
 
-    # Remove charges and delete record without canceling / callbacks
-    pay_subscription.charges.destroy_all
-    pay_subscription.cancel_now!
-    pay_subscription.delete
+      # Remove charges and delete record without canceling / callbacks
+      pay_subscription.charges.destroy_all
+      pay_subscription.cancel_now!
+      pay_subscription.delete
 
-    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
-    refute pay_subscription.active?
+      pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+      refute pay_subscription.active?
+      assert pay_subscription.ends_at > 28.days.from_now
+    end
   end
 
   test "braintree sync canceled subscription with trial" do
-    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
-    processor_id = pay_subscription.processor_id
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+      pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
+      processor_id = pay_subscription.processor_id
 
-    pay_subscription.cancel_now!
-    pay_subscription.delete
+      pay_subscription.cancel_now!
+      pay_subscription.delete
 
-    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
-    refute pay_subscription.active?
-    assert_not_nil pay_subscription.trial_ends_at
+      pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+      refute pay_subscription.active?
+      assert_not_nil pay_subscription.trial_ends_at
+      assert_equal Time.current.to_date, pay_subscription.ends_at.to_date
+    end
   end
 end
