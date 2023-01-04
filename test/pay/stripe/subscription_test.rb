@@ -5,6 +5,16 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     @pay_customer = pay_customers(:stripe)
   end
 
+  test "stripe past_due is not active" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(status: "past_due"))
+    refute pay_subscription.active?
+  end
+
+  test "stripe incomplete is not active" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(status: "incomplete"))
+    refute pay_subscription.active?
+  end
+
   test "change stripe subscription quantity" do
     @pay_customer.processor_id = nil
     @pay_customer.payment_method_token = "pm_card_visa"

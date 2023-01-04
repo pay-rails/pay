@@ -37,8 +37,9 @@ module Pay
           trial_ends_at: (object.created_at + object.trial_duration.send(object.trial_duration_unit) if object.trial_period)
         }
 
+        # Canceled subscriptions should have access through the paid_through_date or updated_at
         if object.status == "Canceled"
-          attributes[:ends_at] = object.updated_at
+          attributes[:ends_at] = object.paid_through_date&.end_of_day || object.updated_at
 
         # Set grace period for subscriptions that are marked to be canceled
         elsif object.status == "Active" && object.number_of_billing_cycles

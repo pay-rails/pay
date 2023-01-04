@@ -11,7 +11,7 @@ module Pay
     scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.current) }
     scope :cancelled, -> { where.not(ends_at: nil) }
     scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.current) }
-    scope :active, -> { where(status: ["trialing", "active"], ends_at: nil).pause_not_started.or(on_grace_period).or(on_trial) }
+    scope :active, -> { where(status: ["trialing", "active", "canceled"], ends_at: nil).pause_not_started.or(on_grace_period).or(on_trial) }
     scope :paused, -> { where(status: "paused").or(where("pause_starts_at <= ?", Time.current)) }
     scope :pause_not_started, -> { where("pause_starts_at IS NULL OR pause_starts_at > ?", Time.current) }
     scope :active_or_paused, -> { active.or(paused) }
@@ -121,8 +121,10 @@ module Pay
 
     # If you cancel during a trial, you should still retain access until the end of the trial
     # Otherwise a subscription is active unless it has ended or is currently paused
+    # Check the subscription status so we don't accidentally consider "incomplete", "past_due", or other statuses as active
     def active?
-      on_trial? || !(ended? || pause_active?)
+      ["trialing", "active", "canceled"].include?(status) &&
+        (!(canceled? || paused?) || on_trial? || on_grace_period?)
     end
 
     def past_due?

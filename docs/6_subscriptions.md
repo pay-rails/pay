@@ -194,6 +194,11 @@ In addition to the API, Paddle provides a subscription [Cancel URL](https://deve
 @user.payment_processor.subscription.cancel_now!
 ```
 
+The customer will no longer be charged and you *cannot* resume the subscription.
+
+For Stripe subscriptions, the subscription will continue to be active until the end of the period.
+For Braintree subscriptions, the subscription will continue to be active until the end of the period.
+
 #### Swap a Subscription to another Plan
 
 If a user wishes to change subscription plans, you can pass in the Plan or Price ID into the `swap` method:
@@ -272,7 +277,7 @@ Paddle will pause payments at the end of the period. The status remains `active`
 
 In general, you don't need to use these methods as Pay's webhooks will keep you all your subscriptions in sync automatically.
 
-However, for instance, a user returning from Stripe Checkout / Stripe Billing Portal might still see stale subscription information before the Webhook is processed, so these might come in handy. 
+However, for instance, a user returning from Stripe Checkout / Stripe Billing Portal might still see stale subscription information before the Webhook is processed, so these might come in handy.
 
 ### Individual subscription
 
@@ -310,7 +315,7 @@ class SubscriptionsController < ApplicationController
     # Let's say your business model doesn't allow multiple subscriptions per
     # user, and you want to make extra sure they are not already subscribed before showing the new subscription form.
     current_user.payment_processor.sync_subscriptions(status: "all")
-    
+
     redirect_to subscription_path and return if current_user.payment_processor.subscription.active?
   end
 ```

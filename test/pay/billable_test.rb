@@ -66,9 +66,24 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     assert @user.payment_processor.subscribed?
   end
 
-  test "subscribed? with inactive subscription" do
-    @user.payment_processor.subscription.update(status: :canceled)
+  test "subscribed? with incomplete subscription" do
+    @user.payment_processor.subscription.update(status: :incomplete)
     refute @user.payment_processor.subscribed?
+  end
+
+  test "subscribed? with past_due subscription" do
+    @user.payment_processor.subscription.update(status: :past_due)
+    refute @user.payment_processor.subscribed?
+  end
+
+  test "subscribed? with canceled subscription" do
+    @user.payment_processor.subscription.update(status: :canceled, ends_at: 1.day.ago)
+    refute @user.payment_processor.subscribed?
+  end
+
+  test "subscribed? with canceled subscription on grace period" do
+    @user.payment_processor.subscription.update(status: :canceled, ends_at: 1.day.from_now)
+    assert @user.payment_processor.subscribed?
   end
 
   test "subscribed? with different plan" do
