@@ -98,6 +98,10 @@ module Pay
       canceled?
     end
 
+    def ended?
+      ends_at? && Time.current.after?(ends_at)
+    end
+
     def on_grace_period?
       (ends_at? && Time.current < ends_at) ||
         ((status == "paused" || pause_behavior == "void") && will_pause?)
@@ -108,11 +112,17 @@ module Pay
     end
 
     def pause_active?
-      (status == "paused" || pause_behavior == "void") && (pause_starts_at.nil? || pause_starts_at >= Time.current)
+      if status == "paused" # Paddle
+        true
+      elsif pause_behavior == "void"
+        pause_starts_at.nil? || Time.current.after?(pause_starts_at)
+      end
     end
 
+    # If you cancel during a trial, you should still retain access until the end of the trial
+    # Otherwise a subscription is active unless it has ended or is currently paused
     def active?
-      ["trialing", "active"].include?(status) && (!(canceled? || paused?) || on_trial? || on_grace_period?)
+      on_trial? || !(ended? || pause_active?)
     end
 
     def past_due?

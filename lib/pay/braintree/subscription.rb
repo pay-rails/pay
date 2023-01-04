@@ -37,10 +37,12 @@ module Pay
           trial_ends_at: (object.created_at + object.trial_duration.send(object.trial_duration_unit) if object.trial_period)
         }
 
-        # Set ends at to paid through date
-        # On trial, paid through date is nil, so fallback to updated_at
         if object.status == "Canceled"
-          attributes[:ends_at] = object.paid_through_date&.end_of_day || object.updated_at
+          attributes[:ends_at] = object.updated_at
+
+        # Set grace period for subscriptions that are marked to be canceled
+        elsif object.status == "Active" && object.number_of_billing_cycles
+          attributes[:ends_at] = object.paid_through_date&.end_of_day
         end
 
         pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
@@ -71,39 +73,27 @@ module Pay
       end
 
       def cancel(**options)
-        subscription = processor_subscription
-
-        if on_trial?
-          gateway.subscription.cancel(processor_subscription.id)
-          pay_subscription.update(status: :canceled, ends_at: trial_ends_at)
+        result = if on_trial?
+          gateway.subscription.cancel(processor_id)
         else
           gateway.subscription.update(subscription.id, {
             number_of_billing_cycles: subscription.current_billing_cycle
           })
-          pay_subscription.update(status: :canceled, ends_at: subscription.billing_period_end_date.to_date)
         end
+        pay_subscription.sync!(object: result.subscription)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
 
       def cancel_now!(**options)
-        gateway.subscription.cancel(processor_subscription.id)
-        ends_at = Time.current
-        pay_subscription.update!(
-          status: :canceled,
-          trial_ends_at: (ends_at if pay_subscription.trial_ends_at?),
-          ends_at: ends_at
-        )
+        result = gateway.subscription.cancel(processor_id)
+        pay_subscription.sync!(object: result.subscription)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
 
       def change_quantity(quantity, **options)
         raise NotImplementedError, "Braintree does not support setting quantity on subscriptions"
-      end
-
-      def on_grace_period?
-        canceled? && Time.current < ends_at
       end
 
       def paused?

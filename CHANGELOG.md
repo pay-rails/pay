@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+* Fix `pause_active?` for stripe incorrectly returning `true`
+* Refactor Braintree cancel / cancel_now to use sync
+* Fix Braintree grace period for subscriptions with "canceled" state, but paid through to a future date
+
 ### 6.2.1
 
 * Use `paid_through_date` for `ends_at` with canceled subscriptions

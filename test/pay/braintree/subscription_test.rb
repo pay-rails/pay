@@ -10,16 +10,20 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
     @pay_customer.subscribe(trial_period_days: 0)
     @subscription = @pay_customer.subscription
     @subscription.cancel
+    assert_equal "active", @subscription.status
+    assert @subscription.on_grace_period?
+    assert @subscription.active?
     assert_equal @subscription.ends_at.to_date, @subscription.processor_subscription.billing_period_end_date.to_date
-    assert_equal "canceled", @subscription.status
   end
 
   test "braintree cancel_now!" do
     @pay_customer.subscribe(trial_period_days: 0)
     @subscription = @pay_customer.subscription
     @subscription.cancel_now!
-    assert @subscription.ends_at <= Time.current
     assert_equal "canceled", @subscription.status
+    assert_not @subscription.on_grace_period?
+    assert_not @subscription.active?
+    assert @subscription.ends_at <= Time.current
     assert_nil @subscription.trial_ends_at
   end
 
@@ -28,21 +32,24 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
       @pay_customer.subscribe(trial_period_days: 14)
       @subscription = @pay_customer.subscription
       @subscription.cancel
-      assert_equal @subscription.ends_at, @subscription.trial_ends_at
-
+      assert @subscription.on_trial?
+      assert @subscription.on_grace_period?
       @subscription.resume
-      assert_nil @subscription.ends_at
+      assert @subscription.active?
+      assert_not @subscription.on_grace_period?
       assert_equal "active", @subscription.status
     end
   end
 
-  test "braintree cancel_now! on trial" do
+  test "braintree cancel_now on trial" do
     @pay_customer.subscribe(trial_period_days: 14)
-    @subscription = @pay_customer.subscription
-    @subscription.cancel_now!
-    assert @subscription.ends_at <= Time.current
-    assert_equal "canceled", @subscription.status
-    assert_equal @subscription.ends_at, @subscription.trial_ends_at
+    pay_subscription = @pay_customer.subscription
+    pay_subscription.cancel_now!
+
+    # Canceling during a trial ends the subscription, but continues to give access during the trial period
+    assert pay_subscription.active?
+    assert pay_subscription.on_trial?
+    assert pay_subscription.ended?
   end
 
   test "braintree processor subscription" do
@@ -93,33 +100,31 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree sync canceled subscription" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
-      pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 0)
-      processor_id = pay_subscription.processor_id
+    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 0)
+    processor_id = pay_subscription.processor_id
 
-      # Remove charges and delete record without canceling / callbacks
-      pay_subscription.charges.destroy_all
-      pay_subscription.cancel_now!
-      pay_subscription.delete
+    # Remove charges and delete record without canceling / callbacks
+    pay_subscription.charges.destroy_all
+    pay_subscription.cancel_now!
+    pay_subscription.delete
 
-      pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
-      refute pay_subscription.active?
-      assert pay_subscription.ends_at > 28.days.from_now
-    end
+    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+    refute pay_subscription.active?
+    assert pay_subscription.ended?
   end
 
   test "braintree sync canceled subscription with trial" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
-      pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
-      processor_id = pay_subscription.processor_id
+    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
+    processor_id = pay_subscription.processor_id
 
-      pay_subscription.cancel_now!
-      pay_subscription.delete
+    pay_subscription.cancel_now!
+    pay_subscription.delete
 
-      pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
-      refute pay_subscription.active?
-      assert_not_nil pay_subscription.trial_ends_at
-      assert_equal Time.current.to_date, pay_subscription.ends_at.to_date
-    end
+    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+
+    # Canceling during a trial ends the subscription, but continues to give access during the trial period
+    assert pay_subscription.active?
+    assert pay_subscription.on_trial?
+    assert pay_subscription.ended?
   end
 end

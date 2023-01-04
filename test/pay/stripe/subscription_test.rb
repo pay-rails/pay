@@ -237,6 +237,8 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     # First sync the subscription, then sync as paused
     Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "void", resumes_at: nil}, current_period_end: 1.day.from_now))
+    assert pay_subscription.will_pause?
+    refute pay_subscription.pause_active?
     assert pay_subscription.on_grace_period?
     assert pay_subscription.active?
   end
@@ -245,6 +247,8 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     # First sync the subscription, then sync as paused
     Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "void", resumes_at: nil}, current_period_end: 1.day.ago))
+    refute pay_subscription.will_pause?
+    assert pay_subscription.pause_active?
     refute pay_subscription.on_grace_period?
     refute pay_subscription.active?
   end

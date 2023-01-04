@@ -346,18 +346,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_equal "small-annual", @subscription.processor_plan
   end
 
-  test "statuses affect active state" do
-    %w[trialing active].each do |state|
-      @subscription.status = state
-      assert @subscription.active?
-    end
-
-    %w[incomplete incomplete_expired past_due canceled unpaid].each do |state|
-      @subscription.status = state
-      assert_not @subscription.active?
-    end
-  end
-
   test "correctly handles v1 subscriptions without statuses" do
     # Subscriptions in Pay v1.x didn't have a status column, so we've set all their statuses to active
     # We just want to make sure those old, ended subscriptions are still correct
