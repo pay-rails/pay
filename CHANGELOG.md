@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 6.2.1
+
 * Use `paid_through_date` for `ends_at` with canceled subscriptions
 
 ### 6.2.0
