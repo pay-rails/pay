@@ -39,11 +39,11 @@ module Pay
 
         # Canceled subscriptions should have access through the paid_through_date or updated_at
         if object.status == "Canceled"
-          attributes[:ends_at] = object.paid_through_date&.end_of_day || object.updated_at
+          attributes[:ends_at] = object.updated_at
 
         # Set grace period for subscriptions that are marked to be canceled
         elsif object.status == "Active" && object.number_of_billing_cycles
-          attributes[:ends_at] = object.paid_through_date&.end_of_day
+          attributes[:ends_at] = object.paid_through_date.end_of_day
         end
 
         pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
@@ -106,10 +106,6 @@ module Pay
       end
 
       def resume
-        if status == "canceled"
-          raise StandardError, "You cannot resume a canceled subscription."
-        end
-
         unless on_grace_period?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end

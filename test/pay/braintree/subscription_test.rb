@@ -21,8 +21,8 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
     @subscription = @pay_customer.subscription
     @subscription.cancel_now!
     assert_equal "canceled", @subscription.status
-    assert @subscription.on_grace_period?
-    assert @subscription.active?
+    refute @subscription.on_grace_period?
+    refute @subscription.active?
     assert_nil @subscription.trial_ends_at
   end
 
@@ -109,8 +109,8 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
 
     pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
     assert pay_subscription.canceled?
-    assert pay_subscription.on_grace_period?
-    assert pay_subscription.active?
+    refute pay_subscription.on_grace_period?
+    refute pay_subscription.active?
   end
 
   test "braintree sync canceled subscription with trial" do

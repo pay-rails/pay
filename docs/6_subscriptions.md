@@ -194,7 +194,9 @@ In addition to the API, Paddle provides a subscription [Cancel URL](https://deve
 @user.payment_processor.subscription.cancel_now!
 ```
 
-The subscription will continue to be active until the end of the period, but the customer will no longer be charged and you *cannot* resume the subscription.
+The subscription will be canceled immediately and you *cannot* resume the subscription.
+
+If you wish to refund your customer for the remaining time, you will need to calculate that and issue a refund separately.
 
 #### Swap a Subscription to another Plan
 
