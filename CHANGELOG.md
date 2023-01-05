@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Fix Braintree PaymentMethod sync reference to gateway
+
 ### 6.2.2
 
 * Fix `pause_active?` for stripe incorrectly returning `true`
