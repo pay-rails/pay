@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+# 6.2.3
+
 * Fix Braintree PaymentMethod sync reference to gateway
 
 ### 6.2.2
