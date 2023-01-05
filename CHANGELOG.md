@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* `cancel_now!` sets `ends_at` to the end of the period now. This mimics `cancel` which marks the subscription to cancel at period end.
+  If a subscription is canceled immediately, it will still be active until the end of the period that was paid for
 * Fix `pause_active?` for stripe incorrectly returning `true`
 * Refactor Braintree cancel / cancel_now to use sync
 * Fix Braintree grace period for subscriptions with "canceled" state, but paid through to a future date

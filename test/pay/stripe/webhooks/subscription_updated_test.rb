@@ -44,10 +44,20 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_equal 3.days.from_now.beginning_of_day, subscription.reload.ends_at
   end
 
-  test "subscription is updated with ended_at set" do
+  test "ended subscription sets end to current period end" do
     subscription = @pay_customer.subscriptions.create!(processor_id: @event.data.object.id, name: "default", processor_plan: "some-plan", status: "active")
     sub_end = 3.days.ago.beginning_of_day
-    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: false, ended_at: sub_end.to_i, cancel_at: nil)
+    current_period_end = Time.current.beginning_of_day
+    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: false, ended_at: sub_end.to_i, current_period_end: current_period_end.to_i)
+
+    Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
+    assert_equal current_period_end, subscription.reload.ends_at
+  end
+
+  test "ended subscription with last failed payment sets end to ended_at" do
+    subscription = @pay_customer.subscriptions.create!(processor_id: @event.data.object.id, name: "default", processor_plan: "some-plan", status: "active")
+    sub_end = 3.days.ago.beginning_of_day
+    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: false, ended_at: sub_end.to_i, latest_invoice: {status: "failed"})
 
     Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
     assert_equal sub_end, subscription.reload.ends_at

@@ -106,6 +106,10 @@ module Pay
       end
 
       def resume
+        if status == "canceled"
+          raise StandardError, "You cannot resume a canceled subscription."
+        end
+
         unless on_grace_period?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end

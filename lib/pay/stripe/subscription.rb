@@ -71,7 +71,11 @@ module Pay
 
         attributes[:ends_at] = if object.ended_at
           # Fully cancelled subscription
-          Time.at(object.ended_at)
+          if object.latest_invoice&.status == "paid"
+            Time.at(object.current_period_end)
+          else
+            Time.at(object.ended_at)
+          end
         elsif object.cancel_at
           # subscription cancelling in the future
           Time.at(object.cancel_at)
@@ -223,6 +227,10 @@ module Pay
       end
 
       def resume
+        if status == "canceled"
+          raise StandardError, "You cannot resume a canceled subscription."
+        end
+
         unless on_grace_period? || paused?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end

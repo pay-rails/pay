@@ -194,10 +194,7 @@ In addition to the API, Paddle provides a subscription [Cancel URL](https://deve
 @user.payment_processor.subscription.cancel_now!
 ```
 
-The customer will no longer be charged and you *cannot* resume the subscription.
-
-For Stripe subscriptions, the subscription will continue to be active until the end of the period.
-For Braintree subscriptions, the subscription will continue to be active until the end of the period.
+The subscription will continue to be active until the end of the period, but the customer will no longer be charged and you *cannot* resume the subscription.
 
 #### Swap a Subscription to another Plan
 
