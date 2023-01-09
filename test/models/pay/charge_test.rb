@@ -5,6 +5,22 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert_equal Pay::Customer, pay_charges(:stripe).customer.class
   end
 
+  test "braintree scope" do
+    assert Pay::Charge.braintree.is_a?(ActiveRecord::Relation)
+  end
+
+  test "stripe scope" do
+    assert Pay::Charge.stripe.is_a?(ActiveRecord::Relation)
+  end
+
+  test "paddle scope" do
+    assert Pay::Charge.paddle.is_a?(ActiveRecord::Relation)
+  end
+
+  test "fake processor scope" do
+    assert Pay::Charge.fake_processor.is_a?(ActiveRecord::Relation)
+  end
+
   test "charge belongs to subscription" do
     assert_equal pay_subscriptions(:stripe), pay_charges(:stripe).subscription
   end
