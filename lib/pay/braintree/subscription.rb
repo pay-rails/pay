@@ -28,6 +28,9 @@ module Pay
         pay_customer = Pay::Customer.find_by(processor: :braintree, processor_id: payment_method.customer_id)
         return unless pay_customer
 
+        # Sync the PaymentMethod since we've got it
+        pay_customer.save_payment_method(payment_method, default: payment_method.default?)
+
         attributes = {
           created_at: object.created_at,
           current_period_end: object.billing_period_end_date,
