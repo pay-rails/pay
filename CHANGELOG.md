@@ -2,9 +2,14 @@
 
 ### Unreleased
 
-* Set `created_at` on Braintree charges to match transaction created_at
+### 6.2.4
 
-# 6.2.3
+* Set `created_at` on Braintree charges to match transaction created_at
+* Sync Braintree payment method during subscription sync since we already have to look it up
+* Handle missing Braintree subscription when syncing charge
+* Fix `Pay::Charge.payment_processor` scopes to join the customers table
+
+### 6.2.3
 
 * Fix Braintree PaymentMethod sync reference to gateway
 
