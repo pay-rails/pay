@@ -50,7 +50,7 @@ module Pay
         customer.processor == processor_name
       end
 
-      scope processor_name, -> { where(processor: processor_name) }
+      scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
     end
 
     delegate :capture, :credit_note!, :credit_notes, to: :payment_processor
