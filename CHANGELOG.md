@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Set `created_at` on Braintree charges to match transaction created_at
+
 # 6.2.3
 
 * Fix Braintree PaymentMethod sync reference to gateway
