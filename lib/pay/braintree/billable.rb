@@ -179,8 +179,12 @@ module Pay
         # Associate charge with subscription if we can
         if transaction.subscription_id
           pay_subscription = pay_customer.subscriptions.find_by(processor_id: transaction.subscription_id)
-          attrs[:subscription] = pay_subscription
-          attrs[:metadata] = pay_subscription.metadata
+          pay_subscription ||= Pay::Braintree::Subscription.sync(transaction.subscription_id)
+
+          if pay_subscription
+            attrs[:subscription] = pay_subscription
+            attrs[:metadata] = pay_subscription.metadata
+          end
         end
 
         charge = pay_customer.charges.find_or_initialize_by(processor_id: transaction.id)
