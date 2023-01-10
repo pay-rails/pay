@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* Add `unpaid` scope to Pay::Subscription
+* Add `retry_unpaid_subscriptions!` to Pay::Customer for retrying Stripe subscriptions
+
 ### 6.2.4
 
 * Set `created_at` on Braintree charges to match transaction created_at
