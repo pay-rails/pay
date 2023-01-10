@@ -97,5 +97,9 @@ module Pay
     def retry_past_due_subscriptions!
       subscriptions.past_due.each(&:retry_failed_payment)
     end
+
+    def retry_unpaid_subscriptions!
+      subscriptions.unpaid.each(&:retry_failed_payment)
+    end
   end
 end
