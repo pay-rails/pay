@@ -25,6 +25,7 @@ module Pay
       autoload :SubscriptionDeleted, "pay/stripe/webhooks/subscription_deleted"
       autoload :SubscriptionRenewing, "pay/stripe/webhooks/subscription_renewing"
       autoload :SubscriptionUpdated, "pay/stripe/webhooks/subscription_updated"
+      autoload :SubscriptionTrialWillEnd, "pay/stripe/webhooks/subscription_trial_will_end"
     end
 
     extend Env
@@ -32,12 +33,12 @@ module Pay
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
 
-      Pay::Engine.version_matches?(required: "~> 7", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 7")
+      Pay::Engine.version_matches?(required: "~> 8", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 8")
     end
 
     def self.setup
       ::Stripe.api_key = private_key
-      ::Stripe.api_version = "2022-08-01"
+      ::Stripe.api_version = "2022-11-15"
 
       # Used by Stripe to identify Pay for support
       ::Stripe.set_app_info("PayRails", partner_id: "pp_partner_IqhY0UExnJYLxg", version: Pay::VERSION, url: "https://github.com/pay-rails/pay")
@@ -89,6 +90,9 @@ module Pay
 
         # When a customers subscription is canceled, we want to update our records
         events.subscribe "stripe.customer.subscription.deleted", Pay::Stripe::Webhooks::SubscriptionDeleted.new
+
+        # When a customers subscription trial period is 3 days from ending or ended immediately this event is fired
+        events.subscribe "stripe.customer.subscription.trial_will_end", Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new
 
         # Monitor changes for customer's default card changing
         events.subscribe "stripe.customer.updated", Pay::Stripe::Webhooks::CustomerUpdated.new

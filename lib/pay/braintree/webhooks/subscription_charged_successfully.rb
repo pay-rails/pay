@@ -11,11 +11,11 @@ module Pay
           pay_subscription = Pay::Subscription.find_by_processor_and_id(:braintree, subscription.id)
           return unless pay_subscription.present?
 
-          pay_customer = pay_subscription.customer
-          pay_charge = Pay::Braintree::Billable.new(pay_customer).save_transaction(subscription.transactions.first)
+          charge = subscription.transactions.first
+          pay_charge = Pay::Braintree::Charge.sync(charge.id, object: charge)
 
           if pay_charge && Pay.send_email?(:receipt, pay_charge)
-            Pay.mailer.with(pay_customer: pay_customer, pay_charge: pay_charge).receipt.deliver_later
+            Pay.mailer.with(pay_customer: pay_subscription.customer, pay_charge: pay_charge).receipt.deliver_later
           end
         end
       end

@@ -5,17 +5,8 @@ class Pay::Braintree::Webhooks::SubscriptionCanceledTest < ActiveSupport::TestCa
     @event = braintree_event "subscription_cancelled"
   end
 
-  test "it sets ends_at on the subscription" do
-    pay_customer = pay_customers(:braintree)
-    pay_customer.update(processor_id: @event.subscription.transactions.first.customer_details.id)
-    subscription = pay_customer.subscriptions.create!(
-      processor_id: @event.subscription.id,
-      name: "default",
-      processor_plan: "some-plan",
-      status: "active"
-    )
-
+  test "braintree syncs subscription on cancelled webhook" do
+    Pay::Braintree::Subscription.expects(:sync)
     Pay::Braintree::Webhooks::SubscriptionCanceled.new.call(@event)
-    assert subscription.reload.cancelled?
   end
 end

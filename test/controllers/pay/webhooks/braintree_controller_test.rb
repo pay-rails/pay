@@ -17,6 +17,7 @@ module Pay
       params = fake_event "braintree/subscription_charged_successfully"
 
       pay_customer = pay_customers(:braintree)
+      pay_customer.update(processor_id: "108696401")
       pay_customer.subscriptions.create!(
         processor_id: "f6rnpm",
         processor_plan: "default",

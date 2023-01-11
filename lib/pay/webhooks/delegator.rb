@@ -27,7 +27,7 @@ module Pay
 
       # Unsubscribe
       def unsubscribe(name)
-        backend.unsubscribe name
+        backend.unsubscribe name_with_namespace(name)
       end
 
       # Called to process an event

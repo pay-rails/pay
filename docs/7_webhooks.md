@@ -58,13 +58,13 @@ Since we support multiple payment providers, each event type is prefixed with th
 To add your own webhook listener, you can simply subscribe to the event type.
 
 ```ruby
-Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", MyChargeSucceededProcessor.new
-
 class MyChargeSucceededProcessor
   def call(event)
     # do your processing here
   end
 end
+
+Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", MyChargeSucceededProcessor.new
 ```
 
 ### Unsubscribing from a webhook listener

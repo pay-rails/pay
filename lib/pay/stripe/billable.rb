@@ -57,10 +57,7 @@ module Pay
         end
 
         if payment_method_token?
-          payment_method = ::Stripe::PaymentMethod.attach(payment_method_token, {customer: stripe_customer.id}, stripe_options)
-          pay_payment_method = save_payment_method(payment_method, default: false)
-          pay_payment_method.make_default!
-
+          add_payment_method(payment_method_token, default: true)
           pay_customer.payment_method_token = nil
         end
 
@@ -89,13 +86,14 @@ module Pay
           confirm: true,
           currency: "usd",
           customer: processor_id,
+          expand: ["latest_charge.refunds"],
           payment_method: payment_method&.processor_id
         }.merge(options)
 
         payment_intent = ::Stripe::PaymentIntent.create(args, stripe_options)
         Pay::Payment.new(payment_intent).validate
 
-        charge = payment_intent.charges.first
+        charge = payment_intent.latest_charge
         Pay::Stripe::Charge.sync(charge.id, object: charge)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -105,12 +103,8 @@ module Pay
         quantity = options.delete(:quantity)
         opts = {
           expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge"],
-          items: [plan: plan, quantity: quantity],
-          off_session: true
+          items: [plan: plan, quantity: quantity]
         }.merge(options)
-
-        # Inherit trial from plan unless trial override was specified
-        opts[:trial_from_plan] = true unless opts[:trial_period_days]
 
         # Load the Stripe customer to verify it exists and update payment method if needed
         opts[:customer] = customer.id
@@ -190,9 +184,10 @@ module Pay
         stripe_sub.trial_end.present? ? Time.at(stripe_sub.trial_end) : nil
       end
 
-      # Syncs a customer's subscriptions from Stripe to the database
-      def sync_subscriptions
-        subscriptions = ::Stripe::Subscription.list({customer: customer}, stripe_options)
+      # Syncs a customer's subscriptions from Stripe to the database.
+      # Note that by default canceled subscriptions are NOT returned by Stripe. In order to include them, use `sync_subscriptions(status: "all")`.
+      def sync_subscriptions(**options)
+        subscriptions = ::Stripe::Subscription.list(options.merge(customer: customer), stripe_options)
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id)
         end

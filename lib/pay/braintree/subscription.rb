@@ -4,8 +4,9 @@ module Pay
       attr_reader :pay_subscription
 
       delegate :active?,
-        :customer,
         :canceled?,
+        :on_grace_period?,
+        :customer,
         :ends_at,
         :name,
         :on_trial?,
@@ -19,6 +20,54 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
+      def self.sync(subscription_id, object: nil, name: nil, try: 0, retries: 1)
+        object ||= Pay.braintree_gateway.subscription.find(subscription_id)
+
+        # Retrieve Pay::Customer
+        payment_method = Pay.braintree_gateway.payment_method.find(object.payment_method_token)
+        pay_customer = Pay::Customer.find_by(processor: :braintree, processor_id: payment_method.customer_id)
+        return unless pay_customer
+
+        # Sync the PaymentMethod since we've got it
+        pay_customer.save_payment_method(payment_method, default: payment_method.default?)
+
+        attributes = {
+          created_at: object.created_at,
+          current_period_end: object.billing_period_end_date,
+          current_period_start: object.billing_period_start_date,
+          processor_plan: object.plan_id,
+          status: object.status.underscore,
+          trial_ends_at: (object.created_at + object.trial_duration.send(object.trial_duration_unit) if object.trial_period)
+        }
+
+        # Canceled subscriptions should have access through the paid_through_date or updated_at
+        if object.status == "Canceled"
+          attributes[:ends_at] = object.updated_at
+
+        # Set grace period for subscriptions that are marked to be canceled
+        elsif object.status == "Active" && object.number_of_billing_cycles
+          attributes[:ends_at] = object.paid_through_date.end_of_day
+        end
+
+        pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
+        if pay_subscription
+          pay_subscription.with_lock { pay_subscription.update!(attributes) }
+        else
+          name ||= Pay.default_product_name
+          pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
+        end
+
+        pay_subscription
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
+        end
+      end
+
       def initialize(pay_subscription)
         @pay_subscription = pay_subscription
       end
@@ -28,35 +77,27 @@ module Pay
       end
 
       def cancel(**options)
-        subscription = processor_subscription
-
-        if on_trial?
-          gateway.subscription.cancel(processor_subscription.id)
-          pay_subscription.update(status: :canceled, ends_at: trial_ends_at)
+        result = if on_trial?
+          gateway.subscription.cancel(processor_id)
         else
           gateway.subscription.update(subscription.id, {
             number_of_billing_cycles: subscription.current_billing_cycle
           })
-          pay_subscription.update(status: :canceled, ends_at: subscription.billing_period_end_date.to_date)
         end
+        pay_subscription.sync!(object: result.subscription)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
 
       def cancel_now!(**options)
-        gateway.subscription.cancel(processor_subscription.id)
-        ends_at = Time.current
-        pay_subscription.update!(
-          status: :canceled,
-          trial_ends_at: (ends_at if pay_subscription.trial_ends_at?),
-          ends_at: ends_at
-        )
+        result = gateway.subscription.cancel(processor_id)
+        pay_subscription.sync!(object: result.subscription)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
 
-      def on_grace_period?
-        canceled? && Time.current < ends_at
+      def change_quantity(quantity, **options)
+        raise NotImplementedError, "Braintree does not support setting quantity on subscriptions"
       end
 
       def paused?
@@ -96,7 +137,7 @@ module Pay
         raise Pay::Braintree::Error, e
       end
 
-      def swap(plan)
+      def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
         if on_grace_period? && processor_plan == plan
@@ -128,8 +169,23 @@ module Pay
           }
         })
         raise Error, "Braintree failed to swap plans: #{result.message}" unless result.success?
+
+        pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
+      end
+
+      # Retries the latest invoice for a Past Due subscription
+      def retry_failed_payment
+        result = gateway.subscription.retry_charge(
+          processor_id,
+          nil, # amount if different
+          true # submit for settlement
+        )
+
+        if result.success?
+          pay_subscription.update(status: :active)
+        end
       end
 
       private
@@ -197,7 +253,7 @@ module Pay
               add: [
                 {
                   inherited_from_id: "plan-credit",
-                  amount: discount.amount,
+                  amount: discount.amount.round(2),
                   number_of_billing_cycles: discount.number_of_billing_cycles
                 }
               ]
@@ -205,9 +261,10 @@ module Pay
           }
         end
 
-        cancel_now!
-
+        # If subscribe fails we will raise a Pay::Braintree::Error and not cancel the current subscription
         customer.subscribe(**options.merge(name: name, plan: plan.id))
+
+        cancel_now!
       end
     end
   end

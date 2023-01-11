@@ -9,6 +9,23 @@ module Pay
         @pay_payment_method = pay_payment_method
       end
 
+      # Syncs a PaymentIntent's payment method to the database
+      def self.sync_payment_intent(id, stripe_account: nil)
+        payment_intent = ::Stripe::PaymentIntent.retrieve({id: id, expand: ["payment_method"]}, {stripe_account: stripe_account}.compact)
+        payment_method = payment_intent.payment_method
+        return unless payment_method
+        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method)
+      end
+
+      # Syncs a SetupIntent's payment method to the database
+      def self.sync_setup_intent(id, stripe_account: nil)
+        setup_intent = ::Stripe::SetupIntent.retrieve({id: id, expand: ["payment_method"]}, {stripe_account: stripe_account}.compact)
+        payment_method = setup_intent.payment_method
+        return unless payment_method
+        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method)
+      end
+
+      # Syncs PaymentMethod objects from Stripe
       def self.sync(id, object: nil, stripe_account: nil, try: 0, retries: 1)
         object ||= ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
 
@@ -24,6 +41,14 @@ module Pay
         pay_payment_method = pay_customer.payment_methods.where(processor_id: object.id).first_or_initialize
         pay_payment_method.update!(attributes)
         pay_payment_method
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
+        end
       end
 
       # Extracts payment method details from a Stripe::PaymentMethod object

@@ -37,6 +37,10 @@ module Pay
   mattr_accessor :business_logo
   mattr_accessor :support_email
 
+  def self.support_email=(value)
+    @@support_email = value.is_a?(Mail::Address) ? value : Mail::Address.new(value)
+  end
+
   mattr_accessor :automount_routes
   @@automount_routes = true
 
@@ -62,6 +66,8 @@ module Pay
   @@emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
+  @@emails.subscription_trial_will_end = true
+  @@emails.subscription_trial_ended = true
 
   @@mailer = "Pay::UserMailer"
 
@@ -76,6 +82,28 @@ module Pay
 
   mattr_accessor :parent_mailer
   @@parent_mailer = "Pay::ApplicationMailer"
+
+  # Should return a hash of arguments for the `mail` call in UserMailer
+  mattr_accessor :mail_arguments
+  @@mail_arguments = -> {
+    {
+      to: instance_exec(&Pay.mail_to),
+      subject: default_i18n_subject(application: Pay.application_name)
+    }
+  }
+
+  # Should return String or Array of email recipients
+  mattr_accessor :mail_to
+  @@mail_to = -> {
+    if ActionMailer::Base.respond_to?(:email_address_with_name)
+      ActionMailer::Base.email_address_with_name(params[:pay_customer].email, params[:pay_customer].customer_name)
+    else
+      Mail::Address.new.tap do |builder|
+        builder.address = params[:pay_customer].email
+        builder.display_name = params[:pay_customer].customer_name.presence
+      end.to_s
+    end
+  }
 
   def self.setup
     yield self

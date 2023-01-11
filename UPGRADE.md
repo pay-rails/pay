@@ -2,6 +2,47 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## **Pay 5.0 to 6.0**
+This version adds support for accessing the start and end of the current billing period of a subscription. This currently only works with Stripe subscriptions.
+
+Fields changed:
+- Adds `current_period_start` and `current_period_end` to `Pay::Subscription`
+- Adds `metered` to `Pay::Subscription` for metered billing
+- Adds `pause_behavior`, `pause_starts_at`, and `pause_resumes_at` to `Pay::Subscription`
+
+Backfills metered and paused columns from data json column
+
+To upgrade you must add and run the following database migration.
+
+```ruby
+class UpgradeToPayVersion6 < ActiveRecord::Migration[6.0]
+  def change
+    add_column :pay_subscriptions, :current_period_start, :datetime
+    add_column :pay_subscriptions, :current_period_end, :datetime
+
+    add_column :pay_subscriptions, :metered, :boolean
+    add_column :pay_subscriptions, :pause_behavior, :string
+    add_column :pay_subscriptions, :pause_starts_at, :datetime
+    add_column :pay_subscriptions, :pause_resumes_at, :datetime
+
+    add_index :pay_subscriptions, :metered
+    add_index :pay_subscriptions, :pause_starts_at
+
+    Pay::Subscription.find_each do |pay_subscription|
+      pay_subscription.update(
+        metered: pay_subscription.data&.dig("metered"),
+        pause_behavior: pay_subscription.data&.dig("pause_behavior"),
+        pause_starts_at: pay_subscription.data&.dig("paddle_paused_from"),
+        pause_resumes_at: pay_subscription.data&.dig("pause_resumes_at")
+      )
+    end
+  end
+end
+```
+
+Stripe subscriptions created before this upgrade will gain the `current_period_start` and `current_period_end` attributes the next time they are synced. You can manually sync a Stripe subscription by running `Pay::Stripe::Subscription.sync("STRIPE_SUBSCRIPTION_ID")`
+
+
 ## **Pay 3.0 to 4.0**
 
 This is a major change to add Stripe tax support, Stripe metered billing, new configuration options for payment processors and emails, syncing additional customer attributes to Stripe and Braintree, and improving the architecture of Pay.
@@ -17,7 +58,13 @@ This is a major change to add Stripe tax support, Stripe metered billing, new co
 
 ### **Method Additions and Changes**
 
-In an effort to keep a consistant naming convention, the email parameters of `subscription` and `charge` have been updated to have `pay_` prepended to them (`pay_subscription` and `pay_charge` respectively). If you are directly using any of the built in emails, you will want to be sure to update your parameter names to the updated names.
+In an effort to keep a consistant naming convention, the email parameters of `subscription` and `charge` have been updated to have `pay_` prepended to them (`pay_subscription` and `pay_charge` respectively). If you are directly using any of the built in emails or created custom Pay views, you will want to be sure to update your parameter names to the updated names.
+
+You'll need to replace all references to:
+```ruby
+params[:charge] with params[:pay_charge]
+params[:subscription] with params[:pay_subscription]
+```
 
 The `send_emails` configuration variable has been removed from Pay and replaced by the new configuration system which is discussed below. `Pay.send_emails` is primarily used internally, but if you have been using it in your application code you will need to update those areas to use the new method calls from the email configuration settings. For example, to check if the receipt email should be sent you can now call `Pay.send_email?(:receipt)`. If your email configuration option uses a lambda, you can pass any additional arguments to `send_email?` like so `Pay.send_email?(:receipt, pay_charge)` for use in the lambda.
 

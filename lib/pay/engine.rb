@@ -17,7 +17,9 @@ module Pay
       end
     end
 
-    initializer "pay.webhooks" do
+    # Add webhook subscribers before app initializers define extras
+    # This keeps the processing in order so that changes have happened before user-defined webhook processors
+    config.before_initialize do
       Pay::Stripe.configure_webhooks if Pay::Stripe.enabled?
       Pay::Braintree.configure_webhooks if Pay::Braintree.enabled?
       Pay::Paddle.configure_webhooks if Pay::Paddle.enabled?

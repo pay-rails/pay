@@ -44,12 +44,16 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can create a subscription" do
-    @pay_customer.payment_method_token = payment_method
-    @pay_customer.subscribe(name: "default", plan: "small-monthly")
+    travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
+      # We select the subscription by newest created_at, so we want to make sure existing subscriptions are in the past
+      @pay_customer.subscriptions.update_all(created_at: 1.hour.ago)
 
-    assert @pay_customer.subscribed?
-    assert_equal "default", @pay_customer.subscription.name
-    assert_equal "small-monthly", @pay_customer.subscription.processor_plan
+      @pay_customer.payment_method_token = payment_method
+      pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
+
+      assert @pay_customer.subscribed?
+      assert_equal pay_subscription, @pay_customer.subscription
+    end
   end
 
   test "stripe subscribe also saves initial charge" do
@@ -400,10 +404,10 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
       @pay_customer.payment_method_token = payment_method
       @pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
 
-      @pay_subscription.pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now.to_i)
+      @pay_subscription.pause(behavior: "void", resumes_at: 1.month.from_now.to_i)
 
       assert @pay_subscription.paused?
-      assert_equal "mark_uncollectible", @pay_subscription.pause_behavior
+      assert_equal "void", @pay_subscription.pause_behavior
       assert @pay_subscription.pause_resumes_at > 21.days.from_now
 
       @pay_subscription.resume

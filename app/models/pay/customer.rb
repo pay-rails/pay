@@ -46,7 +46,7 @@ module Pay
     end
 
     def subscription(name: Pay.default_product_name)
-      subscriptions.loaded? ? subscriptions.reverse.detect { |s| s.name == name } : subscriptions.for_name(name).last
+      subscriptions.order(created_at: :desc).for_name(name).first
     end
 
     def subscribed?(name: Pay.default_product_name, processor_plan: nil)
@@ -91,6 +91,12 @@ module Pay
 
       # If these match, consider it a generic trial
       subscription.trial_ends_at == subscription.ends_at
+    end
+
+    # Attempts to pay all past_due or unpaid subscriptions
+    # Pass in `statuses: []` if you would like to only include specific subscription statuses
+    def retry_past_due_subscriptions!(status: [:past_due, :unpaid])
+      subscriptions.where(status: Array.wrap(status)).each(&:retry_failed_payment)
     end
   end
 end

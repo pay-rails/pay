@@ -1,4 +1,101 @@
+ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
+
 ### Unreleased
+
+* Add `unpaid` scope to Pay::Subscription
+* Include `unpaid` subscriptions by default when using `retry_past_due_subscriptions!`
+
+### 6.2.4
+
+* Set `created_at` on Braintree charges to match transaction created_at
+* Sync Braintree payment method during subscription sync since we already have to look it up
+* Handle missing Braintree subscription when syncing charge
+* Fix `Pay::Charge.payment_processor` scopes to join the customers table
+
+### 6.2.3
+
+* Fix Braintree PaymentMethod sync reference to gateway
+
+### 6.2.2
+
+* Fix `pause_active?` for stripe incorrectly returning `true`
+* Refactor Braintree cancel / cancel_now to use sync
+
+### 6.2.1
+
+* Use `paid_through_date` for `ends_at` with canceled subscriptions
+
+### 6.2.0
+
+* Add `Pay::Braintree::Subscription.sync`
+* Add `Pay::Braintree::Charge.sync`
+* Switch Braintree webhooks to use `sync`
+* Automatically save first charge when subscribing with Braintree
+* Add `email` for PayPal charges and `username` for Venmo charges on Braintree
+
+### 6.1.2
+
+* Fix `refunds` missing on checkout session completed event.
+
+### 6.1.1
+
+* Cast `Pay.support_email` to `Mail::Address` instead of string. This allows us to easily parse out the address, name, etc for use in Receipts and other places.
+* Update Stripe `checkout_session.completed` webhook to sync `latest_charge` for compatibility with Stripe API `2022-11-15` changes
+
+### 6.1.0
+
+* Swapping Braintree subscriptions previously had a bug where if a user had an existing plan and was attempting to switch to a new plan, we would cancel their current plan before subscribing them to the new plan.
+  If subscribing to the new plan failed however, the user would then no longer have any plan at all. This has now been resolved by attempting to subscribe to the new plan first, which if fails will raise an error and
+  preserve the users current plan.
+* Switch `business_name` to `application_name` to receipt & mailers
+  The business name is included on receipts & refunds, but emails should show the `application_name` instead in case a business has multiple applications / products
+* Use `instance_exec` for `mail_arguments` and `mail_to` so lambda/proc has access to all mailer features
+* Add `application_name` to email subjects
+* Add links to root_url in emails
+
+### 6.0.3
+
+* Validate PaymentIntent on `swap` and `retry_failed_payment`
+
+### 6.0.2
+
+* Retrieve PaymentIntent via API to ensure it always matches the Pay Stripe API verison
+
+### 6.0.1
+
+* Handle ActiveRecord::RecordNotUnique error during sync and retry
+* Add retries to Stripe PaymentMethod.sync
+* Fix deprecation warning in tests #735
+
+### 6.0.0
+
+* [Breaking] Require Stripe 8.x
+* [Breaking] Update Stripe API to 2022-11-15
+* [Breaking] `paddle_paused_from` is now `pause_starts_at:datetime` column
+* [Breaking] `active` scope no longer includes paused subscriptions
+* [Breaking] Stripe paused subscriptions have changed:
+  `pause_behavior=void` subscriptions are now considered `active?` until the end of the current period. This is intended for not providing services for a certain period of time.
+  `pause_behavior=mark_uncollectible` is considered active. This is intended for offering services for free.
+  `pause_behavior=keep_as_draft` is considered active. This is intended for offering serivces for free but collecting payments later.
+* [Breaking] Stripe subscriptions now `always_invoice` when swapping plans. Previously, swap would use `proration_behavior: "create_prorations"`. This caused some confusion when users upgraded plans and weren't charged until the next period. The default will now automatically invoice immediately.
+* Adds `pause_behavior:string` column
+* Adds `pause_resumes_at:datetime` column
+* Adds `metered:boolean` column for easier querying / indexing
+* Adds `active_or_paused` scope to retrieve active or paused subscriptions
+* Remove `off_session: true` default for Stripe `subscribe`. - @excid3
+  Removing this allows Stripe to attach the PaymentMethod to the Customer once confirmed. You can still pass this option in when subscribing if needed. New subscriptions typically are initiated by users, which shouldn't provide this parameter as true.
+* Add `Pay::Stripe::PaymentMethod.sync_payment_intent` to sync PaymentMethod from PaymentIntent objects
+* Add `Pay::Stripe::PaymentMethod.sync_setup_intent` to sync PaymentMethod from SetupIntent objects
+* Add `Pay::Subscription#retry_failed_payment` for retrying `past_due` subscriptions with failed payments
+* Fix `swap` from always setting status to `active`. Failed swaps with Stripe will be set to `past_due`.
+
+### 5.0.4
+
+* Prepend Pay webhook listeners so they run before user-defined webhook listeners - @excid3 @cjilbert504
+  This is important because a user might define a webhook listener that expects a subscription to be deleted and if the Pay webhook hasn't run yet, the subscription would not be canceled when the user-defined webhook runs.
+* Fix Webhook delegator unsubscribe - @excid3 @cjilbert504
+
+* Fix non-deterministic subscription - @feliperaul @excid3
 
 ### 5.0.3
 

@@ -108,7 +108,7 @@ module Pay
         result = gateway.subscription.create(subscription_options)
         raise Pay::Braintree::Error, result unless result.success?
 
-        pay_customer.subscriptions.create!(
+        subscription = pay_customer.subscriptions.create!(
           name: name,
           processor_id: result.subscription.id,
           processor_plan: plan,
@@ -117,6 +117,12 @@ module Pay
           ends_at: nil,
           metadata: metadata
         )
+
+        if (charge = result.subscription.transactions.first)
+          save_transaction(charge)
+        end
+
+        subscription
       rescue ::Braintree::AuthorizationError => e
         raise Pay::Braintree::AuthorizationError, e
       rescue ::Braintree::BraintreeError => e
@@ -168,12 +174,17 @@ module Pay
         attrs[:metadata] = transaction.custom_fields
         attrs[:currency] = transaction.currency_iso_code
         attrs[:application_fee_amount] = transaction.service_fee_amount
+        attrs[:created_at] = transaction.created_at
 
         # Associate charge with subscription if we can
         if transaction.subscription_id
           pay_subscription = pay_customer.subscriptions.find_by(processor_id: transaction.subscription_id)
-          attrs[:subscription] = pay_subscription
-          attrs[:metadata] = pay_subscription.metadata
+          pay_subscription ||= Pay::Braintree::Subscription.sync(transaction.subscription_id)
+
+          if pay_subscription
+            attrs[:subscription] = pay_subscription
+            attrs[:metadata] = pay_subscription.metadata
+          end
         end
 
         charge = pay_customer.charges.find_or_initialize_by(processor_id: transaction.id)
@@ -268,6 +279,7 @@ module Pay
           {
             payment_method_type: :paypal,
             brand: "PayPal",
+            email: transaction.paypal_details.payer_email,
             last4: transaction.paypal_details.payer_email,
             exp_month: nil,
             exp_year: nil
@@ -277,6 +289,7 @@ module Pay
           {
             payment_method_type: :venmo,
             brand: "Venmo",
+            username: transaction.venmo_account_details.username,
             last4: transaction.venmo_account_details.username,
             exp_month: nil,
             exp_year: nil

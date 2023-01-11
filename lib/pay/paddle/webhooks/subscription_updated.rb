@@ -16,7 +16,7 @@ module Pay
             pay_subscription.trial_ends_at = Time.zone.parse(event["next_bill_date"])
           when "active"
             pay_subscription.status = "active"
-            pay_subscription.paddle_paused_from = Time.zone.parse(event["paused_from"]) if event["paused_from"].present?
+            pay_subscription.pause_starts_at = Time.zone.parse(event["paused_from"]) if event["paused_from"].present?
           else
             pay_subscription.status = event["status"]
           end

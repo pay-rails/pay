@@ -17,7 +17,11 @@ jobs:
           - rails_6
           - rails_6_1
           - rails_7
-          - rails_master
+          - rails_main
+        exclude:
+          # Rails 7.1 requires Ruby 3.0 or higher
+          - ruby: '2.7'
+            gemfile: rails_main
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -32,6 +36,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler: default
           bundler-cache: true
+          rubygems: latest
       - name: StandardRb check
         run: bundle exec standardrb
       - name: Run tests
@@ -50,7 +55,8 @@ jobs:
         gemfile:
           - rails_6
           - rails_6_1
-          - rails_master
+          - rails_7
+          - rails_main
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -72,6 +78,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler: default
           bundler-cache: true
+          rubygems: latest
       - name: StandardRb check
         run: bundle exec standardrb
       - name: Run tests
@@ -90,7 +97,8 @@ jobs:
         gemfile:
           - rails_6
           - rails_6_1
-          - rails_master
+          - rails_7
+          - rails_main
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -112,6 +120,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler: default
           bundler-cache: true
+          rubygems: latest
       - name: StandardRb check
         run: bundle exec standardrb
       - name: Run tests

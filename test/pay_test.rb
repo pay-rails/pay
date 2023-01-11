@@ -129,7 +129,23 @@ class Pay::Test < ActiveSupport::TestCase
   test "can configure mailer and retrieve correct class" do
     Pay.mailer = "ApplicationMailer"
     assert_equal(Pay.mailer, ApplicationMailer)
-
+  ensure
     Pay.mailer = "Pay::UserMailer" # clean up for other tests
+  end
+
+  test "can configure mail_arguments" do
+    old_mail_arguments = Pay.mail_arguments
+    Pay.mail_arguments = ->(mailer, params) { {to: "to", cc: "cc"} }
+    assert_equal({to: "to", cc: "cc"}, Pay.mail_arguments.call("pay/receipt", {}))
+  ensure
+    Pay.mail_arguments = old_mail_arguments
+  end
+
+  test "can configure mail_to" do
+    old_mail_to = Pay.mail_to
+    Pay.mail_to = ->(mailer, params) { "user@example.org" }
+    assert_equal "user@example.org", Pay.mail_to.call("pay/receipt", {})
+  ensure
+    Pay.mail_to = old_mail_to
   end
 end

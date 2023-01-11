@@ -12,7 +12,7 @@ To subscribe a user, you can call the `subscribe` method.
 @user.payment_processor.subscribe(name: "default", plan: "monthly")
 ```
 
-You can pass additional options to go directly to the payment processor's API. For example, the `quantity` option to subscribe to a plan with for per-seat pricing.
+You can pass additional options to go directly to the payment processor's API. For example, the `quantity` option to subscribe to a plan with per-seat pricing.
 
 ```ruby
 @user.payment_processor.subscribe(name: "default", plan: "monthly", quantity: 3)
@@ -194,6 +194,10 @@ In addition to the API, Paddle provides a subscription [Cancel URL](https://deve
 @user.payment_processor.subscription.cancel_now!
 ```
 
+The subscription will be canceled immediately and you *cannot* resume the subscription.
+
+If you wish to refund your customer for the remaining time, you will need to calculate that and issue a refund separately.
+
 #### Swap a Subscription to another Plan
 
 If a user wishes to change subscription plans, you can pass in the Plan or Price ID into the `swap` method:
@@ -235,7 +239,13 @@ paused if you wish to limit any feature access within your application.
 
 ##### Pause a Stripe Subscription
 
+Stripe subscriptions have several behaviors.
+* `behavior: void` will put the subscription on a grace period until the end of the current period.
+* `behavior: keep_as_draft` will pause the subscription invoices but the subscription is still active. Use this to delay payments until later.
+* `behavior: mark_uncollectible` will pause the subscription invoices but the subscription is still active. Use this to provide free access temporarily.
+
 Calling pause with no arguments will set `behavior: "mark_uncollectible"` by default.
+
 ```ruby
 @user.payment_processor.subscription.pause
 ```
@@ -250,13 +260,63 @@ You can set this to another option as shown below.
 
 ##### Pause a Paddle Subscription
 
+Paddle will pause payments at the end of the period. The status remains `active` until the period ends with a `paused_from` value to denote when the subscription pause will take effect. When the status becomes `paused` the subscription is no longer active.
+
 ```ruby
 @user.payment_processor.subscription.pause
 ```
+
 #### Resuming a Paused Subscription
 
 ```ruby
 @user.payment_processor.subscription.resume
+```
+
+## Manually syncing subscriptions
+
+In general, you don't need to use these methods as Pay's webhooks will keep you all your subscriptions in sync automatically.
+
+However, for instance, a user returning from Stripe Checkout / Stripe Billing Portal might still see stale subscription information before the Webhook is processed, so these might come in handy.
+
+### Individual subscription
+
+```rb
+@user.payment_processor.subscription.sync!
+```
+
+### All at once
+
+There's a convenience method for syncing all subscriptions at once (currently Stripe only).
+
+```rb
+@user.payment_processor.sync_subscriptions
+```
+
+As per Stripe's docs [here](https://stripe.com/docs/api/subscriptions/list?lang=ruby), by default the list of subscriptions **will not included canceled ones**. You can, however, retrieve them like this:
+
+```rb
+@user.payment_processor.sync_subscriptions(status: "all")
+```
+
+Since subscriptions views are not frequently accessed by users, you might accept to trade off some latency for increased safety on these views, avoiding showing stale data. For instance, in your controller:
+
+```rb
+class SubscriptionsController < ApplicationController
+
+  def show
+    # This guarantees your user will always see up-to-date subscription info
+    # when returning from Stripe Checkout / Billing Portal, regardless of
+    # webhooks race conditions.
+    current_user.payment_processor.sync_subscriptions(status: "all")
+  end
+
+  def create
+    # Let's say your business model doesn't allow multiple subscriptions per
+    # user, and you want to make extra sure they are not already subscribed before showing the new subscription form.
+    current_user.payment_processor.sync_subscriptions(status: "all")
+
+    redirect_to subscription_path and return if current_user.payment_processor.subscription.active?
+  end
 ```
 
 ## Next
