@@ -393,11 +393,11 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     # (see bin/test_databases for multi-db tests).
 
     @pay_customer = pay_customers(:stripe)
-    subscription_1 = create_subscription
+    subscription_1 = create_subscription(processor_id: 1)
 
     assert_equal subscription_1, @pay_customer.subscription
 
-    subscription_2 = create_subscription(status: "canceled")
+    subscription_2 = create_subscription(status: "canceled", processor_id: 2)
 
     assert_equal subscription_2, @pay_customer.subscription
     assert_equal subscription_2, @pay_customer.subscription
