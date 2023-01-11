@@ -59,6 +59,10 @@ If all attempts are exhausted, Stripe will either leave the subscription as `pas
 
 We recommend marking subscriptions as `unpaid`. Pay treats this subscription as inactive. You can display it and allow the user to pay their outstanding invoice in order to resume their subscription.
 
+For metered billing, this is helpful since invoices aren't issued until the customer has used your product. If you allow them to resubscribe without paying the outstanding invoice, they could use your product for free. You should force them to pay the outstanding invoice instead of allowing them to start a new subscription.
+
+For standard billing, the user pre-pays for a month. They can resume the `unpaid` subscription or start a new subscription without over/under charging them.
+
 ## Next
 
 See [Credentials](2_credentials.md)
