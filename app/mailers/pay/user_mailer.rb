@@ -29,7 +29,7 @@ module Pay
     end
 
     def payment_failed
-      mail to: to
+      mail mail_arguments
     end
 
     private
