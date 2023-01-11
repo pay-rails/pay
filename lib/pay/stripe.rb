@@ -16,6 +16,7 @@ module Pay
       autoload :CustomerDeleted, "pay/stripe/webhooks/customer_deleted"
       autoload :CustomerUpdated, "pay/stripe/webhooks/customer_updated"
       autoload :PaymentActionRequired, "pay/stripe/webhooks/payment_action_required"
+      autoload :PaymentFailed, "pay/stripe/webhooks/payment_failed"
       autoload :PaymentIntentSucceeded, "pay/stripe/webhooks/payment_intent_succeeded"
       autoload :PaymentMethodAttached, "pay/stripe/webhooks/payment_method_attached"
       autoload :PaymentMethodDetached, "pay/stripe/webhooks/payment_method_detached"
@@ -77,6 +78,9 @@ module Pay
 
         # Payment action is required to process an invoice
         events.subscribe "stripe.invoice.payment_action_required", Pay::Stripe::Webhooks::PaymentActionRequired.new
+
+        # If an invoice payment fails, we want to notify the user via email to update their payment details
+        events.subscribe "stripe.invoice.payment_failed", Pay::Stripe::Webhooks::PaymentFailed.new
 
         # If a subscription is manually created on Stripe, we want to sync
         events.subscribe "stripe.customer.subscription.created", Pay::Stripe::Webhooks::SubscriptionCreated.new

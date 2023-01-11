@@ -28,6 +28,10 @@ module Pay
       mail mail_arguments
     end
 
+    def payment_failed
+      mail mail_arguments
+    end
+
     private
 
     def mail_arguments
