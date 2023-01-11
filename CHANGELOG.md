@@ -3,7 +3,7 @@
 ### Unreleased
 
 * Add `unpaid` scope to Pay::Subscription
-* Add `retry_unpaid_subscriptions!` to Pay::Customer for retrying Stripe subscriptions
+* Include `unpaid` subscriptions by default when using `retry_past_due_subscriptions!`
 
 ### 6.2.4
 
