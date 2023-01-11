@@ -15,7 +15,7 @@ module Pay
             Pay.mailer.with(
               pay_customer: pay_subscription.customer,
               stripe_invoice: object
-            ).payment_failed.deliver_later
+            ).payment_failed.deliver_now
           end
         end
       end

@@ -11,10 +11,9 @@ class Pay::Stripe::Webhooks::PaymentFailedTest < ActiveSupport::TestCase
     Pay.emails.payment_failed = true # Default is true, setting here for clarity
 
     create_subscription(processor_id: @payment_failed_event.data.object.subscription)
-    mailer = Pay::Stripe::Webhooks::PaymentFailed.new.call(@payment_failed_event)
+    mail = Pay::Stripe::Webhooks::PaymentFailed.new.call(@payment_failed_event)
 
-    assert mailer.arguments.include?("payment_failed")
-    assert_enqueued_emails 1
+    assert_equal I18n.t("pay.user_mailer.payment_failed.subject", application: Pay.application_name), mail.subject
   end
 
   private
