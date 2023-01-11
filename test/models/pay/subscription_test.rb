@@ -393,26 +393,22 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     # (see bin/test_databases for multi-db tests).
 
     @pay_customer = pay_customers(:stripe)
-
     subscription_1 = create_subscription
 
-    assert_equal @pay_customer.subscription, subscription_1
+    assert_equal subscription_1, @pay_customer.subscription
 
     subscription_2 = create_subscription(status: "canceled")
 
-    assert_equal @pay_customer.subscription, subscription_2
-
-    assert_equal @pay_customer.subscription, subscription_2
+    assert_equal subscription_2, @pay_customer.subscription
+    assert_equal subscription_2, @pay_customer.subscription
 
     subscription_1.update_columns(status: "canceled")
 
     @pay_customer.reload
-
     assert_not @pay_customer.subscriptions.loaded?
 
     @pay_customer.subscriptions.load
-
-    assert_equal @pay_customer.subscription, subscription_2
+    assert_equal subscription_2, @pay_customer.subscription
   end
 
   private
