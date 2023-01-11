@@ -46,7 +46,7 @@ module Pay
     end
 
     def subscription(name: Pay.default_product_name)
-      subscriptions.order(id: :desc).for_name(name).first
+      subscriptions.order(created_at: :desc).for_name(name).first
     end
 
     def subscribed?(name: Pay.default_product_name, processor_plan: nil)
