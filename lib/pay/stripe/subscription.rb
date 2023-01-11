@@ -305,10 +305,10 @@ module Pay
         payment_intent_id ||= subscription.latest_invoice.payment_intent.id
         payment_intent = ::Stripe::PaymentIntent.retrieve({id: payment_intent_id}, stripe_options)
 
-        if payment_intent.status == "requires_payment_method"
-          payment_intent = ::Stripe::PaymentIntent.confirm(payment_intent_id, {payment_method: pay_subscription.customer.default_payment_method.processor_id}, stripe_options)
+        payment_intent = if payment_intent.status == "requires_payment_method"
+          ::Stripe::PaymentIntent.confirm(payment_intent_id, {payment_method: pay_subscription.customer.default_payment_method.processor_id}, stripe_options)
         else
-          payment_intent = ::Stripe::PaymentIntent.confirm(payment_intent_id, stripe_options)
+          ::Stripe::PaymentIntent.confirm(payment_intent_id, stripe_options)
         end
         Pay::Payment.new(payment_intent).validate
       rescue ::Stripe::StripeError => e
