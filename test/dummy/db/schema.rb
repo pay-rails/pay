@@ -84,8 +84,8 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.decimal "application_fee_percent", precision: 8, scale: 2
     t.json "metadata"
     t.json "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", null: false, precision: 6
+    t.datetime "updated_at", null: false, precision: 6
     t.boolean "metered"
     t.string "pause_behavior"
     t.datetime "pause_starts_at"
