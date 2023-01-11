@@ -44,10 +44,10 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can create a subscription" do
-    # We select the subscription by newest created_at, so we want to make sure existing subscriptions are in the past
-    @pay_customer.subscriptions.update_all(created_at: 1.hour.ago)
-
     travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
+      # We select the subscription by newest created_at, so we want to make sure existing subscriptions are in the past
+      @pay_customer.subscriptions.update_all(created_at: 1.hour.ago)
+
       @pay_customer.payment_method_token = payment_method
       pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
 
