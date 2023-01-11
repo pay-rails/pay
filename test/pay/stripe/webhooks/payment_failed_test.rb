@@ -8,12 +8,13 @@ class Pay::Stripe::Webhooks::PaymentFailedTest < ActiveSupport::TestCase
   end
 
   test "customer should receive payment failed email if setting is enabled" do
-    Pay.emails.payment_failed = true # Default is true, setting here for clarity
+    Pay.emails.stub(:payment_failed, true) do
 
-    create_subscription(processor_id: @payment_failed_event.data.object.subscription)
-    mail = Pay::Stripe::Webhooks::PaymentFailed.new.call(@payment_failed_event)
+      create_subscription(processor_id: @payment_failed_event.data.object.subscription)
+      mail = Pay::Stripe::Webhooks::PaymentFailed.new.call(@payment_failed_event)
 
-    assert_equal I18n.t("pay.user_mailer.payment_failed.subject", application: Pay.application_name), mail.subject
+      assert_equal I18n.t("pay.user_mailer.payment_failed.subject", application: Pay.application_name), mail.subject
+    end
   end
 
   private
