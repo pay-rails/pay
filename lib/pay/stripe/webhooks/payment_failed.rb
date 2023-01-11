@@ -13,7 +13,8 @@ module Pay
 
           if Pay.send_email?(:payment_failed, pay_subscription)
             Pay.mailer.with(
-              pay_customer: pay_subscription.customer
+              pay_customer: pay_subscription.customer,
+              stripe_invoice: object
             ).payment_failed.deliver_later
           end
         end
