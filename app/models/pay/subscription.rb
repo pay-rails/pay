@@ -18,7 +18,6 @@ module Pay
     scope :incomplete, -> { where(status: :incomplete) }
     scope :past_due, -> { where(status: :past_due) }
     scope :unpaid, -> { where(status: :unpaid) }
-    scope :past_due_or_unpaid, -> { where(status: [:past_due, :unpaid]) }
     scope :metered, -> { where(metered: true) }
     scope :with_active_customer, -> { joins(:customer).merge(Customer.active) }
     scope :with_deleted_customer, -> { joins(:customer).merge(Customer.deleted) }
@@ -131,6 +130,10 @@ module Pay
 
     def past_due?
       status == "past_due"
+    end
+
+    def unpaid?
+      status == "unpaid"
     end
 
     def incomplete?

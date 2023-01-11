@@ -2,8 +2,12 @@
 
 ### Unreleased
 
+### 6.3.0
+
+* `subscription` now sorts by `created_at` to find the latest subscription. This adds compatibility for UUID primary keys on pay tables.
 * Add `unpaid` scope to Pay::Subscription
-* Include `unpaid` subscriptions by default when using `retry_past_due_subscriptions!`
+* Add `pay_open_invoices` to Pay::Stripe::Subscription
+  If you have a subscription with open invoices (like an unpaid metered billing subscription), you can use this method to pay the open invoices and allow the user to resume the subscription
 
 ### 6.2.4
 

@@ -93,10 +93,10 @@ module Pay
       subscription.trial_ends_at == subscription.ends_at
     end
 
-    # Attempts to pay all past_due or unpaid subscriptions
+    # Attempts to pay all past_due subscription invoices to bring them back to active state
     # Pass in `statuses: []` if you would like to only include specific subscription statuses
-    def retry_past_due_subscriptions!(status: [:past_due, :unpaid])
-      subscriptions.where(status: Array.wrap(status)).each(&:retry_failed_payment)
+    def retry_past_due_subscriptions!(status: [:past_due])
+      subscriptions.where(status: Array.wrap(status)).each(&:retry_failed_payments)
     end
   end
 end

@@ -51,6 +51,14 @@ Stripe Checkout can also accept promotion codes by enabling the flag:
 )
 ```
 
+## Failed Payments
+
+Subscriptions that fail payments will be set to `past_due` status.
+
+If all attempts are exhausted, Stripe will either leave the subscription as `past_due`, `canceled`, or set it as `unpaid` depending on the settings in your Stripe account.
+
+We recommend marking subscriptions as `unpaid`. Pay treats this subscription as inactive. You can display it and allow the user to pay their outstanding invoice in order to resume their subscription.
+
 ## Next
 
 See [Credentials](2_credentials.md)

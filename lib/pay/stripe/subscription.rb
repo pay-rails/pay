@@ -301,11 +301,24 @@ module Pay
       end
 
       # Retries the latest invoice for a Past Due subscription and attempts to pay it
-      def retry_failed_payment
-        payment_intent = ::Stripe::PaymentIntent.confirm(subscription.latest_invoice.payment_intent.id)
+      def retry_failed_payment(payment_intent_id: nil)
+        payment_intent_id ||= subscription.latest_invoice.payment_intent.id
+        payment_intent = ::Stripe::PaymentIntent.retrieve({id: payment_intent_id}, stripe_options)
+
+        if payment_intent.status == "requires_payment_method"
+          payment_intent = ::Stripe::PaymentIntent.confirm(payment_intent_id, {payment_method: pay_subscription.customer.default_payment_method.processor_id}, stripe_options)
+        else
+          payment_intent = ::Stripe::PaymentIntent.confirm(payment_intent_id, stripe_options)
+        end
         Pay::Payment.new(payment_intent).validate
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      def pay_open_invoices
+        ::Stripe::Invoice.list({subscription: processor_id, status: :open}, stripe_options).auto_paging_each do |invoice|
+          retry_failed_payment(payment_intent_id: invoice.payment_intent)
+        end
       end
 
       private
