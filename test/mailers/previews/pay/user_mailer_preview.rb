@@ -8,7 +8,7 @@ class Pay::UserMailerPreview < ActionMailer::Preview
 
   def payment_failed
     Pay::UserMailer.with(
-      pay_customer: Pay::Customer.first,
+      pay_customer: Pay::Customer.first
     ).payment_failed
   end
 
