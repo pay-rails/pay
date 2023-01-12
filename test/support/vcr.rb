@@ -16,7 +16,7 @@ unless ENV["SKIP_VCR"]
 
   class ActiveSupport::TestCase
     setup do
-      VCR.insert_cassette name, allow_unused_http_interactions: false
+      VCR.insert_cassette name, allow_unused_http_interactions: false, record_on_error: false
     end
 
     teardown do
