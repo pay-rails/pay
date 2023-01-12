@@ -21,6 +21,9 @@ unless ENV["SKIP_VCR"]
 
     teardown do
       cassette = VCR.current_cassette
+      p "👋 #{cassette.run_failed?}"
+      p "👋 #{cassette.record_on_error}"
+      p "👋 #{cassette.new_recorded_interactions.inspect}"
       VCR.eject_cassette
     rescue VCR::Errors::UnusedHTTPInteractionError
       puts
