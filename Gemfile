@@ -14,6 +14,10 @@ gemspec
 gem "byebug"
 gem "appraisal"
 gem "overcommit"
+gem "standard"
+gem "mocha"
+gem "vcr"
+gem "webmock"
 
 gem "braintree", ">= 2.92.0"
 gem "stripe", "~> 8.0"
@@ -23,13 +27,12 @@ gem "receipts"
 gem "prawn", github: "prawnpdf/prawn"
 
 # Test against different databases
-gem "sqlite3", "~> 1.4"
-gem "mysql2"
 gem "pg"
+gem "mysql2"
+gem "sqlite3", "~> 1.6.0.rc2"
 
 # Used for the dummy Rails app integration
 gem "puma"
-gem "standard"
 gem "web-console", group: :development
 
 gem "sprockets-rails"

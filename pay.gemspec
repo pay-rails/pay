@@ -22,9 +22,4 @@ Gem::Specification.new do |s|
   ]
 
   s.add_dependency "rails", ">= 6.0.0"
-
-  s.add_development_dependency "mocha"
-  s.add_development_dependency "standardrb"
-  s.add_development_dependency "vcr"
-  s.add_development_dependency "webmock"
 end
