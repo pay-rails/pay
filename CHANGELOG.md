@@ -4,6 +4,8 @@
 
 ### 6.3.0
 
+* Add `payment_failed` email to notify customers of failed payments and update their billing information
+  This can be disabled with `Pay.emails.payment_failed = true` if you already use a dunning email service
 * `subscription` now sorts by `created_at` to find the latest subscription. This adds compatibility for UUID primary keys on pay tables.
 * Add `unpaid` scope to Pay::Subscription
 * Add `pay_open_invoices` to Pay::Stripe::Subscription
