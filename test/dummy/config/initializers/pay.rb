@@ -6,8 +6,7 @@ ENV["BRAINTREE_ENVIRONMENT"] ||= "sandbox"
 Pay.setup do |config|
   # For use in the receipt/refund/renewal mailers
   config.business_name = "Test Business"
-  config.business_address = "1600 Pennsylvania Avenue NW"
+  config.business_address = "1600 Pennsylvania Avenue NW\nWashington, DC 20500"
   config.application_name = "My App"
   config.support_email = "support@example.org"
-
 end
