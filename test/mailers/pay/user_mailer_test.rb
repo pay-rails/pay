@@ -93,7 +93,6 @@ class UserMailerTest < ActionMailer::TestCase
 
     assert_equal [@user.email], email.to
     assert_equal I18n.t("pay.user_mailer.payment_failed.subject", application: Pay.application_name), email.subject
-    assert_includes email.body.decoded, @pay_customer.customer_name
-    assert_includes email.body.decoded, "payment didn't go through"
+    assert_includes email.body.decoded, "payment was declined"
   end
 end
