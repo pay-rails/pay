@@ -16,14 +16,12 @@ unless ENV["SKIP_VCR"]
 
   class ActiveSupport::TestCase
     setup do
+      # Test filenames are case sensitive in CI
       VCR.insert_cassette name, allow_unused_http_interactions: false, record_on_error: false
     end
 
     teardown do
       cassette = VCR.current_cassette
-      p "👋 #{cassette.run_failed?}"
-      p "👋 #{cassette.record_on_error}"
-      p "👋 #{cassette.new_recorded_interactions.inspect}"
       VCR.eject_cassette
     rescue VCR::Errors::UnusedHTTPInteractionError
       puts
