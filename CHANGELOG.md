@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 6.3.1
+
 * Fix `retry_past_due_subscriptions` to now call `pay_open_invoices`
 
 ### 6.3.0
