@@ -16,6 +16,7 @@ unless ENV["SKIP_VCR"]
 
   class ActiveSupport::TestCase
     setup do
+      # Test filenames are case sensitive in CI
       VCR.insert_cassette name, allow_unused_http_interactions: false, record_on_error: false
     end
 
