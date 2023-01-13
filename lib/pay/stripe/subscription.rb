@@ -315,6 +315,7 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
+      # Looks up open invoices for a subscription and attempts to pay them
       def pay_open_invoices
         ::Stripe::Invoice.list({subscription: processor_id, status: :open}, stripe_options).auto_paging_each do |invoice|
           retry_failed_payment(payment_intent_id: invoice.payment_intent)

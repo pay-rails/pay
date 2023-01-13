@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Fix `retry_past_due_subscriptions` to now call `pay_open_invoices`
+
 ### 6.3.0
 
 * Add `payment_failed` email to notify customers of failed payments and update their billing information
