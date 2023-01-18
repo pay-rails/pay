@@ -41,14 +41,16 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree cancel_now on trial" do
-    @pay_customer.subscribe(trial_period_days: 14)
-    pay_subscription = @pay_customer.subscription
-    pay_subscription.cancel_now!
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+      @pay_customer.subscribe(trial_period_days: 14)
+      pay_subscription = @pay_customer.subscription
+      pay_subscription.cancel_now!
 
-    # Canceling during a trial ends the subscription, but continues to give access during the trial period
-    assert pay_subscription.active?
-    assert pay_subscription.on_trial?
-    assert pay_subscription.ended?
+      # Canceling during a trial ends the subscription, but continues to give access during the trial period
+      assert pay_subscription.active?
+      assert pay_subscription.on_trial?
+      assert pay_subscription.ended?
+    end
   end
 
   test "braintree processor subscription" do
@@ -86,16 +88,18 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree sync subscription with trial" do
-    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
-    processor_id = pay_subscription.processor_id
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+      pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
+      processor_id = pay_subscription.processor_id
 
-    # Remove charges and delete record without canceling / callbacks
-    pay_subscription.charges.destroy_all
-    pay_subscription.delete
+      # Remove charges and delete record without canceling / callbacks
+      pay_subscription.charges.destroy_all
+      pay_subscription.delete
 
-    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
-    assert pay_subscription.active?
-    assert pay_subscription.on_trial?
+      pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+      assert pay_subscription.active?
+      assert pay_subscription.on_trial?
+    end
   end
 
   test "braintree sync canceled subscription" do
@@ -114,17 +118,20 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree sync canceled subscription with trial" do
-    pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
-    processor_id = pay_subscription.processor_id
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+      travel 1.minute
+      pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
+      processor_id = pay_subscription.processor_id
 
-    pay_subscription.cancel_now!
-    pay_subscription.delete
+      pay_subscription.cancel_now!
+      pay_subscription.delete
 
-    pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
+      pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
 
-    # Canceling during a trial ends the subscription, but continues to give access during the trial period
-    assert pay_subscription.active?
-    assert pay_subscription.on_trial?
-    assert pay_subscription.ended?
+      # Canceling during a trial ends the subscription, but continues to give access during the trial period
+      assert pay_subscription.active?
+      assert pay_subscription.on_trial?
+      assert pay_subscription.ended?
+    end
   end
 end

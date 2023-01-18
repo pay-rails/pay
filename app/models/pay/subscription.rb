@@ -83,12 +83,13 @@ module Pay
       trial_ends_at?
     end
 
+    # Does not include the last second of the trial
     def on_trial?
-      trial_ends_at? && trial_ends_at.after?(Time.current)
+      trial_ends_at? && trial_ends_at > Time.current
     end
 
     def trial_ended?
-      trial_ends_at? && trial_ends_at.before?(Time.current)
+      trial_ends_at? && trial_ends_at <= Time.current
     end
 
     def canceled?
@@ -100,11 +101,11 @@ module Pay
     end
 
     def ended?
-      ends_at? && Time.current.after?(ends_at)
+      ends_at? && ends_at <= Time.current
     end
 
     def on_grace_period?
-      (ends_at? && Time.current < ends_at) ||
+      (ends_at? && ends_at > Time.current) ||
         ((status == "paused" || pause_behavior == "void") && will_pause?)
     end
 
