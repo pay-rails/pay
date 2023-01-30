@@ -38,7 +38,7 @@ module Pay
   mattr_accessor :support_email
 
   def self.support_email=(value)
-    @@support_email = value.is_a?(Mail::Address) ? value : Mail::Address.new(value)
+    @@support_email = value.is_a?(::Mail::Address) ? value : ::Mail::Address.new(value)
   end
 
   mattr_accessor :automount_routes
@@ -98,7 +98,7 @@ module Pay
     if ActionMailer::Base.respond_to?(:email_address_with_name)
       ActionMailer::Base.email_address_with_name(params[:pay_customer].email, params[:pay_customer].customer_name)
     else
-      Mail::Address.new.tap do |builder|
+      ::Mail::Address.new.tap do |builder|
         builder.address = params[:pay_customer].email
         builder.display_name = params[:pay_customer].customer_name.presence
       end.to_s
