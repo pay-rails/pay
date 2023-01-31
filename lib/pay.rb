@@ -4,7 +4,7 @@ require "pay/errors"
 require "pay/adapter"
 
 require "action_mailer"
-require "active_support/dependencies"
+require "active_support"
 
 module Pay
   autoload :Attributes, "pay/attributes"
