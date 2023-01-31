@@ -3,6 +3,7 @@ require "pay/engine"
 require "pay/errors"
 require "pay/adapter"
 
+require "action_mailer"
 require "active_support/dependencies"
 
 module Pay
