@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* Remove unused attributes for `plan` and `quantity` in `app/models/pay/customer.rb`.
+* Add explicit requires for `active_support` and `action_mailer` in `lib/pay.rb`. This should provide better errors for anyone not requiring all of Rails.
+
 ### 6.3.1
 
 * Fix `retry_past_due_subscriptions` to now call `pay_open_invoices`

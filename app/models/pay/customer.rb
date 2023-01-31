@@ -13,8 +13,6 @@ module Pay
     validates :processor, presence: true
     validates :processor_id, allow_blank: true, uniqueness: {scope: :processor, case_sensitive: true}
 
-    attribute :plan, :string
-    attribute :quantity, :integer
     attribute :payment_method_token, :string
 
     # Account(s) for marketplace payments
