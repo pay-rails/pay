@@ -11,6 +11,14 @@ module Pay
     # 1. Check environment variable
     # 2. Check environment scoped credentials, then secrets
     # 3. Check unscoped credentials, then secrets
+    #
+    # For example, find_value_by_name("stripe", "private_key") will check the following in order until it finds a value:
+    #
+    #   ENV["STRIPE_PRIVATE_KEY"]
+    #   Rails.application.credentials.dig(:production, :stripe, :private_key)
+    #   Rails.application.secrets.dig(:production, :stripe, :private_key)
+    #   Rails.application.credentials.dig(:stripe, :private_key)
+    #   Rails.application.secrets.dig(:stripe, :private_key)
     def find_value_by_name(scope, name)
       ENV["#{scope.upcase}_#{name.upcase}"] ||
         credentials&.dig(env, scope, name) ||
