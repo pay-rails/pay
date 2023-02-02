@@ -44,11 +44,13 @@ class SubscriptionsController < ApplicationController
 end
 ```
 
-Alternatively, you can use Pay & Stripe.js to render a button that will take the user to Stripe Checkout instead of redirecting immediately.
+Then link to it in your view:
 
 ```erb
-<%= render "pay/stripe/checkout_button", session: @checkout_session, title: "Checkout" %>
+<%= link_to "Checkout", checkout_path, data: { turbo: false } %>
 ```
+
+**NOTE:** Due to a [bug](https://github.com/hotwired/turbo/issues/211#issuecomment-966570923) in the browser's `fetch` implementation, you will need to disable Turbo if redirecting to Stripe checkout server-side.
 
 The `session_id` param will be included on success and cancel URLs automatically. This allows you to lookup the checkout session on your success page and confirm the payment was successful before fulfilling the customer's purchase.
 
