@@ -7,13 +7,15 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree cancel" do
-    @pay_customer.subscribe(trial_period_days: 0)
-    @subscription = @pay_customer.subscription
-    @subscription.cancel
-    assert_equal "active", @subscription.status
-    assert @subscription.on_grace_period?
-    assert @subscription.active?
-    assert_equal @subscription.ends_at.to_date, @subscription.processor_subscription.billing_period_end_date.to_date
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+      @pay_customer.subscribe(trial_period_days: 0)
+      @subscription = @pay_customer.subscription
+      @subscription.cancel
+      assert_equal "active", @subscription.status
+      assert @subscription.on_grace_period?
+      assert @subscription.active?
+      assert_equal @subscription.ends_at.to_date, @subscription.processor_subscription.billing_period_end_date.to_date
+    end
   end
 
   test "braintree cancel_now!" do
