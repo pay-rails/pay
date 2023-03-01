@@ -29,7 +29,7 @@ gem "prawn", github: "prawnpdf/prawn"
 # Test against different databases
 gem "pg"
 gem "mysql2"
-gem "sqlite3", "~> 1.6.0.rc2"
+gem "sqlite3", "~> 1.6.1"
 
 # Used for the dummy Rails app integration
 gem "puma"
