@@ -31,7 +31,7 @@ class SubscriptionsController < ApplicationController
         trial_period_days: 15,
         metadata: {
           pay_name: "base" # Optional. Overrides the Pay::Subscription name attribute
-        }
+        },
       },
       success_url: root_url,
       cancel_url: root_url
