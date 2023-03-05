@@ -29,7 +29,9 @@ class SubscriptionsController < ApplicationController
       }],
       subscription_data: {
         trial_period_days: 15,
-        pay_name: "base" # Optional. Overrides the Pay::Subscription name attribute
+        metadata: {
+          pay_name: "base" # Optional. Overrides the Pay::Subscription name attribute
+        }
       },
       success_url: root_url,
       cancel_url: root_url
