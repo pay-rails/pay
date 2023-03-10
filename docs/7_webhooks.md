@@ -66,6 +66,7 @@ end
 
 Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", MyChargeSucceededProcessor.new
 ```
+If your custom processors are not executing in your development environment, you may need to add `config.eager_load = true` to `config/environments/development.rb` or otherwise load these classes on Rails boot.
 
 ### Unsubscribing from a webhook listener
 
