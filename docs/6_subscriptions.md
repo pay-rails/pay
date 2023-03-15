@@ -44,7 +44,7 @@ Paddle.Checkout.open({
 Or with Paddle Button Checkout:
 
 ```html
-<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= Pay::Paddle.passthrough(owner: current_user) %>"
+<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= Pay::Paddle.passthrough(owner: current_user) %>">Buy now!</a>
 ```
 
 ###### Paddle Passthrough Helper
