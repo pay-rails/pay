@@ -19,8 +19,9 @@ module Pay
         pay_customer
       end
 
-      def update_customer!
-        # pass
+      def update_customer!(**attributes)
+        # return customer to fake an update
+        customer
       end
 
       def charge(amount, options = {})
@@ -55,6 +56,8 @@ module Pay
         if (trial_period_days = attributes.delete(:trial_period_days))
           attributes[:trial_ends_at] = trial_period_days.to_i.days.from_now
         end
+
+        attributes.delete(:promotion_code)
 
         pay_customer.subscriptions.create!(attributes)
       end

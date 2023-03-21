@@ -23,6 +23,11 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert pay_customers(:fake).respond_to?(:update_customer!)
   end
 
+  test "update_customer! with a promotion code" do
+    pay_customer = pay_customers(:fake)
+    assert pay_customer.update_customer!(promotion_code: "promo_xxx123")
+  end
+
   test "not_fake scope" do
     assert_not_includes Pay::Customer.not_fake_processor, pay_customers(:fake)
     assert_includes Pay::Customer.not_fake_processor, pay_customers(:stripe)

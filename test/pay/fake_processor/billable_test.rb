@@ -33,6 +33,12 @@ class Pay::FakeProcessor::Billable::Test < ActiveSupport::TestCase
     end
   end
 
+  test "fake processor subscribe with promotion code" do
+    assert_difference "Pay::Subscription.count" do
+      @pay_customer.subscribe(promotion_code: "promo_xxx123")
+    end
+  end
+
   test "fake processor add payment method" do
     assert_difference "Pay::PaymentMethod.count" do
       @pay_customer.add_payment_method("x", default: true)
