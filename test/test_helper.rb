@@ -35,12 +35,13 @@ Rails.backtrace_cleaner.remove_silencers!
 Minitest.backtrace_filter = Minitest::BacktraceFilter.new
 
 # Load fixtures from the engine
-if ActiveSupport::TestCase.respond_to?(:fixture_path=)
+if ActiveSupport::TestCase.respond_to?(:fixture_paths=)
+  ActiveSupport::TestCase.fixture_paths << File.expand_path("../fixtures", __FILE__)
+elsif ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActiveSupport::TestCase.fixture_path = File.expand_path("../fixtures", __FILE__)
-  ActionDispatch::IntegrationTest.fixture_path = ActiveSupport::TestCase.fixture_path
-  ActiveSupport::TestCase.file_fixture_path = ActiveSupport::TestCase.fixture_path + "/files"
-  ActiveSupport::TestCase.fixtures :all
 end
+
+ActiveSupport::TestCase.fixtures :all
 
 class ActiveSupport::TestCase
   include ActionMailer::TestHelper
