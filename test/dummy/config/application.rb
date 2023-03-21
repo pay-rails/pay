@@ -13,7 +13,7 @@ module Dummy
 
     config.active_job.queue_adapter = :test
     config.action_mailer.default_url_options = {host: "localhost", port: 3000}
-    config.active_record.legacy_connection_handling = false if ("6.1".."7.0.4").cover?(Rails.version)
+    config.active_record.legacy_connection_handling = false if ("6.1".."7.0.4.2").cover?(Rails.version)
 
     # Set the ActionMailer preview path to the gem test directory
     config.action_mailer.show_previews = true
