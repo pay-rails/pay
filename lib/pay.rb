@@ -57,6 +57,9 @@ module Pay
   mattr_accessor :enabled_processors
   @@enabled_processors = [:stripe, :braintree, :paddle]
 
+  mattr_accessor :disable_emails
+  @@disable_emails = false
+
   mattr_accessor :emails
   @@emails = ActiveSupport::OrderedOptions.new
   @@emails.payment_action_required = true
@@ -111,6 +114,8 @@ module Pay
   end
 
   def self.send_email?(email_option, *remaining_args)
+    return false if disable_emails
+
     config_option = emails.send(email_option)
 
     if config_option.respond_to?(:call)

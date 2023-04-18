@@ -101,6 +101,27 @@ class Pay::Test < ActiveSupport::TestCase
     Pay.enabled_processors = original
   end
 
+  test "can disable all emails" do
+    emails = Pay.emails.keys
+
+    emails.each do |mail_action|
+      if mail_action == :subscription_renewing
+        Pay.emails.stub :subscription_renewing, true do
+          assert Pay.send_email?(:subscription_renewing)
+          assert Pay.send_email?(:subscription_renewing, "dummy_subscription")
+        end
+      else
+        assert Pay.send_email?(mail_action)
+      end
+    end
+
+    Pay.disable_emails = true
+
+    emails.each do |mail_action|
+      refute Pay.send_email?(mail_action)
+    end
+  end
+
   test "can configure email options with a boolean" do
     Pay.emails.stub :subscription_renewing, true do
       assert Pay.send_email?(:subscription_renewing)

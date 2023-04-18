@@ -106,6 +106,10 @@ Pay.setup do |config|
   config.routes_path = "/pay" # Only when automount_routes is true
   # All processors are enabled by default. If a processor is already implemented in your application, you can omit it from this list and the processor will not be set up through the Pay gem.
   config.enabled_processors = [:stripe, :braintree, :paddle]
+
+  # All emails are set to send by default. To disable all emails, set the following configuration option to true:
+  config.disable_emails = true
+
   # All emails can be configured independently as to whether to be sent or not. The values can be set to true, false or a custom lambda to set up more involved logic. The Pay defaults are show below and can be modified as needed.
   config.emails.payment_action_required = true
   config.emails.payment_failed = true
