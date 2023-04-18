@@ -42,7 +42,7 @@ end
 
 ### Stripe SCA Confirm Page
 
-We provide a route for confirming Stripe SCA payments at `/pay/payments/:payment_intent_id`
+We provide a route for confirming Stripe SCA payments at `/pay/payments/:payment_intent_id`.
 
 If you'd like to change the views of the payment confirmation page, you can install the views using the generator and modify the template.
 
@@ -51,7 +51,7 @@ If you'd like to change the views of the payment confirmation page, you can inst
 If you use the default views for payment confirmations, and also have a Content Security Policy in place for your application, make sure to add the following domains to their respective configurations in your `content_security_policy.rb` (otherwise these views won't load properly):
 
 * `style_src`: `https://unpkg.com`
-* `script_src`: `https://cdn.jsdelivr.net` and `https://js.stripe.com`
+* `script_src`: `https://unpkg.com` and `https://js.stripe.com`
 * `frame_src`: `https://js.stripe.com`
 
 ## Next
