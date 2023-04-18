@@ -108,12 +108,15 @@ Pay.setup do |config|
   config.enabled_processors = [:stripe, :braintree, :paddle]
   # All emails can be configured independently as to whether to be sent or not. The values can be set to true, false or a custom lambda to set up more involved logic. The Pay defaults are show below and can be modified as needed.
   config.emails.payment_action_required = true
+  config.emails.payment_failed = true
   config.emails.receipt = true
   config.emails.refund = true
   # This example for subscription_renewing only applies to Stripe, therefor we supply the second argument of price
   config.emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
+  config.emails.subscription_trial_will_end = true
+  config.emails.subscription_trial_ended = true
 
   # Customize who receives emails. Useful when adding additional recipients other than the Pay::Customer. This defaults to the pay customer's email address.
   # config.mail_to = ->(mailer, params) { "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>" }
