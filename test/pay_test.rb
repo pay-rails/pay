@@ -114,13 +114,13 @@ class Pay::Test < ActiveSupport::TestCase
       end
     end
 
-    Pay.disable_email_sending = true
+    Pay.send_emails = false
 
     emails.each do |mail_action|
       refute Pay.send_email?(mail_action)
     end
   ensure
-    Pay.disable_email_sending = false
+    Pay.send_emails = true
   end
 
   test "can configure email options with a boolean" do
