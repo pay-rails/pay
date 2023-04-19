@@ -92,6 +92,20 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_equal 2, pay_charge.refunds.length
   end
 
+  test "sync stripe charge with Link" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(
+      payment_method: "pm_0Mt5J5NFr9vQLFLbmIyjBdIM",
+      payment_method_details: {
+        link: {
+          country: "DE"
+        },
+        type: "link"
+      }
+    ))
+
+    assert_equal "link", pay_charge.payment_method_type
+  end
+
   private
 
   def fake_stripe_invoice(**values)
