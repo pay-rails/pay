@@ -102,21 +102,15 @@ class Pay::Test < ActiveSupport::TestCase
   end
 
   test "can disable all emails" do
-    emails = Pay.emails.keys
-
-    emails.each do |mail_action|
-      if mail_action == :subscription_renewing
-        Pay.emails.stub :subscription_renewing, true do
-          assert Pay.send_email?(:subscription_renewing)
-        end
-      else
+    Pay.emails.keys.each do |mail_action|
+      Pay.emails.stub mail_action, true do
         assert Pay.send_email?(mail_action)
       end
     end
 
     Pay.send_emails = false
 
-    emails.each do |mail_action|
+    Pay.emails.keys.each do |mail_action|
       refute Pay.send_email?(mail_action)
     end
   ensure
