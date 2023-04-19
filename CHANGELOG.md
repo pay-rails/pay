@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 6.3.2
+
 * [SECURITY] Fix XSS vulnerability in back parameter on Stripe payment page
   Previously, an attacker could inject Javascript or redirect the user to any URL by changing the `back` parameter in the URL.
   The `back` parameter is now sanitized and restricted to relative paths.
