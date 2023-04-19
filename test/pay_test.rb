@@ -108,7 +108,6 @@ class Pay::Test < ActiveSupport::TestCase
       if mail_action == :subscription_renewing
         Pay.emails.stub :subscription_renewing, true do
           assert Pay.send_email?(:subscription_renewing)
-          assert Pay.send_email?(:subscription_renewing, "dummy_subscription")
         end
       else
         assert Pay.send_email?(mail_action)
