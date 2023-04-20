@@ -102,6 +102,8 @@ class Pay::Test < ActiveSupport::TestCase
   end
 
   test "can disable all emails" do
+    original_send_email_value = Pay.send_emails
+
     Pay.emails.keys.each do |mail_action|
       Pay.emails.stub mail_action, true do
         assert Pay.send_email?(mail_action)
@@ -114,7 +116,7 @@ class Pay::Test < ActiveSupport::TestCase
       refute Pay.send_email?(mail_action)
     end
   ensure
-    Pay.send_emails = true
+    Pay.send_emails = original_send_email_value
   end
 
   test "can configure email options with a boolean" do

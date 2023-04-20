@@ -121,7 +121,7 @@ Pay.setup do |config|
   config.enabled_processors = [:stripe, :braintree, :paddle]
 
   # To disable all emails, set the following configuration option to false:
-  config.send_emails = false
+  config.send_emails = true
 
   # All emails can be configured independently as to whether to be sent or not. The values can be set to true, false or a custom lambda to set up more involved logic. The Pay defaults are show below and can be modified as needed.
   config.emails.payment_action_required = true
