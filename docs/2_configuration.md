@@ -83,10 +83,13 @@ using the `emails` configuration option as shown in the configuration section be
 
 When enabled, the following emails will be sent when:
 
+- A payment action is required
+- A payment failed
 - A charge succeeded
 - A charge was refunded
 - A yearly subscription is about to renew
-- A payment action is required
+- A subscription trial is about to end
+- A subscription trial has ended
 
 If you are creating your own emails or overriding the built in ones from Pay, be sure to use the [`Pay.send_email?` method](https://github.com/pay-rails/pay/blob/c067771d8c7514acde4b948b474caf054bb0e25d/lib/pay.rb#L113)
 in a conditional check to ensure that you don't send any emails if they are disabled either individually or as a whole. For example:
