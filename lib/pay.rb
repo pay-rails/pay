@@ -114,16 +114,15 @@ module Pay
   end
 
   def self.send_email?(email_option, *remaining_args)
-    email_sending_option = send(:send_emails)
-    email_sending_enabled = process_email_config_for(email_sending_option, *remaining_args)
+    email_sending_enabled = handle_config_for(send_emails, *remaining_args)
 
     return false unless email_sending_enabled
 
-    config_option = emails.send(email_option)
-    process_email_config_for(config_option, *remaining_args)
+    email_config_option_enabled = emails.send(email_option)
+    handle_config_for(email_config_option_enabled, *remaining_args)
   end
 
-  def self.process_email_config_for(option, *remaining_args)
+  def self.handle_config_for(option, *remaining_args)
     if option.respond_to?(:call)
       option.call(*remaining_args)
     else

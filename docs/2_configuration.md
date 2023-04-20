@@ -78,7 +78,8 @@ bin/rails generate pay:email_views
 
 ## Emails
 
-Emails can be enabled/disabled independently using the `emails` configuration option as show in the configuration section below (all are enabled by default).
+Emails can be enabled/disabled as a whole by using the `send_emails` configuration option or independently by 
+using the `emails` configuration option as shown in the configuration section below (all emails are enabled by default).
 
 When enabled, the following emails will be sent when:
 
@@ -86,6 +87,15 @@ When enabled, the following emails will be sent when:
 - A charge was refunded
 - A yearly subscription is about to renew
 - A payment action is required
+
+If you are creating your own emails or overriding the built in ones from Pay, be sure to use the [`Pay.send_email?` method](https://github.com/pay-rails/pay/blob/c067771d8c7514acde4b948b474caf054bb0e25d/lib/pay.rb#L113)
+in a conditional check to ensure that you don't send any emails if they are disabled either individually or as a whole. For example:
+```ruby
+if Pay.send_email?(:receipt, pay_charge)
+  # Your code to send the email here
+end
+```
+
 
 ## Configuration
 
@@ -107,8 +117,8 @@ Pay.setup do |config|
   # All processors are enabled by default. If a processor is already implemented in your application, you can omit it from this list and the processor will not be set up through the Pay gem.
   config.enabled_processors = [:stripe, :braintree, :paddle]
 
-  # All emails are set to send by default. To disable all emails, set the following configuration option to true:
-  config.disable_emails = true
+  # To disable all emails, set the following configuration option to true:
+  config.send_emails = true
 
   # All emails can be configured independently as to whether to be sent or not. The values can be set to true, false or a custom lambda to set up more involved logic. The Pay defaults are show below and can be modified as needed.
   config.emails.payment_action_required = true
