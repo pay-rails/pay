@@ -257,7 +257,7 @@ module Pay
             proration_behavior: proration_behavior,
             trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             quantity: quantity
-          }.merge(expand_options),
+          }.merge(expand_options).merge(options),
           stripe_options
         )
 
