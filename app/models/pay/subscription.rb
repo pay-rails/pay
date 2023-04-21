@@ -163,7 +163,7 @@ module Pay
 
     def swap_and_invoice(plan)
       swap(plan)
-      owner.invoice!(subscription_id: processor_id)
+      customer.invoice!(subscription: processor_id)
     end
 
     def processor_subscription(**options)
