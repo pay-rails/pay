@@ -116,7 +116,7 @@ class Pay::Test < ActiveSupport::TestCase
       refute Pay.send_email?(mail_action)
     end
 
-    Pay.send_emails = ->() { false }
+    Pay.send_emails = -> { false }
 
     Pay.emails.keys.each do |mail_action|
       refute Pay.send_email?(mail_action)
