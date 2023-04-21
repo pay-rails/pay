@@ -74,6 +74,14 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_equal "small-annual", subscription.processor_plan
   end
 
+  test "stripe can swap a subscription and reset billing cycle" do
+    @pay_customer.payment_method_token = payment_method
+    subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
+    subscription.swap("small-annual", billing_cycle_anchor: "now")
+    assert_equal "default", subscription.name
+    assert_equal "small-annual", subscription.processor_plan
+  end
+
   test "stripe can swap and invoice a subscription" do
     @pay_customer.payment_method_token = payment_method
     subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
