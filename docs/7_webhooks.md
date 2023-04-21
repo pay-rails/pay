@@ -58,13 +58,32 @@ Since we support multiple payment providers, each event type is prefixed with th
 To add your own webhook listener, you can simply subscribe to the event type.
 
 ```ruby
+# app/webhooks/my_charge_succeeded_processor.rb
 class MyChargeSucceededProcessor
   def call(event)
     # do your processing here
   end
 end
 
+# config/initializers/pay.rb
 Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", MyChargeSucceededProcessor.new
+```
+
+If you are sending emails from your custom webhook handlers, be sure to use the [`Pay.send_email?` method](https://github.com/pay-rails/pay/blob/c067771d8c7514acde4b948b474caf054bb0e25d/lib/pay.rb#L113)
+in a conditional check to ensure that you don't send any emails if they are disabled either individually or as a whole.
+For example:
+
+```ruby
+# app/webhooks/my_charge_succeeded_processor.rb
+class MyChargeSucceededProcessor
+  def call(event)
+    pay_charge = Pay::Stripe::Charge.sync(event.data.object.id, stripe_account: event.try(:account))
+
+    if pay_charge && Pay.send_email?(:receipt, pay_charge) # <---- Note the usage of the `send_email?` method here
+      Pay.mailer.with(pay_customer: pay_charge.customer, pay_charge: pay_charge).receipt.deliver_later
+    end
+  end
+end
 ```
 
 ### Unsubscribing from a webhook listener
