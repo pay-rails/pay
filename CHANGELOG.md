@@ -2,6 +2,11 @@
 
 ### Unreleased
 
+### 6.3.3
+
+* Fix `swap_and_invoice`
+* Support passing options through `swap` on Stripe
+
 ### 6.3.2
 
 * [SECURITY] Fix XSS vulnerability in back parameter on Stripe payment page
