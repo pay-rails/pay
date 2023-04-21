@@ -101,7 +101,7 @@ class Pay::Test < ActiveSupport::TestCase
     Pay.enabled_processors = original
   end
 
-  test "can disable all emails with a boolean or lambda" do
+  test "can disable all emails with a boolean" do
     original_send_email_value = Pay.send_emails
 
     Pay.emails.keys.each do |mail_action|
@@ -114,6 +114,18 @@ class Pay::Test < ActiveSupport::TestCase
 
     Pay.emails.keys.each do |mail_action|
       refute Pay.send_email?(mail_action)
+    end
+  ensure
+    Pay.send_emails = original_send_email_value
+  end
+
+  test "can disable all emails with a lambda" do
+    original_send_email_value = Pay.send_emails
+
+    Pay.emails.keys.each do |mail_action|
+      Pay.emails.stub mail_action, true do
+        assert Pay.send_email?(mail_action)
+      end
     end
 
     Pay.send_emails = -> { false }
