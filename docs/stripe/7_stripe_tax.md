@@ -10,7 +10,7 @@ An address is required on the Customer for tax calculations.
 class User < ApplicationRecord
   pay_customer stripe_attributes: :stripe_attributes
 
-  def stripe_attributes
+  def stripe_attributes(pay_customer)
     {
       address: {
         country: "US",
