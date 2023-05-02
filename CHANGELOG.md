@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 6.3.4
+
+* Import Stimulus.js from dist folder on unpkg
+
 ### 6.3.3
 
 * Fix `swap_and_invoice`
