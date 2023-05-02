@@ -5,6 +5,13 @@
 * Add new configuration option named `send_emails` which can be used to disable the sending of all current and future emails.
   This option can be set to a boolean value or a proc/lambda that returns a boolean value. - @cjilbert504
 
+* Import Stimulus.js from dist folder on unpkg
+
+### 6.3.3
+
+* Fix `swap_and_invoice`
+* Support passing options through `swap` on Stripe
+
 ### 6.3.2
 
 * [SECURITY] Fix XSS vulnerability in back parameter on Stripe payment page

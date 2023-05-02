@@ -1,0 +1,2594 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/customers
+    body:
+      encoding: UTF-8
+      string: email=stripe%40example.org&name=Stripe+User&expand[0]=tax
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/8.5.0 PayRails/6.3.2 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_QXFqftGMTdNyHh","request_duration_ms":1}}'
+      Idempotency-Key:
+      - 647f77ab-5a4e-4c09-a01d-b4e407ea9b3f
+      Stripe-Version:
+      - '2022-11-15'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"6.3.2"},"bindings_version":"8.5.0","lang":"ruby","lang_version":"3.2.1
+        p31 (2023-02-08)","platform":"x86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.4.0 Darwin Kernel Version 22.4.0: Mon Mar  6 21:00:17
+        PST 2023; root:xnu-8796.101.5~3/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Fri, 21 Apr 2023 18:33:12 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '746'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - 647f77ab-5a4e-4c09-a01d-b4e407ea9b3f
+      Original-Request:
+      - req_WfQ7CCVXI9js6P
+      Request-Id:
+      - req_WfQ7CCVXI9js6P
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2022-11-15'
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_NkuahmIPvlZ9cf",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": 1682101991,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@example.org",
+          "invoice_prefix": "5AA0F78B",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": null,
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "next_invoice_sequence": 1,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "tax": {
+            "automatic_tax": "unrecognized_location",
+            "ip_address": null,
+            "location": null
+          },
+          "tax_exempt": "none",
+          "test_clock": null
+        }
+  recorded_at: Fri, 21 Apr 2023 18:33:11 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/payment_methods/pm_card_visa/attach
+    body:
+      encoding: UTF-8
+      string: customer=cus_NkuahmIPvlZ9cf
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/8.5.0 PayRails/6.3.2 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_WfQ7CCVXI9js6P","request_duration_ms":484}}'
+      Idempotency-Key:
+      - 8b22c14f-385a-4f98-9a08-f31ed03ed5e3
+      Stripe-Version:
+      - '2022-11-15'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"6.3.2"},"bindings_version":"8.5.0","lang":"ruby","lang_version":"3.2.1
+        p31 (2023-02-08)","platform":"x86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.4.0 Darwin Kernel Version 22.4.0: Mon Mar  6 21:00:17
+        PST 2023; root:xnu-8796.101.5~3/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Fri, 21 Apr 2023 18:33:13 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '939'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - 8b22c14f-385a-4f98-9a08-f31ed03ed5e3
+      Original-Request:
+      - req_zw1XCFZLJNcs1T
+      Request-Id:
+      - req_zw1XCFZLJNcs1T
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2022-11-15'
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "pm_1MzOlgKXBGcbgpbZUKhDqPC3",
+          "object": "payment_method",
+          "billing_details": {
+            "address": {
+              "city": null,
+              "country": null,
+              "line1": null,
+              "line2": null,
+              "postal_code": null,
+              "state": null
+            },
+            "email": null,
+            "name": null,
+            "phone": null
+          },
+          "card": {
+            "brand": "visa",
+            "checks": {
+              "address_line1_check": null,
+              "address_postal_code_check": null,
+              "cvc_check": null
+            },
+            "country": "US",
+            "exp_month": 4,
+            "exp_year": 2024,
+            "fingerprint": "w4XDzQOFakih5EZM",
+            "funding": "credit",
+            "generated_from": null,
+            "last4": "4242",
+            "networks": {
+              "available": [
+                "visa"
+              ],
+              "preferred": null
+            },
+            "three_d_secure_usage": {
+              "supported": true
+            },
+            "wallet": null
+          },
+          "created": 1682101992,
+          "customer": "cus_NkuahmIPvlZ9cf",
+          "livemode": false,
+          "metadata": {},
+          "type": "card"
+        }
+  recorded_at: Fri, 21 Apr 2023 18:33:12 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/customers/cus_NkuahmIPvlZ9cf
+    body:
+      encoding: UTF-8
+      string: invoice_settings[default_payment_method]=pm_1MzOlgKXBGcbgpbZUKhDqPC3
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/8.5.0 PayRails/6.3.2 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_zw1XCFZLJNcs1T","request_duration_ms":1035}}'
+      Idempotency-Key:
+      - 7c7a16da-0ef5-4d22-8a45-35b1827fa0ff
+      Stripe-Version:
+      - '2022-11-15'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"6.3.2"},"bindings_version":"8.5.0","lang":"ruby","lang_version":"3.2.1
+        p31 (2023-02-08)","platform":"x86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.4.0 Darwin Kernel Version 22.4.0: Mon Mar  6 21:00:17
+        PST 2023; root:xnu-8796.101.5~3/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Fri, 21 Apr 2023 18:33:13 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '664'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - 7c7a16da-0ef5-4d22-8a45-35b1827fa0ff
+      Original-Request:
+      - req_3wtO4PVxF8Evwn
+      Request-Id:
+      - req_3wtO4PVxF8Evwn
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2022-11-15'
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_NkuahmIPvlZ9cf",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": 1682101991,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@example.org",
+          "invoice_prefix": "5AA0F78B",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": "pm_1MzOlgKXBGcbgpbZUKhDqPC3",
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "next_invoice_sequence": 1,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "tax_exempt": "none",
+          "test_clock": null
+        }
+  recorded_at: Fri, 21 Apr 2023 18:33:13 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/subscriptions
+    body:
+      encoding: UTF-8
+      string: expand[0]=pending_setup_intent&expand[1]=latest_invoice.payment_intent&expand[2]=latest_invoice.charge&expand[3]=latest_invoice.total_discount_amounts.discount&expand[4]=latest_invoice.total_tax_amounts.tax_rate&items[0][plan]=small-monthly&customer=cus_NkuahmIPvlZ9cf
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/8.5.0 PayRails/6.3.2 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_3wtO4PVxF8Evwn","request_duration_ms":477}}'
+      Idempotency-Key:
+      - a7b96e20-79a6-478c-b183-9afe68474b3e
+      Stripe-Version:
+      - '2022-11-15'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"6.3.2"},"bindings_version":"8.5.0","lang":"ruby","lang_version":"3.2.1
+        p31 (2023-02-08)","platform":"x86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.4.0 Darwin Kernel Version 22.4.0: Mon Mar  6 21:00:17
+        PST 2023; root:xnu-8796.101.5~3/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Fri, 21 Apr 2023 18:33:16 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '14304'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - a7b96e20-79a6-478c-b183-9afe68474b3e
+      Original-Request:
+      - req_jeWO6JKfPantmB
+      Request-Id:
+      - req_jeWO6JKfPantmB
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2022-11-15'
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+          "object": "subscription",
+          "application": null,
+          "application_fee_percent": null,
+          "automatic_tax": {
+            "enabled": false
+          },
+          "billing_cycle_anchor": 1682101993,
+          "billing_thresholds": null,
+          "cancel_at": null,
+          "cancel_at_period_end": false,
+          "canceled_at": null,
+          "cancellation_details": {
+            "comment": null,
+            "feedback": null,
+            "reason": null
+          },
+          "collection_method": "charge_automatically",
+          "created": 1682101993,
+          "currency": "usd",
+          "current_period_end": 1684693993,
+          "current_period_start": 1682101993,
+          "customer": "cus_NkuahmIPvlZ9cf",
+          "days_until_due": null,
+          "default_payment_method": null,
+          "default_source": null,
+          "default_tax_rates": [],
+          "description": null,
+          "discount": null,
+          "ended_at": null,
+          "items": {
+            "object": "list",
+            "data": [
+              {
+                "id": "si_NkuasfcBppZ2n4",
+                "object": "subscription_item",
+                "billing_thresholds": null,
+                "created": 1682101994,
+                "metadata": {},
+                "plan": {
+                  "id": "small-monthly",
+                  "object": "plan",
+                  "active": true,
+                  "aggregate_usage": null,
+                  "amount": 2500,
+                  "amount_decimal": "2500",
+                  "billing_scheme": "per_unit",
+                  "created": 1571425570,
+                  "currency": "usd",
+                  "interval": "month",
+                  "interval_count": 1,
+                  "livemode": false,
+                  "metadata": {},
+                  "nickname": "Small Monthly",
+                  "product": "prod_EYTX7RYhRjcwKD",
+                  "tiers_mode": null,
+                  "transform_usage": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "price": {
+                  "id": "small-monthly",
+                  "object": "price",
+                  "active": true,
+                  "billing_scheme": "per_unit",
+                  "created": 1571425570,
+                  "currency": "usd",
+                  "custom_unit_amount": null,
+                  "livemode": false,
+                  "lookup_key": null,
+                  "metadata": {},
+                  "nickname": "Small Monthly",
+                  "product": "prod_EYTX7RYhRjcwKD",
+                  "recurring": {
+                    "aggregate_usage": null,
+                    "interval": "month",
+                    "interval_count": 1,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "tax_behavior": "exclusive",
+                  "tiers_mode": null,
+                  "transform_quantity": null,
+                  "type": "recurring",
+                  "unit_amount": 2500,
+                  "unit_amount_decimal": "2500"
+                },
+                "quantity": 1,
+                "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+                "tax_rates": []
+              }
+            ],
+            "has_more": false,
+            "total_count": 1,
+            "url": "/v1/subscription_items?subscription=sub_1MzOlhKXBGcbgpbZEyl9nOSn"
+          },
+          "latest_invoice": {
+            "id": "in_1MzOlhKXBGcbgpbZ9CEVXY4S",
+            "object": "invoice",
+            "account_country": "US",
+            "account_name": "Pay",
+            "account_tax_ids": null,
+            "amount_due": 2500,
+            "amount_paid": 2500,
+            "amount_remaining": 0,
+            "amount_shipping": 0,
+            "application": null,
+            "application_fee_amount": null,
+            "attempt_count": 1,
+            "attempted": true,
+            "auto_advance": false,
+            "automatic_tax": {
+              "enabled": false,
+              "status": null
+            },
+            "billing_reason": "subscription_create",
+            "charge": {
+              "id": "ch_3MzOliKXBGcbgpbZ1TfonDbe",
+              "object": "charge",
+              "amount": 2500,
+              "amount_captured": 2500,
+              "amount_refunded": 0,
+              "application": null,
+              "application_fee": null,
+              "application_fee_amount": null,
+              "balance_transaction": "txn_3MzOliKXBGcbgpbZ1d0cwRGl",
+              "billing_details": {
+                "address": {
+                  "city": null,
+                  "country": null,
+                  "line1": null,
+                  "line2": null,
+                  "postal_code": null,
+                  "state": null
+                },
+                "email": null,
+                "name": null,
+                "phone": null
+              },
+              "calculated_statement_descriptor": "PAY RAILS",
+              "captured": true,
+              "created": 1682101994,
+              "currency": "usd",
+              "customer": "cus_NkuahmIPvlZ9cf",
+              "description": "Subscription creation",
+              "destination": null,
+              "dispute": null,
+              "disputed": false,
+              "failure_balance_transaction": null,
+              "failure_code": null,
+              "failure_message": null,
+              "fraud_details": {},
+              "invoice": "in_1MzOlhKXBGcbgpbZ9CEVXY4S",
+              "livemode": false,
+              "metadata": {},
+              "on_behalf_of": null,
+              "order": null,
+              "outcome": {
+                "network_status": "approved_by_network",
+                "reason": null,
+                "risk_level": "normal",
+                "risk_score": 31,
+                "seller_message": "Payment complete.",
+                "type": "authorized"
+              },
+              "paid": true,
+              "payment_intent": "pi_3MzOliKXBGcbgpbZ1SYiYxOO",
+              "payment_method": "pm_1MzOlgKXBGcbgpbZUKhDqPC3",
+              "payment_method_details": {
+                "card": {
+                  "brand": "visa",
+                  "checks": {
+                    "address_line1_check": null,
+                    "address_postal_code_check": null,
+                    "cvc_check": null
+                  },
+                  "country": "US",
+                  "exp_month": 4,
+                  "exp_year": 2024,
+                  "fingerprint": "w4XDzQOFakih5EZM",
+                  "funding": "credit",
+                  "installments": null,
+                  "last4": "4242",
+                  "mandate": null,
+                  "network": "visa",
+                  "network_token": {
+                    "used": false
+                  },
+                  "three_d_secure": null,
+                  "wallet": null
+                },
+                "type": "card"
+              },
+              "receipt_email": null,
+              "receipt_number": null,
+              "receipt_url": "https://pay.stripe.com/receipts/invoices/CAcaFwoVYWNjdF8xRTRiZm5LWEJHY2JncGJaKOuti6IGMgbblNQhSO86LBbGTDzBVQOlzQkud6a9HZRUd1PCUNRu249a1BP4Vx79qC-vX9ZddVx1XWsY?s=ap",
+              "refunded": false,
+              "review": null,
+              "shipping": null,
+              "source": null,
+              "source_transfer": null,
+              "statement_descriptor": null,
+              "statement_descriptor_suffix": null,
+              "status": "succeeded",
+              "transfer_data": null,
+              "transfer_group": null
+            },
+            "collection_method": "charge_automatically",
+            "created": 1682101993,
+            "currency": "usd",
+            "custom_fields": null,
+            "customer": "cus_NkuahmIPvlZ9cf",
+            "customer_address": null,
+            "customer_email": "stripe@example.org",
+            "customer_name": "Stripe User",
+            "customer_phone": null,
+            "customer_shipping": null,
+            "customer_tax_exempt": "none",
+            "customer_tax_ids": [],
+            "default_payment_method": null,
+            "default_source": null,
+            "default_tax_rates": [],
+            "description": null,
+            "discount": null,
+            "discounts": [],
+            "due_date": null,
+            "ending_balance": 0,
+            "footer": null,
+            "from_invoice": null,
+            "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhZWhyY2NDZnN4anFqVmxyZGlrWGZsSEhCUmMzLDcyNjQyNzk20200QnlQhvaA?s=ap",
+            "invoice_pdf": "https://pay.stripe.com/invoice/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhZWhyY2NDZnN4anFqVmxyZGlrWGZsSEhCUmMzLDcyNjQyNzk20200QnlQhvaA/pdf?s=ap",
+            "last_finalization_error": null,
+            "latest_revision": null,
+            "lines": {
+              "object": "list",
+              "data": [
+                {
+                  "id": "il_1MzOlhKXBGcbgpbZq8tF4bKq",
+                  "object": "line_item",
+                  "amount": 2500,
+                  "amount_excluding_tax": 2500,
+                  "currency": "usd",
+                  "description": "1 user × Test Subscription (at $25.00 / month)",
+                  "discount_amounts": [],
+                  "discountable": true,
+                  "discounts": [],
+                  "livemode": false,
+                  "metadata": {},
+                  "period": {
+                    "end": 1684693993,
+                    "start": 1682101993
+                  },
+                  "plan": {
+                    "id": "small-monthly",
+                    "object": "plan",
+                    "active": true,
+                    "aggregate_usage": null,
+                    "amount": 2500,
+                    "amount_decimal": "2500",
+                    "billing_scheme": "per_unit",
+                    "created": 1571425570,
+                    "currency": "usd",
+                    "interval": "month",
+                    "interval_count": 1,
+                    "livemode": false,
+                    "metadata": {},
+                    "nickname": "Small Monthly",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "tiers_mode": null,
+                    "transform_usage": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "price": {
+                    "id": "small-monthly",
+                    "object": "price",
+                    "active": true,
+                    "billing_scheme": "per_unit",
+                    "created": 1571425570,
+                    "currency": "usd",
+                    "custom_unit_amount": null,
+                    "livemode": false,
+                    "lookup_key": null,
+                    "metadata": {},
+                    "nickname": "Small Monthly",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "recurring": {
+                      "aggregate_usage": null,
+                      "interval": "month",
+                      "interval_count": 1,
+                      "trial_period_days": null,
+                      "usage_type": "licensed"
+                    },
+                    "tax_behavior": "exclusive",
+                    "tiers_mode": null,
+                    "transform_quantity": null,
+                    "type": "recurring",
+                    "unit_amount": 2500,
+                    "unit_amount_decimal": "2500"
+                  },
+                  "proration": false,
+                  "proration_details": {
+                    "credited_items": null
+                  },
+                  "quantity": 1,
+                  "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+                  "subscription_item": "si_NkuasfcBppZ2n4",
+                  "tax_amounts": [],
+                  "tax_rates": [],
+                  "type": "subscription",
+                  "unit_amount_excluding_tax": "2500"
+                }
+              ],
+              "has_more": false,
+              "total_count": 1,
+              "url": "/v1/invoices/in_1MzOlhKXBGcbgpbZ9CEVXY4S/lines"
+            },
+            "livemode": false,
+            "metadata": {},
+            "next_payment_attempt": null,
+            "number": "5AA0F78B-0001",
+            "on_behalf_of": null,
+            "paid": true,
+            "paid_out_of_band": false,
+            "payment_intent": {
+              "id": "pi_3MzOliKXBGcbgpbZ1SYiYxOO",
+              "object": "payment_intent",
+              "amount": 2500,
+              "amount_capturable": 0,
+              "amount_details": {
+                "tip": {}
+              },
+              "amount_received": 2500,
+              "application": null,
+              "application_fee_amount": null,
+              "automatic_payment_methods": null,
+              "canceled_at": null,
+              "cancellation_reason": null,
+              "capture_method": "automatic",
+              "client_secret": "pi_3MzOliKXBGcbgpbZ1SYiYxOO_secret_O5H2ls1P4VwoWFm8JakhH9dpS",
+              "confirmation_method": "automatic",
+              "created": 1682101994,
+              "currency": "usd",
+              "customer": "cus_NkuahmIPvlZ9cf",
+              "description": "Subscription creation",
+              "invoice": "in_1MzOlhKXBGcbgpbZ9CEVXY4S",
+              "last_payment_error": null,
+              "latest_charge": "ch_3MzOliKXBGcbgpbZ1TfonDbe",
+              "livemode": false,
+              "metadata": {},
+              "next_action": null,
+              "on_behalf_of": null,
+              "payment_method": "pm_1MzOlgKXBGcbgpbZUKhDqPC3",
+              "payment_method_options": {
+                "acss_debit": {
+                  "mandate_options": {
+                    "interval_description": null,
+                    "payment_schedule": null,
+                    "transaction_type": null
+                  },
+                  "verification_method": "automatic"
+                },
+                "card": {
+                  "installments": null,
+                  "mandate_options": null,
+                  "network": null,
+                  "request_three_d_secure": "automatic"
+                },
+                "cashapp": {},
+                "link": {
+                  "persistent_token": null
+                },
+                "us_bank_account": {
+                  "verification_method": "automatic"
+                }
+              },
+              "payment_method_types": [
+                "acss_debit",
+                "card",
+                "cashapp",
+                "link",
+                "us_bank_account"
+              ],
+              "processing": null,
+              "receipt_email": null,
+              "review": null,
+              "setup_future_usage": "off_session",
+              "shipping": null,
+              "source": null,
+              "statement_descriptor": null,
+              "statement_descriptor_suffix": null,
+              "status": "succeeded",
+              "transfer_data": null,
+              "transfer_group": null
+            },
+            "payment_settings": {
+              "default_mandate": null,
+              "payment_method_options": null,
+              "payment_method_types": null
+            },
+            "period_end": 1682101993,
+            "period_start": 1682101993,
+            "post_payment_credit_notes_amount": 0,
+            "pre_payment_credit_notes_amount": 0,
+            "quote": null,
+            "receipt_number": null,
+            "rendering_options": null,
+            "shipping_cost": null,
+            "shipping_details": null,
+            "starting_balance": 0,
+            "statement_descriptor": null,
+            "status": "paid",
+            "status_transitions": {
+              "finalized_at": 1682101993,
+              "marked_uncollectible_at": null,
+              "paid_at": 1682101993,
+              "voided_at": null
+            },
+            "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+            "subtotal": 2500,
+            "subtotal_excluding_tax": 2500,
+            "tax": null,
+            "test_clock": null,
+            "total": 2500,
+            "total_discount_amounts": [],
+            "total_excluding_tax": 2500,
+            "total_tax_amounts": [],
+            "transfer_data": null,
+            "webhooks_delivered_at": 1682101993
+          },
+          "livemode": false,
+          "metadata": {},
+          "next_pending_invoice_item_invoice": null,
+          "on_behalf_of": null,
+          "pause_collection": null,
+          "payment_settings": {
+            "payment_method_options": null,
+            "payment_method_types": null,
+            "save_default_payment_method": "off"
+          },
+          "pending_invoice_item_interval": null,
+          "pending_setup_intent": null,
+          "pending_update": null,
+          "plan": {
+            "id": "small-monthly",
+            "object": "plan",
+            "active": true,
+            "aggregate_usage": null,
+            "amount": 2500,
+            "amount_decimal": "2500",
+            "billing_scheme": "per_unit",
+            "created": 1571425570,
+            "currency": "usd",
+            "interval": "month",
+            "interval_count": 1,
+            "livemode": false,
+            "metadata": {},
+            "nickname": "Small Monthly",
+            "product": "prod_EYTX7RYhRjcwKD",
+            "tiers_mode": null,
+            "transform_usage": null,
+            "trial_period_days": null,
+            "usage_type": "licensed"
+          },
+          "quantity": 1,
+          "schedule": null,
+          "start_date": 1682101993,
+          "status": "active",
+          "test_clock": null,
+          "transfer_data": null,
+          "trial_end": null,
+          "trial_settings": {
+            "end_behavior": {
+              "missing_payment_method": "create_invoice"
+            }
+          },
+          "trial_start": null
+        }
+  recorded_at: Fri, 21 Apr 2023 18:33:16 GMT
+- request:
+    method: get
+    uri: https://api.stripe.com/v1/charges/ch_3MzOliKXBGcbgpbZ1TfonDbe?expand%5B%5D=invoice.total_discount_amounts.discount&expand%5B%5D=invoice.total_tax_amounts.tax_rate&expand%5B%5D=refunds
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/8.5.0 PayRails/6.3.2 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_jeWO6JKfPantmB","request_duration_ms":2631}}'
+      Stripe-Version:
+      - '2022-11-15'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"6.3.2"},"bindings_version":"8.5.0","lang":"ruby","lang_version":"3.2.1
+        p31 (2023-02-08)","platform":"x86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.4.0 Darwin Kernel Version 22.4.0: Mon Mar  6 21:00:17
+        PST 2023; root:xnu-8796.101.5~3/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Fri, 21 Apr 2023 18:33:16 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '8081'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Request-Id:
+      - req_lWj3FYTGD8m5Tm
+      Stripe-Version:
+      - '2022-11-15'
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "ch_3MzOliKXBGcbgpbZ1TfonDbe",
+          "object": "charge",
+          "amount": 2500,
+          "amount_captured": 2500,
+          "amount_refunded": 0,
+          "application": null,
+          "application_fee": null,
+          "application_fee_amount": null,
+          "balance_transaction": "txn_3MzOliKXBGcbgpbZ1d0cwRGl",
+          "billing_details": {
+            "address": {
+              "city": null,
+              "country": null,
+              "line1": null,
+              "line2": null,
+              "postal_code": null,
+              "state": null
+            },
+            "email": null,
+            "name": null,
+            "phone": null
+          },
+          "calculated_statement_descriptor": "PAY RAILS",
+          "captured": true,
+          "created": 1682101994,
+          "currency": "usd",
+          "customer": "cus_NkuahmIPvlZ9cf",
+          "description": "Subscription creation",
+          "destination": null,
+          "dispute": null,
+          "disputed": false,
+          "failure_balance_transaction": null,
+          "failure_code": null,
+          "failure_message": null,
+          "fraud_details": {},
+          "invoice": {
+            "id": "in_1MzOlhKXBGcbgpbZ9CEVXY4S",
+            "object": "invoice",
+            "account_country": "US",
+            "account_name": "Pay",
+            "account_tax_ids": null,
+            "amount_due": 2500,
+            "amount_paid": 2500,
+            "amount_remaining": 0,
+            "amount_shipping": 0,
+            "application": null,
+            "application_fee_amount": null,
+            "attempt_count": 1,
+            "attempted": true,
+            "auto_advance": false,
+            "automatic_tax": {
+              "enabled": false,
+              "status": null
+            },
+            "billing_reason": "subscription_create",
+            "charge": "ch_3MzOliKXBGcbgpbZ1TfonDbe",
+            "collection_method": "charge_automatically",
+            "created": 1682101993,
+            "currency": "usd",
+            "custom_fields": null,
+            "customer": "cus_NkuahmIPvlZ9cf",
+            "customer_address": null,
+            "customer_email": "stripe@example.org",
+            "customer_name": "Stripe User",
+            "customer_phone": null,
+            "customer_shipping": null,
+            "customer_tax_exempt": "none",
+            "customer_tax_ids": [],
+            "default_payment_method": null,
+            "default_source": null,
+            "default_tax_rates": [],
+            "description": null,
+            "discount": null,
+            "discounts": [],
+            "due_date": null,
+            "ending_balance": 0,
+            "footer": null,
+            "from_invoice": null,
+            "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhZWhyY2NDZnN4anFqVmxyZGlrWGZsSEhCUmMzLDcyNjQyNzk20200QnlQhvaA?s=ap",
+            "invoice_pdf": "https://pay.stripe.com/invoice/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhZWhyY2NDZnN4anFqVmxyZGlrWGZsSEhCUmMzLDcyNjQyNzk20200QnlQhvaA/pdf?s=ap",
+            "last_finalization_error": null,
+            "latest_revision": null,
+            "lines": {
+              "object": "list",
+              "data": [
+                {
+                  "id": "il_1MzOlhKXBGcbgpbZq8tF4bKq",
+                  "object": "line_item",
+                  "amount": 2500,
+                  "amount_excluding_tax": 2500,
+                  "currency": "usd",
+                  "description": "1 user × Test Subscription (at $25.00 / month)",
+                  "discount_amounts": [],
+                  "discountable": true,
+                  "discounts": [],
+                  "livemode": false,
+                  "metadata": {},
+                  "period": {
+                    "end": 1684693993,
+                    "start": 1682101993
+                  },
+                  "plan": {
+                    "id": "small-monthly",
+                    "object": "plan",
+                    "active": true,
+                    "aggregate_usage": null,
+                    "amount": 2500,
+                    "amount_decimal": "2500",
+                    "billing_scheme": "per_unit",
+                    "created": 1571425570,
+                    "currency": "usd",
+                    "interval": "month",
+                    "interval_count": 1,
+                    "livemode": false,
+                    "metadata": {},
+                    "nickname": "Small Monthly",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "tiers_mode": null,
+                    "transform_usage": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "price": {
+                    "id": "small-monthly",
+                    "object": "price",
+                    "active": true,
+                    "billing_scheme": "per_unit",
+                    "created": 1571425570,
+                    "currency": "usd",
+                    "custom_unit_amount": null,
+                    "livemode": false,
+                    "lookup_key": null,
+                    "metadata": {},
+                    "nickname": "Small Monthly",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "recurring": {
+                      "aggregate_usage": null,
+                      "interval": "month",
+                      "interval_count": 1,
+                      "trial_period_days": null,
+                      "usage_type": "licensed"
+                    },
+                    "tax_behavior": "exclusive",
+                    "tiers_mode": null,
+                    "transform_quantity": null,
+                    "type": "recurring",
+                    "unit_amount": 2500,
+                    "unit_amount_decimal": "2500"
+                  },
+                  "proration": false,
+                  "proration_details": {
+                    "credited_items": null
+                  },
+                  "quantity": 1,
+                  "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+                  "subscription_item": "si_NkuasfcBppZ2n4",
+                  "tax_amounts": [],
+                  "tax_rates": [],
+                  "type": "subscription",
+                  "unit_amount_excluding_tax": "2500"
+                }
+              ],
+              "has_more": false,
+              "total_count": 1,
+              "url": "/v1/invoices/in_1MzOlhKXBGcbgpbZ9CEVXY4S/lines"
+            },
+            "livemode": false,
+            "metadata": {},
+            "next_payment_attempt": null,
+            "number": "5AA0F78B-0001",
+            "on_behalf_of": null,
+            "paid": true,
+            "paid_out_of_band": false,
+            "payment_intent": "pi_3MzOliKXBGcbgpbZ1SYiYxOO",
+            "payment_settings": {
+              "default_mandate": null,
+              "payment_method_options": null,
+              "payment_method_types": null
+            },
+            "period_end": 1682101993,
+            "period_start": 1682101993,
+            "post_payment_credit_notes_amount": 0,
+            "pre_payment_credit_notes_amount": 0,
+            "quote": null,
+            "receipt_number": null,
+            "rendering_options": null,
+            "shipping_cost": null,
+            "shipping_details": null,
+            "starting_balance": 0,
+            "statement_descriptor": null,
+            "status": "paid",
+            "status_transitions": {
+              "finalized_at": 1682101993,
+              "marked_uncollectible_at": null,
+              "paid_at": 1682101993,
+              "voided_at": null
+            },
+            "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+            "subtotal": 2500,
+            "subtotal_excluding_tax": 2500,
+            "tax": null,
+            "test_clock": null,
+            "total": 2500,
+            "total_discount_amounts": [],
+            "total_excluding_tax": 2500,
+            "total_tax_amounts": [],
+            "transfer_data": null,
+            "webhooks_delivered_at": 1682101993
+          },
+          "livemode": false,
+          "metadata": {},
+          "on_behalf_of": null,
+          "order": null,
+          "outcome": {
+            "network_status": "approved_by_network",
+            "reason": null,
+            "risk_level": "normal",
+            "risk_score": 31,
+            "seller_message": "Payment complete.",
+            "type": "authorized"
+          },
+          "paid": true,
+          "payment_intent": "pi_3MzOliKXBGcbgpbZ1SYiYxOO",
+          "payment_method": "pm_1MzOlgKXBGcbgpbZUKhDqPC3",
+          "payment_method_details": {
+            "card": {
+              "brand": "visa",
+              "checks": {
+                "address_line1_check": null,
+                "address_postal_code_check": null,
+                "cvc_check": null
+              },
+              "country": "US",
+              "exp_month": 4,
+              "exp_year": 2024,
+              "fingerprint": "w4XDzQOFakih5EZM",
+              "funding": "credit",
+              "installments": null,
+              "last4": "4242",
+              "mandate": null,
+              "network": "visa",
+              "network_token": {
+                "used": false
+              },
+              "three_d_secure": null,
+              "wallet": null
+            },
+            "type": "card"
+          },
+          "receipt_email": null,
+          "receipt_number": null,
+          "receipt_url": "https://pay.stripe.com/receipts/invoices/CAcaFwoVYWNjdF8xRTRiZm5LWEJHY2JncGJaKOyti6IGMgbGAL33ETY6LBa43WYIha8pVcJdjlpuD4Fl4v5f99yR_gSGzufQf09a15sKEwc6ZJ5gmXyC?s=ap",
+          "refunded": false,
+          "refunds": {
+            "object": "list",
+            "data": [],
+            "has_more": false,
+            "total_count": 0,
+            "url": "/v1/charges/ch_3MzOliKXBGcbgpbZ1TfonDbe/refunds"
+          },
+          "review": null,
+          "shipping": null,
+          "source": null,
+          "source_transfer": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffix": null,
+          "status": "succeeded",
+          "transfer_data": null,
+          "transfer_group": null
+        }
+  recorded_at: Fri, 21 Apr 2023 18:33:16 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/subscriptions/sub_1MzOlhKXBGcbgpbZEyl9nOSn
+    body:
+      encoding: UTF-8
+      string: cancel_at_period_end=false&plan=small-annual&proration_behavior=always_invoice&trial_end=now&quantity=1&expand[0]=pending_setup_intent&expand[1]=latest_invoice.payment_intent&expand[2]=latest_invoice.charge&expand[3]=latest_invoice.total_discount_amounts.discount&expand[4]=latest_invoice.total_tax_amounts.tax_rate
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/8.5.0 PayRails/6.3.2 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_lWj3FYTGD8m5Tm","request_duration_ms":259}}'
+      Idempotency-Key:
+      - 60ba38c9-f19d-40b0-8929-ce728cb07d7b
+      Stripe-Version:
+      - '2022-11-15'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"6.3.2"},"bindings_version":"8.5.0","lang":"ruby","lang_version":"3.2.1
+        p31 (2023-02-08)","platform":"x86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.4.0 Darwin Kernel Version 22.4.0: Mon Mar  6 21:00:17
+        PST 2023; root:xnu-8796.101.5~3/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Fri, 21 Apr 2023 18:33:18 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '17041'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - 60ba38c9-f19d-40b0-8929-ce728cb07d7b
+      Original-Request:
+      - req_ArMTB9LubbT846
+      Request-Id:
+      - req_ArMTB9LubbT846
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2022-11-15'
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+          "object": "subscription",
+          "application": null,
+          "application_fee_percent": null,
+          "automatic_tax": {
+            "enabled": false
+          },
+          "billing_cycle_anchor": 1682101996,
+          "billing_thresholds": null,
+          "cancel_at": null,
+          "cancel_at_period_end": false,
+          "canceled_at": null,
+          "cancellation_details": {
+            "comment": null,
+            "feedback": null,
+            "reason": null
+          },
+          "collection_method": "charge_automatically",
+          "created": 1682101993,
+          "currency": "usd",
+          "current_period_end": 1713724396,
+          "current_period_start": 1682101996,
+          "customer": "cus_NkuahmIPvlZ9cf",
+          "days_until_due": null,
+          "default_payment_method": null,
+          "default_source": null,
+          "default_tax_rates": [],
+          "description": null,
+          "discount": null,
+          "ended_at": null,
+          "items": {
+            "object": "list",
+            "data": [
+              {
+                "id": "si_NkuasfcBppZ2n4",
+                "object": "subscription_item",
+                "billing_thresholds": null,
+                "created": 1682101994,
+                "metadata": {},
+                "plan": {
+                  "id": "small-annual",
+                  "object": "plan",
+                  "active": true,
+                  "aggregate_usage": null,
+                  "amount": 25000,
+                  "amount_decimal": "25000",
+                  "billing_scheme": "per_unit",
+                  "created": 1571425588,
+                  "currency": "usd",
+                  "interval": "year",
+                  "interval_count": 1,
+                  "livemode": false,
+                  "metadata": {},
+                  "nickname": "Small Annual",
+                  "product": "prod_EYTX7RYhRjcwKD",
+                  "tiers_mode": null,
+                  "transform_usage": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "price": {
+                  "id": "small-annual",
+                  "object": "price",
+                  "active": true,
+                  "billing_scheme": "per_unit",
+                  "created": 1571425588,
+                  "currency": "usd",
+                  "custom_unit_amount": null,
+                  "livemode": false,
+                  "lookup_key": null,
+                  "metadata": {},
+                  "nickname": "Small Annual",
+                  "product": "prod_EYTX7RYhRjcwKD",
+                  "recurring": {
+                    "aggregate_usage": null,
+                    "interval": "year",
+                    "interval_count": 1,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "tax_behavior": "unspecified",
+                  "tiers_mode": null,
+                  "transform_quantity": null,
+                  "type": "recurring",
+                  "unit_amount": 25000,
+                  "unit_amount_decimal": "25000"
+                },
+                "quantity": 1,
+                "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+                "tax_rates": []
+              }
+            ],
+            "has_more": false,
+            "total_count": 1,
+            "url": "/v1/subscription_items?subscription=sub_1MzOlhKXBGcbgpbZEyl9nOSn"
+          },
+          "latest_invoice": {
+            "id": "in_1MzOlkKXBGcbgpbZ5XarMvXj",
+            "object": "invoice",
+            "account_country": "US",
+            "account_name": "Pay",
+            "account_tax_ids": null,
+            "amount_due": 22500,
+            "amount_paid": 22500,
+            "amount_remaining": 0,
+            "amount_shipping": 0,
+            "application": null,
+            "application_fee_amount": null,
+            "attempt_count": 1,
+            "attempted": true,
+            "auto_advance": false,
+            "automatic_tax": {
+              "enabled": false,
+              "status": null
+            },
+            "billing_reason": "subscription_update",
+            "charge": {
+              "id": "ch_3MzOllKXBGcbgpbZ0vMv070M",
+              "object": "charge",
+              "amount": 22500,
+              "amount_captured": 22500,
+              "amount_refunded": 0,
+              "application": null,
+              "application_fee": null,
+              "application_fee_amount": null,
+              "balance_transaction": "txn_3MzOllKXBGcbgpbZ0hhiE7mx",
+              "billing_details": {
+                "address": {
+                  "city": null,
+                  "country": null,
+                  "line1": null,
+                  "line2": null,
+                  "postal_code": null,
+                  "state": null
+                },
+                "email": null,
+                "name": null,
+                "phone": null
+              },
+              "calculated_statement_descriptor": "PAY RAILS",
+              "captured": true,
+              "created": 1682101997,
+              "currency": "usd",
+              "customer": "cus_NkuahmIPvlZ9cf",
+              "description": "Subscription update",
+              "destination": null,
+              "dispute": null,
+              "disputed": false,
+              "failure_balance_transaction": null,
+              "failure_code": null,
+              "failure_message": null,
+              "fraud_details": {},
+              "invoice": "in_1MzOlkKXBGcbgpbZ5XarMvXj",
+              "livemode": false,
+              "metadata": {},
+              "on_behalf_of": null,
+              "order": null,
+              "outcome": {
+                "network_status": "approved_by_network",
+                "reason": null,
+                "risk_level": "normal",
+                "risk_score": 33,
+                "seller_message": "Payment complete.",
+                "type": "authorized"
+              },
+              "paid": true,
+              "payment_intent": "pi_3MzOllKXBGcbgpbZ0xrPEoZl",
+              "payment_method": "pm_1MzOlgKXBGcbgpbZUKhDqPC3",
+              "payment_method_details": {
+                "card": {
+                  "brand": "visa",
+                  "checks": {
+                    "address_line1_check": null,
+                    "address_postal_code_check": null,
+                    "cvc_check": null
+                  },
+                  "country": "US",
+                  "exp_month": 4,
+                  "exp_year": 2024,
+                  "fingerprint": "w4XDzQOFakih5EZM",
+                  "funding": "credit",
+                  "installments": null,
+                  "last4": "4242",
+                  "mandate": null,
+                  "network": "visa",
+                  "network_token": {
+                    "used": false
+                  },
+                  "three_d_secure": null,
+                  "wallet": null
+                },
+                "type": "card"
+              },
+              "receipt_email": null,
+              "receipt_number": null,
+              "receipt_url": "https://pay.stripe.com/receipts/invoices/CAcaFwoVYWNjdF8xRTRiZm5LWEJHY2JncGJaKO6ti6IGMgauhK8-rjY6LBYdaT1L6lHQSRGtOSJRTNJF3bPZIHJGYH-aUfToBWe23OeZHV2j2YvZQfVa?s=ap",
+              "refunded": false,
+              "review": null,
+              "shipping": null,
+              "source": null,
+              "source_transfer": null,
+              "statement_descriptor": null,
+              "statement_descriptor_suffix": null,
+              "status": "succeeded",
+              "transfer_data": null,
+              "transfer_group": null
+            },
+            "collection_method": "charge_automatically",
+            "created": 1682101996,
+            "currency": "usd",
+            "custom_fields": null,
+            "customer": "cus_NkuahmIPvlZ9cf",
+            "customer_address": null,
+            "customer_email": "stripe@example.org",
+            "customer_name": "Stripe User",
+            "customer_phone": null,
+            "customer_shipping": null,
+            "customer_tax_exempt": "none",
+            "customer_tax_ids": [],
+            "default_payment_method": null,
+            "default_source": null,
+            "default_tax_rates": [],
+            "description": null,
+            "discount": null,
+            "discounts": [],
+            "due_date": null,
+            "ending_balance": 0,
+            "footer": null,
+            "from_invoice": null,
+            "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhcWZjZWZDRHF1Q3g3Q2kxTWZsNDF5bFNPUmkxLDcyNjQyNzk40200o82ZZRYM?s=ap",
+            "invoice_pdf": "https://pay.stripe.com/invoice/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhcWZjZWZDRHF1Q3g3Q2kxTWZsNDF5bFNPUmkxLDcyNjQyNzk40200o82ZZRYM/pdf?s=ap",
+            "last_finalization_error": null,
+            "latest_revision": null,
+            "lines": {
+              "object": "list",
+              "data": [
+                {
+                  "id": "il_1MzOlkKXBGcbgpbZZXbEVJDa",
+                  "object": "line_item",
+                  "amount": -2500,
+                  "amount_excluding_tax": -2500,
+                  "currency": "usd",
+                  "description": "Unused time on Test Subscription after 21 Apr 2023",
+                  "discount_amounts": [],
+                  "discountable": false,
+                  "discounts": [],
+                  "invoice_item": "ii_1MzOlkKXBGcbgpbZJSGpgKSZ",
+                  "livemode": false,
+                  "metadata": {},
+                  "period": {
+                    "end": 1684693993,
+                    "start": 1682101996
+                  },
+                  "plan": {
+                    "id": "small-monthly",
+                    "object": "plan",
+                    "active": true,
+                    "aggregate_usage": null,
+                    "amount": 2500,
+                    "amount_decimal": "2500",
+                    "billing_scheme": "per_unit",
+                    "created": 1571425570,
+                    "currency": "usd",
+                    "interval": "month",
+                    "interval_count": 1,
+                    "livemode": false,
+                    "metadata": {},
+                    "nickname": "Small Monthly",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "tiers_mode": null,
+                    "transform_usage": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "price": {
+                    "id": "small-monthly",
+                    "object": "price",
+                    "active": true,
+                    "billing_scheme": "per_unit",
+                    "created": 1571425570,
+                    "currency": "usd",
+                    "custom_unit_amount": null,
+                    "livemode": false,
+                    "lookup_key": null,
+                    "metadata": {},
+                    "nickname": "Small Monthly",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "recurring": {
+                      "aggregate_usage": null,
+                      "interval": "month",
+                      "interval_count": 1,
+                      "trial_period_days": null,
+                      "usage_type": "licensed"
+                    },
+                    "tax_behavior": "exclusive",
+                    "tiers_mode": null,
+                    "transform_quantity": null,
+                    "type": "recurring",
+                    "unit_amount": 2500,
+                    "unit_amount_decimal": "2500"
+                  },
+                  "proration": true,
+                  "proration_details": {
+                    "credited_items": {
+                      "invoice": "in_1MzOlhKXBGcbgpbZ9CEVXY4S",
+                      "invoice_line_items": [
+                        "il_1MzOlhKXBGcbgpbZq8tF4bKq"
+                      ]
+                    }
+                  },
+                  "quantity": 1,
+                  "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+                  "subscription_item": "si_NkuasfcBppZ2n4",
+                  "tax_amounts": [],
+                  "tax_rates": [],
+                  "type": "invoiceitem",
+                  "unit_amount_excluding_tax": "-2500"
+                },
+                {
+                  "id": "il_1MzOlkKXBGcbgpbZZdxlHkyJ",
+                  "object": "line_item",
+                  "amount": 25000,
+                  "amount_excluding_tax": 25000,
+                  "currency": "usd",
+                  "description": "1 user × Test Subscription (at $250.00 / year)",
+                  "discount_amounts": [],
+                  "discountable": true,
+                  "discounts": [],
+                  "livemode": false,
+                  "metadata": {},
+                  "period": {
+                    "end": 1713724396,
+                    "start": 1682101996
+                  },
+                  "plan": {
+                    "id": "small-annual",
+                    "object": "plan",
+                    "active": true,
+                    "aggregate_usage": null,
+                    "amount": 25000,
+                    "amount_decimal": "25000",
+                    "billing_scheme": "per_unit",
+                    "created": 1571425588,
+                    "currency": "usd",
+                    "interval": "year",
+                    "interval_count": 1,
+                    "livemode": false,
+                    "metadata": {},
+                    "nickname": "Small Annual",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "tiers_mode": null,
+                    "transform_usage": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "price": {
+                    "id": "small-annual",
+                    "object": "price",
+                    "active": true,
+                    "billing_scheme": "per_unit",
+                    "created": 1571425588,
+                    "currency": "usd",
+                    "custom_unit_amount": null,
+                    "livemode": false,
+                    "lookup_key": null,
+                    "metadata": {},
+                    "nickname": "Small Annual",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "recurring": {
+                      "aggregate_usage": null,
+                      "interval": "year",
+                      "interval_count": 1,
+                      "trial_period_days": null,
+                      "usage_type": "licensed"
+                    },
+                    "tax_behavior": "unspecified",
+                    "tiers_mode": null,
+                    "transform_quantity": null,
+                    "type": "recurring",
+                    "unit_amount": 25000,
+                    "unit_amount_decimal": "25000"
+                  },
+                  "proration": false,
+                  "proration_details": {
+                    "credited_items": null
+                  },
+                  "quantity": 1,
+                  "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+                  "subscription_item": "si_NkuasfcBppZ2n4",
+                  "tax_amounts": [],
+                  "tax_rates": [],
+                  "type": "subscription",
+                  "unit_amount_excluding_tax": "25000"
+                }
+              ],
+              "has_more": false,
+              "total_count": 2,
+              "url": "/v1/invoices/in_1MzOlkKXBGcbgpbZ5XarMvXj/lines"
+            },
+            "livemode": false,
+            "metadata": {},
+            "next_payment_attempt": null,
+            "number": "5AA0F78B-0002",
+            "on_behalf_of": null,
+            "paid": true,
+            "paid_out_of_band": false,
+            "payment_intent": {
+              "id": "pi_3MzOllKXBGcbgpbZ0xrPEoZl",
+              "object": "payment_intent",
+              "amount": 22500,
+              "amount_capturable": 0,
+              "amount_details": {
+                "tip": {}
+              },
+              "amount_received": 22500,
+              "application": null,
+              "application_fee_amount": null,
+              "automatic_payment_methods": null,
+              "canceled_at": null,
+              "cancellation_reason": null,
+              "capture_method": "automatic",
+              "client_secret": "pi_3MzOllKXBGcbgpbZ0xrPEoZl_secret_cHwvyYHBwXvA2RRfmQXRoNSl8",
+              "confirmation_method": "automatic",
+              "created": 1682101997,
+              "currency": "usd",
+              "customer": "cus_NkuahmIPvlZ9cf",
+              "description": "Subscription update",
+              "invoice": "in_1MzOlkKXBGcbgpbZ5XarMvXj",
+              "last_payment_error": null,
+              "latest_charge": "ch_3MzOllKXBGcbgpbZ0vMv070M",
+              "livemode": false,
+              "metadata": {},
+              "next_action": null,
+              "on_behalf_of": null,
+              "payment_method": "pm_1MzOlgKXBGcbgpbZUKhDqPC3",
+              "payment_method_options": {
+                "acss_debit": {
+                  "mandate_options": {
+                    "interval_description": null,
+                    "payment_schedule": null,
+                    "transaction_type": null
+                  },
+                  "verification_method": "automatic"
+                },
+                "card": {
+                  "installments": null,
+                  "mandate_options": null,
+                  "network": null,
+                  "request_three_d_secure": "automatic"
+                },
+                "cashapp": {},
+                "link": {
+                  "persistent_token": null
+                },
+                "us_bank_account": {
+                  "verification_method": "automatic"
+                }
+              },
+              "payment_method_types": [
+                "acss_debit",
+                "card",
+                "cashapp",
+                "link",
+                "us_bank_account"
+              ],
+              "processing": null,
+              "receipt_email": null,
+              "review": null,
+              "setup_future_usage": "off_session",
+              "shipping": null,
+              "source": null,
+              "statement_descriptor": null,
+              "statement_descriptor_suffix": null,
+              "status": "succeeded",
+              "transfer_data": null,
+              "transfer_group": null
+            },
+            "payment_settings": {
+              "default_mandate": null,
+              "payment_method_options": null,
+              "payment_method_types": null
+            },
+            "period_end": 1682101996,
+            "period_start": 1682101996,
+            "post_payment_credit_notes_amount": 0,
+            "pre_payment_credit_notes_amount": 0,
+            "quote": null,
+            "receipt_number": null,
+            "rendering_options": null,
+            "shipping_cost": null,
+            "shipping_details": null,
+            "starting_balance": 0,
+            "statement_descriptor": null,
+            "status": "paid",
+            "status_transitions": {
+              "finalized_at": 1682101996,
+              "marked_uncollectible_at": null,
+              "paid_at": 1682101996,
+              "voided_at": null
+            },
+            "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+            "subtotal": 22500,
+            "subtotal_excluding_tax": 22500,
+            "tax": null,
+            "test_clock": null,
+            "total": 22500,
+            "total_discount_amounts": [],
+            "total_excluding_tax": 22500,
+            "total_tax_amounts": [],
+            "transfer_data": null,
+            "webhooks_delivered_at": 1682101996
+          },
+          "livemode": false,
+          "metadata": {},
+          "next_pending_invoice_item_invoice": null,
+          "on_behalf_of": null,
+          "pause_collection": null,
+          "payment_settings": {
+            "payment_method_options": null,
+            "payment_method_types": null,
+            "save_default_payment_method": "off"
+          },
+          "pending_invoice_item_interval": null,
+          "pending_setup_intent": null,
+          "pending_update": null,
+          "plan": {
+            "id": "small-annual",
+            "object": "plan",
+            "active": true,
+            "aggregate_usage": null,
+            "amount": 25000,
+            "amount_decimal": "25000",
+            "billing_scheme": "per_unit",
+            "created": 1571425588,
+            "currency": "usd",
+            "interval": "year",
+            "interval_count": 1,
+            "livemode": false,
+            "metadata": {},
+            "nickname": "Small Annual",
+            "product": "prod_EYTX7RYhRjcwKD",
+            "tiers_mode": null,
+            "transform_usage": null,
+            "trial_period_days": null,
+            "usage_type": "licensed"
+          },
+          "quantity": 1,
+          "schedule": null,
+          "start_date": 1682101993,
+          "status": "active",
+          "test_clock": null,
+          "transfer_data": null,
+          "trial_end": null,
+          "trial_settings": {
+            "end_behavior": {
+              "missing_payment_method": "create_invoice"
+            }
+          },
+          "trial_start": null
+        }
+  recorded_at: Fri, 21 Apr 2023 18:33:18 GMT
+- request:
+    method: get
+    uri: https://api.stripe.com/v1/charges/ch_3MzOllKXBGcbgpbZ0vMv070M?expand%5B%5D=invoice.total_discount_amounts.discount&expand%5B%5D=invoice.total_tax_amounts.tax_rate&expand%5B%5D=refunds
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/8.5.0 PayRails/6.3.2 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_ArMTB9LubbT846","request_duration_ms":2427}}'
+      Stripe-Version:
+      - '2022-11-15'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"6.3.2"},"bindings_version":"8.5.0","lang":"ruby","lang_version":"3.2.1
+        p31 (2023-02-08)","platform":"x86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.4.0 Darwin Kernel Version 22.4.0: Mon Mar  6 21:00:17
+        PST 2023; root:xnu-8796.101.5~3/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Fri, 21 Apr 2023 18:33:19 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '10819'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Request-Id:
+      - req_mwwT6T1PK6fshl
+      Stripe-Version:
+      - '2022-11-15'
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "ch_3MzOllKXBGcbgpbZ0vMv070M",
+          "object": "charge",
+          "amount": 22500,
+          "amount_captured": 22500,
+          "amount_refunded": 0,
+          "application": null,
+          "application_fee": null,
+          "application_fee_amount": null,
+          "balance_transaction": "txn_3MzOllKXBGcbgpbZ0hhiE7mx",
+          "billing_details": {
+            "address": {
+              "city": null,
+              "country": null,
+              "line1": null,
+              "line2": null,
+              "postal_code": null,
+              "state": null
+            },
+            "email": null,
+            "name": null,
+            "phone": null
+          },
+          "calculated_statement_descriptor": "PAY RAILS",
+          "captured": true,
+          "created": 1682101997,
+          "currency": "usd",
+          "customer": "cus_NkuahmIPvlZ9cf",
+          "description": "Subscription update",
+          "destination": null,
+          "dispute": null,
+          "disputed": false,
+          "failure_balance_transaction": null,
+          "failure_code": null,
+          "failure_message": null,
+          "fraud_details": {},
+          "invoice": {
+            "id": "in_1MzOlkKXBGcbgpbZ5XarMvXj",
+            "object": "invoice",
+            "account_country": "US",
+            "account_name": "Pay",
+            "account_tax_ids": null,
+            "amount_due": 22500,
+            "amount_paid": 22500,
+            "amount_remaining": 0,
+            "amount_shipping": 0,
+            "application": null,
+            "application_fee_amount": null,
+            "attempt_count": 1,
+            "attempted": true,
+            "auto_advance": false,
+            "automatic_tax": {
+              "enabled": false,
+              "status": null
+            },
+            "billing_reason": "subscription_update",
+            "charge": "ch_3MzOllKXBGcbgpbZ0vMv070M",
+            "collection_method": "charge_automatically",
+            "created": 1682101996,
+            "currency": "usd",
+            "custom_fields": null,
+            "customer": "cus_NkuahmIPvlZ9cf",
+            "customer_address": null,
+            "customer_email": "stripe@example.org",
+            "customer_name": "Stripe User",
+            "customer_phone": null,
+            "customer_shipping": null,
+            "customer_tax_exempt": "none",
+            "customer_tax_ids": [],
+            "default_payment_method": null,
+            "default_source": null,
+            "default_tax_rates": [],
+            "description": null,
+            "discount": null,
+            "discounts": [],
+            "due_date": null,
+            "ending_balance": 0,
+            "footer": null,
+            "from_invoice": null,
+            "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhcWZjZWZDRHF1Q3g3Q2kxTWZsNDF5bFNPUmkxLDcyNjQyNzk50200xd76JE7I?s=ap",
+            "invoice_pdf": "https://pay.stripe.com/invoice/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhcWZjZWZDRHF1Q3g3Q2kxTWZsNDF5bFNPUmkxLDcyNjQyNzk50200xd76JE7I/pdf?s=ap",
+            "last_finalization_error": null,
+            "latest_revision": null,
+            "lines": {
+              "object": "list",
+              "data": [
+                {
+                  "id": "il_1MzOlkKXBGcbgpbZZXbEVJDa",
+                  "object": "line_item",
+                  "amount": -2500,
+                  "amount_excluding_tax": -2500,
+                  "currency": "usd",
+                  "description": "Unused time on Test Subscription after 21 Apr 2023",
+                  "discount_amounts": [],
+                  "discountable": false,
+                  "discounts": [],
+                  "invoice_item": "ii_1MzOlkKXBGcbgpbZJSGpgKSZ",
+                  "livemode": false,
+                  "metadata": {},
+                  "period": {
+                    "end": 1684693993,
+                    "start": 1682101996
+                  },
+                  "plan": {
+                    "id": "small-monthly",
+                    "object": "plan",
+                    "active": true,
+                    "aggregate_usage": null,
+                    "amount": 2500,
+                    "amount_decimal": "2500",
+                    "billing_scheme": "per_unit",
+                    "created": 1571425570,
+                    "currency": "usd",
+                    "interval": "month",
+                    "interval_count": 1,
+                    "livemode": false,
+                    "metadata": {},
+                    "nickname": "Small Monthly",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "tiers_mode": null,
+                    "transform_usage": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "price": {
+                    "id": "small-monthly",
+                    "object": "price",
+                    "active": true,
+                    "billing_scheme": "per_unit",
+                    "created": 1571425570,
+                    "currency": "usd",
+                    "custom_unit_amount": null,
+                    "livemode": false,
+                    "lookup_key": null,
+                    "metadata": {},
+                    "nickname": "Small Monthly",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "recurring": {
+                      "aggregate_usage": null,
+                      "interval": "month",
+                      "interval_count": 1,
+                      "trial_period_days": null,
+                      "usage_type": "licensed"
+                    },
+                    "tax_behavior": "exclusive",
+                    "tiers_mode": null,
+                    "transform_quantity": null,
+                    "type": "recurring",
+                    "unit_amount": 2500,
+                    "unit_amount_decimal": "2500"
+                  },
+                  "proration": true,
+                  "proration_details": {
+                    "credited_items": {
+                      "invoice": "in_1MzOlhKXBGcbgpbZ9CEVXY4S",
+                      "invoice_line_items": [
+                        "il_1MzOlhKXBGcbgpbZq8tF4bKq"
+                      ]
+                    }
+                  },
+                  "quantity": 1,
+                  "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+                  "subscription_item": "si_NkuasfcBppZ2n4",
+                  "tax_amounts": [],
+                  "tax_rates": [],
+                  "type": "invoiceitem",
+                  "unit_amount_excluding_tax": "-2500"
+                },
+                {
+                  "id": "il_1MzOlkKXBGcbgpbZZdxlHkyJ",
+                  "object": "line_item",
+                  "amount": 25000,
+                  "amount_excluding_tax": 25000,
+                  "currency": "usd",
+                  "description": "1 user × Test Subscription (at $250.00 / year)",
+                  "discount_amounts": [],
+                  "discountable": true,
+                  "discounts": [],
+                  "livemode": false,
+                  "metadata": {},
+                  "period": {
+                    "end": 1713724396,
+                    "start": 1682101996
+                  },
+                  "plan": {
+                    "id": "small-annual",
+                    "object": "plan",
+                    "active": true,
+                    "aggregate_usage": null,
+                    "amount": 25000,
+                    "amount_decimal": "25000",
+                    "billing_scheme": "per_unit",
+                    "created": 1571425588,
+                    "currency": "usd",
+                    "interval": "year",
+                    "interval_count": 1,
+                    "livemode": false,
+                    "metadata": {},
+                    "nickname": "Small Annual",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "tiers_mode": null,
+                    "transform_usage": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "price": {
+                    "id": "small-annual",
+                    "object": "price",
+                    "active": true,
+                    "billing_scheme": "per_unit",
+                    "created": 1571425588,
+                    "currency": "usd",
+                    "custom_unit_amount": null,
+                    "livemode": false,
+                    "lookup_key": null,
+                    "metadata": {},
+                    "nickname": "Small Annual",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "recurring": {
+                      "aggregate_usage": null,
+                      "interval": "year",
+                      "interval_count": 1,
+                      "trial_period_days": null,
+                      "usage_type": "licensed"
+                    },
+                    "tax_behavior": "unspecified",
+                    "tiers_mode": null,
+                    "transform_quantity": null,
+                    "type": "recurring",
+                    "unit_amount": 25000,
+                    "unit_amount_decimal": "25000"
+                  },
+                  "proration": false,
+                  "proration_details": {
+                    "credited_items": null
+                  },
+                  "quantity": 1,
+                  "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+                  "subscription_item": "si_NkuasfcBppZ2n4",
+                  "tax_amounts": [],
+                  "tax_rates": [],
+                  "type": "subscription",
+                  "unit_amount_excluding_tax": "25000"
+                }
+              ],
+              "has_more": false,
+              "total_count": 2,
+              "url": "/v1/invoices/in_1MzOlkKXBGcbgpbZ5XarMvXj/lines"
+            },
+            "livemode": false,
+            "metadata": {},
+            "next_payment_attempt": null,
+            "number": "5AA0F78B-0002",
+            "on_behalf_of": null,
+            "paid": true,
+            "paid_out_of_band": false,
+            "payment_intent": "pi_3MzOllKXBGcbgpbZ0xrPEoZl",
+            "payment_settings": {
+              "default_mandate": null,
+              "payment_method_options": null,
+              "payment_method_types": null
+            },
+            "period_end": 1682101996,
+            "period_start": 1682101996,
+            "post_payment_credit_notes_amount": 0,
+            "pre_payment_credit_notes_amount": 0,
+            "quote": null,
+            "receipt_number": null,
+            "rendering_options": null,
+            "shipping_cost": null,
+            "shipping_details": null,
+            "starting_balance": 0,
+            "statement_descriptor": null,
+            "status": "paid",
+            "status_transitions": {
+              "finalized_at": 1682101996,
+              "marked_uncollectible_at": null,
+              "paid_at": 1682101996,
+              "voided_at": null
+            },
+            "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+            "subtotal": 22500,
+            "subtotal_excluding_tax": 22500,
+            "tax": null,
+            "test_clock": null,
+            "total": 22500,
+            "total_discount_amounts": [],
+            "total_excluding_tax": 22500,
+            "total_tax_amounts": [],
+            "transfer_data": null,
+            "webhooks_delivered_at": 1682101996
+          },
+          "livemode": false,
+          "metadata": {},
+          "on_behalf_of": null,
+          "order": null,
+          "outcome": {
+            "network_status": "approved_by_network",
+            "reason": null,
+            "risk_level": "normal",
+            "risk_score": 33,
+            "seller_message": "Payment complete.",
+            "type": "authorized"
+          },
+          "paid": true,
+          "payment_intent": "pi_3MzOllKXBGcbgpbZ0xrPEoZl",
+          "payment_method": "pm_1MzOlgKXBGcbgpbZUKhDqPC3",
+          "payment_method_details": {
+            "card": {
+              "brand": "visa",
+              "checks": {
+                "address_line1_check": null,
+                "address_postal_code_check": null,
+                "cvc_check": null
+              },
+              "country": "US",
+              "exp_month": 4,
+              "exp_year": 2024,
+              "fingerprint": "w4XDzQOFakih5EZM",
+              "funding": "credit",
+              "installments": null,
+              "last4": "4242",
+              "mandate": null,
+              "network": "visa",
+              "network_token": {
+                "used": false
+              },
+              "three_d_secure": null,
+              "wallet": null
+            },
+            "type": "card"
+          },
+          "receipt_email": null,
+          "receipt_number": null,
+          "receipt_url": "https://pay.stripe.com/receipts/invoices/CAcaFwoVYWNjdF8xRTRiZm5LWEJHY2JncGJaKO-ti6IGMgYxdeYTuks6LBYomRzKlfyuUlHo_zOEFfNnbEEOzzWbyk3kQ4XH1CJvk0K16FM2V-oIOTdj?s=ap",
+          "refunded": false,
+          "refunds": {
+            "object": "list",
+            "data": [],
+            "has_more": false,
+            "total_count": 0,
+            "url": "/v1/charges/ch_3MzOllKXBGcbgpbZ0vMv070M/refunds"
+          },
+          "review": null,
+          "shipping": null,
+          "source": null,
+          "source_transfer": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffix": null,
+          "status": "succeeded",
+          "transfer_data": null,
+          "transfer_group": null
+        }
+  recorded_at: Fri, 21 Apr 2023 18:33:19 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/invoices
+    body:
+      encoding: UTF-8
+      string: subscription=sub_1MzOlhKXBGcbgpbZEyl9nOSn&customer=cus_NkuahmIPvlZ9cf
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/8.5.0 PayRails/6.3.2 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_mwwT6T1PK6fshl","request_duration_ms":288}}'
+      Idempotency-Key:
+      - 04a64f7a-e605-4107-bc10-d0728bfdbd50
+      Stripe-Version:
+      - '2022-11-15'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"6.3.2"},"bindings_version":"8.5.0","lang":"ruby","lang_version":"3.2.1
+        p31 (2023-02-08)","platform":"x86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.4.0 Darwin Kernel Version 22.4.0: Mon Mar  6 21:00:17
+        PST 2023; root:xnu-8796.101.5~3/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Fri, 21 Apr 2023 18:33:19 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '2448'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - 04a64f7a-e605-4107-bc10-d0728bfdbd50
+      Original-Request:
+      - req_VTMCeUca1Zi01V
+      Request-Id:
+      - req_VTMCeUca1Zi01V
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2022-11-15'
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "in_1MzOlnKXBGcbgpbZjcxnouiQ",
+          "object": "invoice",
+          "account_country": "US",
+          "account_name": "Pay",
+          "account_tax_ids": null,
+          "amount_due": 0,
+          "amount_paid": 0,
+          "amount_remaining": 0,
+          "amount_shipping": 0,
+          "application": null,
+          "application_fee_amount": null,
+          "attempt_count": 0,
+          "attempted": false,
+          "auto_advance": false,
+          "automatic_tax": {
+            "enabled": false,
+            "status": null
+          },
+          "billing_reason": "manual",
+          "charge": null,
+          "collection_method": "charge_automatically",
+          "created": 1682101999,
+          "currency": "usd",
+          "custom_fields": null,
+          "customer": "cus_NkuahmIPvlZ9cf",
+          "customer_address": null,
+          "customer_email": "stripe@example.org",
+          "customer_name": "Stripe User",
+          "customer_phone": null,
+          "customer_shipping": null,
+          "customer_tax_exempt": "none",
+          "customer_tax_ids": [],
+          "default_payment_method": null,
+          "default_source": null,
+          "default_tax_rates": [],
+          "description": null,
+          "discount": null,
+          "discounts": [],
+          "due_date": null,
+          "ending_balance": null,
+          "footer": null,
+          "from_invoice": null,
+          "hosted_invoice_url": null,
+          "invoice_pdf": null,
+          "last_finalization_error": null,
+          "latest_revision": null,
+          "lines": {
+            "object": "list",
+            "data": [],
+            "has_more": false,
+            "total_count": 0,
+            "url": "/v1/invoices/in_1MzOlnKXBGcbgpbZjcxnouiQ/lines"
+          },
+          "livemode": false,
+          "metadata": {},
+          "next_payment_attempt": null,
+          "number": null,
+          "on_behalf_of": null,
+          "paid": false,
+          "paid_out_of_band": false,
+          "payment_intent": null,
+          "payment_settings": {
+            "default_mandate": null,
+            "payment_method_options": null,
+            "payment_method_types": null
+          },
+          "period_end": 1682101999,
+          "period_start": 1682101996,
+          "post_payment_credit_notes_amount": 0,
+          "pre_payment_credit_notes_amount": 0,
+          "quote": null,
+          "receipt_number": null,
+          "rendering_options": null,
+          "shipping_cost": null,
+          "shipping_details": null,
+          "starting_balance": 0,
+          "statement_descriptor": null,
+          "status": "draft",
+          "status_transitions": {
+            "finalized_at": null,
+            "marked_uncollectible_at": null,
+            "paid_at": null,
+            "voided_at": null
+          },
+          "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+          "subtotal": 0,
+          "subtotal_excluding_tax": 0,
+          "tax": null,
+          "test_clock": null,
+          "total": 0,
+          "total_discount_amounts": [],
+          "total_excluding_tax": 0,
+          "total_tax_amounts": [],
+          "transfer_data": null,
+          "webhooks_delivered_at": 1682101999
+        }
+  recorded_at: Fri, 21 Apr 2023 18:33:19 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/invoices/in_1MzOlnKXBGcbgpbZjcxnouiQ/pay
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/8.5.0 PayRails/6.3.2 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Content-Type:
+      - application/x-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_VTMCeUca1Zi01V","request_duration_ms":507}}'
+      Idempotency-Key:
+      - eb372692-6172-475e-a1af-01cbb232b220
+      Stripe-Version:
+      - '2022-11-15'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"6.3.2"},"bindings_version":"8.5.0","lang":"ruby","lang_version":"3.2.1
+        p31 (2023-02-08)","platform":"x86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.4.0 Darwin Kernel Version 22.4.0: Mon Mar  6 21:00:17
+        PST 2023; root:xnu-8796.101.5~3/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Fri, 21 Apr 2023 18:33:20 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '2781'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - eb372692-6172-475e-a1af-01cbb232b220
+      Original-Request:
+      - req_gBTcOZphsEtBHw
+      Request-Id:
+      - req_gBTcOZphsEtBHw
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2022-11-15'
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "in_1MzOlnKXBGcbgpbZjcxnouiQ",
+          "object": "invoice",
+          "account_country": "US",
+          "account_name": "Pay",
+          "account_tax_ids": null,
+          "amount_due": 0,
+          "amount_paid": 0,
+          "amount_remaining": 0,
+          "amount_shipping": 0,
+          "application": null,
+          "application_fee_amount": null,
+          "attempt_count": 0,
+          "attempted": true,
+          "auto_advance": false,
+          "automatic_tax": {
+            "enabled": false,
+            "status": null
+          },
+          "billing_reason": "manual",
+          "charge": null,
+          "collection_method": "charge_automatically",
+          "created": 1682101999,
+          "currency": "usd",
+          "custom_fields": null,
+          "customer": "cus_NkuahmIPvlZ9cf",
+          "customer_address": null,
+          "customer_email": "stripe@example.org",
+          "customer_name": "Stripe User",
+          "customer_phone": null,
+          "customer_shipping": null,
+          "customer_tax_exempt": "none",
+          "customer_tax_ids": [],
+          "default_payment_method": null,
+          "default_source": null,
+          "default_tax_rates": [],
+          "description": null,
+          "discount": null,
+          "discounts": [],
+          "due_date": null,
+          "ending_balance": 0,
+          "footer": null,
+          "from_invoice": null,
+          "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhVlF0NUJFejhFMWNubGxEYXRqSDdBRGl2RGpZLDcyNjQyODAw0200gcM8ae3Z?s=ap",
+          "invoice_pdf": "https://pay.stripe.com/invoice/acct_1E4bfnKXBGcbgpbZ/test_YWNjdF8xRTRiZm5LWEJHY2JncGJaLF9Oa3VhVlF0NUJFejhFMWNubGxEYXRqSDdBRGl2RGpZLDcyNjQyODAw0200gcM8ae3Z/pdf?s=ap",
+          "last_finalization_error": null,
+          "latest_revision": null,
+          "lines": {
+            "object": "list",
+            "data": [],
+            "has_more": false,
+            "total_count": 0,
+            "url": "/v1/invoices/in_1MzOlnKXBGcbgpbZjcxnouiQ/lines"
+          },
+          "livemode": false,
+          "metadata": {},
+          "next_payment_attempt": null,
+          "number": "5AA0F78B-0003",
+          "on_behalf_of": null,
+          "paid": true,
+          "paid_out_of_band": false,
+          "payment_intent": null,
+          "payment_settings": {
+            "default_mandate": null,
+            "payment_method_options": null,
+            "payment_method_types": null
+          },
+          "period_end": 1682101999,
+          "period_start": 1682101996,
+          "post_payment_credit_notes_amount": 0,
+          "pre_payment_credit_notes_amount": 0,
+          "quote": null,
+          "receipt_number": null,
+          "rendering_options": null,
+          "shipping_cost": null,
+          "shipping_details": null,
+          "starting_balance": 0,
+          "statement_descriptor": null,
+          "status": "paid",
+          "status_transitions": {
+            "finalized_at": 1682101999,
+            "marked_uncollectible_at": null,
+            "paid_at": 1682101999,
+            "voided_at": null
+          },
+          "subscription": "sub_1MzOlhKXBGcbgpbZEyl9nOSn",
+          "subtotal": 0,
+          "subtotal_excluding_tax": 0,
+          "tax": null,
+          "test_clock": null,
+          "total": 0,
+          "total_discount_amounts": [],
+          "total_excluding_tax": 0,
+          "total_tax_amounts": [],
+          "transfer_data": null,
+          "webhooks_delivered_at": 1682101999
+        }
+  recorded_at: Fri, 21 Apr 2023 18:33:20 GMT
+recorded_with: VCR 6.1.0
