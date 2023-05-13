@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 6.4.0
+
 * Introduce `:pay` load hook - @excid3
   Rails no longer allows autoloading during the initialization process. The on_load hook allows you to run code after autoloading, so we can register webhook listeners once autoloading is available.
 
