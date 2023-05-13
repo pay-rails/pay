@@ -5,6 +5,7 @@ class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
     attr_accessor :success
 
     def call(event)
+      event[:result] = true
       @success = true
     end
   end
@@ -38,6 +39,13 @@ class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
     delegator.subscribe "stripe.test_event", processor
     delegator.instrument event: {}, type: "stripe.test_event"
     assert processor.success
+  end
+
+  test "can subscribe with a string" do
+    event_hash = {}
+    delegator.subscribe "stripe.test_event", "Pay::WebhookDelegatorTest::TestEventProcessor"
+    delegator.instrument event: event_hash, type: "stripe.test_event"
+    assert event_hash[:result]
   end
 
   test "can unsubscribe" do

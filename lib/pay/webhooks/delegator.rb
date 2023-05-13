@@ -47,7 +47,13 @@ module Pay
 
         def call(*args)
           payload = args.last
-          @subscriber.call(payload)
+          subscriber_instance.call(payload)
+        end
+
+        private
+
+        def subscriber_instance
+          @subscriber_instance ||= @subscriber.is_a?(String) ? @subscriber.constantize.new : @subscriber
         end
       end
 

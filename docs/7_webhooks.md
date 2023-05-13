@@ -65,6 +65,9 @@ class MyChargeSucceededProcessor
 end
 
 Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", MyChargeSucceededProcessor.new
+
+# You can also pass a string representation the processor class name.
+Pay::Webhooks.delegator.subscribe "stripe.charge.refunded", "MyChargeRefundedProcessor"
 ```
 
 ### Unsubscribing from a webhook listener
