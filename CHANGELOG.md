@@ -2,6 +2,17 @@
 
 ### Unreleased
 
+* Introduce `:pay` load hook - @excid3
+  Rails no longer allows autoloading during the initialization process. The on_load hook allows you to run code after autoloading, so we can register webhook listeners once autoloading is available.
+
+  To use this, wrap your webhook subscribe calls in the `on_load(:pay)` hook:
+
+  ```ruby
+    ActiveSupport.on_load(:pay) do
+      Pay::Webhooks.delegator.subscribe "stripe.charge.succeded", ChargeSucceeded
+    end
+  ```
+
 ### 6.3.4
 
 * Import Stimulus.js from dist folder on unpkg

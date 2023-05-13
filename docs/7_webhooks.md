@@ -64,7 +64,9 @@ class MyChargeSucceededProcessor
   end
 end
 
-Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", MyChargeSucceededProcessor.new
+ActiveSupport.on_load(:pay) do
+  Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", MyChargeSucceededProcessor.new
+end
 ```
 
 ### Unsubscribing from a webhook listener

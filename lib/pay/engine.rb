@@ -17,6 +17,10 @@ module Pay
       end
     end
 
+    config.after_initialize do
+      ActiveSupport.run_load_hooks(:pay, Pay)
+    end
+
     # Add webhook subscribers before app initializers define extras
     # This keeps the processing in order so that changes have happened before user-defined webhook processors
     config.before_initialize do
