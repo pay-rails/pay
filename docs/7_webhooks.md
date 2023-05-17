@@ -66,7 +66,9 @@ class MyChargeSucceededProcessor
 end
 
 # config/initializers/pay.rb
-Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", MyChargeSucceededProcessor.new
+ActiveSupport.on_load(:pay) do
+  Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", MyChargeSucceededProcessor.new
+end
 ```
 
 If you are sending emails from your custom webhook handlers, be sure to use the [`Pay.send_email?` method](https://github.com/pay-rails/pay/blob/c067771d8c7514acde4b948b474caf054bb0e25d/lib/pay.rb#L113)

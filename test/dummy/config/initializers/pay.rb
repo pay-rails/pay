@@ -10,3 +10,7 @@ Pay.setup do |config|
   config.application_name = "My App"
   config.support_email = "support@example.org"
 end
+
+ActiveSupport.on_load(:pay) do
+  Pay::Webhooks.delegator.subscribe "stripe.charge.succeeded", ChargeSucceeded.new
+end
