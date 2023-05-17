@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 6.5.0
+
 * Add new configuration option named `send_emails` which can be used to disable the sending of all current and future emails.
   This option can be set to a boolean value or a proc/lambda that returns a boolean value. - @cjilbert504
 
