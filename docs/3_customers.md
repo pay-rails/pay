@@ -34,7 +34,7 @@ After setting the payment processor, your model will have a `payment_processor` 
 #=> #<Pay::Customer processor: "stripe", processor_id: "cus_1000">
 ```
 
-This record keeps track of payment processor is active and the ID for the customer on the API. It also is associated with all Charges, Subscriptions, and Payment Methods.
+This record keeps track of payment processor that is active and the ID for the customer on the API. It also is associated with all Charges, Subscriptions, and Payment Methods.
 
 A user might switch between payment processors. For example, they might initially subscribe using Braintree, cancel after a while, and resubscribe using Stripe later on.
 
