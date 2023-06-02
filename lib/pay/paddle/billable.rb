@@ -49,8 +49,10 @@ module Pay
         # pass
       end
 
-      def add_payment_method(token, default: true)
-        Pay::Paddle::PaymentMethod.sync(self)
+      # Paddle does not use payment method tokens. The method signature has it here
+      # to have a uniform API with the other payment processors.
+      def add_payment_method(token = nil, default: true)
+        Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer)
       end
 
       def trial_end_date(subscription)
