@@ -25,7 +25,7 @@ module Pay
         subscription_user = PaddlePay::Subscription::User.list({subscription_id: subscription_id}).try(:first)
         payment_information = subscription_user ? subscription_user[:payment_information] : {}
 
-        case payment_information[:payment_method]
+        case payment_information[:payment_method].downcase
         when "card"
           {
             payment_method_type: :card,

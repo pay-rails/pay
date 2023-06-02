@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Fix Paddle PayPal payment method details not recording
+
 ### 6.6.0
 
 * Add `Pay::Stripe.to_client_reference_id(User.first)` method to generate client_reference_id for use with Stripe's CheckoutSession, Pricing Tables, etc #823
