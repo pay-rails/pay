@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Add default value of `nil` to the token param of `Pay::Paddle::Billable#add_payment_method` and pass `pay_customer: pay_customer` as keyword arg / value to `sync` call inside `Pay::Paddle::Billable#add_payment_method` method body.
 * Add `Pay::Stripe.to_client_reference_id(User.first)` method to generate client_reference_id for use with Stripe's CheckoutSession, Pricing Tables, etc
   Unfortunately with the `client_reference_id` requirements, we cannot use Signed GlobalIDs and have to implement our own IDs and validation. If Stripe relaxes their requirements in the future, we could replace this implementation with SGIDs.
 * Skip Stripe `customer.deleted` webhook processing if customer is not in the database. #818
