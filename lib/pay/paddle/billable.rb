@@ -50,7 +50,7 @@ module Pay
       end
 
       def add_payment_method(token, default: true)
-        Pay::Paddle::PaymentMethod.sync(self)
+        Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer)
       end
 
       def trial_end_date(subscription)
