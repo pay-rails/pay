@@ -8,6 +8,7 @@ module Pay
         :on_grace_period?,
         :on_trial?,
         :ends_at,
+        :ends_at?,
         :owner,
         :processor_subscription,
         :processor_id,
