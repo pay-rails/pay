@@ -45,4 +45,16 @@ class Pay::Paddle::Billable::Test < ActiveSupport::TestCase
     assert_equal "06", @pay_customer.default_payment_method.exp_month
     assert_equal "2022", @pay_customer.default_payment_method.exp_year
   end
+
+  test "paddle can add payment method" do
+    PaddlePay::Subscription::User.stub(:list, []) do
+      assert @pay_customer.add_payment_method
+    end
+  end
+
+  test "paddle can update payment method" do
+    PaddlePay::Subscription::User.stub(:list, []) do
+      assert @pay_customer.update_payment_method(nil)
+    end
+  end
 end
