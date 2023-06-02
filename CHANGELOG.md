@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Skip Stripe `customer.deleted` webhook processing if customer is not in the database. #818
 * Refactor `on_grace_period?` to be implemented separately by each payment processor
 
 ### 6.5.0
