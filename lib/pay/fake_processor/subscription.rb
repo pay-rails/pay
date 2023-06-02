@@ -49,7 +49,7 @@ module Pay
       end
 
       def on_grace_period?
-        canceled? && Time.current < ends_at
+        ends_at? && ends_at > Time.current
       end
 
       def paused?
