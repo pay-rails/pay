@@ -86,7 +86,7 @@ class Pay::Paddle::Webhooks::SubscriptionPaymentSucceededTest < ActiveSupport::T
       state: "active",
       signup_date: "2020-12-08 07:52:22",
       last_payment: {amount: 0, currency: "USD", date: "2020-12-08"}, linked_subscriptions: [],
-      payment_information: {payment_method: "paypal"},
+      payment_information: {payment_method: "PayPal"},
       next_payment: {amount: 0, currency: "USD", date: "2021-01-08"}
     }
 
