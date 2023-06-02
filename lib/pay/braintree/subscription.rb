@@ -5,7 +5,7 @@ module Pay
 
       delegate :active?,
         :canceled?,
-        :on_grace_period?,
+        :ends_at?,
         :customer,
         :ends_at,
         :name,
@@ -98,6 +98,10 @@ module Pay
 
       def change_quantity(quantity, **options)
         raise NotImplementedError, "Braintree does not support setting quantity on subscriptions"
+      end
+
+      def on_grace_period?
+        ends_at? && ends_at > Time.current
       end
 
       def paused?

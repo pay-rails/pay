@@ -11,6 +11,7 @@ module Pay
         :name,
         :owner,
         :pause_starts_at,
+        :pause_starts_at?,
         :processor_id,
         :processor_plan,
         :processor_subscription,
@@ -107,8 +108,10 @@ module Pay
         raise NotImplementedError, "Paddle does not support setting quantity on subscriptions"
       end
 
+      # A subscription could be set to cancel or pause in the future
+      # It is considered on grace period until the cancel or pause time begins
       def on_grace_period?
-        canceled? && Time.current < ends_at || paused? && Time.current < paddle_paused_from
+        (canceled? && Time.current < ends_at) || (paused? && pause_starts_at? && Time.current < pause_starts_at)
       end
 
       def paused?

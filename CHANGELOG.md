@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Refactor `on_grace_period?` to be implemented separately by each payment processor
+
 ### 6.5.0
 
 * Add new configuration option named `send_emails` which can be used to disable the sending of all current and future emails.

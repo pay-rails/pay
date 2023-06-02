@@ -6,10 +6,12 @@ module Pay
 
       delegate :active?,
         :canceled?,
-        :on_grace_period?,
+        :ends_at?,
         :ends_at,
         :name,
         :on_trial?,
+        :pause_starts_at,
+        :pause_starts_at?,
         :processor_id,
         :processor_plan,
         :processor_subscription,
@@ -182,6 +184,18 @@ module Pay
         true
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      def on_grace_period?
+        (ends_at? && ends_at > Time.current) || (paused? && will_pause?)
+      end
+
+      def pause_active?
+        paused? && (pause_starts_at.nil? || Time.current.after?(pause_starts_at))
+      end
+
+      def will_pause?
+        pause_starts_at? && Time.current < pause_starts_at
       end
 
       def paused?
