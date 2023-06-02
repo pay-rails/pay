@@ -120,7 +120,7 @@ module Pay
     end
 
     def self.to_client_reference_id(record)
-      raise ArgumentError, "#{record.class.name} does not include Pay. Allowed models: #{model_names.join(", ")}" unless model_names.include?(record.class.name)
+      raise ArgumentError, "#{record.class.name} does not include Pay. Allowed models: #{model_names.to_a.join(", ")}" unless model_names.include?(record.class.name)
       [record.class.name, record.id].join("/")
     end
 
