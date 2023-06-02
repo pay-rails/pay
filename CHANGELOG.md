@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 6.6.1
+
 * Fix Paddle PayPal payment method details not recording
 
 ### 6.6.0
