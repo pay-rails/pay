@@ -6,6 +6,7 @@
   Unfortunately with the `client_reference_id` requirements, we cannot use Signed GlobalIDs and have to implement our own IDs and validation. If Stripe relaxes their requirements in the future, we could replace this implementation with SGIDs.
 * Skip Stripe `customer.deleted` webhook processing if customer is not in the database. #818
 * Refactor `on_grace_period?` to be implemented separately by each payment processor
+* Remove Rails 6.0 from CI now that it is EOL
 
 ### 6.5.0
 
