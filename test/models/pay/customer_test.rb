@@ -32,4 +32,9 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert_not_includes Pay::Customer.not_fake_processor, pay_customers(:fake)
     assert_includes Pay::Customer.not_fake_processor, pay_customers(:stripe)
   end
+
+  test "get invoice credit balance" do
+    pay_customers(:stripe).expects(:customer).times(3).returns(OpenStruct.new(fake_event("stripe/customer.invoice_credit_balance")))
+    assert_equal pay_customers(:stripe).invoice_credit_balance, 400
+  end
 end

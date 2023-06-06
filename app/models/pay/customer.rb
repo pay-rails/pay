@@ -73,6 +73,11 @@ module Pay
       owner.respond_to?(:name) ? owner.name : [owner.try(:first_name), owner.try(:last_name)].compact.join(" ")
     end
 
+    def invoice_credit_balance
+      return 0 if !stripe? || customer.invoice_credit_balance.blank?
+      customer.invoice_credit_balance[customer.currency]
+    end
+
     def active?
       deleted_at.nil?
     end
