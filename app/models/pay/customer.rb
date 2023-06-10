@@ -18,6 +18,8 @@ module Pay
     # Account(s) for marketplace payments
     store_accessor :data, :stripe_account
     store_accessor :data, :braintree_account
+    store_accessor :data, :invoice_credit_balance
+    store_accessor :data, :currency
 
     delegate :email, to: :owner
     delegate_missing_to :pay_processor
@@ -71,11 +73,6 @@ module Pay
     def customer_name
       return owner.pay_customer_name if owner.respond_to?(:pay_customer_name) && owner.pay_customer_name.present?
       owner.respond_to?(:name) ? owner.name : [owner.try(:first_name), owner.try(:last_name)].compact.join(" ")
-    end
-
-    def invoice_credit_balance
-      return 0 if !stripe? || customer.invoice_credit_balance.blank?
-      customer.invoice_credit_balance[customer.currency]
     end
 
     def active?
