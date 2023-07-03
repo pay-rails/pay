@@ -19,6 +19,8 @@ module Pay
         Pay.braintree_gateway.webhook_notification.parse(event["bt_signature"], event["bt_payload"])
       when "paddle"
         to_recursive_ostruct(event)
+      when "lemon_squeezy"
+        to_recursive_ostruct(event)
       when "stripe"
         ::Stripe::Event.construct_from(event)
       else
