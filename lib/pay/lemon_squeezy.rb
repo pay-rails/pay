@@ -31,16 +31,12 @@ module Pay
       find_value_by_name(:lemon_squeezy, :access_token)
     end
 
-    def self.passthrough(owner:, **options)
-      options.merge(owner_sgid: owner.to_sgid.to_s).to_json
-    end
-
-    def self.parse_passthrough(passthrough)
-      JSON.parse(passthrough)
+    def self.passthrough(owner:)
+      owner.to_sgid.to_s
     end
 
     def self.owner_from_passthrough(passthrough)
-      GlobalID::Locator.locate_signed parse_passthrough(passthrough)["owner_sgid"]
+      GlobalID::Locator.locate_signed passthrough
     rescue JSON::ParserError
       nil
     end
