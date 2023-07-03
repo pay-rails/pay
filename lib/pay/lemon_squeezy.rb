@@ -23,7 +23,12 @@ module Pay
       Pay::Engine.version_matches?(required: "~> 0.2", current: ::LemonSqueezy::VERSION) || (raise "[Pay] lemonsqueezy gem must be version ~> 0.2")
     end
 
-    def self.setup
+    def self.client
+      ::LemonSqueezy::Client.new access_token: access_token
+    end
+
+    def self.access_token
+      find_value_by_name(:lemon_squeezy, :access_token)
     end
 
     def self.passthrough(owner:, **options)
