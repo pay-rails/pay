@@ -3,7 +3,7 @@ module Pay
     module Webhooks
       class SubscriptionCreated
         def call(event)
-          Pay::Paddle::Subscription.sync(event.subscription_id, object: event)
+          Pay::LemonSqueezy::Subscription.sync(event.id, object: event)
         end
       end
     end
