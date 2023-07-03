@@ -18,6 +18,7 @@ module Pay
   autoload :Braintree, "pay/braintree"
   autoload :FakeProcessor, "pay/fake_processor"
   autoload :Paddle, "pay/paddle"
+  autoload :LemonSqueezy, "pay/lemon_squeezy"
   autoload :Stripe, "pay/stripe"
 
   autoload :Webhooks, "pay/webhooks"
