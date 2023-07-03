@@ -23,45 +23,42 @@ module Pay
         to: :pay_subscription
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
-        # Passthrough is not return from this API, so we can't use that
-        object ||= OpenStruct.new PaddlePay::Subscription::User.list({subscription_id: subscription_id}).try(:first)
-
-        pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: object.user_id)
+        pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: object.customer_id)
 
         # If passthrough exists (only on webhooks) we can use it to create the Pay::Customer
         if pay_customer.nil? && object.passthrough
-          owner = Pay::Paddle.owner_from_passthrough(object.passthrough)
-          pay_customer = owner&.set_payment_processor(:paddle, processor_id: object.user_id)
+          owner = Pay::LemonSqueezy.owner_from_passthrough(object.passthrough)
+          pay_customer = owner&.set_payment_processor(:lemon_squeezy, processor_id: object.customer_id)
         end
 
         return unless pay_customer
 
         attributes = {
-          paddle_cancel_url: object.cancel_url,
-          paddle_update_url: object.update_url,
-          processor_plan: object.plan_id || object.subscription_plan_id,
-          quantity: object.quantity,
-          status: object.state || object.status
+          # This expires so should be grabbed when the customer wants it
+          # lemon_squeezy_update_url: object.urls&.update_payment_method,
+          processor_plan: object.product_id,
+          quantity: 1,
+          status: object.status
         }
 
         # If paused or delete while on trial, set ends_at to match
         case attributes[:status]
         when "trialing"
-          attributes[:trial_ends_at] = Time.zone.parse(object.next_bill_date)
+          attributes[:trial_ends_at] = Time.zone.parse(object.trial_ends_at)
           attributes[:ends_at] = nil
         when "paused", "deleted"
           attributes[:trial_ends_at] = nil
-          attributes[:ends_at] = Time.zone.parse(object.next_bill_date)
+          attributes[:ends_at] = Time.zone.parse(object.ends_at)
         end
 
         # Update or create the subscription
-        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.subscription_id))
+        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: subscription_id))
           pay_subscription.with_lock do
             pay_subscription.update!(attributes)
           end
           pay_subscription
         else
-          pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.subscription_id))
+          pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: subscription_id))
         end
       end
 
@@ -70,10 +67,11 @@ module Pay
       end
 
       def subscription(**options)
-        hash = PaddlePay::Subscription::User.list({subscription_id: processor_id}, options).try(:first)
-        OpenStruct.new(hash)
-      rescue ::PaddlePay::PaddlePayError => e
-        raise Pay::Paddle::Error, e
+        Pay::LemonSqueezy.client.subscriptions.get(id: processor_id)
+        # hash = PaddlePay::Subscription::User.list({subscription_id: processor_id}, options).try(:first)
+        # OpenStruct.new(hash)
+      # rescue ::PaddlePay::PaddlePayError => e
+      #   raise Pay::Paddle::Error, e
       end
 
       def cancel(**options)
