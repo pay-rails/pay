@@ -15,7 +15,7 @@ module Pay
       end
 
       def customer
-        # pass
+        Pay::LemonSqueezy.client.customers.get(id: processor_id)
       end
 
       def update_customer!
@@ -61,10 +61,7 @@ module Pay
       end
 
       def processor_subscription(subscription_id, options = {})
-        hash = PaddlePay::Subscription::User.list({subscription_id: subscription_id}, options).try(:first)
-        OpenStruct.new(hash)
-      rescue ::PaddlePay::PaddlePayError => e
-        raise Pay::Paddle::Error, e
+        Pay::LemonSqueezy.client.subscriptions.get(id: subscription_id)
       end
     end
   end
