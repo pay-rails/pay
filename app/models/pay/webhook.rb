@@ -21,6 +21,8 @@ module Pay
         to_recursive_ostruct(event["data"])
       when "paddle_classic"
         to_recursive_ostruct(event)
+      when "lemon_squeezy"
+        to_recursive_ostruct(event)
       when "stripe"
         ::Stripe::Event.construct_from(event)
       else
