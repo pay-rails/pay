@@ -8,19 +8,44 @@ module Pay
       def create
         queue_event(verify_params.as_json)
         head :ok
-      rescue Pay::LemonSqueezy::Error
-        head :bad_request
+      # rescue Pay::LemonSqueezy::Error
+      #   head :bad_request
       end
 
       private
 
       def queue_event(event)
-        event_type = params[:meta][:event_name]
-        return unless Pay::Webhooks.delegator.listening?("lemon_squeezy.#{event_type}")
+        event_name = request.headers["X-Event-Name"]
+        return unless Pay::Webhooks.delegator.listening?("lemon_squeezy.#{event_name}")
 
-        record = Pay::Webhook.create!(processor: :lemon_squeezy, event_type: event_type, event: event)
-        Pay::Webhooks::ProcessJob.perform_later(record)
+        evnt = event
+
+        evnt["id"] = params["data"]["id"]
+
+        if params["meta"]["custom_data"]
+          passthrough = params["meta"]["custom_data"]["passthrough"]
+          evnt["passthrough"] = passthrough
+        end
+
+        record = Pay::Webhook.create!(
+          processor: :lemon_squeezy,
+          event_type: event_name,
+          event: evnt
+        )
+
+        record.process!
+
+        # Pay::Webhooks::ProcessJob.perform_later(record)
       end
+
+      # def queue_event(event)
+      #   event_type = params[:meta][:event_name]
+      #   return unless Pay::Webhooks.delegator.listening?("lemon_squeezy.#{event_type}")
+
+      #   record = Pay::Webhook.create!(processor: :lemon_squeezy, event_type: event_type, event: event)
+      #   record.process!
+      #   # Pay::Webhooks::ProcessJob.perform_later(record)
+      # end
 
       # def verified_event
       #   event = verify_params.as_json
@@ -30,7 +55,8 @@ module Pay
       # end
 
       def verify_params
-        params.except(:action, :controller).permit!
+        # params.except(:action, :controller).permit!
+        params["data"]["attributes"].permit!
       end
     end
   end
