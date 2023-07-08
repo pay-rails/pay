@@ -21,7 +21,7 @@ module Pay
           end
 
           # Sync invoice credit balance and currency
-          if stripe_customer.invoice_credit_balance&.keys.present?
+          if stripe_customer.invoice_credit_balance.present?
             pay_customer.update(invoice_credit_balance: stripe_customer.invoice_credit_balance[stripe_customer.currency], currency: stripe_customer.currency)
           end
         end
