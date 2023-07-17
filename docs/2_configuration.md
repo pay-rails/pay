@@ -6,7 +6,7 @@ Pay comes with a lot of configuration out of the box for you, but you'll need to
 
 Pay automatically looks up credentials for each payment provider. We recommend storing them in the Rails credentials.
 
-##### Rails Credentials & Secrets
+##### Rails Credentials
 
 You'll need to add your API keys to your Rails credentials. You can do this by running:
 
