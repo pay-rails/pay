@@ -37,13 +37,13 @@ class Pay::Stripe::Test < ActiveSupport::TestCase
 
   test "env ignores Stripe secrets when not defined" do
     Rails.stub(:application, nil) do
-      assert_nil Pay::Stripe.secrets
+      assert_nil Pay::Stripe.send(:secrets)
     end
   end
 
   test "env ignores Stripe credentials when not defined" do
     Rails.stub(:application, nil) do
-      assert_nil Pay::Stripe.credentials
+      assert_nil Pay::Stripe.send(:credentials)
     end
   end
 end
