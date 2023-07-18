@@ -35,7 +35,7 @@ paddle:
   environment: sandbox
 ```
 
-You can also nest these credentials under the Rails environment if using a shared credentials file or secrets.
+You can also nest these credentials under the Rails environment if using a shared credentials file.
 
 ```yaml
 development:
@@ -78,7 +78,7 @@ bin/rails generate pay:email_views
 
 ## Emails
 
-Emails can be enabled/disabled as a whole by using the `send_emails` configuration option or independently by 
+Emails can be enabled/disabled as a whole by using the `send_emails` configuration option or independently by
 using the `emails` configuration option as shown in the configuration section below (all emails are enabled by default).
 
 When enabled, the following emails will be sent when:
