@@ -98,7 +98,7 @@ module Pay
         # When a customers subscription trial period is 3 days from ending or ended immediately this event is fired
         events.subscribe "stripe.customer.subscription.trial_will_end", Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new
 
-        # Monitor changes for customer's default card changing
+        # Monitor changes for customer's default card changing and invoice credit updates
         events.subscribe "stripe.customer.updated", Pay::Stripe::Webhooks::CustomerUpdated.new
 
         # If a customer was deleted in Stripe, their subscriptions should be cancelled

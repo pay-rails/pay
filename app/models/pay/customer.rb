@@ -19,6 +19,10 @@ module Pay
     store_accessor :data, :stripe_account
     store_accessor :data, :braintree_account
 
+    # Stripe invoice credit balance is a Hash-like object { "usd" => 1234 }
+    store_accessor :data, :invoice_credit_balance
+    store_accessor :data, :currency
+
     delegate :email, to: :owner
     delegate_missing_to :pay_processor
 
