@@ -6,11 +6,14 @@ $VERBOSE = ENV["CI"]
 
 # Configure all the payment providers for testing
 ENV["STRIPE_PRIVATE_KEY"] ||= "sk_test_fake"
+ENV["STRIPE_SIGNING_SECRET"] ||= "whsec_x"
 
 # Paddle configuration
 paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle/verification/paddle_public_key.pem"))
 ENV["PADDLE_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
 ENV["PADDLE_ENVIRONMENT"] = "sandbox"
+ENV["PADDLE_VENDOR_ID"] = "1"
+ENV["PADDLE_VENDOR_AUTH_CODE"] = "x"
 
 require "braintree"
 require "stripe"
