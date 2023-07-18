@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Safely handle Rails 7.2's removal of secrets. #834 @heliocola
+
 ### 6.6.1
 
 * Fix Paddle PayPal payment method details not recording
