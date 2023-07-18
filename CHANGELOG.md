@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 6.7.0
+
 * Add `currency` and `invoice_credit_balance` to Stripe Pay::Customer #825 - @nachiket87
 * Safely handle Rails 7.2's removal of secrets. #834 @heliocola
 
