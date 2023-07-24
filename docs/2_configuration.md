@@ -119,7 +119,7 @@ Pay.setup do |config|
   config.emails.payment_failed = true
   config.emails.receipt = true
   config.emails.refund = true
-  # This example for subscription_renewing only applies to Stripe, therefor we supply the second argument of price
+  # This example for subscription_renewing only applies to Stripe, therefore we supply the second argument of price
   config.emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
