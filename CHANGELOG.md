@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 6.7.1
+
+* Fix payments#show redirect_to not falling back to root_path properly
+
 ### 6.7.0
 
 * Add `currency` and `invoice_credit_balance` to Stripe Pay::Customer #825 - @nachiket87
