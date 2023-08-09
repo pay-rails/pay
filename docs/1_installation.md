@@ -36,8 +36,6 @@ Copy the Pay migrations to your app:
 bin/rails pay:install:migrations
 ````
 
->If your models rely on non integer ids (uuids for example) you will need to alter the migrations.
-
 Then run the migrations:
 
 ```bash
@@ -115,12 +113,12 @@ If you want to automatically sync whenever any other attribute changes, override
 
 ```rb
 class User < ApplicationRecord
-  
+
   def pay_should_sync_customer?
     # super will invoke Pay's default (e-mail changed)
     super || self.saved_change_to_address? || self.saved_change_to_name?
   end
-  
+
 end
 ```
 
