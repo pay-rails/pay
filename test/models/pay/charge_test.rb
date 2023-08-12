@@ -13,8 +13,8 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert Pay::Charge.stripe.is_a?(ActiveRecord::Relation)
   end
 
-  test "paddle scope" do
-    assert Pay::Charge.paddle.is_a?(ActiveRecord::Relation)
+  test "paddle_classic scope" do
+    assert Pay::Charge.paddle_classic.is_a?(ActiveRecord::Relation)
   end
 
   test "fake processor scope" do

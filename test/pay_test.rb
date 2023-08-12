@@ -89,14 +89,14 @@ class Pay::Test < ActiveSupport::TestCase
     Pay.enabled_processors = original
   end
 
-  test "can enable and disable the paddle processor" do
+  test "can enable and disable the paddle classic processor" do
     original = Pay.enabled_processors
 
     Pay.enabled_processors = []
-    refute Pay::Paddle.enabled?
+    refute Pay::PaddleClassic.enabled?
 
-    Pay.enabled_processors = [:paddle]
-    assert Pay::Paddle.enabled?
+    Pay.enabled_processors = [:paddle_classic]
+    assert Pay::PaddleClassic.enabled?
 
     Pay.enabled_processors = original
   end

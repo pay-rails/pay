@@ -8,8 +8,8 @@ $VERBOSE = ENV["CI"]
 ENV["STRIPE_PRIVATE_KEY"] ||= "sk_test_fake"
 ENV["STRIPE_SIGNING_SECRET"] ||= "whsec_x"
 
-# Paddle configuration
-paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle/verification/paddle_public_key.pem"))
+# Paddle Classic configuration
+paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle_classic/verification/paddle_public_key.pem"))
 ENV["PADDLE_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
 ENV["PADDLE_ENVIRONMENT"] = "sandbox"
 ENV["PADDLE_VENDOR_ID"] = "1"
@@ -61,8 +61,8 @@ class ActiveSupport::TestCase
     Pay.braintree_gateway.webhook_notification.parse(raw["bt_signature"], raw["bt_payload"])
   end
 
-  def paddle_event(name)
-    OpenStruct.new fake_event("paddle/#{name}")
+  def paddle_classic_event(name)
+    OpenStruct.new fake_event("paddle_classic/#{name}")
   end
 
   def stripe_event(name, overrides: {})
