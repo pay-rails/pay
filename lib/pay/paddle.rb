@@ -9,11 +9,10 @@ module Pay
     module Webhooks
       # autoload :SignatureVerifier, "pay/paddle/webhooks/signature_verifier"
       autoload :SubscriptionCreated, "pay/paddle/webhooks/subscription_created"
+      autoload :SubscriptionUpdated, "pay/paddle/webhooks/subscription_updated"
+      autoload :TransactionCreated, "pay/paddle/webhooks/transaction_created"
+      autoload :TransactionUpdated, "pay/paddle/webhooks/transaction_updated"
       autoload :TransactionCompleted, "pay/paddle/webhooks/transaction_completed"
-      # autoload :SubscriptionCancelled, "pay/paddle/webhooks/subscription_cancelled"
-      # autoload :SubscriptionPaymentRefunded, "pay/paddle/webhooks/subscription_payment_refunded"
-      # autoload :SubscriptionPaymentSucceeded, "pay/paddle/webhooks/subscription_payment_succeeded"
-      # autoload :SubscriptionUpdated, "pay/paddle/webhooks/subscription_updated"
     end
 
     extend Env
@@ -52,11 +51,9 @@ module Pay
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
         events.subscribe "paddle.subscription.created", Pay::Paddle::Webhooks::SubscriptionCreated.new
+        events.subscribe "paddle.subscription.updated", Pay::Paddle::Webhooks::SubscriptionUpdated.new
+        events.subscribe "paddle.transaction.updated", Pay::Paddle::Webhooks::TransactionUpdated.new
         events.subscribe "paddle.transaction.completed", Pay::Paddle::Webhooks::TransactionCompleted.new
-        # events.subscribe "paddle.subscription_updated", Pay::Paddle::Webhooks::SubscriptionUpdated.new
-        # events.subscribe "paddle.subscription_cancelled", Pay::Paddle::Webhooks::SubscriptionCancelled.new
-        # events.subscribe "paddle.subscription_payment_succeeded", Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new
-        # events.subscribe "paddle.subscription_payment_refunded", Pay::Paddle::Webhooks::SubscriptionPaymentRefunded.new
       end
     end
   end
