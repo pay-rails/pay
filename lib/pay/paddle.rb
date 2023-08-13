@@ -10,6 +10,7 @@ module Pay
       # autoload :SignatureVerifier, "pay/paddle/webhooks/signature_verifier"
       autoload :SubscriptionCreated, "pay/paddle/webhooks/subscription_created"
       autoload :SubscriptionUpdated, "pay/paddle/webhooks/subscription_updated"
+      autoload :SubscriptionActivated, "pay/paddle/webhooks/subscription_activated"
       autoload :TransactionCreated, "pay/paddle/webhooks/transaction_created"
       autoload :TransactionUpdated, "pay/paddle/webhooks/transaction_updated"
       autoload :TransactionCompleted, "pay/paddle/webhooks/transaction_completed"
@@ -52,6 +53,9 @@ module Pay
       Pay::Webhooks.configure do |events|
         events.subscribe "paddle.subscription.created", Pay::Paddle::Webhooks::SubscriptionCreated.new
         events.subscribe "paddle.subscription.updated", Pay::Paddle::Webhooks::SubscriptionUpdated.new
+        events.subscribe "paddle.subscription.activated", Pay::Paddle::Webhooks::SubscriptionActivated.new
+
+        events.subscribe "paddle.transaction.created", Pay::Paddle::Webhooks::TransactionCreated.new
         events.subscribe "paddle.transaction.updated", Pay::Paddle::Webhooks::TransactionUpdated.new
         events.subscribe "paddle.transaction.completed", Pay::Paddle::Webhooks::TransactionCompleted.new
       end

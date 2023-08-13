@@ -1,7 +1,7 @@
 module Pay
   module Paddle
     module Webhooks
-      class SubscriptionUpdated
+      class SubscriptionActivated
         def call(event)
 
           Pay::Paddle::Subscription.sync(event.id, object: event)
@@ -33,7 +33,6 @@ module Pay
           # pay_subscription.ends_at = pay_subscription.trial_ends_at if pay_subscription.on_trial?
 
           # pay_subscription.save!
-
         end
       end
     end
