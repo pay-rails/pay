@@ -28,11 +28,15 @@ module Pay
       end
     end
 
-    def to_recursive_ostruct(hash)
-      result = hash.each_with_object({}) do |(key, val), memo|
-        memo[key] = val.is_a?(Hash) ? to_recursive_ostruct(val) : val
+    def to_recursive_ostruct(obj)
+      if obj.is_a?(Hash)
+        OpenStruct.new(obj.map { |key, val| [key, to_recursive_ostruct(val)] }.to_h)
+      elsif obj.is_a?(Array)
+        obj.map { |o| to_recursive_ostruct(o) }
+      else # Assumed to be a primitive value
+        obj
       end
-      OpenStruct.new(result)
     end
+
   end
 end
