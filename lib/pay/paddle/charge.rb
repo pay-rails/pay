@@ -17,6 +17,9 @@ module Pay
         # Ignore charges without a Customer
         return if object.customer_id.blank?
 
+        # Ignore transactions that are drafts
+        return if object.status == "draft"
+
         # Ignore transactions that are payment method changes
         return if object.origin == "subscription_payment_method_change"
 
