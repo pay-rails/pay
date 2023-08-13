@@ -17,8 +17,8 @@
     <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
     <script type="text/javascript">
       Paddle.Environment.set('sandbox');
-      <% if Pay::Paddle.vendor_id %>
-        Paddle.Setup({ vendor: <%= Pay::Paddle.vendor_id %> });
+      <% if Pay::PaddleClassic.vendor_id %>
+        Paddle.Setup({ vendor: <%= Pay::PaddleClassic.vendor_id %> });
       <% end %>
     </script>
 
@@ -59,11 +59,11 @@
 
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Paddle
+              Paddle Classic
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <%= link_to "Charges", paddle_charges_path, class: "dropdown-item" %>
-              <%= link_to "Subscriptions", paddle_subscriptions_path, class: "dropdown-item" %>
+              <%= link_to "Charges", paddle_classic_charges_path, class: "dropdown-item" %>
+              <%= link_to "Subscriptions", paddle_classic_subscriptions_path, class: "dropdown-item" %>
             </div>
           </li>
 
