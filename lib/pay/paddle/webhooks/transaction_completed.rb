@@ -44,6 +44,7 @@ module Pay
             amount: (price.amount.to_f / 100),
             created_at: event.created_at,
             currency: price.currency_code,
+            metadata: event.details.line_items.first.id
           }.merge(payment_method_details)
 
           pay_charge = pay_customer.charges.find_or_initialize_by(processor_id: event.id)
