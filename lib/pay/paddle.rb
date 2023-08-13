@@ -40,27 +40,21 @@ module Pay
       find_value_by_name(:paddle, :signing_secret)
     end
 
-    def self.passthrough(owner:, **options)
-      options.merge(owner_sgid: owner.to_sgid.to_s).to_json
-    end
-
-    def self.parse_passthrough(passthrough)
-      JSON.parse(passthrough)
+    def self.passthrough(owner:)
+      {passthrough: owner.to_sgid.to_s}.to_json
     end
 
     def self.owner_from_passthrough(passthrough)
-      GlobalID::Locator.locate_signed parse_passthrough(passthrough)["owner_sgid"]
-    rescue JSON::ParserError
-      nil
+      GlobalID::Locator.locate_signed(passthrough)
     end
 
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
-        events.subscribe "paddle.subscription_created", Pay::Paddle::Webhooks::SubscriptionCreated.new
-        events.subscribe "paddle.subscription_updated", Pay::Paddle::Webhooks::SubscriptionUpdated.new
-        events.subscribe "paddle.subscription_cancelled", Pay::Paddle::Webhooks::SubscriptionCancelled.new
-        events.subscribe "paddle.subscription_payment_succeeded", Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new
-        events.subscribe "paddle.subscription_payment_refunded", Pay::Paddle::Webhooks::SubscriptionPaymentRefunded.new
+        events.subscribe "paddle.subscription.created", Pay::Paddle::Webhooks::SubscriptionCreated.new
+        # events.subscribe "paddle.subscription_updated", Pay::Paddle::Webhooks::SubscriptionUpdated.new
+        # events.subscribe "paddle.subscription_cancelled", Pay::Paddle::Webhooks::SubscriptionCancelled.new
+        # events.subscribe "paddle.subscription_payment_succeeded", Pay::Paddle::Webhooks::SubscriptionPaymentSucceeded.new
+        # events.subscribe "paddle.subscription_payment_refunded", Pay::Paddle::Webhooks::SubscriptionPaymentRefunded.new
       end
     end
   end

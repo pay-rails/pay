@@ -29,8 +29,8 @@ module Pay
         pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: object.customer_id)
 
         # If passthrough exists (only on webhooks) we can use it to create the Pay::Customer
-        if pay_customer.nil? && object.passthrough
-          owner = Pay::Paddle.owner_from_passthrough(object.passthrough)
+        if pay_customer.nil? && object.custom_data
+          owner = Pay::Paddle.owner_from_passthrough(object.custom_data.passthrough)
           pay_customer = owner&.set_payment_processor(:paddle, processor_id: object.customer_id)
         end
 
