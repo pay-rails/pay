@@ -30,27 +30,27 @@ module Pay
     end
 
     def self.vendor_id
-      find_value_by_name(:paddle, :vendor_id)
+      find_value_by_name(:paddle_classic, :vendor_id)
     end
 
     def self.vendor_auth_code
-      find_value_by_name(:paddle, :vendor_auth_code)
+      find_value_by_name(:paddle_classic, :vendor_auth_code)
     end
 
     def self.environment
-      find_value_by_name(:paddle, :environment) || "production"
+      find_value_by_name(:paddle_classic, :environment) || "production"
     end
 
     def self.public_key
-      find_value_by_name(:paddle, :public_key)
+      find_value_by_name(:paddle_classic, :public_key)
     end
 
     def self.public_key_file
-      find_value_by_name(:paddle, :public_key_file)
+      find_value_by_name(:paddle_classic, :public_key_file)
     end
 
     def self.public_key_base64
-      find_value_by_name(:paddle, :public_key_base64)
+      find_value_by_name(:paddle_classic, :public_key_base64)
     end
 
     def self.passthrough(owner:, **options)
