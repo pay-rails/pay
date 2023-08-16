@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Allow overriding Stripe API version
+
 ### 6.7.1
 
 * Fix payments#show redirect_to not falling back to root_path properly
