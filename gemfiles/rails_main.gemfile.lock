@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 93453aaf23f7561ae8fc2e389ab781c04ac923d3
+  revision: b56f938b5f0f7c044c30790fdf618adb88188dad
   branch: main
   specs:
     actioncable (7.1.0.alpha)
@@ -37,7 +37,7 @@ GIT
       net-imap
       net-pop
       net-smtp
-      rails-dom-testing (~> 2.0)
+      rails-dom-testing (~> 2.2)
     actionpack (7.1.0.alpha)
       actionview (= 7.1.0.alpha)
       activesupport (= 7.1.0.alpha)
@@ -45,7 +45,7 @@ GIT
       rack (>= 2.2.4)
       rack-session (>= 1.0.1)
       rack-test (>= 0.6.3)
-      rails-dom-testing (~> 2.0)
+      rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
     actiontext (7.1.0.alpha)
       actionpack (= 7.1.0.alpha)
@@ -58,7 +58,7 @@ GIT
       activesupport (= 7.1.0.alpha)
       builder (~> 3.1)
       erubi (~> 1.11)
-      rails-dom-testing (~> 2.0)
+      rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
     activejob (7.1.0.alpha)
       activesupport (= 7.1.0.alpha)
@@ -76,10 +76,13 @@ GIT
       activesupport (= 7.1.0.alpha)
       marcel (~> 1.0)
     activesupport (7.1.0.alpha)
+      base64
       concurrent-ruby (~> 1.0, >= 1.0.2)
       connection_pool (>= 2.2.5)
+      drb
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
+      mutex_m
       tzinfo (~> 2.0)
     rails (7.1.0.alpha)
       actioncable (= 7.1.0.alpha)
@@ -116,15 +119,16 @@ GIT
 PATH
   remote: ..
   specs:
-    pay (6.7.1)
+    pay (6.7.2)
       rails (>= 6.0.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.4)
+    addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
+    base64 (0.1.1)
     bindex (0.8.1)
     braintree (4.12.0)
       builder (>= 3.2.4)
@@ -138,6 +142,8 @@ GEM
       rexml
     crass (1.0.6)
     date (3.3.3)
+    drb (2.1.1)
+      ruby2_keywords
     erubi (1.12.0)
     faraday (2.7.10)
       faraday-net_http (>= 2.0, < 3.1)
@@ -168,12 +174,13 @@ GEM
       net-smtp
     marcel (1.0.2)
     matrix (0.4.2)
-    mini_mime (1.1.2)
-    minitest (5.18.1)
-    mocha (2.0.4)
+    mini_mime (1.1.5)
+    minitest (5.19.0)
+    mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
+    mutex_m (0.1.2)
     mysql2 (0.5.5)
-    net-imap (0.3.6)
+    net-imap (0.3.7)
       date
       net-protocol
     net-pop (0.1.2)
@@ -183,11 +190,11 @@ GEM
     net-smtp (0.3.3)
       net-protocol
     nio4r (2.5.9)
-    nokogiri (1.15.3-arm64-darwin)
+    nokogiri (1.15.4-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.15.3-x86_64-darwin)
+    nokogiri (1.15.4-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.15.3-x86_64-linux)
+    nokogiri (1.15.4-x86_64-linux)
       racc (~> 1.4)
     overcommit (0.60.0)
       childprocess (>= 0.6.3, < 5)
@@ -215,7 +222,7 @@ GEM
     rackup (2.1.0)
       rack (>= 3)
       webrick (~> 1.8)
-    rails-dom-testing (2.1.1)
+    rails-dom-testing (2.2.0)
       activesupport (>= 5.0.0)
       minitest
       nokogiri (>= 1.6)
@@ -228,9 +235,9 @@ GEM
       prawn (>= 1.3.0, < 3.0.0)
       prawn-table (~> 0.2.1)
     regexp_parser (2.8.1)
-    reline (0.3.6)
+    reline (0.3.7)
       io-console (~> 0.5)
-    rexml (3.2.5)
+    rexml (3.2.6)
     rubocop (1.52.1)
       json (~> 2.3)
       parallel (~> 1.10)
@@ -270,9 +277,9 @@ GEM
     standard-performance (1.1.2)
       lint_roller (~> 1.1)
       rubocop-performance (~> 1.18.0)
-    stimulus-rails (1.2.1)
+    stimulus-rails (1.2.2)
       railties (>= 6.0.0)
-    stripe (8.6.0)
+    stripe (8.7.0)
     thor (1.2.2)
     timeout (0.4.0)
     ttfunk (1.7.0)
@@ -294,10 +301,10 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.1)
-    websocket-driver (0.7.5)
+    websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.6.8)
+    zeitwerk (2.6.11)
 
 PLATFORMS
   arm64-darwin-21

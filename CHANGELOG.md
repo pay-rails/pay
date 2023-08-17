@@ -2,7 +2,10 @@
 
 ### Unreleased
 
-* Allow overriding Stripe API version
+### 6.7.2
+
+* Allow configurable Stripe API version
+* Only include success_url and cancel_url for checkout when not embedded mode
 
 ### 6.7.1
 
