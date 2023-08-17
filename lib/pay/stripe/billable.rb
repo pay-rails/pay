@@ -209,15 +209,14 @@ module Pay
         customer unless processor_id?
         args = {
           customer: processor_id,
-          mode: "payment",
+          mode: "payment"
         }
 
         # Embedded checkouts cannot use URLs
-        args.merge!(
-          # These placeholder URLs will be replaced in a following step.
-          success_url: merge_session_id_param(options.delete(:success_url) || root_url),
-          cancel_url: merge_session_id_param(options.delete(:cancel_url) || root_url)
-        ) if options[:ui_mode] != "embedded"
+        if options[:ui_mode] != "embedded"
+          args[:success_url] = merge_session_id_param(options.delete(:success_url) || root_url)
+          args[:cancel_url] = merge_session_id_param(options.delete(:cancel_url) || root_url)
+        end
 
         # Line items are optional
         if (line_items = options.delete(:line_items))
