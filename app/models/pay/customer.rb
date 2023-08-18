@@ -38,6 +38,16 @@ module Pay
       "Pay::#{name.to_s.classify}::Billable".constantize
     end
 
+    def self.sync_subscriptions(**options)
+      all.each do |pay_customer|
+        pay_customer.sync_subscription(**options)
+      end
+    end
+
+    def sync_subscription(**options)
+      Pay::Stripe::Billable.new(self).sync_subscriptions(**options)
+    end
+
     def pay_processor
       return if processor.blank?
       @pay_processor ||= self.class.pay_processor_for(processor).new(self)
