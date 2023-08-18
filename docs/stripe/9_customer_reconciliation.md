@@ -56,7 +56,7 @@ end
 ### Backfilling subscriptions and charges for reconciled customers
 When `Pay::Customer`s are created using `Model.set_payment_processor` or `Model.add_payment_processor`, existing Stripe subscriptions and charges are not automatically backfilled.
 
-To backfill active subscriptions and the charges associated with those subscriptions, the `Pay::Customer.sync_subscriptions` method can be used. To backfill all subscriptions including canceled subscriptions, the `status: "all"` parameter can be provided (e.g. `Pay::Customer.sync_subscriptions(status: "all")`).
+To backfill active subscriptions and the charges associated with those subscriptions, the `Pay::Stripe::Billable.new(pay_customer).sync_subscriptions` method can be used. To backfill all subscriptions including canceled subscriptions, the `status: "all"` parameter can be provided (e.g. `Pay::Stripe::Billable.new(pay_customer).sync_subscriptions(status: "all")`).
 
 An equivalent method to backfilling charges not associated with subscriptions is not currently implemented within Pay, however `Pay::Charge`s can be created manually by the application such as in the example below.
 
