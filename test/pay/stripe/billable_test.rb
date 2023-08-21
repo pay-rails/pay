@@ -94,7 +94,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     exception = assert_raises(Pay::Stripe::Error) {
       @pay_customer.subscribe(name: "default", plan: "small-monthly")
     }
-    assert_equal "This customer has no attached payment source or default payment method.", exception.message
+    assert_match "This customer has no attached payment source or default payment method.", exception.message
   end
 
   test "stripe fails when subscribing with SCA card" do
@@ -164,7 +164,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   test "stripe handles exception when creating a customer" do
     @pay_customer.payment_method_token = "invalid"
     exception = assert_raises(Pay::Stripe::Error) { @pay_customer.customer }
-    assert_equal "No such PaymentMethod: 'invalid'", exception.message
+    assert_match "No such PaymentMethod: 'invalid'", exception.message
   end
 
   test "stripe handles exception when creating a charge" do
@@ -180,7 +180,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
 
   test "stripe handles exception when updating a card" do
     exception = assert_raises(Pay::Stripe::Error) { @pay_customer.update_payment_method("abcd") }
-    assert_equal "No such PaymentMethod: 'abcd'", exception.message
+    assert_match "No such PaymentMethod: 'abcd'", exception.message
   end
 
   test "stripe handles coupons" do

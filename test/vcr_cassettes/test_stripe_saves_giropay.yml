@@ -2,28 +2,31 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.stripe.com/v1/payment_methods
+    uri: https://api.stripe.com/v<VENDOR_ID>/payment_methods
     body:
       encoding: UTF-8
       string: type=giropay&billing_details[name]=Test+User
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.37.0 PayRails/2.7.1 (https://github.com/pay-rails/pay)
+      - Stripe/v<VENDOR_ID> RubyBindings/9.0.0 PayRails/6.7.2 (https://github.com/pay-rails/pay)
       Authorization:
-      - Bearer <STRIPE_PRIVATE_KEY>
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
-      - application/x-www-form-urlencoded
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_6rzf1s9268tpCg","request_duration_ms":1}}'
+      - '{"last_request_metrics":{"request_id":"req_jWWuEYnDQuPnRU","request_duration_ms":366}}'
+      Idempotency-Key:
+      - 72ba79e<VENDOR_ID>-363d-4227-826e-a56ad<VENDOR_ID>d02d4b
       Stripe-Version:
-      - '2020-08-27'
+      - 2023-08-<VENDOR_ID>6
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"2.7.1"},"bindings_version":"5.37.0","lang":"ruby","lang_version":"3.0.1
-        p64 (2021-04-05)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 20.5.0 Darwin Kernel Version 20.5.0: Sat May  8 05:10:33
-        PDT 2021; root:xnu-7195.121.3~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"6.7.2"},"bindings_version":"9.0.0","lang":"ruby","lang_version":"3.2.2
+        p53 (2023-03-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 22.6.0 Darwin Kernel Version 22.6.0: Wed Jul  5 22:2<VENDOR_ID>:56
+        PDT 2023; root:<VENDOR_AUTH_CODE>nu-8796.<VENDOR_ID>4<VENDOR_ID>.3~6/RELEASE_X86_64
+        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.localdomain"}'
       Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - "*/*"
   response:
@@ -32,13 +35,13 @@ http_interactions:
       message: OK
     headers:
       Server:
-      - nginx
+      - ngin<VENDOR_AUTH_CODE>
       Date:
-      - Tue, 10 Aug 2021 22:38:16 GMT
+      - Mon, 2<VENDOR_ID> Aug 2023 20:26:54 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '446'
+      - '439'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
@@ -47,31 +50,38 @@ http_interactions:
       - GET, POST, HEAD, OPTIONS, DELETE
       Access-Control-Allow-Origin:
       - "*"
-      Access-Control-Expose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
-      Access-Control-Max-Age:
-      - '300'
       Cache-Control:
       - no-cache, no-store
+      Idempotency-Key:
+      - 72ba79e<VENDOR_ID>-363d-4227-826e-a56ad<VENDOR_ID>d02d4b
+      Original-Request:
+      - req_ejtSjyOpZiv99X
       Request-Id:
-      - req_4wCgp9lzWrHHUu
+      - req_ejtSjyOpZiv99X
+      Stripe-Should-Retry:
+      - 'false'
       Stripe-Version:
-      - '2020-08-27'
-      X-Stripe-C-Cost:
-      - '0'
+      - 2023-08-<VENDOR_ID>6
       Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
     body:
       encoding: UTF-8
-      string: |
+      string: |-
         {
-          "id": "pm_1JN3aOKXBGcbgpbZeNR9dmvk",
+          "id": "pm_<VENDOR_ID>NhegcKXBGcbgpbZs2BEJeRf",
           "object": "payment_method",
           "billing_details": {
             "address": {
               "city": null,
               "country": null,
-              "line1": null,
+              "line<VENDOR_ID>": null,
               "line2": null,
               "postal_code": null,
               "state": null
@@ -80,14 +90,12 @@ http_interactions:
             "name": "Test User",
             "phone": null
           },
-          "created": 1628635096,
+          "created": <VENDOR_ID>6926496<VENDOR_ID>4,
           "customer": null,
-          "giropay": {
-          },
+          "giropay": {},
           "livemode": false,
-          "metadata": {
-          },
+          "metadata": {},
           "type": "giropay"
         }
-  recorded_at: Tue, 10 Aug 2021 22:38:16 GMT
-recorded_with: VCR 6.0.0
+  recorded_at: Mon, 21 Aug 2023 20:26:54 GMT
+recorded_with: VCR 6.2.0

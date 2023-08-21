@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Update to Stripe `2023-08-16` API version
+
 ### 6.7.2
 
 * Allow configurable Stripe API version

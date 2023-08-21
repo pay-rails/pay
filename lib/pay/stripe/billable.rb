@@ -87,7 +87,8 @@ module Pay
           currency: "usd",
           customer: processor_id,
           expand: ["latest_charge.refunds"],
-          payment_method: payment_method&.processor_id
+          payment_method: payment_method&.processor_id,
+          return_url: root_url
         }.merge(options)
 
         payment_intent = ::Stripe::PaymentIntent.create(args, stripe_options)
