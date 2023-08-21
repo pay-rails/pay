@@ -113,18 +113,18 @@ module Pay
     yield self
   end
 
-  def self.send_email?(email_option, *remaining_args)
-    if resolve_option(send_emails, *remaining_args)
+  def self.send_email?(email_option, *)
+    if resolve_option(send_emails, *)
       email_config_option_enabled = emails.send(email_option)
-      resolve_option(email_config_option_enabled, *remaining_args)
+      resolve_option(email_config_option_enabled, *)
     else
       false
     end
   end
 
-  def self.resolve_option(option, *remaining_args)
+  def self.resolve_option(option, *)
     if option.respond_to?(:call)
-      option.call(*remaining_args)
+      option.call(*)
     else
       option
     end

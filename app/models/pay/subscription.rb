@@ -62,8 +62,8 @@ module Pay
       @payment_processor ||= self.class.pay_processor_for(customer.processor).new(self)
     end
 
-    def sync!(**options)
-      self.class.pay_processor_for(customer.processor).sync(processor_id, **options)
+    def sync!(**)
+      self.class.pay_processor_for(customer.processor).sync(processor_id, **)
       reload
     end
 
@@ -128,8 +128,8 @@ module Pay
       past_due? || incomplete?
     end
 
-    def change_quantity(quantity, **options)
-      payment_processor.change_quantity(quantity, **options)
+    def change_quantity(quantity, **)
+      payment_processor.change_quantity(quantity, **)
       update(quantity: quantity)
     end
 
@@ -139,9 +139,9 @@ module Pay
       self
     end
 
-    def swap(plan, **options)
+    def swap(plan, **)
       raise ArgumentError, "plan must be a string. Got `#{plan.inspect}` instead." unless plan.is_a?(String)
-      payment_processor.swap(plan, **options)
+      payment_processor.swap(plan, **)
     end
 
     def swap_and_invoice(plan)
@@ -149,8 +149,8 @@ module Pay
       customer.invoice!(subscription: processor_id)
     end
 
-    def processor_subscription(**options)
-      payment_processor.subscription(**options)
+    def processor_subscription(**)
+      payment_processor.subscription(**)
     end
 
     def latest_payment
