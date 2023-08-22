@@ -77,27 +77,41 @@ module Pay
         )
       end
 
+      # Charges an amount to the customer's default payment method
       def charge(amount, options = {})
         add_payment_method(payment_method_token, default: true) if payment_method_token?
 
         payment_method = pay_customer.default_payment_method
         args = {
-          amount: amount,
           confirm: true,
-          currency: "usd",
-          customer: processor_id,
-          expand: ["latest_charge.refunds"],
           payment_method: payment_method&.processor_id,
-          return_url: root_url
         }.merge(options)
 
-        payment_intent = ::Stripe::PaymentIntent.create(args, stripe_options)
+        payment_intent = create_payment_intent(amount, args)
         Pay::Payment.new(payment_intent).validate
 
         charge = payment_intent.latest_charge
         Pay::Stripe::Charge.sync(charge.id, object: charge)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      # Creates and returns a Stripe::PaymentIntent
+      def create_payment_intent(amount, options = {})
+        args = {
+          amount: amount,
+          currency: "usd",
+          customer: processor_id,
+          expand: ["latest_charge.refunds"],
+          return_url: root_url
+        }.merge(options)
+
+        ::Stripe::PaymentIntent.create(args, stripe_options)
+      end
+
+      # Used for creating Stripe Terminal charges
+      def terminal_charge(amount, options = {})
+        create_payment_intent(amount, options.merge( payment_method_types: ["card_present"], capture_method: "manual"))
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
