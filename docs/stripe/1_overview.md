@@ -63,6 +63,14 @@ For metered billing, this is helpful since invoices aren't issued until the cust
 
 For standard billing, the user pre-pays for a month. They can resume the `unpaid` subscription or start a new subscription without over/under charging them.
 
+## Stripe Terminal
+
+Collecting in-person payments with Stripe Terminal is also easy with Pay. You can use the `terminal_charge` method to create a charge with the `card_present` payment method type and manual capture to be used with Terminal.
+
+```ruby
+payment_intent = current_user.payment_processor.terminal_charge(10_00)
+```
+
 ## Next
 
 See [Credentials](2_credentials.md)
