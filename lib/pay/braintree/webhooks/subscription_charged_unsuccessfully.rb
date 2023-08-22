@@ -9,7 +9,7 @@ module Pay
           return if subscription.nil?
 
           pay_subscription = Pay::Subscription.find_by_processor_and_id(:braintree, subscription.id)
-          nil unless pay_subscription.present?
+          return unless pay_subscription.present?
 
           # pay_customer = pay_subscription.customer
           # pay_charge = Pay::Braintree::Billable.new(pay_customer).save_transaction(subscription.transactions.first)

@@ -12,9 +12,9 @@ module Pay
     end
 
     # Takes an amount (in cents) and currency and returns the formatted version for the currency
-    def self.format(amount, currency:, **)
+    def self.format(amount, currency:, **options)
       currency ||= :usd
-      new(currency).format_amount(amount, **)
+      new(currency).format_amount(amount, **options)
     end
 
     def initialize(iso_code)
