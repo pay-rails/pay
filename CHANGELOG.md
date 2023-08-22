@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 6.8.0
+
 * Update to Stripe `2023-08-16` API version
 * [Stripe] Add `pay_customer.create_payment_intent` for creating payment intents without immediate confirmation
 * [Stripe] Add `pay_customer.terminal_charge` for creating Stripe Terminal payments
