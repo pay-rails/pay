@@ -84,7 +84,7 @@ module Pay
         payment_method = pay_customer.default_payment_method
         args = {
           confirm: true,
-          payment_method: payment_method&.processor_id,
+          payment_method: payment_method&.processor_id
         }.merge(options)
 
         payment_intent = create_payment_intent(amount, args)
@@ -111,7 +111,7 @@ module Pay
 
       # Used for creating Stripe Terminal charges
       def terminal_charge(amount, options = {})
-        create_payment_intent(amount, options.merge( payment_method_types: ["card_present"], capture_method: "manual"))
+        create_payment_intent(amount, options.merge(payment_method_types: ["card_present"], capture_method: "manual"))
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
