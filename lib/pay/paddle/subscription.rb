@@ -40,7 +40,8 @@ module Pay
 
         attributes[:status] = object.status
 
-        if object.items && item = object.items.first
+        if object.items&.first
+          item = object.items.first
           attributes[:name] = item.price.description
           attributes[:processor_plan] = item.price.id
           attributes[:quantity] = item.quantity

@@ -26,8 +26,8 @@ module Pay
       # Pass Paddle signature from request.headers["Paddle-Signature"]
       def valid_signarure?(paddle_signature)
         ts_part, h1_part = paddle_signature.split(";")
-        var, ts = ts_part.split("=")
-        var, h1 = h1_part.split("=")
+        _, ts = ts_part.split("=")
+        _, h1 = h1_part.split("=")
 
         signed_payload = "#{ts}:#{request.raw_post}"
 
