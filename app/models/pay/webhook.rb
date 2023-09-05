@@ -37,6 +37,5 @@ module Pay
         obj
       end
     end
-
   end
 end
