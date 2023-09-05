@@ -7,7 +7,6 @@ module Pay
     autoload :Subscription, "pay/paddle/subscription"
 
     module Webhooks
-      # autoload :SignatureVerifier, "pay/paddle/webhooks/signature_verifier"
       autoload :SubscriptionCreated, "pay/paddle/webhooks/subscription_created"
       autoload :SubscriptionUpdated, "pay/paddle/webhooks/subscription_updated"
       autoload :SubscriptionActivated, "pay/paddle/webhooks/subscription_activated"

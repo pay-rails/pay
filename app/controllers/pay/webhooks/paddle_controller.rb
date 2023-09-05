@@ -6,14 +6,10 @@ module Pay
       end
 
       def create
-
-        # puts "*****"
-        # puts request.headers["Paddle-Signature"]
-        # puts "*****"
-
-
-        queue_event(verify_params.as_json)
-        head :ok
+        if valid_signarure?(request.headers["Paddle-Signature"])
+          queue_event(verify_params.as_json)
+          head :ok
+        end
       rescue Pay::Paddle::Error
         head :bad_request
       end
@@ -27,12 +23,21 @@ module Pay
         Pay::Webhooks::ProcessJob.perform_later(record)
       end
 
-      # def verified_event
-      #   event = verify_params.as_json
-      #   verifier = Pay::Paddle::Webhooks::SignatureVerifier.new(event)
-      #   return event if verifier.verify
-      #   raise Pay::Paddle::Error, "Unable to verify Paddle webhook event"
-      # end
+      # Pass Paddle signature from request.headers["Paddle-Signature"]
+      def valid_signarure?(paddle_signature)
+        ts_part, h1_part = paddle_signature.split(";")
+        var, ts = ts_part.split("=")
+        var, h1 = h1_part.split("=")
+
+        signed_payload = "#{ts}:#{request.raw_post}"
+
+        key = Pay::Paddle.signing_secret
+        data = signed_payload
+        digest = OpenSSL::Digest.new("sha256")
+
+        hmac = OpenSSL::HMAC.hexdigest(digest, key, data)
+        hmac == h1
+      end
 
       def verify_params
         params.except(:action, :controller).permit!
