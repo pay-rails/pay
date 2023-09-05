@@ -21,15 +21,13 @@ module Pay
       #
       # Returns a Paddle::Customer object
       def customer
-        paddle_customer = if processor_id?
+        if processor_id?
           ::Paddle::Customer.retrieve(id: processor_id)
         else
           sc = ::Paddle::Customer.create(email: email, name: customer_name)
           pay_customer.update!(processor_id: sc.id)
           sc
         end
-
-        paddle_customer
       rescue ::Paddle::Error => e
         raise Pay::Paddle::Error, e
       end

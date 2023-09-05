@@ -10,7 +10,6 @@ module Pay
       end
 
       def self.sync(charge_id, object: nil, try: 0, retries: 1)
-
         # Skip loading the latest charge details from the API if we already have it
         object ||= ::Paddle::Transaction.retrieve(id: charge_id)
 
@@ -36,10 +35,10 @@ module Pay
           return
         end
 
-        item    = object.items.first
+        item = object.items.first
         payment = object.payments.first
-        price   = item.price.unit_price
-        card    = payment&.method_details&.card
+        price = item.price.unit_price
+        card = payment&.method_details&.card
         if object.details.line_items
           metadata = object.details.line_items.first.id
         end
@@ -54,7 +53,7 @@ module Pay
           last4: card.try(:last4).to_s,
           metadata: metadata,
           payment_method_type: payment&.method_details&.type,
-          subscription: pay_customer.subscriptions.find_by(processor_id: object.subscription_id),
+          subscription: pay_customer.subscriptions.find_by(processor_id: object.subscription_id)
         }
 
         # Update or create the charge
@@ -66,7 +65,6 @@ module Pay
         else
           pay_customer.charges.create!(attrs.merge(processor_id: object.id))
         end
-
       end
 
       # def charge
@@ -90,7 +88,6 @@ module Pay
       # rescue ::PaddlePay::PaddlePayError => e
       #   raise Pay::Paddle::Error, e
       # end
-
     end
   end
 end
