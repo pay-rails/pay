@@ -22,7 +22,7 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
-      def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
+      def self.sync(subscription_id, object: nil)
         # Passthrough is not return from this API, so we can't use that
         object ||= ::Paddle::Subscription.retrieve(id: subscription_id)
 
@@ -40,9 +40,10 @@ module Pay
 
         attributes[:status] = object.status
 
-        if object.items && object.items.first
-          attributes[:processor_plan] = object.items.first.price.id
-          attributes[:quantity] = object.items.first.quantity
+        if object.items && item = object.items.first
+          attributes[:name]           = item.price.description
+          attributes[:processor_plan] = item.price.id
+          attributes[:quantity]       = item.quantity
         end
 
         if object.management_urls
