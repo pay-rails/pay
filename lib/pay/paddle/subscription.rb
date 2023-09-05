@@ -53,11 +53,11 @@ module Pay
         # If paused or delete while on trial, set ends_at to match
         case attributes[:status]
         when "trialing"
-          attributes[:trial_ends_at] = Time.zone.parse(object.next_bill_date)
+          attributes[:trial_ends_at] = Time.zone.parse(object.next_billed_at)
           attributes[:ends_at] = nil
         when "paused", "deleted"
           attributes[:trial_ends_at] = nil
-          attributes[:ends_at] = Time.zone.parse(object.next_bill_date)
+          attributes[:ends_at] = Time.zone.parse(object.next_billed_at)
         end
 
         # Update or create the subscription
@@ -80,35 +80,36 @@ module Pay
       end
 
       def cancel(**options)
-      #   ends_at = if on_trial?
-      #     trial_ends_at
-      #   elsif paused?
-      #     pause_starts_at
-      #   else
-      #     processor_subscription.next_payment&.fetch(:date) || Time.current
-      #   end
+        ends_at = if on_trial?
+          trial_ends_at
+        elsif paused?
+          pause_starts_at
+        else
+          processor_subscription.next_payment&.fetch(:date) || Time.current
+        end
 
-      #   PaddlePay::Subscription::User.cancel(processor_id)
-      #   pay_subscription.update(status: :canceled, ends_at: ends_at)
+        response = ::Paddle::Subscription.cancel(id: processor_id, effective_from: "next_billing_period")
 
-      #   # Remove payment methods since customer cannot be reused after cancelling
-      #   Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
-      # rescue ::PaddlePay::PaddlePayError => e
-      #   raise Pay::Paddle::Error, e
+        pay_subscription.update(status: :canceled, ends_at: response.scheduled_change.effective_at)
+
+        # Remove payment methods since customer cannot be reused after cancelling
+        Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
+      rescue ::Paddle::Error => e
+        raise Pay::Paddle::Error, e
       end
 
       def cancel_now!(**options)
-      #   PaddlePay::Subscription::User.cancel(processor_id)
-      #   pay_subscription.update(status: :canceled, ends_at: Time.current)
-
-      #   # Remove payment methods since customer cannot be reused after cancelling
-      #   Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
-      # rescue ::PaddlePay::PaddlePayError => e
-      #   raise Pay::Paddle::Error, e
       end
 
       def change_quantity(quantity, **options)
-        raise NotImplementedError, "Paddle does not support setting quantity on subscriptions"
+        items = [{
+          price_id: processor_plan,
+          quantity: quantity
+        }]
+
+        ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
+      rescue ::Paddle::Error => e
+        raise Pay::Paddle::Error, e
       end
 
       # A subscription could be set to cancel or pause in the future
@@ -122,35 +123,38 @@ module Pay
       end
 
       def pause
-      #   attributes = {pause: true}
-      #   response = PaddlePay::Subscription::User.update(processor_id, attributes)
-      #   pay_subscription.update(status: :paused, pause_starts_at: Time.zone.parse(response.dig(:next_payment, :date)))
-      # rescue ::PaddlePay::PaddlePayError => e
-      #   raise Pay::Paddle::Error, e
+        response = ::Paddle::Subscription.pause(id: processor_id)
+        pay_subscription.update!(status: :paused, pause_starts_at: response.scheduled_change.effective_at)
+      rescue ::Paddle::Error => e
+        raise Pay::Paddle::Error, e
       end
 
       def resume
-      #   unless paused?
-      #     raise StandardError, "You can only resume paused subscriptions."
-      #   end
+        unless paused?
+          raise StandardError, "You can only resume paused subscriptions."
+        end
 
-      #   attributes = {pause: false}
-      #   PaddlePay::Subscription::User.update(processor_id, attributes)
-      #   pay_subscription.update(status: :active, pause_starts_at: nil)
-      # rescue ::PaddlePay::PaddlePayError => e
-      #   raise Pay::Paddle::Error, e
+        # Paddle Billing API only allows "resuming" subscriptions when they are paused
+        # So cancel the scheduled change if it is in the future
+        if paused? && pause_starts_at? && Time.current < pause_starts_at
+          ::Paddle::Subscription.update(id: processor_id, scheduled_change: nil)
+        else
+          ::Paddle::Subscription.resume(id: processor_id, effective_from: "immediately")
+        end
+
+        pay_subscription.update(status: :active, pause_starts_at: nil)
+      rescue ::Paddle::Error => e
+        raise Pay::Paddle::Error, e
       end
 
       def swap(plan, **options)
-      #   raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
+        items = [{
+          price_id: plan,
+          quantity: quantity || 1
+        }]
 
-      #   attributes = {plan_id: plan, prorate: prorate}
-      #   attributes[:quantity] = quantity if quantity?
-      #   PaddlePay::Subscription::User.update(processor_id, attributes)
-
-      #   pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
-      # rescue ::PaddlePay::PaddlePayError => e
-      #   raise Pay::Paddle::Error, e
+        ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
+        pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
       end
 
       # Retries the latest invoice for a Past Due subscription
