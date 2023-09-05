@@ -21,7 +21,7 @@ module Pay
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle) && defined?(::Paddle)
 
-      Pay::Engine.version_matches?(required: "~> 1.1", current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 1.1")
+      Pay::Engine.version_matches?(required: "~> 2.1", current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 2.1")
     end
 
     def self.setup
