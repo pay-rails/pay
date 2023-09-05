@@ -5,6 +5,12 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     @pay_customer = pay_customers(:stripe)
   end
 
+  test "stripe sync skips subscription without customer" do
+    @pay_customer.update!(processor_id: nil)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(customer: nil, status: "past_due"))
+    assert_nil pay_subscription
+  end
+
   test "stripe past_due is not active" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(status: "past_due"))
     refute pay_subscription.active?
