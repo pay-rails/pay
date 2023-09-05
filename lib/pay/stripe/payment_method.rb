@@ -28,9 +28,16 @@ module Pay
       # Syncs PaymentMethod objects from Stripe
       def self.sync(id, object: nil, stripe_account: nil, try: 0, retries: 1)
         object ||= ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
+        if object.customer.blank?
+          Rails.logger.debug "Stripe PaymentMethod #{object.id} does not have a customer."
+          return
+        end
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
-        return unless pay_customer
+        if pay_customer.blank?
+          Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Stripe PaymentMethod #{object.id}."
+          return
+        end
 
         default_payment_method_id = pay_customer.customer.invoice_settings.default_payment_method
         default = (id == default_payment_method_id)

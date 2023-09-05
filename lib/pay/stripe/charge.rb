@@ -15,12 +15,16 @@ module Pay
       def self.sync(charge_id, object: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest charge details from the API if we already have it
         object ||= ::Stripe::Charge.retrieve({id: charge_id, expand: ["invoice.total_discount_amounts.discount", "invoice.total_tax_amounts.tax_rate", "refunds"]}, {stripe_account: stripe_account}.compact)
-
-        # Ignore charges without a Customer
-        return if object.customer.blank?
+        if object.customer.blank?
+          Rails.logger.debug "Stripe Charge #{object.id} does not have a customer"
+          return
+        end
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
-        return unless pay_customer
+        if pay_customer.blank?
+          Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Stripe Charge #{object.id}"
+          return
+        end
 
         refunds = []
         object.refunds.auto_paging_each { |refund| refunds << refund }
