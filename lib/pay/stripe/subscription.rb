@@ -31,9 +31,16 @@ module Pay
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest subscription details from the API if we already have it
         object ||= ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)
+        if object.customer.blank?
+          Rails.logger.debug "Stripe Subscription #{object.id} does not have a customer"
+          return
+        end
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
-        return unless pay_customer
+        if pay_customer.blank?
+          Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Stripe Subscription #{object.id}"
+          return
+        end
 
         attributes = {
           application_fee_percent: object.application_fee_percent,

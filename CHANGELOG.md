@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* [Stripe] Skip sync if object is not attached to a customer. Fixes #842
+
 ### 6.8.0
 
 * Update to Stripe `2023-08-16` API version
