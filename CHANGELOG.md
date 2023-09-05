@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 6.8.1
+
 * [Stripe] Skip sync if object is not attached to a customer. Fixes #842
 
 ### 6.8.0
