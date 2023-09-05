@@ -7,9 +7,7 @@ module Pay
     autoload :Subscription, "pay/paddle/subscription"
 
     module Webhooks
-      autoload :SubscriptionCreated, "pay/paddle/webhooks/subscription_created"
-      autoload :SubscriptionUpdated, "pay/paddle/webhooks/subscription_updated"
-      autoload :SubscriptionActivated, "pay/paddle/webhooks/subscription_activated"
+      autoload :Subscription, "pay/paddle/webhooks/subscription"
       autoload :TransactionCompleted, "pay/paddle/webhooks/transaction_completed"
     end
 
@@ -48,9 +46,9 @@ module Pay
 
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
-        events.subscribe "paddle.subscription.created", Pay::Paddle::Webhooks::SubscriptionCreated.new
-        events.subscribe "paddle.subscription.updated", Pay::Paddle::Webhooks::SubscriptionUpdated.new
-        events.subscribe "paddle.subscription.activated", Pay::Paddle::Webhooks::SubscriptionActivated.new
+        events.subscribe "paddle.subscription.created", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.updated", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.activated", Pay::Paddle::Webhooks::Subscription.new
 
         events.subscribe "paddle.transaction.completed", Pay::Paddle::Webhooks::TransactionCompleted.new
       end
