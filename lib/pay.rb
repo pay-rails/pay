@@ -17,6 +17,7 @@ module Pay
   # Payment processors
   autoload :Braintree, "pay/braintree"
   autoload :FakeProcessor, "pay/fake_processor"
+  autoload :Lago, "pay/lago"
   autoload :Paddle, "pay/paddle"
   autoload :Stripe, "pay/stripe"
 
