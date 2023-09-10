@@ -14,6 +14,10 @@ module Pay
         @pay_customer = pay_customer
       end
 
+      def customer_attributes
+        {email: email, name: customer_name}
+      end
+
       # Retrieves a Paddle::Customer object
       #
       # Finds an existing Paddle::Customer if processor_id exists
@@ -32,8 +36,12 @@ module Pay
         raise Pay::Paddle::Error, e
       end
 
-      def update_customer!
-        # pass
+      # Syncs name and email to Paddle::Customer
+      # You can also pass in other attributes that will be merged into the default attributes
+      def update_customer!(**attributes)
+        customer unless processor_id?
+        attrs = customer_attributes.merge(attributes)
+        ::Paddle::Customer.update(id: processor_id, **attrs)
       end
 
       def charge(amount, options = {})
