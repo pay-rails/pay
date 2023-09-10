@@ -6,7 +6,7 @@ module Pay
       end
 
       def create
-        if valid_signarure?(request.headers["Paddle-Signature"])
+        if valid_signature?(request.headers["Paddle-Signature"])
           queue_event(verify_params.as_json)
           head :ok
         end
@@ -24,7 +24,7 @@ module Pay
       end
 
       # Pass Paddle signature from request.headers["Paddle-Signature"]
-      def valid_signarure?(paddle_signature)
+      def valid_signature?(paddle_signature)
         ts_part, h1_part = paddle_signature.split(";")
         _, ts = ts_part.split("=")
         _, h1 = h1_part.split("=")
