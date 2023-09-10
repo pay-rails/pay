@@ -32,7 +32,6 @@ module Pay
         item = object.items.first
         payment = object.payments.first
         price = item.price.unit_price
-        card = payment&.method_details&.card
         if object.details.line_items
           metadata = object.details.line_items.first.id
         end
