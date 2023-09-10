@@ -19,19 +19,13 @@ module Pay
         # Ignore transactions that are drafts
         return if object.status == "draft"
 
-        # Ignore transactions that are payment method changes
-        return if object.origin == "subscription_payment_method_change"
-
         pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: object.customer_id)
         return unless pay_customer
 
-        if pay_customer.nil?
-          owner = Pay::Paddle.owner_from_passthrough(event.custom_data.passthrough)
-          pay_customer = owner&.set_payment_processor :paddle, processor_id: event.customer_id
-        end
-
-        if pay_customer.nil?
-          Rails.logger.error("[Pay] Unable to find Pay::Customer with: '#{event.passthrough}'")
+        # Ignore transactions that are payment method changes
+        # But update the customer's payment method
+        if object.origin == "subscription_payment_method_change"
+          Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
           return
         end
 
@@ -43,18 +37,29 @@ module Pay
           metadata = object.details.line_items.first.id
         end
 
-        attrs = {
-          amount: (price.amount.to_f / 100),
-          created_at: object.created_at,
-          currency: price.currency_code,
-          brand: card.try(:type).to_s,
-          exp_month: card.try(:exp_month).to_s,
-          exp_year: card.try(:exp_year).to_s,
-          last4: card.try(:last4).to_s,
-          metadata: metadata,
-          payment_method_type: payment&.method_details&.type,
-          subscription: pay_customer.subscriptions.find_by(processor_id: object.subscription_id)
-        }
+        attrs = {}
+
+        details = payment.method_details
+
+        case details.type.downcase
+        when "card"
+          attrs[:payment_method_type] = "card"
+          attrs[:brand] = details.card.type
+          attrs[:exp_month] = details.card.expiry_month
+          attrs[:exp_year] = details.card.expiry_year
+          attrs[:last4] = details.card.last4
+        when "paypal"
+          attrs[:payment_method_type] = "paypal"
+        end
+
+        attrs[:metadata] = metadata
+        attrs[:amount] = payment.amount
+        attrs[:created_at] = object.created_at
+        attrs[:currency] = price.currency_code
+        attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: object.subscription_id)
+
+        # Update customer's payment method
+        Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
 
         # Update or create the charge
         if (pay_charge = pay_customer.charges.find_by(processor_id: object.id))
