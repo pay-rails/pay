@@ -5,14 +5,27 @@ module Pay
 
       delegate :customer, :processor_id, to: :pay_payment_method
 
-      # Paddle doesn't provide PaymentMethod IDs, so we have to lookup via the Customer
       def self.sync(pay_customer:, attributes:)
-        return unless pay_customer.subscription
+        attrs = {}
+
+        details = attributes.method_details
+
+        case details.type.downcase
+        when "card"
+          attrs[:type] = "card"
+          attrs[:brand] = details.card.type
+          attrs[:last4] = details.card.last4
+          attrs[:exp_month] = details.card.expiry_month
+          attrs[:exp_year] = details.card.expiry_year
+        when "paypal"
+          attrs[:type] = "paypal"
+        end
 
         payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
-        payment_method.processor_id ||= NanoId.generate
+        payment_method.name = :paddle
+        payment_method.processor_id = attributes.stored_payment_method_id
 
-        payment_method.update!(attributes)
+        payment_method.update!(attrs)
         payment_method
       end
 
