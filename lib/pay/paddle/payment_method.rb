@@ -22,7 +22,6 @@ module Pay
         end
 
         payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
-        payment_method.name = :paddle
         payment_method.processor_id = attributes.stored_payment_method_id
 
         payment_method.update!(attrs)
