@@ -36,14 +36,6 @@ module Pay
       find_value_by_name(:paddle, :signing_secret)
     end
 
-    def self.passthrough(owner:)
-      {passthrough: owner.to_sgid.to_s}.to_json
-    end
-
-    def self.owner_from_passthrough(passthrough)
-      GlobalID::Locator.locate_signed(passthrough)
-    end
-
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
         events.subscribe "paddle.subscription.created", Pay::Paddle::Webhooks::Subscription.new
