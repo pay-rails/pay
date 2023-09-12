@@ -22,6 +22,7 @@ gem "webmock"
 gem "braintree", ">= 2.92.0"
 gem "stripe", "~> 9.0"
 gem "paddle_pay", "~> 0.2"
+gem "lago-ruby-client", "~> 0.44.0.pre.beta"
 
 gem "receipts"
 gem "prawn", github: "prawnpdf/prawn"
