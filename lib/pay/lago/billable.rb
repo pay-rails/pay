@@ -82,22 +82,24 @@ module Pay
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         # Make to generate a processor_id
-        customer
+        lago_customer = customer
+        pay_subscription = create_placeholder_subscription(name, plan)
+        external_id = pay_subscription.to_gid.to_s
+
         attributes = options.merge(
-          processor_id: NanoId.generate,
-          name: name,
-          processor_plan: plan,
-          status: :active,
-          quantity: options.fetch(:quantity, 1)
+          external_customer_id: lago_customer.external_id,
+          name:, external_id:, plan_code: plan
         )
 
-        if (trial_period_days = attributes.delete(:trial_period_days))
-          attributes[:trial_ends_at] = trial_period_days.to_i.days.from_now
+        begin
+          subscription = Lago.client.subscriptions.create(attributes)
+        rescue ::Lago::Api::HttpError
+          pay_subscription.destroy!
+          raise Pay::Lago::Error, e
         end
-
-        attributes.delete(:promotion_code)
-
-        pay_customer.subscriptions.create!(attributes)
+        
+        pay_subscription.update!(processor_id: external_id)
+        Pay::Lago::Subscription.sync(external_id, object: subscription)
       end
 
       def add_payment_method(payment_method_id, default: false)
@@ -129,6 +131,16 @@ module Pay
       end
 
       private
+
+      def create_placeholder_subscription(name, plan)
+        pay_customer.subscriptions.create!(
+          processor_id: ("a".."z").to_a.sample(16).join,
+          name:,
+          processor_plan: plan,
+          quantity: 0,
+          status: "incomplete"
+        )
+      end
 
       def pay_default_addon
         begin

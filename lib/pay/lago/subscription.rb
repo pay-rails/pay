@@ -1,6 +1,10 @@
 module Pay
   module Lago
     class Subscription
+      STATUS_MAP = {
+        "pending" => "active",
+        "terminated" => "canceled"
+      }
       attr_reader :pay_subscription
 
       delegate :active?,
@@ -18,62 +22,101 @@ module Pay
         :quantity,
         to: :pay_subscription
 
+      def self.sync(subscription_id, object: nil, try: 0, retries: 1)
+        object ||= Lago.client.invoices.get(subscription_id)
+
+        pay_customer = Pay::Customer.find_by(processor: :lago, processor_id: object.external_customer_id)
+        if pay_customer.blank?
+          Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Lago Subscription #{object.lago_id}"
+          return
+        end
+        
+        attrs = {
+          processor_id: object.external_id,
+          processor_plan: object.plan_code,
+          quantity: 1,
+          status: STATUS_MAP.fetch(object.status, object.status),
+          data: Lago.openstruct_to_h(object)
+        }
+
+        # Update or create the charge
+        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: subscription_id))
+          pay_subscription.with_lock do
+            pay_subscription.update!(attrs)
+          end
+          pay_subscription
+        else
+          pay_customer.subscriptions.create!(attrs)
+        end
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
+        end
+      end
+
+      def self.get_subscription(customer_id, external_id)
+        result = Lago.client.subscriptions.get_all(external_customer_id: customer_id, per_page: 9223372036854775807)
+        result.subscriptions.each { |sub| return (@lago_subscription = sub) if sub.external_id == external_id }
+        raise "No subscription could be found."
+      end
+
       def initialize(pay_subscription)
         @pay_subscription = pay_subscription
       end
 
-      def subscription(**options)
-        pay_subscription
+      def subscription
+        @lago_subscription ||= self.class.get_subscription(pay_subscription.customer.processor_id, processor_id)
       end
 
-      # With trial, sets end to trial end (mimicing Stripe)
-      # Without trial, sets can ends_at to end of month
       def cancel(**options)
-        if pay_subscription.on_trial?
-          pay_subscription.update(ends_at: pay_subscription.trial_ends_at)
-        else
-          pay_subscription.update(ends_at: Time.current.end_of_month)
-        end
+        response = Lago.client.subscriptions.destroy!(URI.encode_www_form_component(processor_id), options)
+        self.class.sync(processor_id, object: response)
+      rescue ::Lago::Api::HttpError => e
+        raise Pay::Lago::Error, e
       end
 
       def cancel_now!(**options)
-        ends_at = Time.current
-        pay_subscription.update(
-          status: :canceled,
-          trial_ends_at: (ends_at if pay_subscription.trial_ends_at?),
-          ends_at: ends_at
-        )
+        cancel(options)
       end
 
-      def change_quantity(quantity, **options)
-        pay_subscription.update(quantity: quantity)
+      def change_quantity(_quantity, **_options)
+        raise "Lago subscriptions do not implement quantity."
       end
 
       def on_grace_period?
-        ends_at? && ends_at > Time.current
+        false
       end
 
       def paused?
-        pay_subscription.status == "paused"
+        false
       end
 
       def pause
-        pay_subscription.update(status: :paused, trial_ends_at: Time.current)
+        raise "Lago subscriptions cannot be paused."
       end
 
       def resume
-        unless on_grace_period? || paused?
-          raise StandardError, "You can only resume subscriptions within their grace period."
-        end
+        raise "Lago subscriptions cannot be paused."
       end
 
       def swap(plan, **options)
-        pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
+        attributes = options.merge(
+          external_customer_id: subscription.external_customer_id,
+          external_id: processor_id, plan_code: plan
+        )
+        subscription = Lago.client.subscriptions.create(attributes)
+        self.class.sync(processor_id, object: subscription)
+      rescue ::Lago::Api::HttpError => e
+        raise Pay::Lago::Error, e
       end
 
       # Retries the latest invoice for a Past Due subscription
       def retry_failed_payment
-        pay_subscription.update(status: :active)
+        raise "Lago subscriptions cannot be retried."
       end
     end
   end
