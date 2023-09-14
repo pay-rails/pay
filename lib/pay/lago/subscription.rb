@@ -61,7 +61,7 @@ module Pay
       def self.get_subscription(customer_id, external_id)
         result = Lago.client.subscriptions.get_all(external_customer_id: customer_id, per_page: 9223372036854775807)
         result.subscriptions.each { |sub| return (@lago_subscription = sub) if sub.external_id == external_id }
-        raise "No subscription could be found."
+        raise Pay::Lago::Error.new("No subscription could be found.")
       end
 
       def initialize(pay_subscription)
@@ -84,7 +84,7 @@ module Pay
       end
 
       def change_quantity(_quantity, **_options)
-        raise "Lago subscriptions do not implement quantity."
+        raise Pay::Lago::Error.new("Lago subscriptions do not implement quantity.")
       end
 
       def on_grace_period?
@@ -96,11 +96,11 @@ module Pay
       end
 
       def pause
-        raise "Lago subscriptions cannot be paused."
+        raise Pay::Lago::Error.new("Lago subscriptions cannot be paused.")
       end
 
       def resume
-        raise "Lago subscriptions cannot be paused."
+        raise Pay::Lago::Error.new("Lago subscriptions cannot be paused.")
       end
 
       def swap(plan, **options)
@@ -116,7 +116,7 @@ module Pay
 
       # Retries the latest invoice for a Past Due subscription
       def retry_failed_payment
-        raise "Lago subscriptions cannot be retried."
+        raise Pay::Lago::Error.new("Lago subscriptions cannot be retried.")
       end
     end
   end

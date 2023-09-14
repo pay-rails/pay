@@ -15,7 +15,6 @@ module Pay
         end
         
         attrs = {
-          customer: pay_customer,
           processor_id: object.lago_id,
           amount: object.total_amount_cents,
           data: Lago.openstruct_to_h(object)
@@ -50,11 +49,27 @@ module Pay
       end
 
       def charge
-        Lago.client.invoices.get(pay_charge.processor_id)
+        Lago.client.invoices.get(processor_id)
+      rescue ::Lago::Api::HttpError => e
+        raise Pay::Lago::Error, e
       end
 
-      def refund!(amount_to_refund)
-        pay_charge.update(amount_refunded: amount_to_refund)
+      def refund!(amount_to_refund, **options)
+        attributes = {
+          refund_amount_cents: amount_to_refund,
+          invoice_id: processor_id,
+          items: [{fee_id: charge.fees.first.try(:lago_id), amount_cents: amount_to_refund}]
+        }
+        begin
+          Lago.client.credit_notes.create(options.merge(attributes))
+        rescue ::Lago::Api::HttpError => e
+          if e.error_code == 403
+            raise Pay::Lago::Error.new("Creating a credit note requires Lago Premium.")
+          else
+            raise Pay::Lago::Error, e
+          end
+        end
+        pay_charge.update!(amount_refunded: pay_charge.amount_refunded.to_i + amount_to_refund)
       end
     end
   end

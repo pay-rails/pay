@@ -102,32 +102,16 @@ module Pay
         Pay::Lago::Subscription.sync(external_id, object: subscription)
       end
 
-      def add_payment_method(payment_method_id, default: false)
-        # Make to generate a processor_id
-        customer
-
-        pay_payment_method = pay_customer.payment_methods.create!(
-          processor_id: NanoId.generate,
-          default: default,
-          type: :card,
-          data: {
-            brand: "Fake",
-            last4: 1234,
-            exp_month: Date.today.month,
-            exp_year: Date.today.year
-          }
-        )
-
-        pay_customer.reload_default_payment_method if default
-        pay_payment_method
+      def add_payment_method(token = nil, default: true)
+        Pay::Lago::PaymentMethod.sync(pay_customer: pay_customer)
       end
 
       def processor_subscription(subscription_id, options = {})
-        pay_customer.subscriptions.find_by(processor_id: subscription_id)
+        Pay::Lago::Subscription.get_subscription(processor_id, subscription_id)
       end
 
       def trial_end_date(subscription)
-        Date.today
+        raise Pay::Lago::Error.new("Lago subscriptions do not implement trials.")
       end
 
       private
