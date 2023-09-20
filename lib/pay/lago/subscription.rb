@@ -30,7 +30,7 @@ module Pay
           Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Lago Subscription #{object.lago_id}"
           return
         end
-        
+
         attrs = {
           processor_id: object.external_id,
           processor_plan: object.plan_code,

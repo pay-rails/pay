@@ -1,7 +1,7 @@
 module Pay
   module Lago
     class Billable
-      require 'uri'
+      require "uri"
 
       attr_reader :pay_customer
 
@@ -34,7 +34,7 @@ module Pay
         # Guard against attributes being returned nil
         attributes ||= {}
 
-        {external_id:, email: email, name: customer_name}.merge(attributes)
+        {external_id: external_id, email: email, name: customer_name}.merge(attributes)
       end
 
       def customer
@@ -85,7 +85,7 @@ module Pay
 
         attributes = options.merge(
           external_customer_id: lago_customer.external_id,
-          name:, external_id:, plan_code: plan
+          name: name, external_id: external_id, plan_code: plan
         )
 
         begin
@@ -94,7 +94,7 @@ module Pay
           pay_subscription.destroy!
           raise Pay::Lago::Error, e
         end
-        
+
         pay_subscription.update!(processor_id: external_id)
         Pay::Lago::Subscription.sync(lago_customer.external_id, external_id, object: subscription)
       end
@@ -116,7 +116,7 @@ module Pay
       def create_placeholder_subscription(name, plan)
         pay_customer.subscriptions.create!(
           processor_id: NanoId.generate,
-          name:,
+          name: name,
           processor_plan: plan,
           quantity: 0,
           status: "incomplete"
@@ -125,13 +125,13 @@ module Pay
 
       def pay_default_addon
         begin
-          return Lago.client.add_ons.get('pay_default_addon')
+          Lago.client.add_ons.get("pay_default_addon")
         rescue ::Lago::Api::HttpError
-          return Lago.client.add_ons.create(
-            name: 'Default Charge',
-            code: 'pay_default_addon',
+          Lago.client.add_ons.create(
+            name: "Default Charge",
+            code: "pay_default_addon",
             amount_cents: 100,
-            amount_currency: 'USD'
+            amount_currency: "USD"
           )
         end
       rescue ::Lago::Api::HttpError => e

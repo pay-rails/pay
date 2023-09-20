@@ -13,13 +13,13 @@ module Pay
           Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Lago Invoice #{object.lago_id}"
           return
         end
-        
+
         attrs = {
           processor_id: object.lago_id,
           amount: object.total_amount_cents,
           data: Lago.openstruct_to_h(object)
         }
-        
+
         if object.subscriptions.present?
           subscription = object.subscriptions.first
           attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: subscription.try(:lago_id))
