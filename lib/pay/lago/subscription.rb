@@ -22,10 +22,10 @@ module Pay
         :quantity,
         to: :pay_subscription
 
-      def self.sync(subscription_id, object: nil, try: 0, retries: 1)
-        object ||= Lago.client.invoices.get(subscription_id)
+      def self.sync(customer_id, subscription_id, object: nil, try: 0, retries: 1)
+        object ||= get_subscription(customer_id, subscription_id)
 
-        pay_customer = Pay::Customer.find_by(processor: :lago, processor_id: object.external_customer_id)
+        pay_customer = Pay::Customer.find_by(processor: :lago, processor_id: customer_id)
         if pay_customer.blank?
           Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Lago Subscription #{object.lago_id}"
           return
@@ -34,6 +34,7 @@ module Pay
         attrs = {
           processor_id: object.external_id,
           processor_plan: object.plan_code,
+          ends_at: object.cancelled_at || object.terminated_at,
           quantity: 1,
           status: STATUS_MAP.fetch(object.status, object.status),
           data: Lago.openstruct_to_h(object)
@@ -60,8 +61,10 @@ module Pay
 
       def self.get_subscription(customer_id, external_id)
         result = Lago.client.subscriptions.get_all(external_customer_id: customer_id, per_page: 9223372036854775807)
-        result.subscriptions.each { |sub| return (@lago_subscription = sub) if sub.external_id == external_id }
+        result.subscriptions.each { |sub| return sub if sub.external_id == external_id }
         raise Pay::Lago::Error.new("No subscription could be found.")
+      rescue ::Lago::Api::HttpError => e
+        raise Pay::Lago::Error, e
       end
 
       def initialize(pay_subscription)
@@ -72,9 +75,10 @@ module Pay
         @lago_subscription ||= self.class.get_subscription(pay_subscription.customer.processor_id, processor_id)
       end
 
-      def cancel(**options)
-        response = Lago.client.subscriptions.destroy!(URI.encode_www_form_component(processor_id), options)
-        self.class.sync(processor_id, object: response)
+      def cancel(**_options)
+        customer_id = subscription.external_customer_id
+        response = Lago.client.subscriptions.destroy(URI.encode_www_form_component(processor_id))
+        self.class.sync(customer_id, processor_id, object: response)
       rescue ::Lago::Api::HttpError => e
         raise Pay::Lago::Error, e
       end
@@ -95,6 +99,11 @@ module Pay
         false
       end
 
+      def changing_plan?
+        return unless subscription.downgrade_plan_date
+        subscription.downgrade_plan_date > Time.now
+      end
+
       def pause
         raise Pay::Lago::Error.new("Lago subscriptions cannot be paused.")
       end
@@ -104,12 +113,13 @@ module Pay
       end
 
       def swap(plan, **options)
+        customer_id = subscription.external_customer_id
         attributes = options.merge(
-          external_customer_id: subscription.external_customer_id,
+          external_customer_id: customer_id,
           external_id: processor_id, plan_code: plan
         )
-        subscription = Lago.client.subscriptions.create(attributes)
-        self.class.sync(processor_id, object: subscription)
+        new_subscription = Lago.client.subscriptions.create(attributes)
+        self.class.sync(customer_id, processor_id, object: new_subscription)
       rescue ::Lago::Api::HttpError => e
         raise Pay::Lago::Error, e
       end

@@ -1,0 +1,375 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://localhost:3000/api/v<VENDOR_ID>/customers/gid:%2F%2Fdummy%2FPay::Customer%2F772847388
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <VENDOR_ID>55ed033-87<VENDOR_ID>6-4587-9ac6-fed8ddae33<VENDOR_ID>7
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Lago Ruby v0.44.0-beta
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"af429c6f5<VENDOR_ID>b25054dd9b23522b77d57d"
+      Cache-Control:
+      - ma<VENDOR_AUTH_CODE>-age=0, private, must-revalidate
+      X-Request-Id:
+      - ce076377-87<VENDOR_ID>b-428a-ba<VENDOR_ID>2-dc9<VENDOR_ID>d0deb304
+      X-Runtime:
+      - '0.096262'
+      Vary:
+      - Origin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"customer":{"lago_id":"c8bb805a-590c-444f-ae<VENDOR_ID>4-66589764f273","e<VENDOR_AUTH_CODE>ternal_id":"gid://dummy/Pay::Customer/772847388","name":"Lago
+        User","sequential_id":4,"slug":"AMO-FBCD-004","created_at":"2023-09-<VENDOR_ID>8T06:42:57Z","updated_at":"2023-09-<VENDOR_ID>8T06:43:<VENDOR_ID><VENDOR_ID>Z","country":null,"address_line<VENDOR_ID>":null,"address_line2":null,"state":null,"zipcode":null,"email":"test@e<VENDOR_AUTH_CODE>ample.com","city":null,"url":null,"phone":null,"logo_url":null,"legal_name":null,"legal_number":null,"currency":"USD","ta<VENDOR_AUTH_CODE>_identification_number":null,"timezone":null,"applicable_timezone":"UTC","net_payment_term":null,"e<VENDOR_AUTH_CODE>ternal_salesforce_id":null,"billing_configuration":{"invoice_grace_period":null,"payment_provider":null,"vat_rate":null,"document_locale":null},"metadata":[],"ta<VENDOR_AUTH_CODE>es":[]}}'
+  recorded_at: Tue, 19 Sep 2023 02:16:52 GMT
+- request:
+    method: get
+    uri: http://localhost:3000/api/v<VENDOR_ID>/add_ons/pay_default_addon
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <VENDOR_ID>55ed033-87<VENDOR_ID>6-4587-9ac6-fed8ddae33<VENDOR_ID>7
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Lago Ruby v0.44.0-beta
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"3<VENDOR_ID>3c360c2793ebdbf699d3669bdb5703"
+      Cache-Control:
+      - ma<VENDOR_AUTH_CODE>-age=0, private, must-revalidate
+      X-Request-Id:
+      - a34c537b-d044-48de-9b07-f5ed8468e529
+      X-Runtime:
+      - 0.02<VENDOR_ID>093
+      Vary:
+      - Origin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"add_on":{"lago_id":"690e70c2-f<VENDOR_ID>0<VENDOR_ID>-4539-bda7-aefe4b<VENDOR_ID>d068e","name":"Default
+        Charge","code":"pay_default_addon","amount_cents":<VENDOR_ID>00,"amount_currency":"USD","created_at":"2023-09-<VENDOR_ID><VENDOR_ID>T05:0<VENDOR_ID>:<VENDOR_ID>7Z","description":null,"ta<VENDOR_AUTH_CODE>es":[]}}'
+  recorded_at: Tue, 19 Sep 2023 02:16:52 GMT
+- request:
+    method: post
+    uri: http://localhost:3000/api/v<VENDOR_ID>/invoices
+    body:
+      encoding: UTF-8
+      string: '{"invoice":{"e<VENDOR_AUTH_CODE>ternal_customer_id":"gid://dummy/Pay::Customer/772847388","currency":"USD","net_payment_term":null,"fees":[{"add_on_code":"pay_default_addon","unit_amount_cents":<VENDOR_ID>000}]}}'
+    headers:
+      Authorization:
+      - Bearer <VENDOR_ID>55ed033-87<VENDOR_ID>6-4587-9ac6-fed8ddae33<VENDOR_ID>7
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Lago Ruby v0.44.0-beta
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"6e42f84ca8b<VENDOR_ID>c44fef3e4d727f4640fe"
+      Cache-Control:
+      - ma<VENDOR_AUTH_CODE>-age=0, private, must-revalidate
+      X-Request-Id:
+      - db727cfa-9c42-4<VENDOR_ID>85-9f0f-60649e2a7<VENDOR_ID>b4
+      X-Runtime:
+      - 0.<VENDOR_ID>48822
+      Vary:
+      - Origin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"invoice":{"lago_id":"9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace","sequential_id":<VENDOR_ID>3,"number":"AMO-FBCD-004-0<VENDOR_ID>3","issuing_date":"2023-09-<VENDOR_ID>9","payment_due_date":"2023-09-<VENDOR_ID>9","net_payment_term":0,"invoice_type":"one_off","status":"finalized","payment_status":"pending","currency":"USD","fees_amount_cents":<VENDOR_ID>000,"ta<VENDOR_AUTH_CODE>es_amount_cents":0,"coupons_amount_cents":0,"credit_notes_amount_cents":0,"sub_total_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>es_amount_cents":<VENDOR_ID>000,"sub_total_including_ta<VENDOR_AUTH_CODE>es_amount_cents":<VENDOR_ID>000,"total_amount_cents":<VENDOR_ID>000,"prepaid_credit_amount_cents":0,"file_url":null,"version_number":3,"legacy":false,"amount_currency":"USD","vat_amount_currency":"USD","credit_amount_currency":"USD","total_amount_currency":"USD","amount_cents":<VENDOR_ID>000,"credit_amount_cents":0,"vat_amount_cents":0,"sub_total_vat_e<VENDOR_AUTH_CODE>cluded_amount_cents":<VENDOR_ID>000,"sub_total_vat_included_amount_cents":<VENDOR_ID>000,"customer":{"lago_id":"c8bb805a-590c-444f-ae<VENDOR_ID>4-66589764f273","e<VENDOR_AUTH_CODE>ternal_id":"gid://dummy/Pay::Customer/772847388","name":"Lago
+        User","sequential_id":4,"slug":"AMO-FBCD-004","created_at":"2023-09-<VENDOR_ID>8T06:42:57Z","updated_at":"2023-09-<VENDOR_ID>8T06:43:<VENDOR_ID><VENDOR_ID>Z","country":null,"address_line<VENDOR_ID>":null,"address_line2":null,"state":null,"zipcode":null,"email":"test@e<VENDOR_AUTH_CODE>ample.com","city":null,"url":null,"phone":null,"logo_url":null,"legal_name":null,"legal_number":null,"currency":"USD","ta<VENDOR_AUTH_CODE>_identification_number":null,"timezone":null,"applicable_timezone":"UTC","net_payment_term":null,"e<VENDOR_AUTH_CODE>ternal_salesforce_id":null,"billing_configuration":{"invoice_grace_period":null,"payment_provider":null,"vat_rate":null,"document_locale":null},"metadata":[]},"subscriptions":[],"fees":[{"lago_id":"287fa5fe-2e87-4fd2-80d4-d8<VENDOR_ID>dcbd070e0","lago_group_id":null,"lago_invoice_id":"9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace","lago_true_up_fee_id":null,"lago_true_up_parent_fee_id":null,"item":{"type":"add_on","code":"pay_default_addon","name":"Default
+        Charge","lago_item_id":"690e70c2-f<VENDOR_ID>0<VENDOR_ID>-4539-bda7-aefe4b<VENDOR_ID>d068e","item_type":"AddOn"},"pay_in_advance":false,"invoiceable":true,"amount_cents":<VENDOR_ID>000,"amount_currency":"USD","ta<VENDOR_AUTH_CODE>es_amount_cents":0,"ta<VENDOR_AUTH_CODE>es_rate":0.0,"total_amount_cents":<VENDOR_ID>000,"total_amount_currency":"USD","units":"<VENDOR_ID>.0","description":null,"unit_amount_cents":<VENDOR_ID>000,"events_count":null,"payment_status":"pending","created_at":"2023-09-<VENDOR_ID>9T02:<VENDOR_ID>6:52Z","succeeded_at":null,"failed_at":null,"refunded_at":null,"vat_amount_cents":0,"vat_amount_currency":"USD"}],"credits":[],"metadata":[],"applied_ta<VENDOR_AUTH_CODE>es":[]}}'
+  recorded_at: Tue, 19 Sep 2023 02:16:53 GMT
+- request:
+    method: get
+    uri: http://localhost:3000/api/v<VENDOR_ID>/invoices/9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <VENDOR_ID>55ed033-87<VENDOR_ID>6-4587-9ac6-fed8ddae33<VENDOR_ID>7
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Lago Ruby v0.44.0-beta
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"6e42f84ca8b<VENDOR_ID>c44fef3e4d727f4640fe"
+      Cache-Control:
+      - ma<VENDOR_AUTH_CODE>-age=0, private, must-revalidate
+      X-Request-Id:
+      - e0a0f2d2-d36f-42e4-8<VENDOR_ID>62-f33ca44de46e
+      X-Runtime:
+      - 0.0<VENDOR_ID>8967
+      Vary:
+      - Origin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"invoice":{"lago_id":"9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace","sequential_id":<VENDOR_ID>3,"number":"AMO-FBCD-004-0<VENDOR_ID>3","issuing_date":"2023-09-<VENDOR_ID>9","payment_due_date":"2023-09-<VENDOR_ID>9","net_payment_term":0,"invoice_type":"one_off","status":"finalized","payment_status":"pending","currency":"USD","fees_amount_cents":<VENDOR_ID>000,"ta<VENDOR_AUTH_CODE>es_amount_cents":0,"coupons_amount_cents":0,"credit_notes_amount_cents":0,"sub_total_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>es_amount_cents":<VENDOR_ID>000,"sub_total_including_ta<VENDOR_AUTH_CODE>es_amount_cents":<VENDOR_ID>000,"total_amount_cents":<VENDOR_ID>000,"prepaid_credit_amount_cents":0,"file_url":null,"version_number":3,"legacy":false,"amount_currency":"USD","vat_amount_currency":"USD","credit_amount_currency":"USD","total_amount_currency":"USD","amount_cents":<VENDOR_ID>000,"credit_amount_cents":0,"vat_amount_cents":0,"sub_total_vat_e<VENDOR_AUTH_CODE>cluded_amount_cents":<VENDOR_ID>000,"sub_total_vat_included_amount_cents":<VENDOR_ID>000,"customer":{"lago_id":"c8bb805a-590c-444f-ae<VENDOR_ID>4-66589764f273","e<VENDOR_AUTH_CODE>ternal_id":"gid://dummy/Pay::Customer/772847388","name":"Lago
+        User","sequential_id":4,"slug":"AMO-FBCD-004","created_at":"2023-09-<VENDOR_ID>8T06:42:57Z","updated_at":"2023-09-<VENDOR_ID>8T06:43:<VENDOR_ID><VENDOR_ID>Z","country":null,"address_line<VENDOR_ID>":null,"address_line2":null,"state":null,"zipcode":null,"email":"test@e<VENDOR_AUTH_CODE>ample.com","city":null,"url":null,"phone":null,"logo_url":null,"legal_name":null,"legal_number":null,"currency":"USD","ta<VENDOR_AUTH_CODE>_identification_number":null,"timezone":null,"applicable_timezone":"UTC","net_payment_term":null,"e<VENDOR_AUTH_CODE>ternal_salesforce_id":null,"billing_configuration":{"invoice_grace_period":null,"payment_provider":null,"vat_rate":null,"document_locale":null},"metadata":[]},"subscriptions":[],"fees":[{"lago_id":"287fa5fe-2e87-4fd2-80d4-d8<VENDOR_ID>dcbd070e0","lago_group_id":null,"lago_invoice_id":"9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace","lago_true_up_fee_id":null,"lago_true_up_parent_fee_id":null,"item":{"type":"add_on","code":"pay_default_addon","name":"Default
+        Charge","lago_item_id":"690e70c2-f<VENDOR_ID>0<VENDOR_ID>-4539-bda7-aefe4b<VENDOR_ID>d068e","item_type":"AddOn"},"pay_in_advance":false,"invoiceable":true,"amount_cents":<VENDOR_ID>000,"amount_currency":"USD","ta<VENDOR_AUTH_CODE>es_amount_cents":0,"ta<VENDOR_AUTH_CODE>es_rate":0.0,"total_amount_cents":<VENDOR_ID>000,"total_amount_currency":"USD","units":"<VENDOR_ID>.0","description":null,"unit_amount_cents":<VENDOR_ID>000,"events_count":null,"payment_status":"pending","created_at":"2023-09-<VENDOR_ID>9T02:<VENDOR_ID>6:52Z","succeeded_at":null,"failed_at":null,"refunded_at":null,"vat_amount_cents":0,"vat_amount_currency":"USD"}],"credits":[],"metadata":[],"applied_ta<VENDOR_AUTH_CODE>es":[]}}'
+  recorded_at: Tue, 19 Sep 2023 02:16:53 GMT
+- request:
+    method: put
+    uri: http://localhost:3000/api/v<VENDOR_ID>/invoices/9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace
+    body:
+      encoding: UTF-8
+      string: '{"invoice":{"payment_status":"succeeded","net_payment_term":null}}'
+    headers:
+      Authorization:
+      - Bearer <VENDOR_ID>55ed033-87<VENDOR_ID>6-4587-9ac6-fed8ddae33<VENDOR_ID>7
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Lago Ruby v0.44.0-beta
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"66<VENDOR_ID>8bb4b598acdf7033e<VENDOR_ID>37c7bd623c0"
+      Cache-Control:
+      - ma<VENDOR_AUTH_CODE>-age=0, private, must-revalidate
+      X-Request-Id:
+      - b7c684f3-0c8c-4298-9edc-ef2b9500c908
+      X-Runtime:
+      - 0.0325<VENDOR_ID>6
+      Vary:
+      - Origin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"invoice":{"lago_id":"9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace","sequential_id":<VENDOR_ID>3,"number":"AMO-FBCD-004-0<VENDOR_ID>3","issuing_date":"2023-09-<VENDOR_ID>9","payment_due_date":"2023-09-<VENDOR_ID>9","net_payment_term":0,"invoice_type":"one_off","status":"finalized","payment_status":"succeeded","currency":"USD","fees_amount_cents":<VENDOR_ID>000,"ta<VENDOR_AUTH_CODE>es_amount_cents":0,"coupons_amount_cents":0,"credit_notes_amount_cents":0,"sub_total_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>es_amount_cents":<VENDOR_ID>000,"sub_total_including_ta<VENDOR_AUTH_CODE>es_amount_cents":<VENDOR_ID>000,"total_amount_cents":<VENDOR_ID>000,"prepaid_credit_amount_cents":0,"file_url":null,"version_number":3,"legacy":false,"amount_currency":"USD","vat_amount_currency":"USD","credit_amount_currency":"USD","total_amount_currency":"USD","amount_cents":<VENDOR_ID>000,"credit_amount_cents":0,"vat_amount_cents":0,"sub_total_vat_e<VENDOR_AUTH_CODE>cluded_amount_cents":<VENDOR_ID>000,"sub_total_vat_included_amount_cents":<VENDOR_ID>000,"customer":{"lago_id":"c8bb805a-590c-444f-ae<VENDOR_ID>4-66589764f273","e<VENDOR_AUTH_CODE>ternal_id":"gid://dummy/Pay::Customer/772847388","name":"Lago
+        User","sequential_id":4,"slug":"AMO-FBCD-004","created_at":"2023-09-<VENDOR_ID>8T06:42:57Z","updated_at":"2023-09-<VENDOR_ID>8T06:43:<VENDOR_ID><VENDOR_ID>Z","country":null,"address_line<VENDOR_ID>":null,"address_line2":null,"state":null,"zipcode":null,"email":"test@e<VENDOR_AUTH_CODE>ample.com","city":null,"url":null,"phone":null,"logo_url":null,"legal_name":null,"legal_number":null,"currency":"USD","ta<VENDOR_AUTH_CODE>_identification_number":null,"timezone":null,"applicable_timezone":"UTC","net_payment_term":null,"e<VENDOR_AUTH_CODE>ternal_salesforce_id":null,"billing_configuration":{"invoice_grace_period":null,"payment_provider":null,"vat_rate":null,"document_locale":null},"metadata":[]},"subscriptions":[],"fees":[{"lago_id":"287fa5fe-2e87-4fd2-80d4-d8<VENDOR_ID>dcbd070e0","lago_group_id":null,"lago_invoice_id":"9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace","lago_true_up_fee_id":null,"lago_true_up_parent_fee_id":null,"item":{"type":"add_on","code":"pay_default_addon","name":"Default
+        Charge","lago_item_id":"690e70c2-f<VENDOR_ID>0<VENDOR_ID>-4539-bda7-aefe4b<VENDOR_ID>d068e","item_type":"AddOn"},"pay_in_advance":false,"invoiceable":true,"amount_cents":<VENDOR_ID>000,"amount_currency":"USD","ta<VENDOR_AUTH_CODE>es_amount_cents":0,"ta<VENDOR_AUTH_CODE>es_rate":0.0,"total_amount_cents":<VENDOR_ID>000,"total_amount_currency":"USD","units":"<VENDOR_ID>.0","description":null,"unit_amount_cents":<VENDOR_ID>000,"events_count":null,"payment_status":"pending","created_at":"2023-09-<VENDOR_ID>9T02:<VENDOR_ID>6:52Z","succeeded_at":null,"failed_at":null,"refunded_at":null,"vat_amount_cents":0,"vat_amount_currency":"USD"}],"credits":[],"metadata":[],"applied_ta<VENDOR_AUTH_CODE>es":[]}}'
+  recorded_at: Tue, 19 Sep 2023 02:16:53 GMT
+- request:
+    method: get
+    uri: http://localhost:3000/api/v<VENDOR_ID>/invoices/9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Authorization:
+      - Bearer <VENDOR_ID>55ed033-87<VENDOR_ID>6-4587-9ac6-fed8ddae33<VENDOR_ID>7
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Lago Ruby v0.44.0-beta
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Etag:
+      - W/"66<VENDOR_ID>8bb4b598acdf7033e<VENDOR_ID>37c7bd623c0"
+      Cache-Control:
+      - ma<VENDOR_AUTH_CODE>-age=0, private, must-revalidate
+      X-Request-Id:
+      - 7e566fd6-6586-45a4-947e-d9035c5e9d76
+      X-Runtime:
+      - 0.0<VENDOR_ID>6495
+      Vary:
+      - Origin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"invoice":{"lago_id":"9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace","sequential_id":<VENDOR_ID>3,"number":"AMO-FBCD-004-0<VENDOR_ID>3","issuing_date":"2023-09-<VENDOR_ID>9","payment_due_date":"2023-09-<VENDOR_ID>9","net_payment_term":0,"invoice_type":"one_off","status":"finalized","payment_status":"succeeded","currency":"USD","fees_amount_cents":<VENDOR_ID>000,"ta<VENDOR_AUTH_CODE>es_amount_cents":0,"coupons_amount_cents":0,"credit_notes_amount_cents":0,"sub_total_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>es_amount_cents":<VENDOR_ID>000,"sub_total_including_ta<VENDOR_AUTH_CODE>es_amount_cents":<VENDOR_ID>000,"total_amount_cents":<VENDOR_ID>000,"prepaid_credit_amount_cents":0,"file_url":null,"version_number":3,"legacy":false,"amount_currency":"USD","vat_amount_currency":"USD","credit_amount_currency":"USD","total_amount_currency":"USD","amount_cents":<VENDOR_ID>000,"credit_amount_cents":0,"vat_amount_cents":0,"sub_total_vat_e<VENDOR_AUTH_CODE>cluded_amount_cents":<VENDOR_ID>000,"sub_total_vat_included_amount_cents":<VENDOR_ID>000,"customer":{"lago_id":"c8bb805a-590c-444f-ae<VENDOR_ID>4-66589764f273","e<VENDOR_AUTH_CODE>ternal_id":"gid://dummy/Pay::Customer/772847388","name":"Lago
+        User","sequential_id":4,"slug":"AMO-FBCD-004","created_at":"2023-09-<VENDOR_ID>8T06:42:57Z","updated_at":"2023-09-<VENDOR_ID>8T06:43:<VENDOR_ID><VENDOR_ID>Z","country":null,"address_line<VENDOR_ID>":null,"address_line2":null,"state":null,"zipcode":null,"email":"test@e<VENDOR_AUTH_CODE>ample.com","city":null,"url":null,"phone":null,"logo_url":null,"legal_name":null,"legal_number":null,"currency":"USD","ta<VENDOR_AUTH_CODE>_identification_number":null,"timezone":null,"applicable_timezone":"UTC","net_payment_term":null,"e<VENDOR_AUTH_CODE>ternal_salesforce_id":null,"billing_configuration":{"invoice_grace_period":null,"payment_provider":null,"vat_rate":null,"document_locale":null},"metadata":[]},"subscriptions":[],"fees":[{"lago_id":"287fa5fe-2e87-4fd2-80d4-d8<VENDOR_ID>dcbd070e0","lago_group_id":null,"lago_invoice_id":"9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace","lago_true_up_fee_id":null,"lago_true_up_parent_fee_id":null,"item":{"type":"add_on","code":"pay_default_addon","name":"Default
+        Charge","lago_item_id":"690e70c2-f<VENDOR_ID>0<VENDOR_ID>-4539-bda7-aefe4b<VENDOR_ID>d068e","item_type":"AddOn"},"pay_in_advance":false,"invoiceable":true,"amount_cents":<VENDOR_ID>000,"amount_currency":"USD","ta<VENDOR_AUTH_CODE>es_amount_cents":0,"ta<VENDOR_AUTH_CODE>es_rate":0.0,"total_amount_cents":<VENDOR_ID>000,"total_amount_currency":"USD","units":"<VENDOR_ID>.0","description":null,"unit_amount_cents":<VENDOR_ID>000,"events_count":null,"payment_status":"pending","created_at":"2023-09-<VENDOR_ID>9T02:<VENDOR_ID>6:52Z","succeeded_at":null,"failed_at":null,"refunded_at":null,"vat_amount_cents":0,"vat_amount_currency":"USD"}],"credits":[],"metadata":[],"applied_ta<VENDOR_AUTH_CODE>es":[]}}'
+  recorded_at: Tue, 19 Sep 2023 02:16:53 GMT
+- request:
+    method: post
+    uri: http://localhost:3000/api/v<VENDOR_ID>/credit_notes
+    body:
+      encoding: UTF-8
+      string: '{"credit_note":{"invoice_id":"9acafa0b-d422-4a83-b9a<VENDOR_ID>-f9ba73942ace","refund_amount_cents":500,"items":[{"fee_id":"287fa5fe-2e87-4fd2-80d4-d8<VENDOR_ID>dcbd070e0","amount_cents":500}]}}'
+    headers:
+      Authorization:
+      - Bearer <VENDOR_ID>55ed033-87<VENDOR_ID>6-4587-9ac6-fed8ddae33<VENDOR_ID>7
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Lago Ruby v0.44.0-beta
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 403
+      message: Forbidden
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Content-Type:
+      - application/json; charset=utf-8
+      Cache-Control:
+      - no-cache
+      X-Request-Id:
+      - f63be0ba-e448-4268-a40e-ba6c728f4073
+      X-Runtime:
+      - 0.006<VENDOR_ID>56
+      Vary:
+      - Origin
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: UTF-8
+      string: '{"status":403,"error":"Forbidden","code":"feature_unavailable"}'
+  recorded_at: Tue, 19 Sep 2023 02:16:53 GMT
+recorded_with: VCR 6.2.0

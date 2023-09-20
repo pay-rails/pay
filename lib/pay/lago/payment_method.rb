@@ -1,7 +1,6 @@
 module Pay
   module Lago
     class PaymentMethod
-      include Lago
       attr_reader :pay_payment_method
 
       delegate :customer, :processor_id, to: :pay_payment_method
@@ -15,7 +14,7 @@ module Pay
         payment_method_attr = {
           processor_id: payment_data.provider_customer_id || NanoId.generate,
           type: "card",
-          data: openstruct_to_h(payment_data)
+          data: Lago.openstruct_to_h(payment_data)
         }
 
         payment_method.update!(payment_method_attr)

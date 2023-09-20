@@ -15,6 +15,8 @@ ENV["PADDLE_ENVIRONMENT"] = "sandbox"
 ENV["PADDLE_VENDOR_ID"] = "1"
 ENV["PADDLE_VENDOR_AUTH_CODE"] = "x"
 
+ENV["LAGO_API_URL"] = "http://localhost:3000"
+
 require "braintree"
 require "stripe"
 require "paddle_pay"

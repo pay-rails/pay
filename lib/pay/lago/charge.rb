@@ -54,6 +54,12 @@ module Pay
         raise Pay::Lago::Error, e
       end
 
+      def update_charge!(**attributes)
+        Lago.client.invoices.update({metadata: []}.merge(attributes), charge.lago_id)
+      rescue ::Lago::Api::HttpError => e
+        raise Pay::Lago::Error, e
+      end
+
       def refund!(amount_to_refund, **options)
         attributes = {
           refund_amount_cents: amount_to_refund,

@@ -2,7 +2,6 @@ module Pay
   module Lago
     class Billable
       require 'uri'
-      include Lago
 
       attr_reader :pay_customer
 
@@ -17,15 +16,13 @@ module Pay
         @pay_customer = pay_customer
       end
 
-      def escaped_processor_id
-        return "" unless processor_id?
-        URI.encode_www_form_component processor_id
+      def pay_external_id
+        processor_id || pay_customer.to_gid.to_s
       end
 
-      # Returns a hash of attributes for the Stripe::Customer object
-      def customer_attributes
+      # Returns a hash of attributes for the Lago::Customer object
+      def customer_attributes(external_id)
         owner = pay_customer.owner
-        gid = pay_customer.to_gid.to_s
 
         attributes = case owner.class.pay_lago_customer_attributes
         when Symbol
@@ -37,17 +34,17 @@ module Pay
         # Guard against attributes being returned nil
         attributes ||= {}
 
-        {external_id: gid, email: email, name: customer_name}.merge(attributes)
+        {external_id:, email: email, name: customer_name}.merge(attributes)
       end
 
       def customer
-        if processor_id?
-          Lago.client.customers.get(escaped_processor_id)
-        else
-          lc = Lago.client.customers.create(customer_attributes)
-          pay_customer.update!(processor_id: lc.external_id)
-          lc
+        begin
+          lago_customer = Lago.client.customers.get(uri_escape(pay_external_id))
+        rescue ::Lago::Api::HttpError
+          lago_customer = Lago.client.customers.create(customer_attributes(pay_external_id))
         end
+        pay_customer.update!(processor_id: lago_customer.external_id) unless processor_id == lago_customer.external_id
+        lago_customer
       rescue ::Lago::Api::HttpError => e
         raise Pay::Lago::Error, e
       end
@@ -60,12 +57,12 @@ module Pay
       end
 
       def charge(amount, addon: nil, options: {})
-        processor_id? ? nil : customer
+        lago_customer = customer
         lago_addon = addon.is_a?(String) ? Lago.client.add_ons.get(addon) : pay_default_addon
 
         attributes = {
           external_customer_id: processor_id,
-          currency: options[:currency] || lago_addon.amount_currency,
+          currency: options[:currency] || lago_customer.currency,
           fees: [
             {
               add_on_code: lago_addon.code,
@@ -99,10 +96,10 @@ module Pay
         end
         
         pay_subscription.update!(processor_id: external_id)
-        Pay::Lago::Subscription.sync(external_id, object: subscription)
+        Pay::Lago::Subscription.sync(lago_customer.external_id, external_id, object: subscription)
       end
 
-      def add_payment_method(token = nil, default: true)
+      def add_payment_method(_token = nil, default: true)
         Pay::Lago::PaymentMethod.sync(pay_customer: pay_customer)
       end
 
@@ -118,7 +115,7 @@ module Pay
 
       def create_placeholder_subscription(name, plan)
         pay_customer.subscriptions.create!(
-          processor_id: ("a".."z").to_a.sample(16).join,
+          processor_id: NanoId.generate,
           name:,
           processor_plan: plan,
           quantity: 0,
@@ -139,6 +136,11 @@ module Pay
         end
       rescue ::Lago::Api::HttpError => e
         raise Pay::Lago::Error, e
+      end
+
+      def uri_escape(uri)
+        return "" unless uri.is_a? String
+        URI.encode_www_form_component uri
       end
     end
   end
