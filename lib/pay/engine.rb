@@ -27,6 +27,7 @@ module Pay
       Pay::Stripe.configure_webhooks if Pay::Stripe.enabled?
       Pay::Braintree.configure_webhooks if Pay::Braintree.enabled?
       Pay::Paddle.configure_webhooks if Pay::Paddle.enabled?
+      Pay::Lago.configure_webhooks if Pay::Lago.enabled?
     end
 
     config.to_prepare do

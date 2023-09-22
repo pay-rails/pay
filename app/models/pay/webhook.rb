@@ -21,6 +21,8 @@ module Pay
         to_recursive_ostruct(event)
       when "stripe"
         ::Stripe::Event.construct_from(event)
+      when "lago"
+        to_recursive_ostruct(event)
       else
         event
       end

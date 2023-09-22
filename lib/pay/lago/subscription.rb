@@ -32,6 +32,7 @@ module Pay
         end
 
         attrs = {
+          name: object.name.present? ? object.name : Pay.default_plan_name,
           processor_id: object.external_id,
           processor_plan: object.plan_code,
           ends_at: object.cancelled_at || object.terminated_at,

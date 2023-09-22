@@ -5,4 +5,5 @@ Pay::Engine.routes.draw do
   post "webhooks/stripe", to: "pay/webhooks/stripe#create" if Pay::Stripe.enabled?
   post "webhooks/braintree", to: "pay/webhooks/braintree#create" if Pay::Braintree.enabled?
   post "webhooks/paddle", to: "pay/webhooks/paddle#create" if Pay::Paddle.enabled?
+  post "webhooks/lago", to: "pay/webhooks/lago#create" if Pay::Lago.enabled?
 end
