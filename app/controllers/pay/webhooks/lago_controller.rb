@@ -6,23 +6,34 @@ module Pay
       end
 
       def create
-        return head :bad_request unless verified_webhook?(request.headers["HTTP_X_LAGO_SIGNATURE"], request.raw_post)
-        queue_event(params)
+        return head :bad_request unless (event = verified_event)
+        queue_event(event)
         head :ok
       end
 
       private
-
+      
       def queue_event(event)
         return unless Pay::Webhooks.delegator.listening?("lago.#{event["webhook_type"]}")
-
+        
         record = Pay::Webhook.create!(processor: :lago, event_type: event["webhook_type"], event: event)
         Pay::Webhooks::ProcessJob.perform_later(record)
       end
 
-      def verified_webhook?(signature, payload)
+      def verified_event
+        payload_json = JSON.parse(request.raw_post)
+        return false unless valid_signature?(request.headers["HTTP_X_LAGO_SIGNATURE"], payload_json)
+        payload_json
+      rescue JSON::ParserError
+        false
+      end
+
+      def valid_signature?(signature, payload)
         public_key = Pay::Lago.webhook_public_key
-        payload_json = JSON.parse(payload)
+        Pay::Lago.client.webhooks.valid_signature?(signature, payload, public_key)
+      end
+
+      def verified_webhook?(signature, payload)
         Pay::Lago.client.webhooks.valid_signature?(signature, payload_json, public_key)
       end
     end
