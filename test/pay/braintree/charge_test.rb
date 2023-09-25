@@ -34,8 +34,8 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
     assert pay_customers(:braintree).charges.new.braintree?
     refute pay_customers(:braintree).charges.new.stripe?
 
-    assert pay_customers(:paddle).charges.new.paddle?
-    refute pay_customers(:paddle).charges.new.stripe?
+    assert pay_customers(:paddle_classic).charges.new.paddle_classic?
+    refute pay_customers(:paddle_classic).charges.new.stripe?
 
     assert pay_customers(:fake).charges.new.fake_processor?
     refute pay_customers(:fake).charges.new.stripe?

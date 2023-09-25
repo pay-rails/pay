@@ -28,7 +28,7 @@ braintree:
   public_key: yyyy
   merchant_id: aaaa
   environment: sandbox
-paddle:
+paddle_classic:
   vendor_id: xxxx
   vendor_auth_code: yyyy
   public_key_base64: MII...==
@@ -55,12 +55,12 @@ Pay will also check environment variables for API keys:
 * `BRAINTREE_PUBLIC_KEY`
 * `BRAINTREE_PRIVATE_KEY`
 * `BRAINTREE_ENVIRONMENT`
-* `PADDLE_VENDOR_ID`
-* `PADDLE_VENDOR_AUTH_CODE`
-* `PADDLE_PUBLIC_KEY`
-* `PADDLE_PUBLIC_KEY_FILE`
-* `PADDLE_PUBLIC_KEY_BASE64`
-* `PADDLE_ENVIRONMENT`
+* `PADDLE_CLASSIC_VENDOR_ID`
+* `PADDLE_CLASSIC_VENDOR_AUTH_CODE`
+* `PADDLE_CLASSIC_PUBLIC_KEY`
+* `PADDLE_CLASSIC_PUBLIC_KEY_FILE`
+* `PADDLE_CLASSIC_PUBLIC_KEY_BASE64`
+* `PADDLE_CLASSIC_ENVIRONMENT`
 
 ## Generators
 
