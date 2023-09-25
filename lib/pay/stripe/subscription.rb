@@ -149,9 +149,17 @@ module Pay
         stripe_sub&.pending_setup_intent&.client_secret || stripe_sub&.latest_invoice&.payment_intent&.client_secret
       end
 
+      # Marks a subscription to cancel at period end
+      #
+      # If subscription is already past_due, the subscription will be cancelled immediately
+      # To disable this, pass past_due_cancel_now: false
       def cancel(**options)
-        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}.merge(expand_options), stripe_options)
-        pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(@stripe_subscription.current_period_end)))
+        if past_due? && options.fetch(:past_due_cancel_now, true)
+          cancel_now!
+        else
+          @stripe_subscription = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}.merge(expand_options), stripe_options)
+          pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(@stripe_subscription.current_period_end)))
+        end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
