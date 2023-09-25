@@ -76,9 +76,9 @@ module Pay
         @lago_subscription ||= self.class.get_subscription(pay_subscription.customer.processor_id, processor_id)
       end
 
-      def cancel(**_options)
+      def cancel(**options)
         customer_id = subscription.external_customer_id
-        response = Lago.client.subscriptions.destroy(URI.encode_www_form_component(processor_id))
+        response = Lago.client.subscriptions.destroy(URI.encode_www_form_component(processor_id), options: options)
         self.class.sync(customer_id, processor_id, object: response)
       rescue ::Lago::Api::HttpError => e
         raise Pay::Lago::Error, e
@@ -101,7 +101,7 @@ module Pay
       end
 
       def changing_plan?
-        return unless subscription.downgrade_plan_date
+        return false unless subscription.downgrade_plan_date
         subscription.downgrade_plan_date > Time.now
       end
 

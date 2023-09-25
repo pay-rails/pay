@@ -56,9 +56,10 @@ module Pay
         )
       end
 
-      def charge(amount, addon: nil, options: {})
+      def charge(amount = nil, addon: nil, options: {})
         lago_customer = customer
         lago_addon = addon.is_a?(String) ? Lago.client.add_ons.get(addon) : pay_default_addon
+        amount ||= lago_addon.amount_cents
 
         attributes = {
           external_customer_id: processor_id,
