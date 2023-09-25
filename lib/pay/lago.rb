@@ -29,6 +29,24 @@ module Pay
         @client ||= ::Lago::Api::Client.new(api_key: api_key, api_url: api_url)
       end
 
+      def valid_auth?
+        webhook_public_key
+        true
+      rescue
+        false
+      end
+
+      def create_webhook!(url, mount = "/pay")
+        uri = URI(url)
+        raise Pay::Lago::Error.new("Invalid HTTP/S URI: #{url}") if uri.path.nil?
+        webhook_url = url.delete_suffix(uri.path) + "#{mount}/webhooks/lago"
+        client.webhook_endpoints.create(signature_algo: "jwt", webhook_url: webhook_url)
+        true
+      rescue ::Lago::Api::HttpError => e
+        return true if e.error_code == 422
+        raise Pay::Lago::Error, e
+      end
+
       def webhook_public_key
         @webhook_public_key ||= client.webhooks.public_key
       end
