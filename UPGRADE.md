@@ -2,6 +2,16 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Pay 6 to 7
+
+Pay 7 introduces Paddle Billing support and renames `paddle` to `paddle_classic`.
+
+```ruby
+Pay::Customer.where(processor: :paddle).update_all(processor: :paddle_classic)
+```
+
+Environment variables should be renamed to `PADDLE_CLASSIC_XXXX`
+
 ## **Pay 5.0 to 6.0**
 This version adds support for accessing the start and end of the current billing period of a subscription. This currently only works with Stripe subscriptions.
 

@@ -2,6 +2,14 @@
 
 ### Unreleased
 
+* [Breaking] Rename `paddle` to `paddle_classic`. Paddle Billing will now be the default and takes place of `paddle`.
+  Environment variables should be renamed to `PADDLE_CLASSIC_`
+  Pay::Customer need updating from `processor: "paddle" to `processor: "paddle_classic"`
+
+  ```ruby
+  Pay::Customer.where(processor: :paddle).update_all(processor: :paddle_classic)
+  ```
+
 ### 6.8.1
 
 * [Stripe] Skip sync if object is not attached to a customer. Fixes #842
