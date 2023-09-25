@@ -12,10 +12,10 @@ module Pay
       end
 
       private
-      
+
       def queue_event(event)
         return unless Pay::Webhooks.delegator.listening?("lago.#{event["webhook_type"]}")
-        
+
         record = Pay::Webhook.create!(processor: :lago, event_type: event["webhook_type"], event: event)
         Pay::Webhooks::ProcessJob.perform_later(record)
       end
