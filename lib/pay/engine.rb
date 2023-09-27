@@ -27,6 +27,7 @@ module Pay
       Pay::Stripe.configure_webhooks if Pay::Stripe.enabled?
       Pay::Braintree.configure_webhooks if Pay::Braintree.enabled?
       Pay::Paddle.configure_webhooks if Pay::Paddle.enabled?
+      Pay::PaddleClassic.configure_webhooks if Pay::PaddleClassic.enabled?
       Pay::Lago.configure_webhooks if Pay::Lago.enabled?
     end
 
@@ -34,6 +35,7 @@ module Pay
       Pay::Stripe.setup if Pay::Stripe.enabled?
       Pay::Braintree.setup if Pay::Braintree.enabled?
       Pay::Paddle.setup if Pay::Paddle.enabled?
+      Pay::PaddleClassic.setup if Pay::PaddleClassic.enabled?
 
       if defined?(::Receipts::VERSION)
         if Pay::Engine.version_matches?(required: "~> 2", current: ::Receipts::VERSION)

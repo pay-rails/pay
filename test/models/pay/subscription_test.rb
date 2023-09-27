@@ -35,9 +35,9 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute pay_subscriptions(:fake).stripe?
   end
 
-  test "paddle?" do
-    assert pay_subscriptions(:paddle).paddle?
-    refute pay_subscriptions(:fake).paddle?
+  test "paddle_classic?" do
+    assert pay_subscriptions(:paddle_classic).paddle_classic?
+    refute pay_subscriptions(:fake).paddle_classic?
   end
 
   test "fake_processor?" do
@@ -53,8 +53,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert Pay::Subscription.stripe.is_a?(ActiveRecord::Relation)
   end
 
-  test "paddle scope" do
-    assert Pay::Subscription.paddle.is_a?(ActiveRecord::Relation)
+  test "paddle_classic scope" do
+    assert Pay::Subscription.paddle_classic.is_a?(ActiveRecord::Relation)
   end
 
   test "fake processor scope" do
@@ -446,6 +446,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       status: :active
     }
 
-    pay_customers(:paddle).subscriptions.create! defaults.merge(options)
+    pay_customers(:paddle_classic).subscriptions.create! defaults.merge(options)
   end
 end

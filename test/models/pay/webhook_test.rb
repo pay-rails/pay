@@ -1,8 +1,8 @@
 require "test_helper"
 
 class Pay::Webhook::Test < ActiveSupport::TestCase
-  test "rehydrates a Paddle event" do
-    pay_webhook = Pay::Webhook.create processor: :paddle, event_type: :example, event: fake_event("paddle/subscription_payment_succeeded")
+  test "rehydrates a Paddle Classic event" do
+    pay_webhook = Pay::Webhook.create processor: :paddle_classic, event_type: :example, event: fake_event("paddle_classic/subscription_payment_succeeded")
     event = pay_webhook.rehydrated_event
     assert_equal OpenStruct, event.class
     assert_equal "visa", event.payment_method.card_type

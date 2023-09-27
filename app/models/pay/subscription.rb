@@ -42,7 +42,7 @@ module Pay
     delegate_missing_to :payment_processor
 
     # Helper methods for payment processors
-    %w[braintree stripe paddle fake_processor lago].each do |processor_name|
+    %w[braintree stripe paddle paddle_classic lago fake_processor].each do |processor_name|
       define_method "#{processor_name}?" do
         customer.processor == processor_name
       end

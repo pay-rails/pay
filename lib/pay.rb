@@ -19,6 +19,7 @@ module Pay
   autoload :FakeProcessor, "pay/fake_processor"
   autoload :Lago, "pay/lago"
   autoload :Paddle, "pay/paddle"
+  autoload :PaddleClassic, "pay/paddle_classic"
   autoload :Stripe, "pay/stripe"
 
   autoload :Webhooks, "pay/webhooks"
@@ -56,7 +57,7 @@ module Pay
   @@routes_path = "/pay"
 
   mattr_accessor :enabled_processors
-  @@enabled_processors = [:stripe, :braintree, :paddle, :lago]
+  @@enabled_processors = [:stripe, :braintree, :paddle, :paddle_classic, :lago]
 
   mattr_accessor :send_emails
   @@send_emails = true
