@@ -47,6 +47,13 @@ When this event is triggered, Pay creates or updates a Pay::Charge for the given
 
 Currently handles the same as [Invoice Created](#invoice-created).
 
+### Invoice Payment Status Updated
+`invoice.payment_status_updated`
+
+When this event is triggered, it will update the payment status in the corresponding charge's data.
+
+Does nothing if no matching charge is found.
+
 ### Subscription Started
 `subscription.started`
 
