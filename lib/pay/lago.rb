@@ -36,11 +36,12 @@ module Pay
         false
       end
 
-      def create_webhook!(url, mount = "/pay")
+      def create_webhook!(url, mount = Pay.routes_path)
         uri = URI(url)
-        raise Pay::Lago::Error.new("Invalid HTTP/S URI: #{url}") if uri.path.nil?
-        webhook_url = url.delete_suffix(uri.path) + "#{mount}/webhooks/lago"
-        client.webhook_endpoints.create(signature_algo: "jwt", webhook_url: webhook_url)
+        raise Pay::Lago::Error.new("Invalid URI: #{uri}") unless uri.host.present?
+        uri.scheme = "https" unless %w[http https].include?(uri.scheme)
+        uri.path = "/#{mount}/webhooks/lago".squeeze("/")
+        client.webhook_endpoints.create(signature_algo: "jwt", webhook_url: uri.to_s)
         true
       rescue ::Lago::Api::HttpError => e
         return true if e.error_code == 422

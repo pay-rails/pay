@@ -4,18 +4,19 @@ In order for Pay to automatically sync charges and subscriptions, Lago must be c
 
 ## Adding the Webhook to Lago
 You can add webhooks using the [Lago UI](https://docs.getlago.com/guide/webhooks). Pay's default webhook endpoint for Lago
-is `/pay/webhooks/lago` (`/pay` is replaced by the mountpoint of the Pay engine).
+is `/pay/webhooks/lago` (`/pay` is replaced by the mountpoint of the Pay engine). Webhooks should use JWT.
 
 Alternatively you can use the helper method to add the webhook to Lago.
 
 ```ruby
-# Create a webhook endpoint in Lago for the Pay gem
-Pay::Lago.create_webhook!("https://mypayinstance.com")
+# Create a webhook endpoint in Lago for the Pay gem.
+Pay::Lago.create_webhook!("https://mypayinstance.example")
 ```
 
 ```ruby
-# Create a webhook endpoint, where you have mounted Pay at a different path (eg. "admin/pay")
-Pay::Lago.create_webhook!("https://mypayinstance.com", "/admin/pay")
+# Create a webhook endpoint, where you have mounted Pay at a different path (eg. "admin/pay").
+# Not necessary unless you have disabled "automount_routes".
+Pay::Lago.create_webhook!("https://mypayinstance.example", "/admin/pay")
 ```
 
 Please note: the given string must be a valid HTTP/S URL. Pay will automatically set the path of the URL to be the correct path,
