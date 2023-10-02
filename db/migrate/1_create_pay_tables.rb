@@ -11,7 +11,7 @@ class CreatePayTables < ActiveRecord::Migration[6.0]
       t.datetime :deleted_at
       t.timestamps
     end
-    add_index :pay_customers, [:owner_type, :owner_id, :default], name: :pay_customer_owner_index, unique: true
+    add_index :pay_customers, [:owner_type, :owner_id, :deleted_at], name: :pay_customer_owner_index, unique: true
     add_index :pay_customers, [:processor, :processor_id], unique: true
 
     create_table :pay_merchants, id: primary_key_type do |t|
