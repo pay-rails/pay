@@ -19,7 +19,7 @@ module Pay
 
     def onboarding_complete?
       ActiveModel::Type::Boolean.new.cast(
-        (data.presence || {})["onboarding_complete"]
+        data.presence.try(:fetch, "onboarding_complete") || false
       )
     end
   end
