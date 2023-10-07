@@ -37,7 +37,7 @@ end
 
 ## When Using Checkout Session
 
-Don't forget to add stripe_account
+You can add yout stripe connect account by passing the id to the set_payment_processor
 
 ```ruby
 class SubscriptionsController < ApplicationController
