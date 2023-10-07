@@ -37,7 +37,7 @@ end
 
 ## When Using Checkout Session
 
-You can add yout stripe connect account by passing the id to the set_payment_processor
+You can add your stripe connect account by passing the connect id to the set_payment_processor
 
 ```ruby
 class SubscriptionsController < ApplicationController
