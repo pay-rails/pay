@@ -84,16 +84,7 @@ module Pay
       def cancel(**options)
         return if canceled?
 
-        ends_at = if on_trial?
-          trial_ends_at
-        elsif paused?
-          pause_starts_at
-        else
-          processor_subscription.next_payment&.fetch(:date) || Time.current
-        end
-
         response = ::Paddle::Subscription.cancel(id: processor_id, effective_from: "next_billing_period")
-
         pay_subscription.update(status: :canceled, ends_at: response.scheduled_change.effective_at)
 
         # Remove payment methods since customer cannot be reused after cancelling
