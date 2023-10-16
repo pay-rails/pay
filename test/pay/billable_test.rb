@@ -83,7 +83,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test "subscribed? with canceled subscription on grace period" do
     @user.payment_processor.subscription.update(status: :canceled, ends_at: 1.day.from_now)
-    assert @user.payment_processor.subscribed?
+    refute @user.payment_processor.subscribed?
   end
 
   test "subscribed? with different plan" do

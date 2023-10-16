@@ -305,6 +305,24 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute @subscription.active?
   end
 
+  test "past_due" do
+    @subscription.update!(status: :past_due)
+    refute @subscription.active?
+    assert_not_includes @pay_customer.subscriptions.active, @subscription
+  end
+
+  test "unpaid" do
+    @subscription.update!(status: :unpaid)
+    refute @subscription.active?
+    assert_not_includes @pay_customer.subscriptions.active, @subscription
+  end
+
+  test "canceled subscriptions with a future ends_at are considered active" do
+    @subscription.update(status: :canceled, ends_at: 1.hour.from_now)
+    refute @subscription.active?
+    assert_not_includes @pay_customer.subscriptions.active, @subscription
+  end
+
   test "cancel" do
     @subscription.cancel
     assert @subscription.ends_at?

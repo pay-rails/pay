@@ -82,7 +82,9 @@ module Pay
       end
 
       def cancel(**options)
-        if on_trial?
+        return if canceled?
+
+        ends_at = if on_trial?
           trial_ends_at
         elsif paused?
           pause_starts_at
@@ -101,6 +103,15 @@ module Pay
       end
 
       def cancel_now!(**options)
+        return if canceled?
+
+        PaddlePay::Subscription::User.cancel(processor_id)
+        pay_subscription.update(status: :canceled, ends_at: Time.current)
+
+        # Remove payment methods since customer cannot be reused after cancelling
+        Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
+      rescue ::PaddlePay::PaddlePayError => e
+        raise Pay::Paddle::Error, e
       end
 
       def change_quantity(quantity, **options)

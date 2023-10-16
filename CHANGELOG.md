@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Subscriptions with `status: :canceled` and `ends_at: future` are now considered canceled. Previously, these were considered active to accomodate canceling a Braintree subscription during trial (and allowing the user to continue using until the end of the trial).
+
 ### 6.8.1
 
 * [Stripe] Skip sync if object is not attached to a customer. Fixes #842

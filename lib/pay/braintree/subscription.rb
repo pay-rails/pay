@@ -77,6 +77,9 @@ module Pay
       end
 
       def cancel(**options)
+        return if canceled?
+
+        # Braintree doesn't allow canceling at period end while on trial, so trials are canceled immediately
         result = if on_trial?
           gateway.subscription.cancel(processor_id)
         else
@@ -90,6 +93,8 @@ module Pay
       end
 
       def cancel_now!(**options)
+        return if canceled?
+
         result = gateway.subscription.cancel(processor_id)
         pay_subscription.sync!(object: result.subscription)
       rescue ::Braintree::BraintreeError => e

@@ -159,6 +159,8 @@ module Pay
       end
 
       def cancel(**options)
+        return if canceled?
+
         @stripe_subscription = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}.merge(expand_options), stripe_options)
         pay_subscription.update(ends_at: (on_trial? ? trial_ends_at : Time.at(@stripe_subscription.current_period_end)))
       rescue ::Stripe::StripeError => e
@@ -170,6 +172,8 @@ module Pay
       # cancel_now!(prorate: true)
       # cancel_now!(invoice_now: true)
       def cancel_now!(**options)
+        return if canceled?
+
         @stripe_subscription = ::Stripe::Subscription.cancel(processor_id, options.merge(expand_options), stripe_options)
         pay_subscription.update(ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
