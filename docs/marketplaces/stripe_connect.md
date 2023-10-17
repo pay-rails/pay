@@ -4,8 +4,8 @@ You can use Stripe Connect to handle Marketplace payments in your app.
 
 There are two main marketplace payment types:
 
-* Allow other businesses to accept payments directly from their customers (i.e. Shopify)
-* Collect payments directly and pay out service providers separately (i.e. Lyft, Instacart, Postmates)
+- Allow other businesses to accept payments directly from their customers (i.e. Shopify)
+- Collect payments directly and pay out service providers separately (i.e. Lyft, Instacart, Postmates)
 
 Not sure what account types to use? Read the Stripe docs: https://stripe.com/docs/connect/accounts
 
@@ -35,22 +35,62 @@ end
 @user.merchant_processor.transfer(amount: 25_00)
 ```
 
+## When Using Checkout Session
+
+You can add your stripe connect account by passing the connect id to the set_payment_processor
+
+```ruby
+class SubscriptionsController < ApplicationController
+  def checkout
+    # Make sure the user's payment processor is Stripe
+    current_user.set_payment_processor :stripe, stripe_account: "acct_1234"
+
+    # One-time payments (https://stripe.com/docs/payments/accept-a-payment)
+    @checkout_session = current_user.payment_processor.checkout(mode: "payment", line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG")
+
+    # Or Subscriptions (https://stripe.com/docs/billing/subscriptions/build-subscription)
+    @checkout_session = current_user.payment_processor.checkout(
+      mode: 'subscription',
+      locale: I18n.locale,
+      line_items: [{
+        price: 'price_1ILVZaKXBGcbgpbZQ26kgXWG',
+        quantity: 4
+      }],
+      subscription_data: {
+        trial_period_days: 15,
+        metadata: {
+          pay_name: "base" # Optional. Overrides the Pay::Subscription name attribute
+        },
+      },
+      success_url: root_url,
+      cancel_url: root_url
+    )
+
+    # Or Setup a new card for future use (https://stripe.com/docs/payments/save-and-reuse)
+    @checkout_session = current_user.payment_processor.checkout(mode: "setup")
+
+    # If you want to redirect directly to checkout
+    redirect_to @checkout_session.url, allow_other_host: true, status: :see_other
+  end
+end
+```
+
 ## Charge Types
 
 Stripe provides multiple ways of handling payments
 
-| Charge Type | Use When |
-| ------------- | ------------- |
-| Direct charges	| Customers directly transact with your user, often unaware of your platform's existence |
-| Destination charges	| Customers transact with your platform for products or services provided by your user |
+| Charge Type                    | Use When                                                                                                                                                 |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Direct charges                 | Customers directly transact with your user, often unaware of your platform's existence                                                                   |
+| Destination charges            | Customers transact with your platform for products or services provided by your user                                                                     |
 | Separate charges and transfers | Multiple users are involved in the transaction <br />A specific user isn't known at the time of charge<br />Transfer can't be made at the time of charge |
 
 ### Direct Charges
 
-* You create a charge on your user’s account so the payment appears as a charge on the connected account, not in your account balance.
-* The connected account’s balance increases with every charge.
-* Your account balance increases with application fees from every charge.
-* The connected account’s balance will be debited for the cost of Stripe fees, refunds, and chargebacks.
+- You create a charge on your user’s account so the payment appears as a charge on the connected account, not in your account balance.
+- The connected account’s balance increases with every charge.
+- Your account balance increases with application fees from every charge.
+- The connected account’s balance will be debited for the cost of Stripe fees, refunds, and chargebacks.
 
 ```ruby
 @user.stripe_account = "acct_123l5jadsgfas3"
@@ -58,15 +98,15 @@ Stripe provides multiple ways of handling payments
 ```
 
 ```javascript
-var stripe = Stripe('<%= @sample_credentials.test_publishable_key %>', {
-  stripeAccount: "{{CONNECTED_STRIPE_ACCOUNT_ID}}"
+var stripe = Stripe("<%= @sample_credentials.test_publishable_key %>", {
+  stripeAccount: "{{CONNECTED_STRIPE_ACCOUNT_ID}}",
 });
 ```
 
 ### Destination Charges
 
-* You create a charge on your platform’s account so the payment appears as a charge on your account. Then, you determine whether some or all of those funds are transferred to the connected account.
-* Your account balance will be debited for the cost of the Stripe fees, refunds, and chargebacks.
+- You create a charge on your platform’s account so the payment appears as a charge on your account. Then, you determine whether some or all of those funds are transferred to the connected account.
+- Your account balance will be debited for the cost of the Stripe fees, refunds, and chargebacks.
 
 ```ruby
 @user.charge(
@@ -80,9 +120,9 @@ var stripe = Stripe('<%= @sample_credentials.test_publishable_key %>', {
 
 ### Separate Charges and Transfers
 
-* You create a charge on your platform’s account and also transfer funds to your user’s account. The payment appears as a charge on your account and there’s also a transfer to a connected account (amount determined by you), which is withdrawn from your account balance.
-* You can transfer funds to multiple connected accounts.
-* Your account balance will be debited for the cost of the Stripe fees, refunds, and chargebacks.
+- You create a charge on your platform’s account and also transfer funds to your user’s account. The payment appears as a charge on your account and there’s also a transfer to a connected account (amount determined by you), which is withdrawn from your account balance.
+- You can transfer funds to multiple connected accounts.
+- Your account balance will be debited for the cost of the Stripe fees, refunds, and chargebacks.
 
 ```ruby
 pay_charge = @user.charge(100_00, transfer_group: '{ORDER10}')
