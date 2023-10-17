@@ -123,13 +123,13 @@ module Pay
 
     def self.to_client_reference_id(record)
       raise ArgumentError, "#{record.class.name} does not include Pay. Allowed models: #{model_names.to_a.join(", ")}" unless model_names.include?(record.class.name)
-      [record.class.name, record.id].join("/")
+      [record.class.name, record.id].join("_")
     end
 
     def self.find_by_client_reference_id(client_reference_id)
       # If there is a client reference ID, make sure we have a Pay::Customer record
       # client_reference_id should be in the format of "User/1"
-      model_name, id = client_reference_id.split("/", 2)
+      model_name, id = client_reference_id.split("_", 2)
 
       # Only allow model names that use Pay
       return unless model_names.include?(model_name)
