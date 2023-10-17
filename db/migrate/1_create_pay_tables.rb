@@ -9,6 +9,7 @@ class CreatePayTables < ActiveRecord::Migration[6.0]
       t.boolean :default
       t.public_send Pay::Adapter.json_column_type, :data
       t.datetime :deleted_at
+      t.string :stripe_account
       t.timestamps
     end
     add_index :pay_customers, [:owner_type, :owner_id, :deleted_at, :default], name: :pay_customer_owner_index

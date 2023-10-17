@@ -16,7 +16,6 @@ module Pay
     attribute :payment_method_token, :string
 
     # Account(s) for marketplace payments
-    store_accessor :data, :stripe_account
     store_accessor :data, :braintree_account
 
     # Stripe invoice credit balance is a Hash-like object { "usd" => 1234 }
