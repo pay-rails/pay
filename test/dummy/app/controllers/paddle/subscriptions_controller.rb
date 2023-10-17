@@ -1,14 +1,16 @@
-class PaddleClassic::SubscriptionsController < ApplicationController
+class Paddle::SubscriptionsController < ApplicationController
   before_action :set_subscription, only: [:show, :edit, :update, :destroy, :cancel, :resume]
 
   def index
-    @subscriptions = Pay::Subscription.joins(:customer).where(pay_customers: {processor: :paddle_classic}).order(created_at: :desc)
+    @subscriptions = Pay::Subscription.joins(:customer).where(pay_customers: {processor: :paddle}).order(created_at: :desc)
   end
 
   def show
   end
 
   def new
+    @payment_processor = current_user.set_payment_processor :paddle
+    @payment_processor.customer unless @payment_processor.processor_id?
   end
 
   def create

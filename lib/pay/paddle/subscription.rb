@@ -27,18 +27,18 @@ module Pay
         object ||= ::Paddle::Subscription.retrieve(id: subscription_id)
 
         pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: object.customer_id)
-
-        # If passthrough exists (only on webhooks) we can use it to create the Pay::Customer
-        if pay_customer.nil? && object.custom_data
-          owner = Pay::Paddle.owner_from_passthrough(object.custom_data.passthrough)
-          pay_customer = owner&.set_payment_processor(:paddle, processor_id: object.customer_id)
-        end
-
         return unless pay_customer
 
-        attributes = {}
-
-        attributes[:status] = object.status
+        attributes = {
+          current_period_end: object.current_billing_period&.ends_at,
+          current_period_start: object.current_billing_period&.starts_at,
+          ends_at: (object.canceled_at ? Time.parse(object.canceled_at) : nil),
+          metadata: object.custom_data,
+          paddle_cancel_url: object.management_urls&.cancel,
+          paddle_update_url: object.management_urls&.update_payment_method,
+          pause_starts_at: (object.paused_at ? Time.parse(object.paused_at) : nil),
+          status: object.status
+        }
 
         if object.items&.first
           item = object.items.first
@@ -47,19 +47,20 @@ module Pay
           attributes[:quantity] = item.quantity
         end
 
-        if object.management_urls
-          attributes[:paddle_cancel_url] = object.management_urls.cancel
-          attributes[:paddle_update_url] = object.management_urls.update_payment_method
-        end
-
-        # If paused or delete while on trial, set ends_at to match
         case attributes[:status]
         when "trialing"
-          attributes[:trial_ends_at] = Time.zone.parse(object.next_billed_at)
-          attributes[:ends_at] = nil
-        when "paused", "deleted"
-          attributes[:trial_ends_at] = nil
-          attributes[:ends_at] = Time.zone.parse(object.next_billed_at)
+          attributes[:trial_ends_at] = Time.parse(object.next_billed_at)
+        when "paused"
+          attributes[:pause_starts_at] = Time.parse(object.paused_at)
+        end
+
+        case object.scheduled_change&.action
+        when "cancel"
+          attributes[:ends_at] = Time.parse(object.scheduled_change.effective_at)
+        when "pause"
+          attributes[:pause_starts_at] = Time.parse(object.scheduled_change.effective_at)
+        when "resume"
+          attributes[:pause_resumes_at] = Time.parse(object.scheduled_change.effective_at)
         end
 
         # Update or create the subscription
@@ -90,9 +91,14 @@ module Pay
           processor_subscription.next_payment&.fetch(:date) || Time.current
         end
 
-        response = ::Paddle::Subscription.cancel(id: processor_id, effective_from: "next_billing_period")
-
-        pay_subscription.update(status: :canceled, ends_at: response.scheduled_change.effective_at)
+        response = ::Paddle::Subscription.cancel(
+          id: processor_id,
+          effective_from: options.fetch(:effective_from, "next_billing_period")
+        )
+        pay_subscription.update(
+          status: :canceled,
+          ends_at: response.scheduled_change.effective_at
+        )
 
         # Remove payment methods since customer cannot be reused after cancelling
         Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
@@ -101,6 +107,9 @@ module Pay
       end
 
       def cancel_now!(**options)
+        cancel(options.merge(effective_from: "immediately"))
+      rescue ::Paddle::Error => e
+        raise Pay::Paddle::Error, e
       end
 
       def change_quantity(quantity, **options)

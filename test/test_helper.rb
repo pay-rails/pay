@@ -17,6 +17,10 @@ ENV["PADDLE_CLASSIC_ENVIRONMENT"] = "sandbox"
 ENV["PADDLE_CLASSIC_VENDOR_ID"] = "1"
 ENV["PADDLE_CLASSIC_VENDOR_AUTH_CODE"] = "x"
 
+ENV["PADDLE_ENVIRONMENT"] = "sandbox"
+ENV["PADDLE_SELLER_ID"] = "1"
+ENV["PADDLE_API_KEY"] = "secret"
+
 require "braintree"
 require "stripe"
 require "paddle_pay"

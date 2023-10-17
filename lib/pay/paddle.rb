@@ -28,6 +28,10 @@ module Pay
       find_value_by_name(:paddle, :environment) || "production"
     end
 
+    def self.seller_id
+      find_value_by_name(:paddle, :seller_id)
+    end
+
     def self.api_key
       find_value_by_name(:paddle, :api_key)
     end
@@ -38,9 +42,15 @@ module Pay
 
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
-        events.subscribe "paddle.subscription.created", Pay::Paddle::Webhooks::Subscription.new
-        events.subscribe "paddle.subscription.updated", Pay::Paddle::Webhooks::Subscription.new
         events.subscribe "paddle.subscription.activated", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.canceled", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.created", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.imported", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.past_due", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.paused", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.resumed", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.trialing", Pay::Paddle::Webhooks::Subscription.new
+        events.subscribe "paddle.subscription.updated", Pay::Paddle::Webhooks::Subscription.new
 
         events.subscribe "paddle.transaction.completed", Pay::Paddle::Webhooks::TransactionCompleted.new
       end
