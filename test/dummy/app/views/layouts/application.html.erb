@@ -13,14 +13,23 @@
     <%= tag.meta name: "stripe-key", content: Pay::Stripe.public_key %>
     <script src="https://js.stripe.com/v3/"></script>
 
-    <%# Paddle dependencies %>
-    <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
-    <script type="text/javascript">
-      Paddle.Environment.set('sandbox');
-      <% if Pay::Paddle.vendor_id %>
-        Paddle.Setup({ vendor: <%= Pay::Paddle.vendor_id %> });
+    <%# Paddle Classic dependencies %>
+    <% if Pay::PaddleClassic.vendor_id %>
+      <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+      <script type="text/javascript">
+        Paddle.Environment.set('sandbox')
+        Paddle.Setup({ vendor: <%= Pay::PaddleClassic.vendor_id %> })
       <% end %>
     </script>
+
+    <%# Paddle Billing dependencies %>
+    <% if Pay::Paddle.seller_id %>
+      <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+      <script type="text/javascript">
+        Paddle.Environment.set('sandbox')
+        Paddle.Setup({ seller: <%= Pay::Paddle.seller_id %> })
+      </script>
+    <% end %>
 
     <%# Braintree dependencies %>
     <%= javascript_include_tag 'https://js.braintreegateway.com/web/dropin/1.25.0/js/dropin.min.js' %>
@@ -59,11 +68,21 @@
 
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Paddle
+              Paddle Billing
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <%= link_to "Charges", paddle_charges_path, class: "dropdown-item" %>
               <%= link_to "Subscriptions", paddle_subscriptions_path, class: "dropdown-item" %>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Paddle Classic
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <%= link_to "Charges", paddle_classic_charges_path, class: "dropdown-item" %>
+              <%= link_to "Subscriptions", paddle_classic_subscriptions_path, class: "dropdown-item" %>
             </div>
           </li>
 

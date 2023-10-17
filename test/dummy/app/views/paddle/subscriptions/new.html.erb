@@ -6,9 +6,16 @@
       function openCheckout(event) {
         event.preventDefault()
         Paddle.Checkout.open({
-                product: 7736,
-                passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
-              });
+          customer: {
+            id: "<%= @payment_processor.processor_id %>",
+          },
+          items: [
+            {
+              priceId: "pri_01hb6ts7ggtm9y62jkptd3hk1b",
+              quantity: 1
+            }
+          ],
+        })
       }
       document.getElementById('buy').addEventListener('click', openCheckout, false);
     </script>

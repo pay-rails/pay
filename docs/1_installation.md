@@ -10,7 +10,7 @@ Add these lines to your application's Gemfile:
 gem "pay", "~> 6.0"
 
 # To use Stripe, also include:
-gem "stripe", "~> 8.0"
+gem "stripe", "~> 9.0"
 
 # To use Braintree + PayPal, also include:
 gem "braintree", "~> 4.7"
@@ -35,8 +35,6 @@ Copy the Pay migrations to your app:
 ````bash
 bin/rails pay:install:migrations
 ````
-
->If your models rely on non integer ids (uuids for example) you will need to alter the migrations.
 
 Then run the migrations:
 
@@ -115,12 +113,12 @@ If you want to automatically sync whenever any other attribute changes, override
 
 ```rb
 class User < ApplicationRecord
-  
+
   def pay_should_sync_customer?
     # super will invoke Pay's default (e-mail changed)
     super || self.saved_change_to_address? || self.saved_change_to_name?
   end
-  
+
 end
 ```
 

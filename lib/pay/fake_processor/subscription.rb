@@ -8,6 +8,7 @@ module Pay
         :on_grace_period?,
         :on_trial?,
         :ends_at,
+        :ends_at?,
         :owner,
         :processor_subscription,
         :processor_id,
@@ -28,6 +29,8 @@ module Pay
       # With trial, sets end to trial end (mimicing Stripe)
       # Without trial, sets can ends_at to end of month
       def cancel(**options)
+        return if canceled?
+
         if pay_subscription.on_trial?
           pay_subscription.update(ends_at: pay_subscription.trial_ends_at)
         else
@@ -36,6 +39,8 @@ module Pay
       end
 
       def cancel_now!(**options)
+        return if canceled?
+
         ends_at = Time.current
         pay_subscription.update(
           status: :canceled,
@@ -49,7 +54,7 @@ module Pay
       end
 
       def on_grace_period?
-        canceled? && Time.current < ends_at
+        ends_at? && ends_at > Time.current
       end
 
       def paused?

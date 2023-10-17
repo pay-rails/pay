@@ -83,7 +83,7 @@ class Pay::Billable::Test < ActiveSupport::TestCase
 
   test "subscribed? with canceled subscription on grace period" do
     @user.payment_processor.subscription.update(status: :canceled, ends_at: 1.day.from_now)
-    assert @user.payment_processor.subscribed?
+    refute @user.payment_processor.subscribed?
   end
 
   test "subscribed? with different plan" do
@@ -178,8 +178,8 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     end
 
     assert_difference "user.pay_customers.count" do
-      user.set_payment_processor :paddle
-      assert_equal "paddle", user.payment_processor.processor
+      user.set_payment_processor :paddle_classic
+      assert_equal "paddle_classic", user.payment_processor.processor
     end
 
     assert_difference "user.pay_customers.count" do

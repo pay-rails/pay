@@ -35,9 +35,9 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute pay_subscriptions(:fake).stripe?
   end
 
-  test "paddle?" do
-    assert pay_subscriptions(:paddle).paddle?
-    refute pay_subscriptions(:fake).paddle?
+  test "paddle_classic?" do
+    assert pay_subscriptions(:paddle_classic).paddle_classic?
+    refute pay_subscriptions(:fake).paddle_classic?
   end
 
   test "fake_processor?" do
@@ -53,8 +53,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert Pay::Subscription.stripe.is_a?(ActiveRecord::Relation)
   end
 
-  test "paddle scope" do
-    assert Pay::Subscription.paddle.is_a?(ActiveRecord::Relation)
+  test "paddle_classic scope" do
+    assert Pay::Subscription.paddle_classic.is_a?(ActiveRecord::Relation)
   end
 
   test "fake processor scope" do
@@ -305,6 +305,24 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute @subscription.active?
   end
 
+  test "past_due" do
+    @subscription.update!(status: :past_due)
+    refute @subscription.active?
+    assert_not_includes @pay_customer.subscriptions.active, @subscription
+  end
+
+  test "unpaid" do
+    @subscription.update!(status: :unpaid)
+    refute @subscription.active?
+    assert_not_includes @pay_customer.subscriptions.active, @subscription
+  end
+
+  test "canceled subscriptions with a future ends_at are inactive" do
+    @subscription.update(status: :canceled, ends_at: 1.hour.from_now)
+    refute @subscription.active?
+    assert_not_includes @pay_customer.subscriptions.active, @subscription
+  end
+
   test "cancel" do
     @subscription.cancel
     assert @subscription.ends_at?
@@ -446,6 +464,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       status: :active
     }
 
-    pay_customers(:paddle).subscriptions.create! defaults.merge(options)
+    pay_customers(:paddle_classic).subscriptions.create! defaults.merge(options)
   end
 end

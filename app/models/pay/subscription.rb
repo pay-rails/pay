@@ -8,10 +8,11 @@ module Pay
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
-    scope :on_trial, -> { where.not(trial_ends_at: nil).where("#{table_name}.trial_ends_at > ?", Time.current) }
-    scope :cancelled, -> { where.not(ends_at: nil) }
-    scope :on_grace_period, -> { cancelled.where("#{table_name}.ends_at > ?", Time.current) }
-    scope :active, -> { where(status: ["trialing", "active", "canceled"], ends_at: nil).pause_not_started.or(on_grace_period).or(on_trial) }
+    scope :on_trial, -> { where("trial_ends_at > ?", Time.current) }
+    scope :canceled, -> { where.not(ends_at: nil) }
+    scope :cancelled, -> { canceled }
+    scope :on_grace_period, -> { where("#{table_name}.ends_at IS NOT NULL AND #{table_name}.ends_at > ?", Time.current) }
+    scope :active, -> { where(status: ["trialing", "active"]).pause_not_started.where("#{table_name}.ends_at IS NULL OR #{table_name}.ends_at > ?", Time.current).where("trial_ends_at IS NULL OR trial_ends_at > ?", Time.current) }
     scope :paused, -> { where(status: "paused").or(where("pause_starts_at <= ?", Time.current)) }
     scope :pause_not_started, -> { where("pause_starts_at IS NULL OR pause_starts_at > ?", Time.current) }
     scope :active_or_paused, -> { active.or(paused) }
@@ -42,7 +43,7 @@ module Pay
     delegate_missing_to :payment_processor
 
     # Helper methods for payment processors
-    %w[braintree stripe paddle fake_processor].each do |processor_name|
+    %w[braintree stripe paddle paddle_classic fake_processor].each do |processor_name|
       define_method "#{processor_name}?" do
         customer.processor == processor_name
       end
@@ -104,28 +105,11 @@ module Pay
       ends_at? && ends_at <= Time.current
     end
 
-    def on_grace_period?
-      (ends_at? && ends_at > Time.current) ||
-        ((status == "paused" || pause_behavior == "void") && will_pause?)
-    end
-
-    def will_pause?
-      pause_starts_at? && Time.current < pause_starts_at
-    end
-
-    def pause_active?
-      if status == "paused" # Paddle
-        true
-      elsif pause_behavior == "void"
-        pause_starts_at.nil? || Time.current.after?(pause_starts_at)
-      end
-    end
-
     # If you cancel during a trial, you should still retain access until the end of the trial
     # Otherwise a subscription is active unless it has ended or is currently paused
-    # Check the subscription status so we don't accidentally consider "incomplete", "past_due", or other statuses as active
+    # Check the subscription status so we don't accidentally consider "incomplete", "unpaid", or other statuses as active
     def active?
-      ["trialing", "active", "canceled"].include?(status) &&
+      ["trialing", "active"].include?(status) &&
         (!(canceled? || paused?) || on_trial? || on_grace_period?)
     end
 
@@ -177,9 +161,7 @@ module Pay
     private
 
     def cancel_if_active
-      if active?
-        cancel_now!
-      end
+      cancel_now! if active?
     rescue => e
       Rails.logger.info "[Pay] Unable to automatically cancel subscription `#{customer.processor} #{id}`: #{e.message}"
     end

@@ -28,6 +28,12 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     end
   end
 
+  test "stripe sync skips charge without customer" do
+    @pay_customer.update!(processor_id: nil)
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(customer: nil))
+    assert_nil pay_charge
+  end
+
   test "sync stripe charge ignores when customer is nil" do
     assert_no_difference "Pay::Charge.count" do
       Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(customer: nil))

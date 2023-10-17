@@ -9,21 +9,20 @@ module Pay
     # the current environment.
     #
     # 1. Check environment variable
-    # 2. Check environment scoped credentials, then secrets
-    # 3. Check unscoped credentials, then secrets
+    # 2. Check environment scoped credentials
+    # 3. Check unscoped credentials
+    # 4. Check scoped and unscoped secrets (removed in Rails 7.2)
     #
     # For example, find_value_by_name("stripe", "private_key") will check the following in order until it finds a value:
     #
     #   ENV["STRIPE_PRIVATE_KEY"]
     #   Rails.application.credentials.dig(:production, :stripe, :private_key)
-    #   Rails.application.secrets.dig(:production, :stripe, :private_key)
     #   Rails.application.credentials.dig(:stripe, :private_key)
-    #   Rails.application.secrets.dig(:stripe, :private_key)
     def find_value_by_name(scope, name)
       ENV["#{scope.upcase}_#{name.upcase}"] ||
         credentials&.dig(env, scope, name) ||
-        secrets&.dig(env, scope, name) ||
         credentials&.dig(scope, name) ||
+        secrets&.dig(env, scope, name) ||
         secrets&.dig(scope, name)
     rescue ActiveSupport::MessageEncryptor::InvalidMessage
       Rails.logger.error <<~MESSAGE
@@ -40,7 +39,7 @@ module Pay
     end
 
     def secrets
-      Rails.application.secrets
+      Rails.application.secrets if Rails.gem_version < Gem::Version.new("7.2.0.alpha") && Rails.application.respond_to?(:secrets)
     end
 
     def credentials

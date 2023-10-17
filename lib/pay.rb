@@ -18,6 +18,7 @@ module Pay
   autoload :Braintree, "pay/braintree"
   autoload :FakeProcessor, "pay/fake_processor"
   autoload :Paddle, "pay/paddle"
+  autoload :PaddleClassic, "pay/paddle_classic"
   autoload :Stripe, "pay/stripe"
 
   autoload :Webhooks, "pay/webhooks"
@@ -55,7 +56,10 @@ module Pay
   @@routes_path = "/pay"
 
   mattr_accessor :enabled_processors
-  @@enabled_processors = [:stripe, :braintree, :paddle]
+  @@enabled_processors = [:stripe, :braintree, :paddle, :paddle_classic]
+
+  mattr_accessor :send_emails
+  @@send_emails = true
 
   mattr_accessor :emails
   @@emails = ActiveSupport::OrderedOptions.new
@@ -111,12 +115,19 @@ module Pay
   end
 
   def self.send_email?(email_option, *remaining_args)
-    config_option = emails.send(email_option)
-
-    if config_option.respond_to?(:call)
-      config_option.call(*remaining_args)
+    if resolve_option(send_emails, *remaining_args)
+      email_config_option_enabled = emails.send(email_option)
+      resolve_option(email_config_option_enabled, *remaining_args)
     else
-      config_option
+      false
+    end
+  end
+
+  def self.resolve_option(option, *remaining_args)
+    if option.respond_to?(:call)
+      option.call(*remaining_args)
+    else
+      option
     end
   end
 end

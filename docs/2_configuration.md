@@ -6,7 +6,7 @@ Pay comes with a lot of configuration out of the box for you, but you'll need to
 
 Pay automatically looks up credentials for each payment provider. We recommend storing them in the Rails credentials.
 
-##### Rails Credentials & Secrets
+##### Rails Credentials
 
 You'll need to add your API keys to your Rails credentials. You can do this by running:
 
@@ -28,14 +28,14 @@ braintree:
   public_key: yyyy
   merchant_id: aaaa
   environment: sandbox
-paddle:
+paddle_classic:
   vendor_id: xxxx
   vendor_auth_code: yyyy
   public_key_base64: MII...==
   environment: sandbox
 ```
 
-You can also nest these credentials under the Rails environment if using a shared credentials file or secrets.
+You can also nest these credentials under the Rails environment if using a shared credentials file.
 
 ```yaml
 development:
@@ -55,12 +55,12 @@ Pay will also check environment variables for API keys:
 * `BRAINTREE_PUBLIC_KEY`
 * `BRAINTREE_PRIVATE_KEY`
 * `BRAINTREE_ENVIRONMENT`
-* `PADDLE_VENDOR_ID`
-* `PADDLE_VENDOR_AUTH_CODE`
-* `PADDLE_PUBLIC_KEY`
-* `PADDLE_PUBLIC_KEY_FILE`
-* `PADDLE_PUBLIC_KEY_BASE64`
-* `PADDLE_ENVIRONMENT`
+* `PADDLE_CLASSIC_VENDOR_ID`
+* `PADDLE_CLASSIC_VENDOR_AUTH_CODE`
+* `PADDLE_CLASSIC_PUBLIC_KEY`
+* `PADDLE_CLASSIC_PUBLIC_KEY_FILE`
+* `PADDLE_CLASSIC_PUBLIC_KEY_BASE64`
+* `PADDLE_CLASSIC_ENVIRONMENT`
 
 ## Generators
 
@@ -78,14 +78,18 @@ bin/rails generate pay:email_views
 
 ## Emails
 
-Emails can be enabled/disabled independently using the `emails` configuration option as show in the configuration section below (all are enabled by default).
+Emails can be enabled/disabled as a whole by using the `send_emails` configuration option or independently by
+using the `emails` configuration option as shown in the configuration section below (all emails are enabled by default).
 
 When enabled, the following emails will be sent when:
 
+- A payment action is required
+- A payment failed
 - A charge succeeded
 - A charge was refunded
 - A yearly subscription is about to renew
-- A payment action is required
+- A subscription trial is about to end
+- A subscription trial has ended
 
 ## Configuration
 
@@ -106,12 +110,16 @@ Pay.setup do |config|
   config.routes_path = "/pay" # Only when automount_routes is true
   # All processors are enabled by default. If a processor is already implemented in your application, you can omit it from this list and the processor will not be set up through the Pay gem.
   config.enabled_processors = [:stripe, :braintree, :paddle]
+
+  # To disable all emails, set the following configuration option to false:
+  config.send_emails = true
+
   # All emails can be configured independently as to whether to be sent or not. The values can be set to true, false or a custom lambda to set up more involved logic. The Pay defaults are show below and can be modified as needed.
   config.emails.payment_action_required = true
   config.emails.payment_failed = true
   config.emails.receipt = true
   config.emails.refund = true
-  # This example for subscription_renewing only applies to Stripe, therefor we supply the second argument of price
+  # This example for subscription_renewing only applies to Stripe, therefore we supply the second argument of price
   config.emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }

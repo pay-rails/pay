@@ -18,6 +18,8 @@ module Pay
         has_one :payment_processor, -> { where(default: true, deleted_at: nil) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
 
         after_commit :cancel_active_pay_subscriptions!, on: [:destroy]
+
+        Pay::Stripe.model_names << name if Pay::Stripe.enabled?
       end
 
       # Changes a user's payment processor

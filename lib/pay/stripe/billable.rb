@@ -49,7 +49,7 @@ module Pay
       # Returns a Stripe::Customer object
       def customer
         stripe_customer = if processor_id?
-          ::Stripe::Customer.retrieve({id: processor_id, expand: ["tax"]}, stripe_options)
+          ::Stripe::Customer.retrieve({id: processor_id, expand: ["tax", "invoice_credit_balance"]}, stripe_options)
         else
           sc = ::Stripe::Customer.create(customer_attributes.merge(expand: ["tax"]), stripe_options)
           pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
@@ -77,26 +77,41 @@ module Pay
         )
       end
 
+      # Charges an amount to the customer's default payment method
       def charge(amount, options = {})
         add_payment_method(payment_method_token, default: true) if payment_method_token?
 
         payment_method = pay_customer.default_payment_method
         args = {
-          amount: amount,
           confirm: true,
-          currency: "usd",
-          customer: processor_id,
-          expand: ["latest_charge.refunds"],
           payment_method: payment_method&.processor_id
         }.merge(options)
 
-        payment_intent = ::Stripe::PaymentIntent.create(args, stripe_options)
+        payment_intent = create_payment_intent(amount, args)
         Pay::Payment.new(payment_intent).validate
 
         charge = payment_intent.latest_charge
         Pay::Stripe::Charge.sync(charge.id, object: charge)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      # Creates and returns a Stripe::PaymentIntent
+      def create_payment_intent(amount, options = {})
+        args = {
+          amount: amount,
+          currency: "usd",
+          customer: processor_id,
+          expand: ["latest_charge.refunds"],
+          return_url: root_url
+        }.merge(options)
+
+        ::Stripe::PaymentIntent.create(args, stripe_options)
+      end
+
+      # Used for creating Stripe Terminal charges
+      def terminal_charge(amount, options = {})
+        create_payment_intent(amount, options.merge(payment_method_types: ["card_present"], capture_method: "manual"))
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
@@ -209,11 +224,14 @@ module Pay
         customer unless processor_id?
         args = {
           customer: processor_id,
-          mode: "payment",
-          # These placeholder URLs will be replaced in a following step.
-          success_url: merge_session_id_param(options.delete(:success_url) || root_url),
-          cancel_url: merge_session_id_param(options.delete(:cancel_url) || root_url)
+          mode: "payment"
         }
+
+        # Embedded checkouts cannot use URLs
+        if options[:ui_mode] != "embedded"
+          args[:success_url] = merge_session_id_param(options.delete(:success_url) || root_url)
+          args[:cancel_url] = merge_session_id_param(options.delete(:cancel_url) || root_url)
+        end
 
         # Line items are optional
         if (line_items = options.delete(:line_items))

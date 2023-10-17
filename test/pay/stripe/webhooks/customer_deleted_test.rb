@@ -27,4 +27,10 @@ class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
     assert_empty pay_customer.payment_methods
     assert pay_subscription.canceled?
   end
+
+  test "stripe customer deleted webhook does nothing if customer not in database" do
+    assert_nothing_raised do
+      Pay::Stripe::Webhooks::CustomerDeleted.new.call(@event)
+    end
+  end
 end

@@ -30,15 +30,21 @@ module Pay
 
     extend Env
 
+    REQUIRED_VERSION = "~> 9"
+
+    # A list of database model names that include Pay
+    # Used for safely looking up models with client_reference_id
+    mattr_accessor :model_names, default: Set.new
+
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
 
-      Pay::Engine.version_matches?(required: "~> 8", current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version ~> 8")
+      Pay::Engine.version_matches?(required: REQUIRED_VERSION, current: ::Stripe::VERSION) || (raise "[Pay] stripe gem must be version #{REQUIRED_VERSION}")
     end
 
     def self.setup
       ::Stripe.api_key = private_key
-      ::Stripe.api_version = "2022-11-15"
+      ::Stripe.api_version ||= "2023-08-16"
 
       # Used by Stripe to identify Pay for support
       ::Stripe.set_app_info("PayRails", partner_id: "pp_partner_IqhY0UExnJYLxg", version: Pay::VERSION, url: "https://github.com/pay-rails/pay")
@@ -94,7 +100,7 @@ module Pay
         # When a customers subscription trial period is 3 days from ending or ended immediately this event is fired
         events.subscribe "stripe.customer.subscription.trial_will_end", Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new
 
-        # Monitor changes for customer's default card changing
+        # Monitor changes for customer's default card changing and invoice credit updates
         events.subscribe "stripe.customer.updated", Pay::Stripe::Webhooks::CustomerUpdated.new
 
         # If a customer was deleted in Stripe, their subscriptions should be cancelled
@@ -113,6 +119,25 @@ module Pay
         events.subscribe "stripe.checkout.session.completed", Pay::Stripe::Webhooks::CheckoutSessionCompleted.new
         events.subscribe "stripe.checkout.session.async_payment_succeeded", Pay::Stripe::Webhooks::CheckoutSessionAsyncPaymentSucceeded.new
       end
+    end
+
+    def self.to_client_reference_id(record)
+      raise ArgumentError, "#{record.class.name} does not include Pay. Allowed models: #{model_names.to_a.join(", ")}" unless model_names.include?(record.class.name)
+      [record.class.name, record.id].join("_")
+    end
+
+    def self.find_by_client_reference_id(client_reference_id)
+      # If there is a client reference ID, make sure we have a Pay::Customer record
+      # client_reference_id should be in the format of "User/1"
+      model_name, id = client_reference_id.split("_", 2)
+
+      # Only allow model names that use Pay
+      return unless model_names.include?(model_name)
+
+      model_name.constantize.find(id)
+    rescue ActiveRecord::RecordNotFound
+      Rails.logger.error "[Pay] Unable to locate record with: #{client_reference_id}"
+      nil
     end
   end
 end

@@ -12,7 +12,7 @@ gemspec
 # your gem to rubygems.org.
 
 gem "byebug"
-gem "appraisal"
+gem "appraisal", github: "thoughtbot/appraisal"
 gem "overcommit"
 gem "standard"
 gem "mocha"
@@ -20,8 +20,9 @@ gem "vcr"
 gem "webmock"
 
 gem "braintree", ">= 2.92.0"
-gem "stripe", "~> 8.0"
+gem "stripe", "~> 9.0"
 gem "paddle_pay", "~> 0.2"
+gem "paddle", "~> 2.1", ">= 2.1.1"
 
 gem "receipts"
 gem "prawn", github: "prawnpdf/prawn"

@@ -5,11 +5,11 @@ module Pay
     module Webhooks
       class SubscriptionChargedUnsuccessfully
         def call(event)
-          subscription = event.subscription
-          return if subscription.nil?
+          # subscription = event.subscription
+          # return if subscription.nil?
 
-          pay_subscription = Pay::Subscription.find_by_processor_and_id(:braintree, subscription.id)
-          return unless pay_subscription.present?
+          # pay_subscription = Pay::Subscription.find_by_processor_and_id(:braintree, subscription.id)
+          # return unless pay_subscription.present?
 
           # pay_customer = pay_subscription.customer
           # pay_charge = Pay::Braintree::Billable.new(pay_customer).save_transaction(subscription.transactions.first)

@@ -6,10 +6,12 @@ module Pay
 
       delegate :active?,
         :canceled?,
-        :on_grace_period?,
+        :ends_at?,
         :ends_at,
         :name,
         :on_trial?,
+        :pause_starts_at,
+        :pause_starts_at?,
         :processor_id,
         :processor_plan,
         :processor_subscription,
@@ -29,9 +31,16 @@ module Pay
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest subscription details from the API if we already have it
         object ||= ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)
+        if object.customer.blank?
+          Rails.logger.debug "Stripe Subscription #{object.id} does not have a customer"
+          return
+        end
 
         pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
-        return unless pay_customer
+        if pay_customer.blank?
+          Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Stripe Subscription #{object.id}"
+          return
+        end
 
         attributes = {
           application_fee_percent: object.application_fee_percent,
@@ -154,6 +163,8 @@ module Pay
       # If subscription is already past_due, the subscription will be cancelled immediately
       # To disable this, pass past_due_cancel_now: false
       def cancel(**options)
+        return if canceled?
+
         if past_due? && options.fetch(:past_due_cancel_now, true)
           cancel_now!
         else
@@ -169,6 +180,8 @@ module Pay
       # cancel_now!(prorate: true)
       # cancel_now!(invoice_now: true)
       def cancel_now!(**options)
+        return if canceled?
+
         @stripe_subscription = ::Stripe::Subscription.cancel(processor_id, options.merge(expand_options), stripe_options)
         pay_subscription.update(ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
@@ -190,6 +203,18 @@ module Pay
         true
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
+      end
+
+      def on_grace_period?
+        (ends_at? && ends_at > Time.current) || (paused? && will_pause?)
+      end
+
+      def pause_active?
+        paused? && (pause_starts_at.nil? || Time.current.after?(pause_starts_at))
+      end
+
+      def will_pause?
+        pause_starts_at? && Time.current < pause_starts_at
       end
 
       def paused?

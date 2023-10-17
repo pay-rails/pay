@@ -13,8 +13,8 @@ class WebhookRoutesTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  test "paddle webhook routes get mounted correctly" do
-    post "/pay/webhooks/paddle", as: :json
+  test "paddle classic webhook routes get mounted correctly" do
+    post "/pay/webhooks/paddle_classic", as: :json
     assert_response :bad_request
   end
 end

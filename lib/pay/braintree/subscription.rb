@@ -5,7 +5,7 @@ module Pay
 
       delegate :active?,
         :canceled?,
-        :on_grace_period?,
+        :ends_at?,
         :customer,
         :ends_at,
         :name,
@@ -77,6 +77,9 @@ module Pay
       end
 
       def cancel(**options)
+        return if canceled?
+
+        # Braintree doesn't allow canceling at period end while on trial, so trials are canceled immediately
         result = if on_trial?
           gateway.subscription.cancel(processor_id)
         else
@@ -90,6 +93,8 @@ module Pay
       end
 
       def cancel_now!(**options)
+        return if canceled?
+
         result = gateway.subscription.cancel(processor_id)
         pay_subscription.sync!(object: result.subscription)
       rescue ::Braintree::BraintreeError => e
@@ -98,6 +103,10 @@ module Pay
 
       def change_quantity(quantity, **options)
         raise NotImplementedError, "Braintree does not support setting quantity on subscriptions"
+      end
+
+      def on_grace_period?
+        ends_at? && ends_at > Time.current
       end
 
       def paused?

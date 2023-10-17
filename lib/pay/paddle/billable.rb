@@ -14,12 +14,34 @@ module Pay
         @pay_customer = pay_customer
       end
 
-      def customer
-        # pass
+      def customer_attributes
+        {email: email, name: customer_name}
       end
 
-      def update_customer!
-        # pass
+      # Retrieves a Paddle::Customer object
+      #
+      # Finds an existing Paddle::Customer if processor_id exists
+      # Creates a new Paddle::Customer using `email` and `customer_name` if empty processor_id
+      #
+      # Returns a Paddle::Customer object
+      def customer
+        if processor_id?
+          ::Paddle::Customer.retrieve(id: processor_id)
+        else
+          sc = ::Paddle::Customer.create(email: email, name: customer_name)
+          pay_customer.update!(processor_id: sc.id)
+          sc
+        end
+      rescue ::Paddle::Error => e
+        raise Pay::Paddle::Error, e
+      end
+
+      # Syncs name and email to Paddle::Customer
+      # You can also pass in other attributes that will be merged into the default attributes
+      def update_customer!(**attributes)
+        customer unless processor_id?
+        attrs = customer_attributes.merge(attributes)
+        ::Paddle::Customer.update(id: processor_id, **attrs)
       end
 
       def charge(amount, options = {})
@@ -49,8 +71,10 @@ module Pay
         # pass
       end
 
-      def add_payment_method(token, default: true)
-        Pay::Paddle::PaymentMethod.sync(self)
+      # Paddle does not use payment method tokens. The method signature has it here
+      # to have a uniform API with the other payment processors.
+      def add_payment_method(token = nil, default: true)
+        Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer)
       end
 
       def trial_end_date(subscription)

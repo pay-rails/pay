@@ -2,6 +2,60 @@
 
 ### Unreleased
 
+* [Breaking] Paddle Classic is now `paddle_classic` and Paddle Billing is now `paddle`.
+
+    To migrate, existing Paddle customers should be updated to `paddle_classic`
+    ```ruby
+    Pay::Customer.where(processor: :paddle).update_all(processor: :paddle_classic)
+    ```
+
+  Webhooks for `paddle.*` should be renamed to `paddle_classic.*`
+
+* [Breaking] Subscriptions with `status: :canceled` and `ends_at: future` are now considered canceled. Previously, these were considered active to accomodate canceling a Braintree subscription during trial (and allowing the user to continue using until the end of the trial).
+
+### 6.8.1
+
+* [Stripe] Skip sync if object is not attached to a customer. Fixes #842
+
+### 6.8.0
+
+* Update to Stripe `2023-08-16` API version
+* [Stripe] Add `pay_customer.create_payment_intent` for creating payment intents without immediate confirmation
+* [Stripe] Add `pay_customer.terminal_charge` for creating Stripe Terminal payments
+
+### 6.7.2
+
+* Allow configurable Stripe API version
+* Only include success_url and cancel_url for checkout when not embedded mode
+
+### 6.7.1
+
+* Fix payments#show redirect_to not falling back to root_path properly
+
+### 6.7.0
+
+* Add `currency` and `invoice_credit_balance` to Stripe Pay::Customer #825 - @nachiket87
+* Safely handle Rails 7.2's removal of secrets. #834 @heliocola
+
+### 6.6.1
+
+* Fix Paddle PayPal payment method details not recording
+
+### 6.6.0
+
+* Add `Pay::Stripe.to_client_reference_id(User.first)` method to generate client_reference_id for use with Stripe's CheckoutSession, Pricing Tables, etc #823
+  Unfortunately with the `client_reference_id` requirements, we cannot use Signed GlobalIDs and have to implement our own IDs and validation. If Stripe relaxes their requirements in the future, we could replace this implementation with SGIDs.
+* Skip Stripe `customer.deleted` webhook processing if customer is not in the database. #818
+* Refactor `on_grace_period?` to be implemented separately by each payment processor
+* Add default value of `nil` to the token param of `Pay::Paddle::Billable#add_payment_method`
+* Fix `Pay::Paddle::Billable#add_payment_method`. Pass `pay_customer: pay_customer` as keyword arg / value to `sync` call inside `Pay::Paddle::Billable#add_payment_method` method body. #821
+* Remove Rails 6.0 from CI now that it is EOL
+
+### 6.5.0
+
+* Add new configuration option named `send_emails` which can be used to disable the sending of all current and future emails.
+  This option can be set to a boolean value or a proc/lambda that returns a boolean value. - @cjilbert504
+
 ### 6.4.0
 
 * Introduce `:pay` load hook - @excid3
