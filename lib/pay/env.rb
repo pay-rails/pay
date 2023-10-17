@@ -39,7 +39,7 @@ module Pay
     end
 
     def secrets
-      Rails.application.secrets if Rails.application.respond_to?(:secrets)
+      Rails.application.secrets if Rails.gem_version < Gem::Version.new("7.2.0.alpha") && Rails.application.respond_to?(:secrets)
     end
 
     def credentials
