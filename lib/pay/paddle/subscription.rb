@@ -48,6 +48,9 @@ module Pay
         end
 
         case attributes[:status]
+        when "canceled"
+          # Remove payment methods since customer cannot be reused after cancelling
+          Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
         when "trialing"
           attributes[:trial_ends_at] = Time.parse(object.next_billed_at)
         when "paused"
@@ -83,13 +86,7 @@ module Pay
       end
 
       def cancel(**options)
-        if on_trial?
-          trial_ends_at
-        elsif paused?
-          pause_starts_at
-        else
-          processor_subscription.next_payment&.fetch(:date) || Time.current
-        end
+        return if canceled?
 
         response = ::Paddle::Subscription.cancel(
           id: processor_id,
@@ -99,9 +96,6 @@ module Pay
           status: :canceled,
           ends_at: response.scheduled_change.effective_at
         )
-
-        # Remove payment methods since customer cannot be reused after cancelling
-        Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
       rescue ::Paddle::Error => e
         raise Pay::Paddle::Error, e
       end

@@ -77,6 +77,8 @@ module Pay
       end
 
       def cancel(**options)
+        return if canceled?
+
         ends_at = if on_trial?
           trial_ends_at
         elsif paused?
@@ -95,6 +97,8 @@ module Pay
       end
 
       def cancel_now!(**options)
+        return if canceled?
+
         PaddlePay::Subscription::User.cancel(processor_id)
         pay_subscription.update(status: :canceled, ends_at: Time.current)
 

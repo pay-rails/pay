@@ -49,9 +49,11 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
       pay_subscription.cancel_now!
 
       # Canceling during a trial ends the subscription, but continues to give access during the trial period
-      assert pay_subscription.active?
+      assert_equal "canceled", pay_subscription.status
+      refute pay_subscription.active?
       assert pay_subscription.on_trial?
       assert pay_subscription.ended?
+      assert_not_includes @pay_customer.subscriptions.active, pay_subscription
     end
   end
 
@@ -130,10 +132,12 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
 
       pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
 
-      # Canceling during a trial ends the subscription, but continues to give access during the trial period
-      assert pay_subscription.active?
+      # Canceling during a trial ends the subscription, but continues to give acess during the trial period
+      assert_equal "canceled", pay_subscription.status
+      refute pay_subscription.active?
       assert pay_subscription.on_trial?
       assert pay_subscription.ended?
+      assert_not_includes @pay_customer.subscriptions.active, pay_subscription
     end
   end
 end

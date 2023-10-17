@@ -2,8 +2,6 @@
 
 ### Unreleased
 
-<<<<<<< Updated upstream
-=======
 * [Breaking] Paddle Classic is now `paddle_classic` and Paddle Billing is now `paddle`.
 
     To migrate, existing Paddle customers should be updated to `paddle_classic`
@@ -11,9 +9,10 @@
     Pay::Customer.where(processor: :paddle).update_all(processor: :paddle_classic)
     ```
 
+  Webhooks for `paddle.*` should be renamed to `paddle_classic.*`
+
 * [Breaking] Subscriptions with `status: :canceled` and `ends_at: future` are now considered canceled. Previously, these were considered active to accomodate canceling a Braintree subscription during trial (and allowing the user to continue using until the end of the trial).
 
->>>>>>> Stashed changes
 ### 6.8.1
 
 * [Stripe] Skip sync if object is not attached to a customer. Fixes #842
