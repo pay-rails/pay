@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.string "processor_id"
     t.boolean "default"
     t.json "data"
+    t.string "stripe_account"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
