@@ -11,7 +11,6 @@
 
     Rename webhooks for `paddle.*` to `paddle_classic.*`
 
-* [Breaking] Subscriptions with `status: :canceled` and `ends_at: future` are now considered canceled. Previously, these were considered active to accomodate canceling a Braintree subscription during trial (and allowing the user to continue using until the end of the trial).
 * [Breaking] `stripe_account` has been moved from the `data:json` column to a dedicated column
 
     To migrate, create a migration to add the column.
@@ -24,6 +23,9 @@
     ```ruby
     Pay::Customer.find_each{ |c| c.update(stripe_account: c.data["stripe_account"]) }
     ```
+
+* [Breaking] Subscriptions with `status: :canceled` and `ends_at: future` are now considered canceled. Previously, these were considered active to accomodate canceling a Braintree subscription during trial (and allowing the user to continue using until the end of the trial).
+* [Breaking] Subscriptions with `status: :past_due` will be canceled immediately by default.
 
 ### 6.8.1
 
