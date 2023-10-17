@@ -10,6 +10,7 @@ module Pay
         :ends_at,
         :name,
         :on_trial?,
+        :past_due?,
         :pause_starts_at,
         :pause_starts_at?,
         :processor_id,
