@@ -18,7 +18,7 @@ class Pay::Stripe::Test < ActiveSupport::TestCase
 
   test "can generate a client_reference_id for a model" do
     user = users(:none)
-    assert_equal "User/#{user.id}", Pay::Stripe.to_client_reference_id(user)
+    assert_equal "User_#{user.id}", Pay::Stripe.to_client_reference_id(user)
   end
 
   test "raises an error for client_reference_id if the object does not use Pay" do
@@ -29,15 +29,15 @@ class Pay::Stripe::Test < ActiveSupport::TestCase
 
   test "can find a record by client_reference_id" do
     user = users(:none)
-    assert_equal user, Pay::Stripe.find_by_client_reference_id("User/#{user.id}")
+    assert_equal user, Pay::Stripe.find_by_client_reference_id("User_#{user.id}")
   end
 
   test "returns nil if record not found by client_reference_id" do
-    assert_nil Pay::Stripe.find_by_client_reference_id("User/9999")
+    assert_nil Pay::Stripe.find_by_client_reference_id("User_9999")
   end
 
   test "returns nil if client_reference_id is not an allowed class" do
-    assert_nil Pay::Stripe.find_by_client_reference_id("Secret::Agent::Man/9999")
+    assert_nil Pay::Stripe.find_by_client_reference_id("Secret::Agent::Man_9999")
   end
 
   test "env ignores Stripe secrets when not defined" do
