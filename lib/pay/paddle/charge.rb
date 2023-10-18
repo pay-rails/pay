@@ -49,7 +49,6 @@ module Pay
             attrs[:payment_method_type] = "paypal"
           end
 
-
           # Update customer's payment method
           Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
         end
@@ -64,7 +63,6 @@ module Pay
           pay_customer.charges.create!(attrs.merge(processor_id: object.id))
         end
       end
-
     end
   end
 end
