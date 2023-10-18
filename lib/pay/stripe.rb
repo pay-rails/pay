@@ -30,7 +30,7 @@ module Pay
 
     extend Env
 
-    REQUIRED_VERSION = "~> 9"
+    REQUIRED_VERSION = "~> 10"
 
     # A list of database model names that include Pay
     # Used for safely looking up models with client_reference_id
@@ -44,7 +44,6 @@ module Pay
 
     def self.setup
       ::Stripe.api_key = private_key
-      ::Stripe.api_version ||= "2023-08-16"
 
       # Used by Stripe to identify Pay for support
       ::Stripe.set_app_info("PayRails", partner_id: "pp_partner_IqhY0UExnJYLxg", version: Pay::VERSION, url: "https://github.com/pay-rails/pay")
