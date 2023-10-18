@@ -85,6 +85,11 @@ module Pay
         ::Paddle::Subscription.retrieve(id: processor_id)
       end
 
+      # Get a transaction to update payment method
+      def payment_method_transaction
+        ::Paddle::Subscription.get_transaction(id: processor_id)
+      end
+
       def cancel(**options)
         return if canceled?
 
