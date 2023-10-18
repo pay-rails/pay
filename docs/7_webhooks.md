@@ -51,7 +51,8 @@ Since we support multiple payment providers, each event type is prefixed with th
 ```ruby
 "stripe.charge.succeeded"
 "braintree.subscription_charged_successfully"
-"paddle.subscription_created"
+"paddle.subscription.created"
+"paddle_classic.subscription_created"
 ```
 
 ## Custom Webhook Listeners
