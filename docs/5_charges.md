@@ -23,7 +23,17 @@ On failure, a `Pay::Error` will be raised with details about the payment failure
 
 ##### Paddle Charges
 
-Paddle requires an active subscription on the customer in order to create a one-time charge. It also requires a `charge_name` for the charge.
+Paddle requires an active subscription on the customer in order to create a one-time charge. It also requires a `price_id` and `quantity` for the charge.
+
+The price value can be set to 0 as the amount is set in the `price_id` on Paddle.
+
+```ruby
+@user.payment_processor.charge(0, {price_id: "pri_acb123", quantity: 1})
+```
+
+##### Paddle Classic Charges
+
+Paddle Classic requires an active subscription on the customer in order to create a one-time charge. It also requires a `charge_name` for the charge.
 
 ```ruby
 @user.payment_processor.charge(1500, {charge_name: "Test"}) # $15.00 USD

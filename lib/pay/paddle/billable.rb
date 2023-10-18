@@ -47,23 +47,17 @@ module Pay
       def charge(amount, options = {})
         subscription = pay_customer.subscription
         return unless subscription.processor_id
-        raise Pay::Error, "A charge_name is required to create a one-time charge" if options[:charge_name].nil?
+        raise Pay::Error, "A price_id is required to create a one-time charge" if options[:price_id].nil?
+        raise Pay::Error, "A quantity is required to create a one-time charge" if options[:quantity].nil?
 
-        response = PaddlePay::Subscription::Charge.create(subscription.processor_id, amount.to_f / 100, options[:charge_name], options)
+        response = ::Paddle::Subscription.charge(
+          id: subscription.processor_id,
+          items: [ { price_id: options[:price_id], quantity: options[:quantity] } ],
+          effective_from: "immediately"
+        )
 
-        attributes = {
-          amount: (response[:amount].to_f * 100).to_i,
-          paddle_receipt_url: response[:receipt_url],
-          created_at: Time.zone.parse(response[:payment_date])
-        }
-
-        # Lookup subscription payment method details
-        attributes.merge! Pay::Paddle::PaymentMethod.payment_method_details_for(subscription_id: subscription.processor_id)
-
-        charge = pay_customer.charges.find_or_initialize_by(processor_id: response[:invoice_id])
-        charge.update(attributes)
-        charge
-      rescue ::PaddlePay::PaddlePayError => e
+        # This charge is then created from the webhook
+      rescue ::Paddle::Error => e
         raise Pay::Paddle::Error, e
       end
 
