@@ -77,9 +77,8 @@ module Pay
       end
 
       def processor_subscription(subscription_id, options = {})
-        hash = PaddlePay::Subscription::User.list({subscription_id: subscription_id}, options).try(:first)
-        OpenStruct.new(hash)
-      rescue ::PaddlePay::PaddlePayError => e
+        ::Paddle::Subscription.retrieve(id: subscription_id)
+      rescue ::Paddle::Error => e
         raise Pay::Paddle::Error, e
       end
     end
