@@ -81,6 +81,16 @@ Paddle Classic and Stripe provide a receipt URL for each payment.
 @charge.stripe_receipt_url
 ```
 
+## Paddle Receipts
+
+Paddle Billing doesn't provide a receipt URL like Paddle Classic did.
+
+In order to retrieve a PDF invoice for a transaction, an API request is required. This will return a URL to the PDF invoice. This URL is not permanent and will expire after a short period of time.
+
+```ruby
+Paddle::Transaction.invoice(id: @charge.processor_id)
+```
+
 ## Next
 
 See [Subscriptions](6_subscriptions.md)
