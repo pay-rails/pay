@@ -56,7 +56,19 @@ module Pay
           effective_from: "immediately"
         )
 
-        # This charge is then created from the webhook
+        transaction = ::Paddle::Transaction.list(subscription_id: subscription.processor_id).data.try(:first)
+
+        attrs = {
+          amount: transaction.details.totals.total,
+          created_at: transaction.created_at,
+          currency: transaction.currency_code,
+          metadata: transaction.details.line_items&.first&.id,
+          subscription: subscription
+        }
+
+        charge = pay_customer.charges.find_or_initialize_by(processor_id: transaction.id)
+        charge.update(attrs)
+        charge
       rescue ::Paddle::Error => e
         raise Pay::Paddle::Error, e
       end
