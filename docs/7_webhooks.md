@@ -21,6 +21,7 @@ To configure webhooks on your payment processor, use the following URLs (with yo
 * **Stripe** - `https://example.org/pay/webhooks/stripe`
 * **Braintree** - `https://example.org/pay/webhooks/braintree`
 * **Paddle** - `https://example.org/pay/webhooks/paddle`
+* **Paddle Classic** - `https://example.org/pay/webhooks/paddle_classic`
 
 #### Mount path
 
