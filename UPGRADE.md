@@ -2,6 +2,18 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## **Pay 6.0 to Unreleased**
+
+This version adds support for Paddle's new Billing APIs and renames the existing Paddle implementation to Paddle Classic.
+
+If you were using Paddle before, you'll need to update existing Paddle customers to `paddle_classic`.
+
+```ruby
+Pay::Customer.where(processor: :paddle).update_all(processor: :paddle_classic)
+```
+
+You'll also need to update the Webhook endpoint from `/pay/webhooks/paddle` to `/pay/webhooks/paddle_classic`
+
 ## **Pay 5.0 to 6.0**
 This version adds support for accessing the start and end of the current billing period of a subscription. This currently only works with Stripe subscriptions.
 
