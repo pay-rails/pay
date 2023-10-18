@@ -50,9 +50,9 @@ module Pay
         raise Pay::Error, "A price_id is required to create a one-time charge" if options[:price_id].nil?
         raise Pay::Error, "A quantity is required to create a one-time charge" if options[:quantity].nil?
 
-        response = ::Paddle::Subscription.charge(
+        ::Paddle::Subscription.charge(
           id: subscription.processor_id,
-          items: [ { price_id: options[:price_id], quantity: options[:quantity] } ],
+          items: [{price_id: options[:price_id], quantity: options[:quantity]}],
           effective_from: "immediately"
         )
 
