@@ -20,10 +20,10 @@ module Pay
 
           charge.update(
             amount: object.amount,
-            card_last4: object.payment_method_details.card.last4,
-            card_type: object.payment_method_details.card.brand,
-            card_exp_month: object.payment_method_details.card.exp_month,
-            card_exp_year: object.payment_method_details.card.exp_year,
+            card_last4: object.payment_method_details.try(:card).try(:last4),
+            card_type: object.payment_method_details.try(:card).try(:brand),
+            card_exp_month: object.payment_method_details.try(:card).try(:exp_month),
+            card_exp_year: object.payment_method_details.try(:card).try(:exp_year),
             created_at: Time.zone.at(object.created)
           )
 
