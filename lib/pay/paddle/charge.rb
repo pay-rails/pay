@@ -37,19 +37,21 @@ module Pay
           subscription: pay_customer.subscriptions.find_by(processor_id: object.subscription_id)
         }
 
-        case object.payment.method_details.type.downcase
-        when "card"
-          attrs[:payment_method_type] = "card"
-          attrs[:brand] = details.card.type
-          attrs[:exp_month] = details.card.expiry_month
-          attrs[:exp_year] = details.card.expiry_year
-          attrs[:last4] = details.card.last4
-        when "paypal"
-          attrs[:payment_method_type] = "paypal"
-        end
+        if object.payment
+          case object.payment.method_details.type.downcase
+          when "card"
+            attrs[:payment_method_type] = "card"
+            attrs[:brand] = details.card.type
+            attrs[:exp_month] = details.card.expiry_month
+            attrs[:exp_year] = details.card.expiry_year
+            attrs[:last4] = details.card.last4
+          when "paypal"
+            attrs[:payment_method_type] = "paypal"
+          end
 
-        # Update customer's payment method
-        Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
+          # Update customer's payment method
+          Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
+        end
 
         # Update or create the charge
         if (pay_charge = pay_customer.charges.find_by(processor_id: object.id))

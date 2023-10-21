@@ -10,6 +10,7 @@ Before you can process payments, you need to assign a payment processor for the 
 @user.set_payment_processor :stripe
 @user.set_payment_processor :braintree
 @user.set_payment_processor :paddle
+@user.set_payment_processor :paddle_classic
 @user.set_payment_processor :fake_processor, allow_fake: true
 ```
 
@@ -56,9 +57,9 @@ If you need to access the API object directly from the payment processor like th
 #=> #<Stripe::Customer>
 ```
 
-##### Paddle:
+##### Paddle Classic:
 
-It is currently not possible to retrieve a Customer object through the Paddle API.
+It is currently not possible to retrieve a Customer object through the Paddle Classic API.
 
 ## Next
 
