@@ -21,9 +21,9 @@ You may pass optional arguments that will be directly passed on to the payment p
 
 On failure, a `Pay::Error` will be raised with details about the payment failure.
 
-##### Paddle Charges
+##### Paddle Classic Charges
 
-Paddle requires an active subscription on the customer in order to create a one-time charge. It also requires a `charge_name` for the charge.
+Paddle Classic requires an active subscription on the customer in order to create a one-time charge. It also requires a `charge_name` for the charge.
 
 ```ruby
 @user.payment_processor.charge(1500, {charge_name: "Test"}) # $15.00 USD
@@ -74,11 +74,21 @@ The details saved will vary depending upon the payment method used.
 
 ## Receipt URL
 
-Paddle and Stripe provide a receipt URL for each payment.
+Paddle Classic and Stripe provide a receipt URL for each payment.
 
 ```ruby
 @charge.paddle_receipt_url
 @charge.stripe_receipt_url
+```
+
+## Paddle Receipts
+
+Paddle Billing doesn't provide a receipt URL like Paddle Classic did.
+
+In order to retrieve a PDF invoice for a transaction, an API request is required. This will return a URL to the PDF invoice. This URL is not permanent and will expire after a short period of time.
+
+```ruby
+Paddle::Transaction.invoice(id: @charge.processor_id)
 ```
 
 ## Next
