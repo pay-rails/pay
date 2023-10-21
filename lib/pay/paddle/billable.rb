@@ -50,7 +50,7 @@ module Pay
         transaction = ::Paddle::Transaction.create(items: items, **opts)
 
         attrs = {
-          amount: transaction.details.totals.total,
+          amount: transaction.details.totals.grand_total,
           created_at: transaction.created_at,
           currency: transaction.currency_code,
           metadata: transaction.details.line_items&.first&.id
