@@ -45,25 +45,15 @@ module Pay
       end
 
       def charge(amount, options = {})
-        subscription = pay_customer.subscription
-        return unless subscription.processor_id
-        raise Pay::Error, "A price_id is required to create a one-time charge" if options[:price_id].nil?
-        raise Pay::Error, "A quantity is required to create a one-time charge" if options[:quantity].nil?
-
-        ::Paddle::Subscription.charge(
-          id: subscription.processor_id,
-          items: [{price_id: options[:price_id], quantity: options[:quantity]}],
-          effective_from: "immediately"
-        )
-
-        transaction = ::Paddle::Transaction.list(subscription_id: subscription.processor_id).data.try(:first)
+        items = options[:items]
+        opts  = options.except(:items).merge(customer_id: processor_id)
+        transaction = ::Paddle::Transaction.create(items: items, **opts)
 
         attrs = {
           amount: transaction.details.totals.total,
           created_at: transaction.created_at,
           currency: transaction.currency_code,
-          metadata: transaction.details.line_items&.first&.id,
-          subscription: subscription
+          metadata: transaction.details.line_items&.first&.id
         }
 
         charge = pay_customer.charges.find_or_initialize_by(processor_id: transaction.id)
