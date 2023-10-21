@@ -258,7 +258,7 @@ You can set this to another option as shown below.
 @user.payment_processor.subscription.pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now)
 ```
 
-##### Pause a Paddle Subscription
+##### Pause a Paddle Classic Subscription
 
 Paddle will pause payments at the end of the period. The status remains `active` until the period ends with a `paused_from` value to denote when the subscription pause will take effect. When the status becomes `paused` the subscription is no longer active.
 
