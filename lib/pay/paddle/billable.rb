@@ -45,6 +45,8 @@ module Pay
       end
 
       def charge(amount, options = {})
+        return Pay::Error unless options
+        
         items = options[:items]
         opts = options.except(:items).merge(customer_id: processor_id)
         transaction = ::Paddle::Transaction.create(items: items, **opts)
