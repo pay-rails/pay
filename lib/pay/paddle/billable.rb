@@ -45,25 +45,23 @@ module Pay
       end
 
       def charge(amount, options = {})
-        subscription = pay_customer.subscription
-        return unless subscription.processor_id
-        raise Pay::Error, "A charge_name is required to create a one-time charge" if options[:charge_name].nil?
+        return Pay::Error unless options
 
-        response = PaddlePay::Subscription::Charge.create(subscription.processor_id, amount.to_f / 100, options[:charge_name], options)
+        items = options[:items]
+        opts = options.except(:items).merge(customer_id: processor_id)
+        transaction = ::Paddle::Transaction.create(items: items, **opts)
 
-        attributes = {
-          amount: (response[:amount].to_f * 100).to_i,
-          paddle_receipt_url: response[:receipt_url],
-          created_at: Time.zone.parse(response[:payment_date])
+        attrs = {
+          amount: transaction.details.totals.grand_total,
+          created_at: transaction.created_at,
+          currency: transaction.currency_code,
+          metadata: transaction.details.line_items&.first&.id
         }
 
-        # Lookup subscription payment method details
-        attributes.merge! Pay::Paddle::PaymentMethod.payment_method_details_for(subscription_id: subscription.processor_id)
-
-        charge = pay_customer.charges.find_or_initialize_by(processor_id: response[:invoice_id])
-        charge.update(attributes)
+        charge = pay_customer.charges.find_or_initialize_by(processor_id: transaction.id)
+        charge.update(attrs)
         charge
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::Paddle::Error, e
       end
 
@@ -83,9 +81,8 @@ module Pay
       end
 
       def processor_subscription(subscription_id, options = {})
-        hash = PaddlePay::Subscription::User.list({subscription_id: subscription_id}, options).try(:first)
-        OpenStruct.new(hash)
-      rescue ::PaddlePay::PaddlePayError => e
+        ::Paddle::Subscription.retrieve(id: subscription_id)
+      rescue ::Paddle::Error => e
         raise Pay::Paddle::Error, e
       end
     end
