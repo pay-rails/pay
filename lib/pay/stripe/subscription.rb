@@ -90,6 +90,17 @@ module Pay
           Time.at(object.current_period_end)
         end
 
+        # Sync payment method if directly attached to subscription
+        if object.default_payment_method
+          if object.default_payment_method.is_a? String
+            Pay::Stripe::PaymentMethod.sync(object.default_payment_method)
+            attributes[:payment_method_id] = object.default_payment_method
+          else
+            Pay::Stripe::PaymentMethod.sync(object.default_payment_method.id, object: object.default_payment_method)
+            attributes[:payment_method_id] = object.default_payment_method.id
+          end
+        end
+
         # Update or create the subscription
         pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
         if pay_subscription
@@ -131,6 +142,7 @@ module Pay
       def self.expand_options
         {
           expand: [
+            "default_payment_method",
             "pending_setup_intent",
             "latest_invoice.payment_intent",
             "latest_invoice.charge",

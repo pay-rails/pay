@@ -2,6 +2,12 @@
 
 ### Unreleased
 
+* [Breaking] Stripe now syncs the `default_payment_method` association to Pay::Subscriptions
+
+    ```bash
+    rails g migration AddPaymentMethodToPaySubscriptions payment_method_id
+    ```
+
 * [Breaking] Paddle Classic is now `paddle_classic` and Paddle Billing is now `paddle`.
 
     To migrate, existing Paddle customers should be updated to `paddle_classic`
@@ -13,15 +19,21 @@
 
 * [Breaking] `stripe_account` has been moved from the `data:json` column to a dedicated column
 
-    To migrate, create a migration to add the column.
+    To migrate, create a migration to add the stripe_account column.
     ```ruby
     add_column :pay_customers, :stripe_account, :string
+    add_column :pay_subscriptions, :stripe_account, :string
+    add_column :pay_payment_methods, :stripe_account, :string
+    add_column :pay_charges, :stripe_account, :string
     ```
 
     Then copy the data over to the column:
 
     ```ruby
     Pay::Customer.find_each{ |c| c.update(stripe_account: c.data["stripe_account"]) }
+    Pay::Subscription.find_each{ |c| c.update(stripe_account: c.data["stripe_account"]) }
+    Pay::PaymentMethod.find_each{ |c| c.update(stripe_account: c.data["stripe_account"]) }
+    Pay::Charge.find_each{ |c| c.update(stripe_account: c.data["stripe_account"]) }
     ```
 
 * [Breaking] Subscriptions with `status: :canceled` and `ends_at: future` are now considered canceled. Previously, these were considered active to accomodate canceling a Braintree subscription during trial (and allowing the user to continue using until the end of the trial).

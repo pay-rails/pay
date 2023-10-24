@@ -8,8 +8,8 @@ class CreatePayTables < ActiveRecord::Migration[6.0]
       t.string :processor_id
       t.boolean :default
       t.public_send Pay::Adapter.json_column_type, :data
-      t.datetime :deleted_at
       t.string :stripe_account
+      t.datetime :deleted_at
       t.timestamps
     end
     add_index :pay_customers, [:owner_type, :owner_id, :deleted_at], name: :pay_customer_owner_index, unique: true
@@ -31,6 +31,7 @@ class CreatePayTables < ActiveRecord::Migration[6.0]
       t.boolean :default
       t.string :type
       t.public_send Pay::Adapter.json_column_type, :data
+      t.string :stripe_account
       t.timestamps
     end
     add_index :pay_payment_methods, [:customer_id, :processor_id], unique: true
@@ -53,6 +54,8 @@ class CreatePayTables < ActiveRecord::Migration[6.0]
       t.decimal :application_fee_percent, precision: 8, scale: 2
       t.public_send Pay::Adapter.json_column_type, :metadata
       t.public_send Pay::Adapter.json_column_type, :data
+      t.string :stripe_account
+      t.string :payment_method_id
       t.timestamps
     end
     add_index :pay_subscriptions, [:customer_id, :processor_id], unique: true
@@ -69,6 +72,7 @@ class CreatePayTables < ActiveRecord::Migration[6.0]
       t.integer :amount_refunded
       t.public_send Pay::Adapter.json_column_type, :metadata
       t.public_send Pay::Adapter.json_column_type, :data
+      t.string :stripe_account
       t.timestamps
     end
     add_index :pay_charges, [:customer_id, :processor_id], unique: true

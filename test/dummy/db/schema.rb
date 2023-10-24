@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.bigint "amount_refunded"
     t.json "metadata"
     t.json "data"
+    t.string "stripe_account"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["customer_id", "processor_id"], name: "index_pay_charges_on_customer_id_and_processor_id", unique: true
@@ -66,6 +67,7 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.boolean "default"
     t.string "type"
     t.json "data"
+    t.string "stripe_account"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["customer_id", "processor_id"], name: "index_pay_payment_methods_on_customer_id_and_processor_id", unique: true
@@ -85,12 +87,14 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.decimal "application_fee_percent", precision: 8, scale: 2
     t.json "metadata"
     t.json "data"
+    t.string "stripe_account"
     t.datetime "created_at", null: false, precision: 6
     t.datetime "updated_at", null: false, precision: 6
     t.boolean "metered"
     t.string "pause_behavior"
     t.datetime "pause_starts_at"
     t.datetime "pause_resumes_at"
+    t.string "payment_method_id"
     t.index ["customer_id", "processor_id"], name: "index_pay_subscriptions_on_customer_id_and_processor_id", unique: true
     t.index ["metered"], name: "index_pay_subscriptions_on_metered"
     t.index ["pause_starts_at"], name: "index_pay_subscriptions_on_pause_starts_at"

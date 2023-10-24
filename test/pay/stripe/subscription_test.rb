@@ -285,98 +285,17 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert pay_subscription.active?
   end
 
-  private
-
-  def fake_stripe_subscription_with_metered_item
-    fake_stripe_subscription(quantity: nil, items: {
-      object: "list",
-      data: [
-        ::Stripe::Subscription.construct_from(
-          id: "si_KjcLsWCXBgVRuU",
-          object: "subscription_item",
-          created: 1638904425,
-          metadata: {},
-          price: {
-            id: "large-monthly",
-            recurring: {
-              aggregate_usage: "sum",
-              interval: "month",
-              interval_count: 1,
-              usage_type: "metered"
-            }
-          }
-        )
-      ],
-      has_more: false
-    })
+  test "stripe subscription syncs payment method association if string" do
+    payment_method = pay_payment_methods(:one)
+    Pay::Stripe::PaymentMethod.stubs(:sync).returns(payment_method)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: "pm_1000"))
+    assert_equal payment_method, pay_subscription.payment_method
   end
 
-  def fake_stripe_subscription(**values)
-    values.reverse_merge!(
-      id: "123",
-      object: "subscription",
-      application_fee_percent: nil,
-      cancel_at: nil,
-      cancel_at_period_end: false,
-      created: 1466783124,
-      current_period_end: 1488987924,
-      current_period_start: 1486568724,
-      customer: "cus_1234",
-      ended_at: nil,
-      latest_invoice: {
-        id: "in_1000",
-        status: "paid"
-      },
-      plan: {
-        id: "default"
-      },
-      price: {
-        id: "default"
-      },
-      quantity: 1,
-      status: "active",
-      trial_end: nil,
-      metadata: {
-        license_id: 1
-      },
-      pause_collection: nil,
-      items: {
-        object: "list",
-        data: [
-          {
-            id: "si_1",
-            object: "subscription_item",
-            billing_threshold: nil,
-            created: 1638904425,
-            metadata: {},
-            price: {
-              id: "default",
-              object: "price",
-              active: true,
-              aggregate_usage: nil,
-              amount: 10000,
-              amount_decimal: "10000",
-              billing_scheme: "per_unit",
-              created: 1571425606,
-              currency: "usd",
-              interval: "month",
-              interval_count: 1,
-              livemode: false,
-              metadata: {},
-              nickname: "Large Monthly",
-              product: "prod_EYTX7RYhRjcwKD",
-              usage_type: "licensed"
-            },
-            quantity: 1,
-            subscription: "123",
-            tax_rates: []
-          }
-        ],
-        has_more: false,
-        total_count: 1,
-        url: "/v1/subscription_items?subscription=123"
-      }
-    )
-    ::Stripe::Subscription.construct_from(values)
+  test "stripe subscription syncs payment method association if object" do
+    payment_method = pay_payment_methods(:one)
+    Pay::Stripe::PaymentMethod.stubs(:sync).returns(payment_method)
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: fake_stripe_payment_method(id: "pm_1000")))
+    assert_equal payment_method, pay_subscription.payment_method
   end
 end

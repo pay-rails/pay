@@ -18,7 +18,6 @@ module Pay
     # Store the payment method kind (card, paypal, etc)
     store_accessor :data, :paddle_receipt_url
     store_accessor :data, :stripe_receipt_url
-    store_accessor :data, :stripe_account
 
     # Payment method attributes
     store_accessor :data, :payment_method_type # card, paypal, sepa, etc

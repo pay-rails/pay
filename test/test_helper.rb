@@ -34,6 +34,7 @@ require "minitest/mock"
 require "mocha/minitest"
 
 require_relative "support/braintree"
+require_relative "support/stripe"
 require_relative "support/vcr"
 
 # Uncomment to view the stacktrace for debugging tests

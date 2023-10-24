@@ -429,6 +429,14 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_equal subscription_2, @pay_customer.subscription
   end
 
+  test "can be associated with a payment method" do
+    assert_equal pay_payment_methods(:one), pay_subscriptions(:stripe).payment_method
+  end
+
+  test "payment method association is optional" do
+    assert_nil pay_subscriptions(:fake).payment_method
+  end
+
   private
 
   def create_subscription(options = {})

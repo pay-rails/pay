@@ -4,7 +4,6 @@ module Pay
 
     belongs_to :customer
 
-    store_accessor :data, :stripe_account
     store_accessor :data, :brand # Visa, Mastercard, Discover, PayPal
     store_accessor :data, :last4
     store_accessor :data, :exp_month
