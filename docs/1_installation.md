@@ -10,12 +10,15 @@ Add these lines to your application's Gemfile:
 gem "pay", "~> 6.0"
 
 # To use Stripe, also include:
-gem "stripe", "~> 9.0"
+gem "stripe", "~> 10.0"
 
 # To use Braintree + PayPal, also include:
 gem "braintree", "~> 4.7"
 
 # To use Paddle, also include:
+gem "paddle", "~> 2.1"
+
+# To use Paddle Classic, also include:
 gem "paddle_pay", "~> 0.2"
 
 # To use Receipts gem for creating invoice and receipt PDFs, also include:

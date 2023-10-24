@@ -12,15 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ['2.7', '3.0', '3.1', '3.2']
+        ruby: ['3.0', '3.1', '3.2']
         gemfile:
           - rails_6_1
           - rails_7
+          - rails_7_1
           - rails_main
-        exclude:
-          # Rails 7.1 requires Ruby 3.0 or higher
-          - ruby: '2.7'
-            gemfile: rails_main
 
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
@@ -51,15 +48,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ['2.7', '3.0', '3.1', '3.2']
+        ruby: ['3.0', '3.1', '3.2']
         gemfile:
           - rails_6_1
           - rails_7
+          - rails_7_1
           - rails_main
-        exclude:
-          # Rails 7.1 requires Ruby 3.0 or higher
-          - ruby: '2.7'
-            gemfile: rails_main
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -96,15 +90,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ['2.7', '3.0', '3.1', '3.2']
+        ruby: ['3.0', '3.1', '3.2']
         gemfile:
           - rails_6_1
           - rails_7
+          - rails_7_1
           - rails_main
-        exclude:
-          # Rails 7.1 requires Ruby 3.0 or higher
-          - ruby: '2.7'
-            gemfile: rails_main
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
