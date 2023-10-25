@@ -40,7 +40,7 @@ module Pay
           paddle_cancel_url: object.cancel_url,
           paddle_update_url: object.update_url,
           processor_plan: object.plan_id || object.subscription_plan_id,
-          quantity: object.quantity,
+          quantity: object.quantity || 1,
           status: object.state || object.status
         }
 
