@@ -227,7 +227,8 @@ module Pay
           mode: "payment"
         }
 
-        if options[:ui_mode].to_s == "hosted"
+        # Hosted (the default) checkout sessions require a success_url and cancel_url
+        if ["", "hosted"].include? options[:ui_mode].to_s
           args[:success_url] = merge_session_id_param(options.delete(:success_url) || root_url)
           args[:cancel_url] = merge_session_id_param(options.delete(:cancel_url) || root_url)
         end
