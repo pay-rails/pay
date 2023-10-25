@@ -227,8 +227,7 @@ module Pay
           mode: "payment"
         }
 
-        # Embedded checkouts cannot use URLs
-        if options[:ui_mode].to_s != "embedded"
+        if options[:ui_mode].to_s == "hosted"
           args[:success_url] = merge_session_id_param(options.delete(:success_url) || root_url)
           args[:cancel_url] = merge_session_id_param(options.delete(:cancel_url) || root_url)
         end
