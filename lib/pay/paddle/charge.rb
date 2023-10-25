@@ -30,7 +30,7 @@ module Pay
         end
 
         attrs = {
-          amount: object.details.totals.total,
+          amount: object.details.totals.grand_total,
           created_at: object.created_at,
           currency: object.currency_code,
           metadata: object.details.line_items&.first&.id,
