@@ -30,5 +30,4 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
     assert_equal "pri_01h7qfsc8apejhjgqqx50rghdz", @pay_customer.subscription.processor_subscription.items.first.price.id
     assert_equal "active", @pay_customer.subscription.status
   end
-
 end
