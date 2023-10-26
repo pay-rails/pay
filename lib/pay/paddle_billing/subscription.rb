@@ -1,5 +1,5 @@
 module Pay
-  module Paddle
+  module PaddleBilling
     class Subscription
       attr_reader :pay_subscription
 
@@ -107,13 +107,13 @@ module Pay
           ends_at: response.scheduled_change.effective_at
         )
       rescue ::Paddle::Error => e
-        raise Pay::Paddle::Error, e
+        raise Pay::PaddleBilling::Error, e
       end
 
       def cancel_now!(**options)
         cancel(options.merge(effective_from: "immediately"))
       rescue ::Paddle::Error => e
-        raise Pay::Paddle::Error, e
+        raise Pay::PaddleBilling::Error, e
       end
 
       def change_quantity(quantity, **options)
@@ -124,7 +124,7 @@ module Pay
 
         ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
       rescue ::Paddle::Error => e
-        raise Pay::Paddle::Error, e
+        raise Pay::PaddleBilling::Error, e
       end
 
       # A subscription could be set to cancel or pause in the future
@@ -141,7 +141,7 @@ module Pay
         response = ::Paddle::Subscription.pause(id: processor_id)
         pay_subscription.update!(status: :paused, pause_starts_at: response.scheduled_change.effective_at)
       rescue ::Paddle::Error => e
-        raise Pay::Paddle::Error, e
+        raise Pay::PaddleBilling::Error, e
       end
 
       def resume
@@ -159,7 +159,7 @@ module Pay
 
         pay_subscription.update(status: :active, pause_starts_at: nil)
       rescue ::Paddle::Error => e
-        raise Pay::Paddle::Error, e
+        raise Pay::PaddleBilling::Error, e
       end
 
       def swap(plan, **options)

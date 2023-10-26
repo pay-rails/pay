@@ -1,5 +1,5 @@
 module Pay
-  module Paddle
+  module PaddleBilling
     class PaymentMethod
       attr_reader :pay_payment_method
 

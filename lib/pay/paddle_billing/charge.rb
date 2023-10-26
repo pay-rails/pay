@@ -1,5 +1,5 @@
 module Pay
-  module Paddle
+  module PaddleBilling
     class Charge
       attr_reader :pay_charge
 
@@ -25,7 +25,7 @@ module Pay
         # Ignore transactions that are payment method changes
         # But update the customer's payment method
         if object.origin == "subscription_payment_method_change"
-          Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
+          Pay::PaddleBilling::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
           return
         end
 
@@ -50,7 +50,7 @@ module Pay
           end
 
           # Update customer's payment method
-          Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
+          Pay::PaddleBilling::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
         end
 
         # Update or create the charge

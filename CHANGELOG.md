@@ -8,7 +8,7 @@
     rails g migration AddPaymentMethodToPaySubscriptions payment_method_id
     ```
 
-* [Breaking] Paddle Classic is now `paddle_classic` and Paddle Billing is now `paddle`.
+* [Breaking] Paddle Classic is now `paddle_classic` and Paddle Billing is `paddle_billing`.
 
     To migrate, existing Paddle customers should be updated to `paddle_classic`
     ```ruby
