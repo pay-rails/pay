@@ -20,7 +20,7 @@ To configure webhooks on your payment processor, use the following URLs (with yo
 
 * **Stripe** - `https://example.org/pay/webhooks/stripe`
 * **Braintree** - `https://example.org/pay/webhooks/braintree`
-* **Paddle** - `https://example.org/pay/webhooks/paddle`
+* **Paddle Billing** - `https://example.org/pay/webhooks/paddle_billing`
 * **Paddle Classic** - `https://example.org/pay/webhooks/paddle_classic`
 
 #### Mount path
@@ -51,7 +51,7 @@ Since we support multiple payment providers, each event type is prefixed with th
 ```ruby
 "stripe.charge.succeeded"
 "braintree.subscription_charged_successfully"
-"paddle.subscription.created"
+"paddle_billing.subscription.created"
 "paddle_classic.subscription_created"
 ```
 

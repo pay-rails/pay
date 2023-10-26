@@ -1,9 +1,9 @@
 module Pay
-  module Paddle
+  module PaddleBilling
     module Webhooks
       class TransactionCompleted
         def call(event)
-          Pay::Paddle::Charge.sync(event.id)
+          Pay::PaddleBilling::Charge.sync(event.id)
         end
       end
     end

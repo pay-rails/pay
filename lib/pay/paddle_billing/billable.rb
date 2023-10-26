@@ -1,5 +1,5 @@
 module Pay
-  module Paddle
+  module PaddleBilling
     class Billable
       attr_reader :pay_customer
 
@@ -33,7 +33,7 @@ module Pay
           sc
         end
       rescue ::Paddle::Error => e
-        raise Pay::Paddle::Error, e
+        raise Pay::PaddleBilling::Error, e
       end
 
       # Syncs name and email to Paddle::Customer
@@ -62,7 +62,7 @@ module Pay
         charge.update(attrs)
         charge
       rescue ::Paddle::Error => e
-        raise Pay::Paddle::Error, e
+        raise Pay::PaddleBilling::Error, e
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
@@ -72,7 +72,7 @@ module Pay
       # Paddle does not use payment method tokens. The method signature has it here
       # to have a uniform API with the other payment processors.
       def add_payment_method(token = nil, default: true)
-        Pay::Paddle::PaymentMethod.sync(pay_customer: pay_customer)
+        Pay::PaddleBilling::PaymentMethod.sync(pay_customer: pay_customer)
       end
 
       def trial_end_date(subscription)
@@ -83,7 +83,7 @@ module Pay
       def processor_subscription(subscription_id, options = {})
         ::Paddle::Subscription.retrieve(id: subscription_id)
       rescue ::Paddle::Error => e
-        raise Pay::Paddle::Error, e
+        raise Pay::PaddleBilling::Error, e
       end
     end
   end

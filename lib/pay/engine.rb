@@ -26,14 +26,14 @@ module Pay
     config.before_initialize do
       Pay::Stripe.configure_webhooks if Pay::Stripe.enabled?
       Pay::Braintree.configure_webhooks if Pay::Braintree.enabled?
-      Pay::Paddle.configure_webhooks if Pay::Paddle.enabled?
+      Pay::PaddleBilling.configure_webhooks if Pay::PaddleBilling.enabled?
       Pay::PaddleClassic.configure_webhooks if Pay::PaddleClassic.enabled?
     end
 
     config.to_prepare do
       Pay::Stripe.setup if Pay::Stripe.enabled?
       Pay::Braintree.setup if Pay::Braintree.enabled?
-      Pay::Paddle.setup if Pay::Paddle.enabled?
+      Pay::PaddleBilling.setup if Pay::PaddleBilling.enabled?
       Pay::PaddleClassic.setup if Pay::PaddleClassic.enabled?
 
       if defined?(::Receipts::VERSION)
