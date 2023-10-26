@@ -56,7 +56,7 @@ module Pay
   @@routes_path = "/pay"
 
   mattr_accessor :enabled_processors
-  @@enabled_processors = [:stripe, :braintree, :paddle, :paddle_classic]
+  @@enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic]
 
   mattr_accessor :send_emails
   @@send_emails = true
