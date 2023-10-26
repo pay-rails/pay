@@ -14,8 +14,6 @@ module Pay
     end
 
     test "should parse a paddle billing webhook" do
-      user = pay_customers(:paddle_billing)
-
       Pay::Webhooks::PaddleBillingController.any_instance.expects(:valid_signature?).returns(true)
 
       assert_difference("Pay::Webhook.count") do
@@ -25,7 +23,7 @@ module Pay
         end
       end
 
-      assert_difference("user.subscriptions.count") do
+      assert_difference -> { pay_customers(:paddle_billing).subscriptions.count } do
         perform_enqueued_jobs
       end
     end
