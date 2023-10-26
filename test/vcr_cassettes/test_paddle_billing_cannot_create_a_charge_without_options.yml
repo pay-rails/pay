@@ -1,0 +1,77 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://sandbox-api.paddle.com/transactions
+    body:
+      encoding: UTF-8
+      string: '{"items":null,"customer_id":"ctm_01hd12bdgxkfjx1cj8ynmjyark"}'
+    headers:
+      User-Agent:
+      - paddle/v2.1.1 (github.com/deanpcmad/paddle)
+      Paddle-Version:
+      - '1'
+      Authorization:
+      - Bearer <PADDLE_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      Date:
+      - Sat, 21 Oct 2023 17:07:21 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '307'
+      Connection:
+      - keep-alive
+      Cache-Control:
+      - no-store, max-age=0
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'; base-uri 'none'
+      Cross-Origin-Embedder-Policy:
+      - require-corp
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Cross-Origin-Resource-Policy:
+      - same-site
+      Permissions-Policy:
+      - accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),display-capture=(),document-domain=(),encrypted-media=(),fullscreen=(),gamepad=(),geolocation=(),gyroscope=(),layout-animations=(self),legacy-image-formats=(self),magnetometer=(),microphone=(),midi=(),oversized-images=(self),payment=(),picture-in-picture=(),publickey-credentials-get=(),speaker-selection=(),sync-xhr=(self),unoptimized-images=(self),unsized-media=(self),usb=(),screen-wake-lock=(),web-share=(),xr-spatial-tracking=()
+      Pragma:
+      - no-cache
+      Referrer-Policy:
+      - no-referrer
+      Request-Id:
+      - 850d6c5f-28ba-4813-ae85-6c30854be843
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=_L_s.bDmTe33pvqIxesReCZscigcVkJvflrPlnL1q0Q-1697908041-0-AS4o8yE6WdWVxtcICJBR6IBZwkgdRpfZybRoenMSu7G+TJ0BMFgDd4RBqjJrHB/ClhFZbtVmpUh/VIxiRcv8Mlg=;
+        path=/; expires=Sat, 21-Oct-23 17:37:21 GMT; domain=.paddle.com; HttpOnly;
+        Secure; SameSite=None
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 819b18a8dab271f8-LHR
+    body:
+      encoding: UTF-8
+      string: '{"error":{"type":"request_error","code":"bad_request","detail":"Invalid
+        request","documentation_url":"https://developer.paddle.com/v1/errors/shared/bad_request","errors":[{"field":"items","message":"Invalid
+        type. Expected: array, given: null"}]},"meta":{"request_id":"850d6c5f-28ba-4813-ae85-6c30854be843"}}'
+  recorded_at: Sat, 21 Oct 2023 17:07:21 GMT
+recorded_with: VCR 6.2.0
