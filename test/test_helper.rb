@@ -68,6 +68,10 @@ class ActiveSupport::TestCase
     Pay.braintree_gateway.webhook_notification.parse(raw["bt_signature"], raw["bt_payload"])
   end
 
+  def paddle_billing_event(name)
+    OpenStruct.new fake_event("paddle_billing/#{name}")
+  end
+
   def paddle_classic_event(name)
     OpenStruct.new fake_event("paddle_classic/#{name}")
   end

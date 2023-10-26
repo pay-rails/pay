@@ -6,11 +6,11 @@ module Pay
       end
 
       def create
-        if request.headers["Paddle-Signature"].blank?
-          head :bad_request
-        elsif valid_signature?(request.headers["Paddle-Signature"])
+        if valid_signature?(request.headers["Paddle-Signature"])
           queue_event(verify_params.as_json)
           head :ok
+        else
+          head :bad_request
         end
       rescue Pay::PaddleBilling::Error
         head :bad_request
@@ -27,6 +27,8 @@ module Pay
 
       # Pass Paddle signature from request.headers["Paddle-Signature"]
       def valid_signature?(paddle_signature)
+        return false if paddle_signature.blank?
+
         ts_part, h1_part = paddle_signature.split(";")
         _, ts = ts_part.split("=")
         _, h1 = h1_part.split("=")

@@ -18,8 +18,8 @@ Rails.application.routes.draw do
     end
   end
 
-  namespace :paddle do
-    resource :payment_method, namespace: :paddle
+  namespace :paddle_billing do
+    resource :payment_method, namespace: :paddle_billing
     resources :subscriptions do
       member do
         patch :cancel
@@ -32,7 +32,6 @@ Rails.application.routes.draw do
       end
     end
   end
-
 
   namespace :paddle_classic do
     resource :payment_method, namespace: :paddle
