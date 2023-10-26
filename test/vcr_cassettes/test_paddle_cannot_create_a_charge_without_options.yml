@@ -1,0 +1,50 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://sandbo<VENDOR_AUTH_CODE>-api.paddle.com/transactions
+    body:
+      encoding: UTF-8
+      string: '{"items":null,"customer_id":"ctm_<VENDOR_ID>23"}'
+    headers:
+      User-Agent:
+      - paddle/v2.<VENDOR_ID>.2 (github.com/deanpcmad/paddle)
+      Paddle-Version:
+      - "<VENDOR_ID>"
+      Authorization:
+      - Bearer <PADDLE_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 403
+      message: Forbidden
+    headers:
+      Date:
+      - Thu, 26 Oct 2023 <VENDOR_ID>7:34:34 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=ro9SJd.2WwP<VENDOR_AUTH_CODE>ORJyhChEJXPtyIE.Xyyb_kXRyJPm_iI-<VENDOR_ID>69834<VENDOR_ID>674-0-AeG<VENDOR_AUTH_CODE>urUgVEKu2eyc5cTfLs9JMBk8AhqdQRfk4vceIU0<VENDOR_AUTH_CODE>GJt76hu2LYjBRZ379z6LbTtMGE/CrM8elNKoljeCuiw=;
+        path=/; e<VENDOR_AUTH_CODE>pires=Thu, 26-Oct-23 <VENDOR_ID>8:04:34 GMT; domain=.paddle.com;
+        HttpOnly; Secure; SameSite=None
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 8<VENDOR_ID>c47365fd674<VENDOR_ID>64-LHR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"error":{"type":"request_error","code":"forbidden","detail":"You are
+        not permitted to perform this request","documentation_url":"https://developer.paddle.com/v<VENDOR_ID>/errors/shared/forbidden"},"meta":{"request_id":"4634f702-c9c0-47ee-9<VENDOR_ID>dc-0b38b9bc9c35"}}'
+  recorded_at: Thu, 26 Oct 2023 17:34:34 GMT
+recorded_with: VCR 6.2.0
