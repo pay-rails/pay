@@ -1,8 +1,8 @@
-# Paddle Webhooks
+# Paddle Billing Webhooks
 
 ## Endpoint
 
-The webhook endpoint for Paddle is `/pay/webhooks/paddle` by default.
+The webhook endpoint for Paddle Billing is `/pay/webhooks/paddle_billing` by default.
 
 ## Events
 

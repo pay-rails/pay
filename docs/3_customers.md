@@ -9,7 +9,7 @@ Before you can process payments, you need to assign a payment processor for the 
 ```ruby
 @user.set_payment_processor :stripe
 @user.set_payment_processor :braintree
-@user.set_payment_processor :paddle
+@user.set_payment_processor :paddle_billing
 @user.set_payment_processor :paddle_classic
 @user.set_payment_processor :fake_processor, allow_fake: true
 ```

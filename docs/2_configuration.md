@@ -28,7 +28,7 @@ braintree:
   public_key: yyyy
   merchant_id: aaaa
   environment: sandbox
-paddle:
+paddle_billing:
   seller_id: 1111
   api_key: yyyy
   signing_secret: pdl_ntfset...
@@ -60,10 +60,10 @@ Pay will also check environment variables for API keys:
 * `BRAINTREE_PUBLIC_KEY`
 * `BRAINTREE_PRIVATE_KEY`
 * `BRAINTREE_ENVIRONMENT`
-* `PADDLE_SELLER_ID`
-* `PADDLE_API_KEY`
-* `PADDLE_SIGNING_SECRET`
-* `PADDLE_ENVIRONMENT`
+* `PADDLE_BILLING_SELLER_ID`
+* `PADDLE_BILLING_API_KEY`
+* `PADDLE_BILLING_SIGNING_SECRET`
+* `PADDLE_BILLING_ENVIRONMENT`
 * `PADDLE_CLASSIC_VENDOR_ID`
 * `PADDLE_CLASSIC_VENDOR_AUTH_CODE`
 * `PADDLE_CLASSIC_PUBLIC_KEY`
@@ -118,7 +118,7 @@ Pay.setup do |config|
   config.automount_routes = true
   config.routes_path = "/pay" # Only when automount_routes is true
   # All processors are enabled by default. If a processor is already implemented in your application, you can omit it from this list and the processor will not be set up through the Pay gem.
-  config.enabled_processors = [:stripe, :braintree, :paddle]
+  config.enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic]
 
   # To disable all emails, set the following configuration option to false:
   config.send_emails = true

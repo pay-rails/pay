@@ -31,7 +31,7 @@ module Pay
         # Passthrough is not return from this API, so we can't use that
         object ||= ::Paddle::Subscription.retrieve(id: subscription_id)
 
-        pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: object.customer_id)
+        pay_customer = Pay::Customer.find_by(processor: :paddle_billing, processor_id: object.customer_id)
         return unless pay_customer
 
         attributes = {
