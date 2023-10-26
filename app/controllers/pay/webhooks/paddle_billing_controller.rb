@@ -1,6 +1,6 @@
 module Pay
   module Webhooks
-    class PaddleController < Pay::ApplicationController
+    class PaddleBillingController < Pay::ApplicationController
       if Rails.application.config.action_controller.default_protect_from_forgery
         skip_before_action :verify_authenticity_token
       end
@@ -10,16 +10,16 @@ module Pay
           queue_event(verify_params.as_json)
           head :ok
         end
-      rescue Pay::Paddle::Error
+      rescue Pay::PaddleBilling::Error
         head :bad_request
       end
 
       private
 
       def queue_event(event)
-        return unless Pay::Webhooks.delegator.listening?("paddle.#{params[:event_type]}")
+        return unless Pay::Webhooks.delegator.listening?("paddle_billing.#{params[:event_type]}")
 
-        record = Pay::Webhook.create!(processor: :paddle, event_type: params[:event_type], event: event)
+        record = Pay::Webhook.create!(processor: :paddle_billing, event_type: params[:event_type], event: event)
         Pay::Webhooks::ProcessJob.perform_later(record)
       end
 
@@ -31,7 +31,7 @@ module Pay
 
         signed_payload = "#{ts}:#{request.raw_post}"
 
-        key = Pay::Paddle.signing_secret
+        key = Pay::PaddleBilling.signing_secret
         data = signed_payload
         digest = OpenSSL::Digest.new("sha256")
 

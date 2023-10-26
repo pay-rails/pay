@@ -1,5 +1,5 @@
 module Pay
-  module Paddle
+  module PaddleBilling
     class Error < Pay::Error
       delegate :message, to: :cause
     end

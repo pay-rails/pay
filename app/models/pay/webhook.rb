@@ -17,7 +17,7 @@ module Pay
       case processor
       when "braintree"
         Pay.braintree_gateway.webhook_notification.parse(event["bt_signature"], event["bt_payload"])
-      when "paddle"
+      when "paddle_billing"
         to_recursive_ostruct(event["data"])
       when "paddle_classic"
         to_recursive_ostruct(event)

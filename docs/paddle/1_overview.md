@@ -1,4 +1,4 @@
-# Using Pay with Paddle
+# Using Pay with Paddle Billing
 
 Paddle Billing is Paddle's new subscription billing platform. It differs quite a bit
 from Paddle Classic. This guide will help you get started with implementing it in your
@@ -14,7 +14,7 @@ Paddle now works similar to Stripe. You create a customer, which subscriptions b
 
 ```ruby
 # Set the payment processor
-@user.set_payment_processor :paddle
+@user.set_payment_processor :paddle_billing
 
 # Create the customer on Paddle
 @user.payment_processor.customer
@@ -55,7 +55,7 @@ this after creating a webhook in the Paddle dashboard. You'll find this page
 Pay will automatically look for the following environment variables, or the equivalent
 Rails credentials:
 
-- `PADDLE_SELLER_ID`
-- `PADDLE_ENVIRONMENT`
-- `PADDLE_API_KEY`
-- `PADDLE_SIGNING_SECRET`
+- `PADDLE_BILLING_SELLER_ID`
+- `PADDLE_BILLING_ENVIRONMENT`
+- `PADDLE_BILLING_API_KEY`
+- `PADDLE_BILLING_SIGNING_SECRET`

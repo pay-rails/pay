@@ -1,5 +1,5 @@
 module Pay
-  module Paddle
+  module PaddleBilling
     class Charge
       attr_reader :pay_charge
 
@@ -19,7 +19,7 @@ module Pay
         # Ignore charges without a Customer
         return if object.customer_id.blank?
 
-        pay_customer = Pay::Customer.find_by(processor: :paddle, processor_id: object.customer_id)
+        pay_customer = Pay::Customer.find_by(processor: :paddle_billing, processor_id: object.customer_id)
         return unless pay_customer
 
         # Ignore transactions that are payment method changes
