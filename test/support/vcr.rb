@@ -12,6 +12,7 @@ unless ENV["SKIP_VCR"]
     c.filter_sensitive_data("<STRIPE_PRIVATE_KEY>") { Pay::Stripe.private_key }
     c.filter_sensitive_data("<BRAINTREE_PRIVATE_KEY>") { Pay::Braintree.private_key }
     c.filter_sensitive_data("<PADDLE_PRIVATE_KEY>") { Pay::PaddleClassic.vendor_auth_code }
+    c.filter_sensitive_data("<PADDLE_API_KEY>") { Pay::PaddleBilling.api_key }
   end
 
   class ActiveSupport::TestCase
