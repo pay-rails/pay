@@ -1,0 +1,147 @@
+---
+http_interactions:
+- request:
+    method: patch
+    uri: https://sandbox-api.paddle.com/subscriptions/sub_01hd1drf5htjz45yt2346anmqt
+    body:
+      encoding: UTF-8
+      string: '{"items":[{"price_id":"pri_01h7qfsc8apejhjgqqx50rghdz","quantity":1}],"proration_billing_mode":"prorated_immediately"}'
+    headers:
+      User-Agent:
+      - paddle/v2.1.1 (github.com/deanpcmad/paddle)
+      Paddle-Version:
+      - '1'
+      Authorization:
+      - Bearer <PADDLE_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 21 Oct 2023 17:05:27 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cache-Control:
+      - no-store, max-age=0
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'; base-uri 'none'
+      Cross-Origin-Embedder-Policy:
+      - require-corp
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Cross-Origin-Resource-Policy:
+      - same-site
+      Permissions-Policy:
+      - accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),display-capture=(),document-domain=(),encrypted-media=(),fullscreen=(),gamepad=(),geolocation=(),gyroscope=(),layout-animations=(self),legacy-image-formats=(self),magnetometer=(),microphone=(),midi=(),oversized-images=(self),payment=(),picture-in-picture=(),publickey-credentials-get=(),speaker-selection=(),sync-xhr=(self),unoptimized-images=(self),unsized-media=(self),usb=(),screen-wake-lock=(),web-share=(),xr-spatial-tracking=()
+      Pragma:
+      - no-cache
+      Referrer-Policy:
+      - no-referrer
+      Request-Id:
+      - cf23912a-03b8-427b-a0ad-327eebeea930
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=WdDD.p4t5m8GQnzmLnNSIGotsZcNMM2JPa2N.w_eoeE-1697907927-0-AXj/SN+fROo177yP+u1eDXzkEJWy7C7DztHVq2LjUyiLpcUz7kxBgc4NgUYMRsMExzt8a9v6U6YxxjWtC8+rHvo=;
+        path=/; expires=Sat, 21-Oct-23 17:35:27 GMT; domain=.paddle.com; HttpOnly;
+        Secure; SameSite=None
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 819b15d779ca76f9-LHR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"data":{"id":"sub_01hd1drf5htjz45yt2346anmqt","status":"active","customer_id":"ctm_01hd12bdgxkfjx1cj8ynmjyark","address_id":"add_01hd1dqz2e52692633kpbvy46b","business_id":null,"currency_code":"USD","created_at":"2023-10-18T12:56:51.633Z","updated_at":"2023-10-21T17:05:25.943Z","started_at":"2023-10-18T12:56:51.633Z","first_billed_at":"2023-10-18T12:58:40.667Z","next_billed_at":"2023-11-18T12:58:40.667Z","paused_at":null,"canceled_at":null,"collection_mode":"automatic","billing_details":null,"current_billing_period":{"starts_at":"2023-10-18T12:58:40.667Z","ends_at":"2023-11-18T12:58:40.667Z"},"billing_cycle":{"frequency":1,"interval":"month"},"scheduled_change":null,"items":[{"status":"active","quantity":1,"recurring":true,"created_at":"2023-10-21T17:05:25.818Z","updated_at":"2023-10-21T17:05:25.818Z","previously_billed_at":"2023-10-21T17:05:25.818Z","next_billed_at":"2023-11-18T12:58:40.667Z","trial_dates":{"starts_at":"2023-10-18T12:56:51.633Z","ends_at":"2023-10-18T12:58:40.667Z"},"price":{"id":"pri_01h7qfsc8apejhjgqqx50rghdz","product_id":"pro_01h7qfrzmwdtgwpt48hae1p3v8","description":"Bronze
+        Monthly","tax_mode":"account_setting","billing_cycle":{"frequency":1,"interval":"month"},"trial_period":null,"unit_price":{"amount":"500","currency_code":"USD"}}}],"custom_data":null,"management_urls":{"update_payment_method":"https://sandbox-buyer-portal.paddle.com/subscriptions/sub_01hd1drf5htjz45yt2346anmqt/update-payment-method?token=pga_eyJhbGciOiJFZERTQSIsImtpZCI6Ijg1ODdjNmZkM2UyNjhkNWQyNTA5NzZkNTc4NGM5MDhlN2FkZmJmMjk1YWM4Mzg0ZWU2NGY4ODlmMDQ0MzMyZDEiLCJ0eXAiOiJKV1QifQ.eyJpZCI6InBnYV8wMWhkOWs1c3YzNjFwZXFwemQxY3A1azg0MyIsInNlbGxlci1pZCI6IjEzODI2IiwidHlwZSI6InN0YW5kYXJkIiwidmVyc2lvbiI6IjEiLCJ1c2FnZSI6Im1hbmFnZW1lbnRfdXJsIiwic2NvcGUiOiJjdXN0b21lci5zdWJzY3JpcHRpb24tcGF5bWVudC51cGRhdGUgY3VzdG9tZXIuc3Vic2NyaXB0aW9uLXBheW1lbnQucmVhZCBjdXN0b21lci5zdWJzY3JpcHRpb24tY2FuY2VsLmNyZWF0ZSBjdXN0b21lci5zdWJzY3JpcHRpb24ucmVhZCIsImlzcyI6Imd1ZXN0YWNjZXNzLXNlcnZpY2UiLCJzdWIiOiJjdG1fMDFoZDEyYmRneGtmangxY2o4eW5tanlhcmsiLCJleHAiOjE3Mjk1MzAzMjYsImlhdCI6MTY5NzkwNzkyNn0.OMMHGJUfYoPASa4w7p9gxWZyTraTTYDmfvDJ6oEIn7jErPAYfa88-4VQ89ohynP5gDxzwZpCLtWWSkLBxFuKDw","cancel":"https://sandbox-buyer-portal.paddle.com/subscriptions/sub_01hd1drf5htjz45yt2346anmqt/cancel?token=pga_eyJhbGciOiJFZERTQSIsImtpZCI6Ijg1ODdjNmZkM2UyNjhkNWQyNTA5NzZkNTc4NGM5MDhlN2FkZmJmMjk1YWM4Mzg0ZWU2NGY4ODlmMDQ0MzMyZDEiLCJ0eXAiOiJKV1QifQ.eyJpZCI6InBnYV8wMWhkOWs1c3YzNjFwZXFwemQxY3A1azg0MyIsInNlbGxlci1pZCI6IjEzODI2IiwidHlwZSI6InN0YW5kYXJkIiwidmVyc2lvbiI6IjEiLCJ1c2FnZSI6Im1hbmFnZW1lbnRfdXJsIiwic2NvcGUiOiJjdXN0b21lci5zdWJzY3JpcHRpb24tcGF5bWVudC51cGRhdGUgY3VzdG9tZXIuc3Vic2NyaXB0aW9uLXBheW1lbnQucmVhZCBjdXN0b21lci5zdWJzY3JpcHRpb24tY2FuY2VsLmNyZWF0ZSBjdXN0b21lci5zdWJzY3JpcHRpb24ucmVhZCIsImlzcyI6Imd1ZXN0YWNjZXNzLXNlcnZpY2UiLCJzdWIiOiJjdG1fMDFoZDEyYmRneGtmangxY2o4eW5tanlhcmsiLCJleHAiOjE3Mjk1MzAzMjYsImlhdCI6MTY5NzkwNzkyNn0.OMMHGJUfYoPASa4w7p9gxWZyTraTTYDmfvDJ6oEIn7jErPAYfa88-4VQ89ohynP5gDxzwZpCLtWWSkLBxFuKDw"},"discount":null},"meta":{"request_id":"cf23912a-03b8-427b-a0ad-327eebeea930"}}'
+  recorded_at: Sat, 21 Oct 2023 17:05:27 GMT
+- request:
+    method: get
+    uri: https://sandbox-api.paddle.com/subscriptions/sub_01hd1drf5htjz45yt2346anmqt
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - paddle/v2.1.1 (github.com/deanpcmad/paddle)
+      Paddle-Version:
+      - '1'
+      Authorization:
+      - Bearer <PADDLE_API_KEY>
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 21 Oct 2023 17:05:27 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cache-Control:
+      - no-store, max-age=0
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'; base-uri 'none'
+      Cross-Origin-Embedder-Policy:
+      - require-corp
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Cross-Origin-Resource-Policy:
+      - same-site
+      Permissions-Policy:
+      - accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),display-capture=(),document-domain=(),encrypted-media=(),fullscreen=(),gamepad=(),geolocation=(),gyroscope=(),layout-animations=(self),legacy-image-formats=(self),magnetometer=(),microphone=(),midi=(),oversized-images=(self),payment=(),picture-in-picture=(),publickey-credentials-get=(),speaker-selection=(),sync-xhr=(self),unoptimized-images=(self),unsized-media=(self),usb=(),screen-wake-lock=(),web-share=(),xr-spatial-tracking=()
+      Pragma:
+      - no-cache
+      Referrer-Policy:
+      - no-referrer
+      Request-Id:
+      - aeca5d2c-7899-4e72-9e4b-781b97fe2ec4
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=53rnlW.loqI3qyYxabIfq_XOVcoX6Kr6m4GJrvolmT0-1697907927-0-AUHwoiMRhO7sfBOoQhjh9UqzzExVG+wHf6XG6iTLR5AVzFvDnkxLvnaaydHHN1Fn8ilSXw+6+JkIN0P9AQujSS8=;
+        path=/; expires=Sat, 21-Oct-23 17:35:27 GMT; domain=.paddle.com; HttpOnly;
+        Secure; SameSite=None
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 819b15e0ae4a4883-LHR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"data":{"id":"sub_01hd1drf5htjz45yt2346anmqt","status":"active","customer_id":"ctm_01hd12bdgxkfjx1cj8ynmjyark","address_id":"add_01hd1dqz2e52692633kpbvy46b","business_id":null,"currency_code":"USD","created_at":"2023-10-18T12:56:51.633Z","updated_at":"2023-10-21T17:05:25.943Z","started_at":"2023-10-18T12:56:51.633Z","first_billed_at":"2023-10-18T12:58:40.667Z","next_billed_at":"2023-11-18T12:58:40.667Z","paused_at":null,"canceled_at":null,"collection_mode":"automatic","billing_details":null,"current_billing_period":{"starts_at":"2023-10-18T12:58:40.667Z","ends_at":"2023-11-18T12:58:40.667Z"},"billing_cycle":{"frequency":1,"interval":"month"},"scheduled_change":null,"items":[{"status":"active","quantity":1,"recurring":true,"created_at":"2023-10-21T17:05:25.818Z","updated_at":"2023-10-21T17:05:25.818Z","previously_billed_at":"2023-10-21T17:05:25.818Z","next_billed_at":"2023-11-18T12:58:40.667Z","trial_dates":{"starts_at":"2023-10-18T12:56:51.633Z","ends_at":"2023-10-18T12:58:40.667Z"},"price":{"id":"pri_01h7qfsc8apejhjgqqx50rghdz","product_id":"pro_01h7qfrzmwdtgwpt48hae1p3v8","description":"Bronze
+        Monthly","tax_mode":"account_setting","billing_cycle":{"frequency":1,"interval":"month"},"trial_period":null,"unit_price":{"amount":"500","currency_code":"USD"}}}],"custom_data":null,"management_urls":{"update_payment_method":"https://sandbox-buyer-portal.paddle.com/subscriptions/sub_01hd1drf5htjz45yt2346anmqt/update-payment-method?token=pga_eyJhbGciOiJFZERTQSIsImtpZCI6Ijg1ODdjNmZkM2UyNjhkNWQyNTA5NzZkNTc4NGM5MDhlN2FkZmJmMjk1YWM4Mzg0ZWU2NGY4ODlmMDQ0MzMyZDEiLCJ0eXAiOiJKV1QifQ.eyJpZCI6InBnYV8wMWhkOWs1dDdkOHB6MnJtajlhY3BlMDZmcSIsInNlbGxlci1pZCI6IjEzODI2IiwidHlwZSI6InN0YW5kYXJkIiwidmVyc2lvbiI6IjEiLCJ1c2FnZSI6Im1hbmFnZW1lbnRfdXJsIiwic2NvcGUiOiJjdXN0b21lci5zdWJzY3JpcHRpb24tcGF5bWVudC51cGRhdGUgY3VzdG9tZXIuc3Vic2NyaXB0aW9uLXBheW1lbnQucmVhZCBjdXN0b21lci5zdWJzY3JpcHRpb24tY2FuY2VsLmNyZWF0ZSBjdXN0b21lci5zdWJzY3JpcHRpb24ucmVhZCIsImlzcyI6Imd1ZXN0YWNjZXNzLXNlcnZpY2UiLCJzdWIiOiJjdG1fMDFoZDEyYmRneGtmangxY2o4eW5tanlhcmsiLCJleHAiOjE3Mjk1MzAzMjcsImlhdCI6MTY5NzkwNzkyN30.mD5LV96GJYTYvOF0etYj3zHwSwJQ1Sk73tz8t4j4mRrqHS3QXYPg4cMLS6ZfkxtWRzs2N4CsiEM7oCOLVRp6Cg","cancel":"https://sandbox-buyer-portal.paddle.com/subscriptions/sub_01hd1drf5htjz45yt2346anmqt/cancel?token=pga_eyJhbGciOiJFZERTQSIsImtpZCI6Ijg1ODdjNmZkM2UyNjhkNWQyNTA5NzZkNTc4NGM5MDhlN2FkZmJmMjk1YWM4Mzg0ZWU2NGY4ODlmMDQ0MzMyZDEiLCJ0eXAiOiJKV1QifQ.eyJpZCI6InBnYV8wMWhkOWs1dDdkOHB6MnJtajlhY3BlMDZmcSIsInNlbGxlci1pZCI6IjEzODI2IiwidHlwZSI6InN0YW5kYXJkIiwidmVyc2lvbiI6IjEiLCJ1c2FnZSI6Im1hbmFnZW1lbnRfdXJsIiwic2NvcGUiOiJjdXN0b21lci5zdWJzY3JpcHRpb24tcGF5bWVudC51cGRhdGUgY3VzdG9tZXIuc3Vic2NyaXB0aW9uLXBheW1lbnQucmVhZCBjdXN0b21lci5zdWJzY3JpcHRpb24tY2FuY2VsLmNyZWF0ZSBjdXN0b21lci5zdWJzY3JpcHRpb24ucmVhZCIsImlzcyI6Imd1ZXN0YWNjZXNzLXNlcnZpY2UiLCJzdWIiOiJjdG1fMDFoZDEyYmRneGtmangxY2o4eW5tanlhcmsiLCJleHAiOjE3Mjk1MzAzMjcsImlhdCI6MTY5NzkwNzkyN30.mD5LV96GJYTYvOF0etYj3zHwSwJQ1Sk73tz8t4j4mRrqHS3QXYPg4cMLS6ZfkxtWRzs2N4CsiEM7oCOLVRp6Cg"},"discount":null},"meta":{"request_id":"aeca5d2c-7899-4e72-9e4b-781b97fe2ec4"}}'
+  recorded_at: Sat, 21 Oct 2023 17:05:27 GMT
+recorded_with: VCR 6.2.0

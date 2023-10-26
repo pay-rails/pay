@@ -178,6 +178,11 @@ class Pay::Billable::Test < ActiveSupport::TestCase
     end
 
     assert_difference "user.pay_customers.count" do
+      user.set_payment_processor :paddle_billing
+      assert_equal "paddle_billing", user.payment_processor.processor
+    end
+
+    assert_difference "user.pay_customers.count" do
       user.set_payment_processor :paddle_classic
       assert_equal "paddle_classic", user.payment_processor.processor
     end

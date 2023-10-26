@@ -6,7 +6,9 @@ module Pay
       end
 
       def create
-        if valid_signature?(request.headers["Paddle-Signature"])
+        if request.headers["Paddle-Signature"].blank?
+          head :bad_request
+        elsif valid_signature?(request.headers["Paddle-Signature"])
           queue_event(verify_params.as_json)
           head :ok
         end
