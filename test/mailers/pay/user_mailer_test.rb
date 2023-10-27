@@ -8,6 +8,18 @@ class UserMailerTest < ActionMailer::TestCase
     @user.update(extra_billing_info: "extra billing info")
   end
 
+  test "from address with Pay.support_email" do
+    Pay.stub :support_email, "pay@test.org" do
+      assert_equal "pay@test.org", Pay::ApplicationMailer.default_from_address
+    end
+  end
+
+  test "from address fallback to ::ApplicationMailer.default_params" do
+    Pay.stub :support_email, nil do
+      assert_equal "from@example.com", Pay::ApplicationMailer.default_from_address
+    end
+  end
+
   test "receipt" do
     email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).receipt
 
