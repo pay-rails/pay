@@ -119,7 +119,7 @@ module Pay
         company: {
           name: Pay.business_name,
           address: Pay.business_address,
-          email: Pay.support_email.address,
+          email: Pay.support_email&.address,
           logo: Pay.business_logo
         },
         line_items: receipt_line_items

@@ -27,6 +27,14 @@ class UserMailerTest < ActionMailer::TestCase
     assert_equal I18n.t("pay.user_mailer.receipt.subject", application: Pay.application_name), email.subject
   end
 
+  test "render receipt with missing support email" do
+    Pay.stub :support_email, nil do
+      assert_nothing_raised do
+        @charge.receipt
+      end
+    end
+  end
+
   test "attaches refunds to receipt" do
     filename = "receipt.pdf"
 
