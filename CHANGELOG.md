@@ -30,14 +30,14 @@
     Then copy the data over to the column:
 
     ```ruby
-    Pay::Customer.find_each{ |c| c.update(stripe_account: c.data["stripe_account"]) }
-    Pay::Subscription.find_each{ |c| c.update(stripe_account: c.data["stripe_account"]) }
-    Pay::PaymentMethod.find_each{ |c| c.update(stripe_account: c.data["stripe_account"]) }
-    Pay::Charge.find_each{ |c| c.update(stripe_account: c.data["stripe_account"]) }
+    Pay::Customer.find_each{ |c| c.update(stripe_account: c.data&.dig("stripe_account")) }
+    Pay::Subscription.find_each{ |c| c.update(stripe_account: c.data&.dig("stripe_account")) }
+    Pay::PaymentMethod.find_each{ |c| c.update(stripe_account: c.data&.dig("stripe_account")) }
+    Pay::Charge.find_each{ |c| c.update(stripe_account: c.data&.dig("stripe_account")) }
     ```
 
 * [Breaking] Subscriptions with `status: :canceled` and `ends_at: future` are now considered canceled. Previously, these were considered active to accomodate canceling a Braintree subscription during trial (and allowing the user to continue using until the end of the trial).
-* [Breaking] Subscriptions with `status: :past_due` will be canceled immediately by default.
+* [Breaking] Subscriptions with `status: :past_due` will be canceled immediately when `cancel` is called.
 
 ### 6.8.1
 
