@@ -94,15 +94,17 @@ module Pay
         ::Paddle::Subscription.get_transaction(id: processor_id)
       end
 
+      # If a subscription is paused, cancel immediately
+      # Otherwise, cancel at period end
       def cancel(**options)
         return if canceled?
 
         response = ::Paddle::Subscription.cancel(
           id: processor_id,
-          effective_from: options.fetch(:effective_from, "next_billing_period")
+          effective_from: options.fetch(:effective_from, (paused? ? "immediately" : "next_billing_period"))
         )
         pay_subscription.update(
-          status: :canceled,
+          status: response.status,
           ends_at: response.scheduled_change.effective_at
         )
       rescue ::Paddle::Error => e
