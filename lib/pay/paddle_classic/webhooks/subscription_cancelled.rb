@@ -10,9 +10,10 @@ module Pay
 
           # User canceled subscriptions have an ends_at
           # Automatically cancelled subscriptions need this value set
+          # Paddle subscriptions are canceled immediately, however we still want to give the user access to the end of the period they paid for
           ends_at = Time.zone.parse(event.cancellation_effective_date)
           pay_subscription.update!(
-            status: :canceled,
+            status: (ends_at.future? ? :active : :canceled),
             trial_ends_at: (ends_at if pay_subscription.trial_ends_at?),
             ends_at: ends_at
           )

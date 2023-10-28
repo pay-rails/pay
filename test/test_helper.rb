@@ -72,8 +72,8 @@ class ActiveSupport::TestCase
     OpenStruct.new fake_event("paddle_billing/#{name}")
   end
 
-  def paddle_classic_event(name)
-    OpenStruct.new fake_event("paddle_classic/#{name}")
+  def paddle_classic_event(name, overrides: {})
+    OpenStruct.new fake_event("paddle_classic/#{name}").deep_merge(overrides)
   end
 
   def stripe_event(name, overrides: {})

@@ -76,6 +76,7 @@ module Pay
         raise Pay::PaddleClassic::Error, e
       end
 
+      # Paddle subscriptions are canceled immediately, however we still want to give the user access to the end of the period they paid for
       def cancel(**options)
         return if canceled?
 
@@ -84,11 +85,14 @@ module Pay
         elsif paused?
           pause_starts_at
         else
-          processor_subscription.next_payment&.fetch(:date) || Time.current
+          Time.parse(processor_subscription.next_payment&.fetch(:date)) || Time.current
         end
 
         PaddlePay::Subscription::User.cancel(processor_id)
-        pay_subscription.update(status: :canceled, ends_at: ends_at)
+        pay_subscription.update(
+          status: (ends_at.future? ? :active : :canceled),
+          ends_at: ends_at
+        )
 
         # Remove payment methods since customer cannot be reused after cancelling
         Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
