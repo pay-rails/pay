@@ -171,6 +171,15 @@ module Pay
         stripe_sub&.pending_setup_intent&.client_secret || stripe_sub&.latest_invoice&.payment_intent&.client_secret
       end
 
+      # Sets the default_payment_method on a subscription
+      # Pass an empty string to unset
+      def update_payment_method(id)
+        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {default_payment_method: id}.merge(expand_options), stripe_options)
+        pay_subscription.update(payment_method_id: @stripe_subscription.default_payment_method&.id)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
+      end
+
       # Marks a subscription to cancel at period end
       #
       # If subscription is already past_due, the subscription will be cancelled immediately

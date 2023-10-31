@@ -298,4 +298,19 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: fake_stripe_payment_method(id: "pm_1000")))
     assert_equal payment_method, pay_subscription.payment_method
   end
+
+  test "change stripe subscription default payment method" do
+    @pay_customer.processor_id = nil
+    @pay_customer.payment_method_token = "pm_card_visa"
+    subscription = @pay_customer.subscribe(name: "default", plan: "default")
+
+    payment_method = ::Stripe::PaymentMethod.attach("pm_card_discover", {customer: @pay_customer.processor_id})
+    subscription.update_payment_method payment_method.id
+    assert_equal payment_method.id, subscription.payment_method_id
+    assert_equal payment_method.id, subscription.processor_subscription.default_payment_method.id
+
+    subscription.update_payment_method ""
+    assert_nil subscription.payment_method_id
+    assert_nil subscription.processor_subscription.default_payment_method
+  end
 end
