@@ -29,7 +29,7 @@ module Pay
         :current_period_end,
         to: :pay_subscription
 
-      def self.sync_from_checkout_session(session_id)
+      def self.sync_from_checkout_session(session_id, stripe_account: nil)
         checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id}, {stripe_account: stripe_account}.compact)
         sync(checkout_session.subscription_id)
       end
