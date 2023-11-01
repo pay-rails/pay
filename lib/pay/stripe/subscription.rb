@@ -29,6 +29,11 @@ module Pay
         :current_period_end,
         to: :pay_subscription
 
+      def self.sync_from_checkout_session(session_id)
+        checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id}, {stripe_account: stripe_account}.compact)
+        sync(checkout_session.subscription_id)
+      end
+
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
         # Skip loading the latest subscription details from the API if we already have it
         object ||= ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)
