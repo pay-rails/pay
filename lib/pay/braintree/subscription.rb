@@ -118,8 +118,12 @@ module Pay
         raise NotImplementedError, "Braintree does not support pausing subscriptions"
       end
 
+      def resumable?
+        on_grace_period?
+      end
+
       def resume
-        unless on_grace_period?
+        unless resumable?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end
 

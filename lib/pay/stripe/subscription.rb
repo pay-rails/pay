@@ -282,8 +282,12 @@ module Pay
         )
       end
 
+      def resume?
+        on_grace_period? || paused?
+      end
+
       def resume
-        unless on_grace_period? || paused?
+        unless resumable?
           raise StandardError, "You can only resume subscriptions within their grace period."
         end
 

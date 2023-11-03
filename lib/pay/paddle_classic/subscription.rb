@@ -134,8 +134,12 @@ module Pay
         raise Pay::PaddleClassic::Error, e
       end
 
+      def resumable?
+        paused?
+      end
+
       def resume
-        unless paused?
+        unless resumable?
           raise StandardError, "You can only resume paused subscriptions."
         end
 
