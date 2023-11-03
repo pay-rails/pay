@@ -64,6 +64,7 @@ module Pay
 
         {
           payment_method_type: payment_method.type,
+          email: details.try(:email), # Link
           brand: details.try(:brand)&.capitalize,
           last4: details.try(:last4).to_s,
           exp_month: details.try(:exp_month).to_s,

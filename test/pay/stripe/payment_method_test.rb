@@ -23,4 +23,11 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
     pay_payment_method = Pay::Stripe::PaymentMethod.sync("pm_123", object: fake_stripe_payment_method(customer: nil))
     assert_nil pay_payment_method
   end
+
+  test "Stripe sync Link payment method" do
+    object = ::Stripe::PaymentMethod.construct_from json_fixture("stripe/payment_methods/link")
+    attributes = Pay::Stripe::PaymentMethod.extract_attributes(object)
+    assert_equal "link", attributes[:payment_method_type]
+    assert_equal "customer@example.org", attributes[:email]
+  end
 end

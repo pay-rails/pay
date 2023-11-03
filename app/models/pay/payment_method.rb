@@ -8,7 +8,7 @@ module Pay
     store_accessor :data, :last4
     store_accessor :data, :exp_month
     store_accessor :data, :exp_year
-    store_accessor :data, :email # PayPal email, etc
+    store_accessor :data, :email # PayPal, Stripe Link, etc
     store_accessor :data, :username
     store_accessor :data, :bank
 

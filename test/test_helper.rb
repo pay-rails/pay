@@ -59,6 +59,10 @@ class ActiveSupport::TestCase
   include ActionMailer::TestHelper
   include ActiveJob::TestHelper
 
+  def json_fixture(name)
+    JSON.parse File.read("test/support/fixtures/#{name}.json")
+  end
+
   def fake_event(name, format: :json)
     JSON.parse File.read("test/support/fixtures/#{name}.#{format}")
   end
