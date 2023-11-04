@@ -282,7 +282,7 @@ module Pay
         )
       end
 
-      def resume?
+      def resumable?
         on_grace_period? || paused?
       end
 
