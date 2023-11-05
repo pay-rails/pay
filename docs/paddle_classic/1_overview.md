@@ -16,7 +16,7 @@ The [Paddle Sandbox](https://developer.paddle.com/getting-started/sandbox) can b
 <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
 <script type="text/javascript">
   Paddle.Environment.set('sandbox');
-  Paddle.Setup({ vendor: <%= Pay::Paddle.vendor_id %> });
+  Paddle.Setup({ vendor: <%= Pay::PaddleClassic.vendor_id %> });
 </script>
 ```
 ## Paddle Public Key
