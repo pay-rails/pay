@@ -26,33 +26,33 @@ Subscribe takes several arguments and options:
 * `trial_period_days` - Number of days for the subscription's trial.
 * Other options may be passed and will be sent directly to the payment processor's API.
 
-##### Paddle Subscriptions
+##### Paddle Classic Subscriptions
 
 Paddle does not allow you to create a subscription through the API.
 
 Instead, Pay uses webhooks to create the the subscription in the database. The Paddle [passthrough parameter](https://developer.paddle.com/guides/how-tos/checkout/pass-parameters) is required during checkout to associate the subscription with the correct `Pay::Customer`.
 
-In your Javascript, include `passthrough` in Checkout using the `Pay::Paddle.passthrough` helper.
+In your Javascript, include `passthrough` in Checkout using the `Pay::PaddleClassic.passthrough` helper.
 
 ```javascript
 Paddle.Checkout.open({
   product: 12345,
-  passthrough: "<%= Pay::Paddle.passthrough(owner: current_user) %>"
+  passthrough: "<%= Pay::PaddleClassic.passthrough(owner: current_user) %>"
 });
 ```
 
 Or with Paddle Button Checkout:
 
 ```html
-<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= Pay::Paddle.passthrough(owner: current_user) %>">Buy now!</a>
+<a href="#!" class="paddle_button" data-product="12345" data-email="<%= current_user.email %>" data-passthrough="<%= Pay::PaddleClassic.passthrough(owner: current_user) %>">Buy now!</a>
 ```
 
-###### Paddle Passthrough Helper
+###### Paddle Classic Passthrough Helper
 
 Pay provides a helper method for generating the `passthrough` JSON object to associate the purchase with the correct Rails model.
 
 ```ruby
-Pay::Paddle.passthrough(owner: current_user, foo: :bar)
+Pay::PaddleClassic.passthrough(owner: current_user, foo: :bar)
 #=> { owner_sgid: "xxxxxxxx", foo: "bar" }
 
 # To generate manually without the helper
@@ -64,6 +64,56 @@ Pay::Paddle.passthrough(owner: current_user, foo: :bar)
 When processing Paddle webhooks, Pay parses the `passthrough` JSON string and verifies the `owner_sgid` hash in order to find the correct `Pay::Customer` record.
 
 The passthrough parameter `owner_sgid` is only required for creating a subscription.
+
+##### Paddle Billing Subscriptions
+
+As with Paddle Classic, Paddle Billing does not allow you to create a subscription through the API.
+
+Instead, Pay uses webhooks to create the the subscription in the database. The Paddle `customer` field is required
+during checkout to associate the subscription with the correct `Pay::Customer`.
+
+Firstly, retrieve/create a Paddle customer by calling `customer`.
+
+```ruby
+@user.payment_processor.customer
+```
+
+Then using either the Javascript `Paddle.Checkout.open` method or the Paddle Button Checkout, pass the `customer` object
+and an array of items to subscribe to.
+
+```javascript
+Paddle.Checkout.open({
+  customer: {
+    id: "<%= @user.payment_processor.processor_id %>",
+  },
+  items: [
+    {
+      // The Price ID of the subscription plan
+      priceId: "pri_abc123",
+      quantity: 1
+    }
+  ],
+});
+```
+
+Or with Paddle Button Checkout:
+
+```html
+<a href='#'
+  class='paddle_button'
+  data-display-mode='overlay'
+  data-locale='en'
+  data-items='[
+    {
+      "priceId": "pri_abc123",
+      "quantity": 1
+    }
+  ]'
+  data-customer-id="<%= @user.payment_processor.processor_id %>"
+>
+  Subscribe
+</a>
+```
 
 ## Retrieving a Subscription from the Database
 
