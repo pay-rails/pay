@@ -1,0 +1,61 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://sandbox-vendors.paddle.com/api/2.0/subscription/users
+    body:
+      encoding: UTF-8
+      string: '{"vendor_id":"<VENDOR_ID>","vendor_auth_code":"<VENDOR_AUTH_CODE>","subscription_id":"8"}'
+    headers:
+      User-Agent:
+      - paddlerb/v2.1.2 (github.com/deanpcmad/paddlerb)
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 05 Nov 2023 14:28:21 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cache-Control:
+      - no-cache, private
+      X-Frame-Options:
+      - sameorigin
+      X-Correlation-Id:
+      - 0ec57234-121a-4d58-8dc6-bc1e9ca0a95a
+      Correlation-Id:
+      - 0ec57234-121a-4d58-8dc6-bc1e9ca0a95a
+      P3p:
+      - CP="CAO CUR ADMa DEVa TAIa OUR DELa STP ONL NAV STA PUR"
+      Vary:
+      - Origin
+      Set-Cookie:
+      - __cf_bm=Z5CvqjSWrMmUWDCrUDb4h94Ppx1K4H2IhWWXU2tMGug-1699194501-0-AdebQdyi2sABS4WZv9w5lllTiG4juUtJnOcWTkhNtcoNg4Ldl2UOBGS37bgn8BiRqda4WxaZ3GURUBheuzPEe4M=;
+        path=/; expires=Sun, 05-Nov-23 14:58:21 GMT; domain=.paddle.com; HttpOnly;
+        Secure; SameSite=None
+      - sandbox_paddle_session_vendor=eyJpdiI6IlFJYW85S3JZOFdvQ3RiZnhQZjVNcUE9PSIsInZhbHVlIjoiMlpQc1NKRHJoeDBIRHhwbTBjdjJIREhuUUNLaUNZeDlaazZjUWFnVUplcFVFa2x4WW45dEw2N3hHYnVTcVp0aUs5NlJqZ1RXcDB2Y3pLMkxPeGdXTE1ZYTlSNFBxeUVjeUQ2aGwyWGlMMkhON2w3eHI0My9UUjJ2WDhPZTZ5Zk4iLCJtYWMiOiJhNDVlZTgzMWQyZTVmZmY3MjAwOThhNjc4OTg3MGNjOWU5YjYxYjdiNjUyNzgxM2E2YzMzNDhmMzVlODQ2NTkzIiwidGFnIjoiIn0%3D;
+        expires=Sun, 05-Nov-2023 16:28:21 GMT; Max-Age=7200; path=/; domain=sandbox-vendors.paddle.com;
+        secure; httponly; samesite=lax;SameSite=lax;Secure
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 8215c86118f24176-LHR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"success":true,"response":[{"subscription_id":3576390,"plan_id":594470,"user_id":17368056,"user_email":"test@example.com","marketing_consent":false,"update_url":"https:\/\/checkout.paddle.com\/subscription\/update?user=17368056&subscription=3576390&hash=cc553b2a75a8a8c23bbd22463e5820a8580ea71198db9519ed752ea36d90ceee","cancel_url":"https:\/\/checkout.paddle.com\/subscription\/cancel?user=17368056&subscription=3576390&hash=53fafebb9ea30fc7853acbbb57a3bcecc01615ee43eb300df111b1ff03e1aa9a","state":"active","signup_date":"2020-06-04
+        13:06:33","last_payment":{"amount":1.19,"currency":"USD","date":"2020-06-05"},"linked_subscriptions":[],"payment_information":{"payment_method":"paypal"},"next_payment":{"amount":0,"currency":"USD","date":"2020-07-04"}}]}'
+  recorded_at: Sun, 05 Nov 2023 14:22:51 GMT
+recorded_with: VCR 6.2.0

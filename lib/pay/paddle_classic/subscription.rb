@@ -24,7 +24,7 @@ module Pay
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         # Passthrough is not return from this API, so we can't use that
-        object ||= OpenStruct.new PaddlePay::Subscription::User.list({subscription_id: subscription_id}).try(:first)
+        object ||= PaddleClassic.client.users.list(subscription_id: subscription_id).data.try(:first)
 
         pay_customer = Pay::Customer.find_by(processor: :paddle_classic, processor_id: object.user_id)
 
@@ -70,9 +70,8 @@ module Pay
       end
 
       def subscription(**options)
-        hash = PaddlePay::Subscription::User.list({subscription_id: processor_id}, options).try(:first)
-        OpenStruct.new(hash)
-      rescue ::PaddlePay::PaddlePayError => e
+        PaddleClassic.client.users.list(subscription_id: processor_id).data.try(:first)
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -85,10 +84,10 @@ module Pay
         elsif paused?
           pause_starts_at
         else
-          Time.parse(processor_subscription.next_payment&.fetch(:date)) || Time.current
+          Time.parse(processor_subscription.next_payment&.try(:date)) || Time.current
         end
 
-        PaddlePay::Subscription::User.cancel(processor_id)
+        PaddleClassic.client.users.cancel(subscription_id: processor_id)
         pay_subscription.update(
           status: (ends_at.future? ? :active : :canceled),
           ends_at: ends_at
@@ -96,19 +95,19 @@ module Pay
 
         # Remove payment methods since customer cannot be reused after cancelling
         Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
       def cancel_now!(**options)
         return if canceled?
 
-        PaddlePay::Subscription::User.cancel(processor_id)
+        PaddleClassic.client.users.cancel(subscription_id: processor_id)
         pay_subscription.update(status: :canceled, ends_at: Time.current)
 
         # Remove payment methods since customer cannot be reused after cancelling
         Pay::PaymentMethod.where(customer_id: pay_subscription.customer_id).destroy_all
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -127,10 +126,9 @@ module Pay
       end
 
       def pause
-        attributes = {pause: true}
-        response = PaddlePay::Subscription::User.update(processor_id, attributes)
+        response = PaddleClassic.client.users.pause(subscription_id: processor_id)
         pay_subscription.update(status: :paused, pause_starts_at: Time.zone.parse(response.dig(:next_payment, :date)))
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -143,10 +141,9 @@ module Pay
           raise StandardError, "You can only resume paused subscriptions."
         end
 
-        attributes = {pause: false}
-        PaddlePay::Subscription::User.update(processor_id, attributes)
+        PaddleClassic.client.users.unpause(subscription_id: processor_id)
         pay_subscription.update(status: :active, pause_starts_at: nil)
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -155,10 +152,10 @@ module Pay
 
         attributes = {plan_id: plan, prorate: prorate}
         attributes[:quantity] = quantity if quantity?
-        PaddlePay::Subscription::User.update(processor_id, attributes)
+        PaddleClassic.client.users.update(subscription_id: processor_id, **attributes)
 
         pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
