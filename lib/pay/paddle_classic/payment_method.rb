@@ -17,12 +17,12 @@ module Pay
 
         payment_method.update!(attributes)
         payment_method
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
       def self.payment_method_details_for(subscription_id:)
-        subscription_user = PaddlePay::Subscription::User.list({subscription_id: subscription_id}).try(:first)
+        subscription_user = PaddleClassic.client.users.list(subscription_id: subscription_id).data.try(:first)
         payment_information = subscription_user ? subscription_user[:payment_information] : {}
 
         case payment_information[:payment_method]&.downcase

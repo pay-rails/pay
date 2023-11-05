@@ -34,7 +34,6 @@ module Pay
       Pay::Stripe.setup if Pay::Stripe.enabled?
       Pay::Braintree.setup if Pay::Braintree.enabled?
       Pay::PaddleBilling.setup if Pay::PaddleBilling.enabled?
-      Pay::PaddleClassic.setup if Pay::PaddleClassic.enabled?
 
       if defined?(::Receipts::VERSION)
         if Pay::Engine.version_matches?(required: "~> 2", current: ::Receipts::VERSION)

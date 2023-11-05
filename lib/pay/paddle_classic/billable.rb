@@ -27,7 +27,7 @@ module Pay
         return unless subscription.processor_id
         raise Pay::Error, "A charge_name is required to create a one-time charge" if options[:charge_name].nil?
 
-        response = PaddlePay::Subscription::Charge.create(subscription.processor_id, amount.to_f / 100, options[:charge_name], options)
+        response = PaddleClassic.client.charges.create(subscription_id: subscription.processor_id, amount: amount.to_f / 100, charge_name: options[:charge_name])
 
         attributes = {
           amount: (response[:amount].to_f * 100).to_i,
@@ -41,7 +41,7 @@ module Pay
         charge = pay_customer.charges.find_or_initialize_by(processor_id: response[:invoice_id])
         charge.update(attributes)
         charge
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -61,9 +61,8 @@ module Pay
       end
 
       def processor_subscription(subscription_id, options = {})
-        hash = PaddlePay::Subscription::User.list({subscription_id: subscription_id}, options).try(:first)
-        OpenStruct.new(hash)
-      rescue ::PaddlePay::PaddlePayError => e
+        PaddleClassic.client.users.list(subscription_id: subscription_id).data.try(:first)
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
     end
