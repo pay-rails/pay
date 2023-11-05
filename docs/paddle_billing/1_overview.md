@@ -35,8 +35,12 @@ automatically create the subscription for you.
 
 ### Paddle API Key
 
-You can generate an API key [here for Production](https://vendors.paddle.com/authentication)
-or [here for Sandbox](https://sandbox-vendors.paddle.com/authentication)
+You can generate an API key [here for Production](https://vendors.paddle.com/authentication-v2)
+or [here for Sandbox](https://sandbox-vendors.paddle.com/authentication-v2)
+
+### Paddle Client Token
+
+Client side tokens are used to work with Paddle.js in your frontend. You can generate one using the same links above.
 
 ### Paddle Environment
 
@@ -58,4 +62,5 @@ Rails credentials:
 - `PADDLE_BILLING_SELLER_ID`
 - `PADDLE_BILLING_ENVIRONMENT`
 - `PADDLE_BILLING_API_KEY`
+- `PADDLE_BILLING_CLIENT_TOKEN`
 - `PADDLE_BILLING_SIGNING_SECRET`
