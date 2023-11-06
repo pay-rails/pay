@@ -86,8 +86,7 @@ module Pay
       end
 
       def subscription(**options)
-        options[:id] = processor_id
-        @paddle_billing_subscription ||= ::Paddle::Subscription.retrieve(**options)
+        @paddle_billing_subscription ||= ::Paddle::Subscription.retrieve(id: processor_id, **options)
       end
 
       # Get a transaction to update payment method
