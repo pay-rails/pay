@@ -28,10 +28,6 @@ module Pay
       find_value_by_name(:paddle_billing, :environment) || "production"
     end
 
-    def self.seller_id
-      find_value_by_name(:paddle_billing, :seller_id)
-    end
-
     def self.client_token
       find_value_by_name(:paddle_billing, :client_token)
     end
