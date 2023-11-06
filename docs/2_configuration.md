@@ -29,7 +29,7 @@ braintree:
   merchant_id: aaaa
   environment: sandbox
 paddle_billing:
-  seller_id: 1111
+  client_token: aaaa
   api_key: yyyy
   signing_secret: pdl_ntfset...
   environment: sandbox
@@ -60,8 +60,8 @@ Pay will also check environment variables for API keys:
 * `BRAINTREE_PUBLIC_KEY`
 * `BRAINTREE_PRIVATE_KEY`
 * `BRAINTREE_ENVIRONMENT`
-* `PADDLE_BILLING_SELLER_ID`
 * `PADDLE_BILLING_API_KEY`
+* `PADDLE_BILLING_CLIENT_TOKEN`
 * `PADDLE_BILLING_SIGNING_SECRET`
 * `PADDLE_BILLING_ENVIRONMENT`
 * `PADDLE_CLASSIC_VENDOR_ID`
