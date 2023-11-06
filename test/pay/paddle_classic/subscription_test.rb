@@ -41,7 +41,7 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "paddle classic processor subscription" do
-    assert_equal @pay_customer.subscription.processor_subscription.class, OpenStruct
+    assert_equal @pay_customer.subscription.processor_subscription.class, Paddle::Classic::User
     assert_equal "active", @pay_customer.subscription.status
   end
 

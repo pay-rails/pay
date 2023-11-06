@@ -15,28 +15,12 @@ class Pay::PaddleClassic::Billable::Test < ActiveSupport::TestCase
     assert_raises(Pay::Error) { @pay_customer.charge(1000) }
   end
 
-  test "retriving a paddle classic subscription" do
-    subscription = ::PaddlePay::Subscription::User.list({subscription_id: "3576390"}, {}).try(:first)
-    assert_equal @pay_customer.processor_subscription("3576390").subscription_id, subscription[:subscription_id]
+  test "retrieving a paddle classic subscription" do
+    subscription = Pay::PaddleClassic.client.users.list(subscription_id: "3576390").data.try(:first)
+    assert_equal @pay_customer.processor_subscription("3576390").subscription_id, subscription.subscription_id
   end
 
   test "paddle classic can sync payment information" do
-    subscription_user = {
-      subscription_id: 7654321,
-      plan_id: 123456,
-      user_id: 12345678,
-      user_email: "test@example.com",
-      marketing_consent: false,
-      update_url: "https://example.com",
-      cancel_url: "https://example.com",
-      state: "active",
-      signup_date: "2020-12-08 07:52:22",
-      last_payment: {amount: 0, currency: "USD", date: "2020-12-08"}, linked_subscriptions: [],
-      payment_information: {payment_method: "card", card_type: "Visa", last_four_digits: "0020", expiry_date: "06/2022"},
-      next_payment: {amount: 0, currency: "USD", date: "2021-01-08"}
-    }
-    PaddlePay::Subscription::User.stubs(:list).returns([subscription_user])
-
     Pay::PaddleClassic::PaymentMethod.sync(pay_customer: @pay_customer)
 
     assert_equal "card", @pay_customer.default_payment_method.type
@@ -47,14 +31,10 @@ class Pay::PaddleClassic::Billable::Test < ActiveSupport::TestCase
   end
 
   test "paddle classic can add payment method" do
-    PaddlePay::Subscription::User.stub(:list, []) do
-      assert @pay_customer.add_payment_method
-    end
+    assert @pay_customer.add_payment_method
   end
 
   test "paddle classic can update payment method" do
-    PaddlePay::Subscription::User.stub(:list, []) do
-      assert @pay_customer.update_payment_method(nil)
-    end
+    assert @pay_customer.update_payment_method(nil)
   end
 end

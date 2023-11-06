@@ -11,23 +11,23 @@ module Pay
 
       def charge
         return unless customer.subscription
-        payments = PaddlePay::Subscription::Payment.list({subscription_id: customer.subscription.processor_id})
-        charges = payments.select { |p| p[:id].to_s == processor_id }
+        payments = PaddleClassic.client.payments.list(subscription_id: customer.subscription.processor_id)
+        charges = payments.data.select { |p| p[:id].to_s == processor_id }
         charges.try(:first)
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
       def refund!(amount_to_refund)
         return unless customer.subscription
-        payments = PaddlePay::Subscription::Payment.list({subscription_id: customer.subscription.processor_id, is_paid: 1})
-        if payments.count > 0
-          PaddlePay::Subscription::Payment.refund(payments.last[:id], {amount: amount_to_refund})
+        payments = PaddleClassic.client.payments.list(subscription_id: customer.subscription.processor_id, is_paid: 1)
+        if payments.total > 0
+          PaddleClassic.client.payments.refund(order_id: payments.data.last[:id], amount: amount_to_refund)
           pay_charge.update(amount_refunded: amount_to_refund)
         else
           raise Error, "Payment not found"
         end
-      rescue ::PaddlePay::PaddlePayError => e
+      rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
     end
