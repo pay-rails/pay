@@ -5,17 +5,13 @@ Paddle Checkout into your website.
 
 ## Setup
 
-Add the Paddle.js script in your application layout and initialize it with either your Paddle
-Seller ID or a Client Side Token. Paddle recommends using a Client Side Token.
+Add the Paddle.js script in your application layout and initialize it with your Paddle Client Side Token.
 
 ```html
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script type="text/javascript">
   Paddle.Environment.set("sandbox");
   Paddle.Setup({
-    // Set either your Seller ID or a Client Side Token
-    seller: <%= Pay::PaddleBilling.seller_id %>
-
     token: <%= Pay::PaddleBilling.client_token %>
   });
 </script>
