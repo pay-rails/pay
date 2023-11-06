@@ -33,6 +33,8 @@ And rename custom webhooks from `paddle.*` to `paddle_classic.*`
 
 The secrets/environment variables for Paddle have also been renamed to from `PADDLE_*` to `PADDLE_CLASSIC_*`
 
+The `paddle_pay` gem requirement has been replaced with `paddle`, which contains APIs for both Paddle Billing and Classic.
+
 ## **Pay 5.0 to 6.0**
 This version adds support for accessing the start and end of the current billing period of a subscription. This currently only works with Stripe subscriptions.
 
