@@ -81,9 +81,7 @@ module Pay
       end
 
       def processor_subscription(subscription_id, options = {})
-        opts = options.except(:id)
-
-        ::Paddle::Subscription.retrieve(id: subscription_id, **opts)
+        ::Paddle::Subscription.retrieve(id: subscription_id, **options)
       rescue ::Paddle::Error => e
         raise Pay::PaddleBilling::Error, e
       end
