@@ -84,7 +84,7 @@ module Pay
         elsif paused?
           pause_starts_at
         else
-          Time.parse(processor_subscription.next_payment&.try(:date)) || Time.current
+          Time.parse(processor_subscription.next_payment.date)
         end
 
         PaddleClassic.client.users.cancel(subscription_id: processor_id)
