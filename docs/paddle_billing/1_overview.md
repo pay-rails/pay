@@ -59,7 +59,6 @@ this after creating a webhook in the Paddle dashboard. You'll find this page
 Pay will automatically look for the following environment variables, or the equivalent
 Rails credentials:
 
-- `PADDLE_BILLING_SELLER_ID`
 - `PADDLE_BILLING_ENVIRONMENT`
 - `PADDLE_BILLING_API_KEY`
 - `PADDLE_BILLING_CLIENT_TOKEN`
