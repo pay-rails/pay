@@ -8,8 +8,8 @@ module Pay
       def create
         queue_event(verify_params.as_json)
         head :ok
-      # rescue Pay::LemonSqueezy::Error
-      #   head :bad_request
+        # rescue Pay::LemonSqueezy::Error
+        #   head :bad_request
       end
 
       private

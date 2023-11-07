@@ -70,8 +70,8 @@ module Pay
         Pay::LemonSqueezy.client.subscriptions.get(id: processor_id)
         # hash = PaddlePay::Subscription::User.list({subscription_id: processor_id}, options).try(:first)
         # OpenStruct.new(hash)
-      # rescue ::PaddlePay::PaddlePayError => e
-      #   raise Pay::Paddle::Error, e
+        # rescue ::PaddlePay::PaddlePayError => e
+        #   raise Pay::Paddle::Error, e
       end
 
       def cancel(**options)
