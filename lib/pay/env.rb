@@ -21,9 +21,7 @@ module Pay
     def find_value_by_name(scope, name)
       ENV["#{scope.upcase}_#{name.upcase}"] ||
         credentials&.dig(env, scope, name) ||
-        credentials&.dig(scope, name) ||
-        secrets&.dig(env, scope, name) ||
-        secrets&.dig(scope, name)
+        credentials&.dig(scope, name)
     rescue ActiveSupport::MessageEncryptor::InvalidMessage
       Rails.logger.error <<~MESSAGE
         Rails was unable to decrypt credentials. Pay checks the Rails credentials to look for API keys for payment processors.
@@ -36,10 +34,6 @@ module Pay
 
     def env
       Rails.env.to_sym
-    end
-
-    def secrets
-      Rails.application.secrets if Rails.gem_version < Gem::Version.new("7.2.0.alpha") && Rails.application.respond_to?(:secrets)
     end
 
     def credentials

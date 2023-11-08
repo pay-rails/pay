@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* [Breaking] Rails secrets are no longer supported. Please use Rails credentials or environment variables.
 * [Breaking] Stripe now syncs the `default_payment_method` association to Pay::Subscriptions
 
     ```bash
