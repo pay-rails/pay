@@ -40,12 +40,6 @@ class Pay::Stripe::Test < ActiveSupport::TestCase
     assert_nil Pay::Stripe.find_by_client_reference_id("Secret::Agent::Man_9999")
   end
 
-  test "env ignores Stripe secrets when not defined" do
-    Rails.stub(:application, nil) do
-      assert_nil Pay::Stripe.send(:secrets)
-    end
-  end
-
   test "env ignores Stripe credentials when not defined" do
     Rails.stub(:application, nil) do
       assert_nil Pay::Stripe.send(:credentials)
