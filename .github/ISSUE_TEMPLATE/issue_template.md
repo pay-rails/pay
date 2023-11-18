@@ -1,3 +1,12 @@
+---
+name: 🐞 Bug
+about: File a bug/issue
+title: '[BUG] <title>'
+labels: Bug, Needs Triage
+assignees: ''
+
+---
+
 ## Bug Report
 
 **Describe the Bug:**
