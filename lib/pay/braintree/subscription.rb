@@ -37,7 +37,7 @@ module Pay
           current_period_start: object.billing_period_start_date,
           payment_method_id: object.payment_method_token,
           processor_plan: object.plan_id,
-          status: object.status.underscore,
+          status: object.status.parameterize(separator: "_"),
           trial_ends_at: (object.created_at + object.trial_duration.send(object.trial_duration_unit) if object.trial_period)
         }
 
