@@ -64,7 +64,7 @@
 </div>
 
 <script type="module">
-  window.stripe = Stripe('<%= Pay::Stripe.public_key %>');
+  window.stripe = Stripe('<%= Pay::Stripe.public_key %>')
 
   import { Application, Controller } from 'https://unpkg.com/@hotwired/stimulus/dist/stimulus.js'
   const application = Application.start()
@@ -83,34 +83,27 @@
 
     connect() {
       if (this.hasCardTarget) {
-        this.elements = stripe.elements()
-        this.cardElement = this.elements.create("card")
-        this.cardElement.mount(this.cardTarget)
+        this.elements = stripe.elements({clientSecret: this.clientSecretValue})
+        this.payment =  this.elements.create('payment')
+        this.payment.mount(this.cardTarget)
       }
     }
 
     statusValueChanged() {
       switch(this.statusValue) {
         case "requires_action":
-          stripe.confirmCardPayment(this.clientSecretValue).then(this.handleConfirmResult.bind(this))
-          break;
+          this.processingValue = true
+          stripe.confirmPayment({clientSecret: this.clientSecretValue, confirmParams: { return_url: document.location.href }}).then(this.handleConfirmResult.bind(this))
+          break
         case "requires_payment_method":
           this.cardFieldsTarget.classList.toggle("hidden", false)
-          break;
+          break
       }
     }
 
     confirmPayment() {
       this.processingValue = true
-      this.completeValue = false
-      stripe.confirmCardPayment(this.clientSecretValue, {
-        payment_method: {
-          card: this.cardElement,
-          billing_details: { name: this.nameTarget.value }
-        },
-        save_payment_method: this.customerValue != "",
-        setup_future_usage: 'off_session',
-      }).then(this.handleConfirmResult.bind(this))
+      stripe.confirmPayment({elements: this.elements, confirmParams: { return_url: document.location.href }}).then(this.handleConfirmResult.bind(this))
     }
 
     handleConfirmResult(result) {
@@ -125,7 +118,7 @@
           this.statusValue = result.error.payment_intent.status
         }
       } else {
-        this.completeValue = true;
+        this.completeValue = true
         this.successMessageValue = '<%=t "pay.requires_action.success" %>'
       }
     }
