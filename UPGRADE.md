@@ -13,11 +13,19 @@ rails g migration UpgradeToPay7
 Then add the following migrations.
 ```ruby
 add_column :pay_subscriptions, :payment_method_id, :string
-
 add_column :pay_customers, :stripe_account, :string
 add_column :pay_subscriptions, :stripe_account, :string
 add_column :pay_payment_methods, :stripe_account, :string
 add_column :pay_charges, :stripe_account, :string
+```
+
+If you are using Stripe, you can transfer the stripe_account from the json column to the new stripe_account column:
+
+```ruby
+Pay::Customer.find_each { |c| c.update(stripe_account: c.data&.dig("stripe_account")) }
+Pay::Subscription.find_each { |c| c.update(stripe_account: c.data&.dig("stripe_account")) }
+Pay::PaymentMethod.find_each { |c| c.update(stripe_account: c.data&.dig("stripe_account")) }
+Pay::Charge.find_each { |c| c.update(stripe_account: c.data&.dig("stripe_account")) }
 ```
 
 In addition, this version adds support for Paddle's new Billing APIs and renames the existing Paddle implementation to Paddle Classic.

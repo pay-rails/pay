@@ -39,6 +39,7 @@
 
 * [Breaking] Subscriptions with `status: :canceled` and `ends_at: future` are now considered canceled. Previously, these were considered active to accomodate canceling a Braintree subscription during trial (and allowing the user to continue using until the end of the trial).
 * [Breaking] Subscriptions with `status: :past_due` will be canceled immediately when `cancel` is called.
+* Updated Stripe Payment confirmation page to use PaymentElement instead of CardElement
 
 ### 6.8.1
 
