@@ -20,7 +20,7 @@ module Dummy
     # Set the ActionMailer preview path to the gem test directory
     config.action_mailer.show_previews = true
 
-    if config.action_mailer.respond_to? :preview_paths
+    if Rails.gem_version >= Gem::Version.new("7.1.0.alpha")
       config.action_mailer.preview_paths << Rails.root.join("../../test/mailers/previews")
     else
       config.action_mailer.preview_path = Rails.root.join("../../test/mailers/previews")
