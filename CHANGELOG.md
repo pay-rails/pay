@@ -2,6 +2,12 @@
 
 ### Unreleased
 
+### 7.1.0
+
+* Add `pay_amount_to_currency` view helper
+
+### 7.0.0
+
 * [Breaking] Rails secrets are no longer supported. Please use Rails credentials or environment variables.
 * [Breaking] Stripe now syncs the `default_payment_method` association to Pay::Subscriptions
 
