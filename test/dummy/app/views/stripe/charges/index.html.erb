@@ -9,6 +9,6 @@
 
 <% @charges.each do |charge| %>
   <div>
-    <%= link_to "Pay::Charge #{charge.id}", stripe_charge_path(charge) %>
+    <%= link_to "Pay::Charge #{charge.id} - #{pay_amount_to_currency(charge)}", stripe_charge_path(charge) %>
   </div>
 <% end %>
