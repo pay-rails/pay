@@ -29,7 +29,7 @@ module Pay
         refunds = []
         object.refunds.auto_paging_each { |refund| refunds << refund }
 
-        payment_method = object.payment_method_details.send(object.payment_method_details.type)
+        payment_method = object.payment_method_details.try(object.payment_method_details.type)
         attrs = {
           amount: object.amount,
           amount_captured: object.amount_captured,
