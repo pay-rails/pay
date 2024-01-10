@@ -60,7 +60,7 @@ module Pay
 
       # Extracts payment method details from a Stripe::PaymentMethod object
       def self.extract_attributes(payment_method)
-        details = payment_method.send(payment_method.type)
+        details = payment_method.try(payment_method.type)
 
         {
           payment_method_type: payment_method.type,
