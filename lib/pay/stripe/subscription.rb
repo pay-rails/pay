@@ -342,13 +342,13 @@ module Pay
       # create_usage_record(quantity: 4, action: :increment)
       # create_usage_record(subscription_item_id: "si_1234", quantity: 100, action: :set)
       def create_usage_record(**options)
-        subscription_item_id = options.fetch(:subscription_item_id, metered_subscription_item&.dig("id"))
+        subscription_item_id = options.delete(:subscription_item_id) || metered_subscription_item&.dig("id")
         ::Stripe::SubscriptionItem.create_usage_record(subscription_item_id, options, stripe_options)
       end
 
       # Returns usage record summaries for a subscription item
       def usage_record_summaries(**options)
-        subscription_item_id = options.fetch(:subscription_item_id, metered_subscription_item&.dig("id"))
+        subscription_item_id = options.delete(:subscription_item_id) || metered_subscription_item&.dig("id")
         ::Stripe::SubscriptionItem.list_usage_record_summaries(subscription_item_id, options, stripe_options)
       end
 
