@@ -265,7 +265,7 @@ module Pay
           end
 
           # Retrieve payment method details from transaction
-          payment_method = transaction.send("#{attribute_name}_details")
+          payment_method = transaction.send(:"#{attribute_name}_details")
 
           {
             payment_method_type: :card,

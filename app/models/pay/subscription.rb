@@ -44,7 +44,7 @@ module Pay
 
     # Helper methods for payment processors
     %w[braintree stripe paddle_billing paddle_classic fake_processor].each do |processor_name|
-      define_method "#{processor_name}?" do
+      define_method :"#{processor_name}?" do
         customer.processor == processor_name
       end
 
