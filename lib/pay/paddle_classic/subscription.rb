@@ -44,12 +44,15 @@ module Pay
           status: object.state || object.status
         }
 
-        # If paused or delete while on trial, set ends_at to match
         case attributes[:status]
         when "trialing"
           attributes[:trial_ends_at] = Time.zone.parse(object.next_bill_date)
           attributes[:ends_at] = nil
+        when "active", "past_due"
+          attributes[:trial_ends_at] = nil
+          attributes[:ends_at] = nil
         when "paused", "deleted"
+          # If paused or delete while on trial, set ends_at to match
           attributes[:trial_ends_at] = nil
           attributes[:ends_at] = Time.zone.parse(object.next_bill_date)
         end
