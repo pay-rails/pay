@@ -59,6 +59,10 @@ module Pay
           attributes[:trial_ends_at] = Time.parse(object.next_billed_at)
         when "paused"
           attributes[:pause_starts_at] = Time.parse(object.paused_at)
+        when "active", "past_due"
+          attributes[:trial_ends_at] = nil
+          attributes[:pause_starts_at] = nil
+          attributes[:ends_at] = nil
         end
 
         case object.scheduled_change&.action
