@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 7.1.1
+
+* Update `trial_ends_at` when Paddle Billing & Classic subscriptions change to `active` or `past_due` [#936](https://github.com/pay-rails/pay/pull/936)
+
 ### 7.1.0
 
 * Add `pay_amount_to_currency` view helper
