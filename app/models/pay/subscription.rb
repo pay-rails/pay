@@ -13,7 +13,7 @@ module Pay
     scope :canceled, -> { where.not(ends_at: nil) }
     scope :cancelled, -> { canceled }
     scope :on_grace_period, -> { where("#{table_name}.ends_at IS NOT NULL AND #{table_name}.ends_at > ?", Time.current) }
-    scope :active, -> { where(status: ["trialing", "active"]).pause_not_started.where("#{table_name}.ends_at IS NULL OR #{table_name}.ends_at > ?", Time.current).where("trial_ends_at IS NULL OR trial_ends_at > ?", Time.current) }
+    scope :active, -> { where(status: ["trialing", "active"]).pause_not_started.where("#{table_name}.ends_at IS NULL OR #{table_name}.ends_at > ?", Time.current).or(on_trial) }
     scope :paused, -> { where(status: "paused").or(where("pause_starts_at <= ?", Time.current)) }
     scope :pause_not_started, -> { where("pause_starts_at IS NULL OR pause_starts_at > ?", Time.current) }
     scope :active_or_paused, -> { active.or(paused) }
