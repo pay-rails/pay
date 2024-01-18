@@ -85,7 +85,7 @@ For more information about the different attributes Stripe accepts for a custome
 class User < ApplicationRecord
   pay_customer stripe_attributes: :stripe_attributes
   # Or using a lambda:
-  # pay_customer stripe_attributes: ->(pay_customer) { metadata: { { user_id: pay_customer.owner_id } } }
+  # pay_customer stripe_attributes: ->(pay_customer) { { metadata: { user_id: pay_customer.owner_id } } }
 
   def stripe_attributes(pay_customer)
     {
