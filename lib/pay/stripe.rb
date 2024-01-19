@@ -138,5 +138,15 @@ module Pay
       Rails.logger.error "[Pay] Unable to locate record with: #{client_reference_id}"
       nil
     end
+
+    def sync_checkout_session(session_id, stripe_account: nil)
+      checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id, expand: %(payment_intent.latest_charge)}, {stripe_account: stripe_account}.compact)
+      case checkout_session.mode
+      when "payment"
+        Pay::Stripe::Charge.sync(checkout_session.payment_intent.latest_charge.id, stripe_account: stripe_account)
+      when "subscription"
+        Pay::Stripe::Subscription.sync(checkout_session.subscription, stripe_account: stripe_account)
+      end
+    end
   end
 end
