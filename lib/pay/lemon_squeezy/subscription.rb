@@ -29,49 +29,44 @@ module Pay
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         # Passthrough is not return from this API, so we can't use that
-        object ||= ::Paddle::Subscription.retrieve(id: subscription_id)
+        object ||= ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
 
-        pay_customer = Pay::Customer.find_by(processor: :paddle_billing, processor_id: object.customer_id)
+        attrs = object.data.attributes if object.respond_to?(:data)
+        attrs ||= object
+
+        pay_customer = Pay::Customer.find_by(processor: :lemon_squeezy, processor_id: attrs.customer_id)
+
+        # If passthrough exists (only on webhooks) we can use it to create the Pay::Customer
+        if pay_customer.nil? && object.meta.custom_data && object.meta.custom_data.passthrough
+          owner = Pay::LemonSqueezy.owner_from_passthrough(object.meta.custom_data.passthrough)
+          pay_customer = owner&.set_payment_processor(:lemon_squeezy, processor_id: attrs.customer_id)
+        end
+
         return unless pay_customer
 
         attributes = {
-          current_period_end: object.current_billing_period&.ends_at,
-          current_period_start: object.current_billing_period&.starts_at,
-          ends_at: (object.canceled_at ? Time.parse(object.canceled_at) : nil),
-          metadata: object.custom_data,
-          paddle_cancel_url: object.management_urls&.cancel,
-          paddle_update_url: object.management_urls&.update_payment_method,
-          pause_starts_at: (object.paused_at ? Time.parse(object.paused_at) : nil),
-          status: object.status
+          current_period_end: attrs.renews_at,
+          current_period_start: attrs.created_at,
+          ends_at: (attrs.ends_at ? Time.parse(attrs.ends_at) : nil),
+          pause_starts_at: (attrs.pause&.resumes_at ? Time.parse(attrs.pause.resumes_at) : nil),
+          status: attrs.status
         }
 
-        if object.items&.first
-          item = object.items.first
-          attributes[:processor_plan] = item.price.id
-          attributes[:quantity] = item.quantity
-        end
+        attributes[:processor_plan] = attrs.first_subscription_item.price_id
+        attributes[:quantity] = attrs.first_subscription_item.quantity
 
         case attributes[:status]
-        when "canceled"
+        when "cancelled"
           # Remove payment methods since customer cannot be reused after cancelling
-          Pay::PaymentMethod.where(customer_id: object.customer_id).destroy_all
-        when "trialing"
-          attributes[:trial_ends_at] = Time.parse(object.next_billed_at)
+          Pay::PaymentMethod.where(customer_id: attrs.customer_id).destroy_all
+        when "on_trial"
+          attributes[:trial_ends_at] = Time.parse(attrs.trial_ends_at)
         when "paused"
-          attributes[:pause_starts_at] = Time.parse(object.paused_at)
+          # attributes[:pause_starts_at] = Time.parse(object.paused_at)
         when "active", "past_due"
           attributes[:trial_ends_at] = nil
           attributes[:pause_starts_at] = nil
           attributes[:ends_at] = nil
-        end
-
-        case object.scheduled_change&.action
-        when "cancel"
-          attributes[:ends_at] = Time.parse(object.scheduled_change.effective_at)
-        when "pause"
-          attributes[:pause_starts_at] = Time.parse(object.scheduled_change.effective_at)
-        when "resume"
-          attributes[:pause_resumes_at] = Time.parse(object.scheduled_change.effective_at)
         end
 
         # Update or create the subscription
@@ -90,35 +85,19 @@ module Pay
       end
 
       def subscription(**options)
-        @paddle_billing_subscription ||= ::Paddle::Subscription.retrieve(id: processor_id, **options)
+        @lemon_squeezy_subscription ||= ::LemonSqueezy::Subscription.retrieve(id: processor_id)
       end
 
-      # Get a transaction to update payment method
-      def payment_method_transaction
-        ::Paddle::Subscription.get_transaction(id: processor_id)
-      end
-
-      # If a subscription is paused, cancel immediately
-      # Otherwise, cancel at period end
       def cancel(**options)
         return if canceled?
-
-        response = ::Paddle::Subscription.cancel(
-          id: processor_id,
-          effective_from: options.fetch(:effective_from, (paused? ? "immediately" : "next_billing_period"))
-        )
-        pay_subscription.update(
-          status: response.status,
-          ends_at: response.scheduled_change.effective_at
-        )
-      rescue ::Paddle::Error => e
-        raise Pay::PaddleBilling::Error, e
+        response = ::LemonSqueezy::Subscription.cancel(id: processor_id)
+        pay_subscription.update(status: response.status, ends_at: response.ends_at)
+      rescue ::LemonSqueezy::Error => e
+        raise Pay::LemonSqueezy::Error, e
       end
 
       def cancel_now!(**options)
-        cancel(options.merge(effective_from: "immediately"))
-      rescue ::Paddle::Error => e
-        raise Pay::PaddleBilling::Error, e
+        # Lemon Squeezy doesn't support cancelling immediately
       end
 
       def change_quantity(quantity, **options)
@@ -129,7 +108,7 @@ module Pay
 
         ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
       rescue ::Paddle::Error => e
-        raise Pay::PaddleBilling::Error, e
+        raise Pay::LemonSqueezy::Error, e
       end
 
       # A subscription could be set to cancel or pause in the future
@@ -142,43 +121,42 @@ module Pay
         pay_subscription.status == "paused"
       end
 
-      def pause
-        response = ::Paddle::Subscription.pause(id: processor_id)
-        pay_subscription.update!(status: :paused, pause_starts_at: response.scheduled_change.effective_at)
-      rescue ::Paddle::Error => e
-        raise Pay::PaddleBilling::Error, e
+      def pause(**options)
+        response = ::LemonSqueezy::Subscription.pause(id: processor_id, **options)
+        pay_subscription.update!(status: :paused, pause_starts_at: response.pause&.resumes_at)
+      rescue ::LemonSqueezy::Error => e
+        raise Pay::LemonSqueezy::Error, e
       end
 
       def resumable?
-        paused?
+        paused? || canceled?
       end
 
       def resume
         unless resumable?
-          raise StandardError, "You can only resume paused subscriptions."
+          raise StandardError, "You can only resume paused or cancelled subscriptions"
         end
 
-        # Paddle Billing API only allows "resuming" subscriptions when they are paused
-        # So cancel the scheduled change if it is in the future
         if paused? && pause_starts_at? && Time.current < pause_starts_at
-          ::Paddle::Subscription.update(id: processor_id, scheduled_change: nil)
+          ::LemonSqueezy::Subscription.unpause(id: processor_id)
         else
-          ::Paddle::Subscription.resume(id: processor_id, effective_from: "immediately")
+          ::LemonSqueezy::Subscription.uncancel(id: processor_id)
         end
 
         pay_subscription.update(status: :active, pause_starts_at: nil)
-      rescue ::Paddle::Error => e
-        raise Pay::PaddleBilling::Error, e
+      rescue ::LemonSqueezy::Error => e
+        raise Pay::LemonSqueezy::Error, e
       end
 
+      # Lemon Squeezy requires both the Product ID and Variant ID.
+      # The Variant ID will be saved as the processor_plan
       def swap(plan, **options)
-        items = [{
-          price_id: plan,
-          quantity: quantity || 1
-        }]
+        raise StandardError, "A plan_id is required to swap a subscription" unless plan
+        raise StandardError, "A variant_id is required to swap a subscription" unless options[:variant_id]
 
-        ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
-        pay_subscription.update(processor_plan: plan, ends_at: nil, status: :active)
+        ::LemonSqueezy::Subscription.change_plan id: processor_id, plan_id: plan, variant_id: options[:variant_id]
+
+        pay_subscription.update(processor_plan: options[:variant_id], ends_at: nil, status: :active)
       end
 
       # Retries the latest invoice for a Past Due subscription

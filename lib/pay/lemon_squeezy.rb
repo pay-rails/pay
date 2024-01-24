@@ -44,7 +44,7 @@ module Pay
     end
 
     def self.owner_from_passthrough(passthrough)
-      GlobalID::Locator.locate_signed parse_passthrough(passthrough)
+      GlobalID::Locator.locate_signed passthrough
     rescue JSON::ParserError
       nil
     end
