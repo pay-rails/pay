@@ -45,24 +45,24 @@ module Pay
       end
 
       def charge(amount, options = {})
-      #   return Pay::Error unless options
+        #   return Pay::Error unless options
 
-      #   items = options[:items]
-      #   opts = options.except(:items).merge(customer_id: processor_id)
-      #   transaction = ::Paddle::Transaction.create(items: items, **opts)
+        #   items = options[:items]
+        #   opts = options.except(:items).merge(customer_id: processor_id)
+        #   transaction = ::Paddle::Transaction.create(items: items, **opts)
 
-      #   attrs = {
-      #     amount: transaction.details.totals.grand_total,
-      #     created_at: transaction.created_at,
-      #     currency: transaction.currency_code,
-      #     metadata: transaction.details.line_items&.first&.id
-      #   }
+        #   attrs = {
+        #     amount: transaction.details.totals.grand_total,
+        #     created_at: transaction.created_at,
+        #     currency: transaction.currency_code,
+        #     metadata: transaction.details.line_items&.first&.id
+        #   }
 
-      #   charge = pay_customer.charges.find_or_initialize_by(processor_id: transaction.id)
-      #   charge.update(attrs)
-      #   charge
-      # rescue ::Paddle::Error => e
-      #   raise Pay::LemonSqueezy::Error, e
+        #   charge = pay_customer.charges.find_or_initialize_by(processor_id: transaction.id)
+        #   charge.update(attrs)
+        #   charge
+        # rescue ::Paddle::Error => e
+        #   raise Pay::LemonSqueezy::Error, e
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
@@ -81,9 +81,9 @@ module Pay
       end
 
       def processor_subscription(subscription_id, options = {})
-      #   ::Paddle::Subscription.retrieve(id: subscription_id, **options)
-      # rescue ::Paddle::Error => e
-      #   raise Pay::LemonSqueezy::Error, e
+        #   ::Paddle::Subscription.retrieve(id: subscription_id, **options)
+        # rescue ::Paddle::Error => e
+        #   raise Pay::LemonSqueezy::Error, e
       end
     end
   end
