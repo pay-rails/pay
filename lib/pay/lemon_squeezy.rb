@@ -31,6 +31,10 @@ module Pay
       find_value_by_name(:lemon_squeezy, :store_id)
     end
 
+    def self.signing_secret
+      find_value_by_name(:lemon_squeezy, :signing_secret)
+    end
+
     def self.passthrough(owner:, **options)
       owner.to_sgid.to_s
     end
