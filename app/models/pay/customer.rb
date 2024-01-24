@@ -25,7 +25,7 @@ module Pay
     delegate :email, to: :owner
     delegate_missing_to :pay_processor
 
-    %w[stripe braintree paddle_billing paddle_classic fake_processor].each do |processor_name|
+    %w[stripe braintree paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
       scope processor_name, -> { where(processor: processor_name) }
 
       define_method :"#{processor_name}?" do

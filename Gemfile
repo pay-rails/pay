@@ -22,6 +22,7 @@ gem "webmock"
 gem "braintree", ">= 2.92.0"
 gem "stripe", "~> 10.4"
 gem "paddle", "~> 2.1"
+gem "lemonsqueezy", "~> 1.0"
 
 gem "receipts"
 gem "prawn", github: "prawnpdf/prawn"

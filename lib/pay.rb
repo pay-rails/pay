@@ -19,6 +19,7 @@ module Pay
   autoload :FakeProcessor, "pay/fake_processor"
   autoload :PaddleBilling, "pay/paddle_billing"
   autoload :PaddleClassic, "pay/paddle_classic"
+  autoload :LemonSqueezy, "pay/lemon_squeezy"
   autoload :Stripe, "pay/stripe"
 
   autoload :Webhooks, "pay/webhooks"
