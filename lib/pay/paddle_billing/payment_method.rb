@@ -5,6 +5,13 @@ module Pay
 
       delegate :customer, :processor_id, to: :pay_payment_method
 
+      def self.sync_from_transaction(pay_customer:, transaction:)
+        transaction = ::Paddle::Transaction.retrieve(id: transaction)
+        return unless transaction.status == "completed"
+        return if transaction.payments.empty?
+        sync(pay_customer: pay_customer, attributes: transaction.payments.first)
+      end
+
       def self.sync(pay_customer:, attributes:)
         details = attributes.method_details
         attrs = {
