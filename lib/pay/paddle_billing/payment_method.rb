@@ -8,7 +8,8 @@ module Pay
       def self.sync(pay_customer:, attributes:)
         details = attributes.method_details
         attrs = {
-          type: details.type.downcase
+          type: details.type.downcase,
+          default: true
         }
 
         case details.type.downcase
