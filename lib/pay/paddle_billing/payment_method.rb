@@ -19,7 +19,7 @@ module Pay
           attrs[:exp_year] = details.card.expiry_year
         end
 
-        payment_method = pay_customer.payment_methods.find_or_initialize_by(processor_id: attributes.stored_payment_method_id)
+        payment_method = pay_customer.payment_methods.find_or_initialize_by(processor_id: attributes.payment_method_id)
         payment_method.update!(attrs)
         payment_method
       end
