@@ -56,9 +56,9 @@ module Pay
           # Remove payment methods since customer cannot be reused after cancelling
           Pay::PaymentMethod.where(customer_id: object.customer_id).destroy_all
         when "trialing"
-          attributes[:trial_ends_at] = Time.parse(object.next_billed_at)
+          attributes[:trial_ends_at] = Time.parse(object.next_billed_at) if object.next_billed_at
         when "paused"
-          attributes[:pause_starts_at] = Time.parse(object.paused_at)
+          attributes[:pause_starts_at] = Time.parse(object.paused_at) if object.paused_at
         when "active", "past_due"
           attributes[:trial_ends_at] = nil
           attributes[:pause_starts_at] = nil
@@ -109,7 +109,7 @@ module Pay
         )
         pay_subscription.update(
           status: response.status,
-          ends_at: response.scheduled_change.effective_at
+          ends_at: response.scheduled_change&.effective_at
         )
       rescue ::Paddle::Error => e
         raise Pay::PaddleBilling::Error, e
