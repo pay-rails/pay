@@ -109,7 +109,7 @@ module Pay
         )
         pay_subscription.update(
           status: response.status,
-          ends_at: response.scheduled_change&.effective_at
+          ends_at: response.scheduled_change&.effective_at || DateTime.now
         )
       rescue ::Paddle::Error => e
         raise Pay::PaddleBilling::Error, e
