@@ -45,45 +45,26 @@ module Pay
       end
 
       def charge(amount, options = {})
-        #   return Pay::Error unless options
-
-        #   items = options[:items]
-        #   opts = options.except(:items).merge(customer_id: processor_id)
-        #   transaction = ::Paddle::Transaction.create(items: items, **opts)
-
-        #   attrs = {
-        #     amount: transaction.details.totals.grand_total,
-        #     created_at: transaction.created_at,
-        #     currency: transaction.currency_code,
-        #     metadata: transaction.details.line_items&.first&.id
-        #   }
-
-        #   charge = pay_customer.charges.find_or_initialize_by(processor_id: transaction.id)
-        #   charge.update(attrs)
-        #   charge
-        # rescue ::Paddle::Error => e
-        #   raise Pay::LemonSqueezy::Error, e
+        # pass
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         # pass
       end
 
-      # Paddle does not use payment method tokens. The method signature has it here
-      # to have a uniform API with the other payment processors.
       def add_payment_method(token = nil, default: true)
-        # Pay::LemonSqueezy::PaymentMethod.sync(pay_customer: pay_customer)
+        # pass
       end
 
       def trial_end_date(subscription)
-        # return unless subscription.state == "trialing"
-        # Time.zone.parse(subscription.next_payment[:date]).end_of_day
+        return unless subscription.state == "trialing"
+        Time.zone.parse(subscription.renews_at).end_of_day
       end
 
       def processor_subscription(subscription_id, options = {})
-        #   ::Paddle::Subscription.retrieve(id: subscription_id, **options)
-        # rescue ::Paddle::Error => e
-        #   raise Pay::LemonSqueezy::Error, e
+        ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
+      rescue ::LemonSqueezy::Error => e
+        raise Pay::LemonSqueezy::Error, e
       end
     end
   end
