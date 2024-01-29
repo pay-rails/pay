@@ -10,57 +10,39 @@ module Pay
       end
 
       def self.sync(charge_id, object: nil, try: 0, retries: 1)
-        # Skip loading the latest charge details from the API if we already have it
-        object ||= ::Paddle::Transaction.retrieve(id: charge_id)
+        # Skip loading the latest subscription invoice details from the API if we already have it
+        object ||= ::LemonSqueezy::SubscriptionInvoice.retrieve(id: charge_id)
 
-        # Ignore transactions that aren't completed
-        return unless object.status == "completed"
+        attrs = object.data.attributes if object.respond_to?(:data)
+        attrs ||= object
 
         # Ignore charges without a Customer
-        return if object.customer_id.blank?
+        return if attrs.customer_id.blank?
 
-        pay_customer = Pay::Customer.find_by(processor: :paddle_billing, processor_id: object.customer_id)
+        pay_customer = Pay::Customer.find_by(processor: :lemon_squeezy, processor_id: attrs.customer_id)
         return unless pay_customer
 
-        # Ignore transactions that are payment method changes
-        # But update the customer's payment method
-        if object.origin == "subscription_payment_method_change"
-          Pay::PaddleBilling::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
-          return
-        end
-
-        attrs = {
-          amount: object.details.totals.grand_total,
-          created_at: object.created_at,
-          currency: object.currency_code,
-          metadata: object.details.line_items&.first&.id,
-          subscription: pay_customer.subscriptions.find_by(processor_id: object.subscription_id)
+        attributes = {
+          amount: attrs.total,
+          created_at: attrs.created_at,
+          currency: attrs.currency,
+          subscription: pay_customer.subscriptions.find_by(processor_id: attrs.subscription_id),
+          payment_method_type: "card",
+          brand: attrs.card_brand,
+          last4: attrs.card_last_four
         }
 
-        if object.payment
-          case object.payment.method_details.type.downcase
-          when "card"
-            attrs[:payment_method_type] = "card"
-            attrs[:brand] = details.card.type
-            attrs[:exp_month] = details.card.expiry_month
-            attrs[:exp_year] = details.card.expiry_year
-            attrs[:last4] = details.card.last4
-          when "paypal"
-            attrs[:payment_method_type] = "paypal"
-          end
-
-          # Update customer's payment method
-          Pay::PaddleBilling::PaymentMethod.sync(pay_customer: pay_customer, attributes: object.payments.first)
-        end
+        # Update customer's payment method
+        Pay::LemonSqueezy::PaymentMethod.sync(pay_customer: pay_customer, attributes: attrs)
 
         # Update or create the charge
-        if (pay_charge = pay_customer.charges.find_by(processor_id: object.id))
+        if (pay_charge = pay_customer.charges.find_by(processor_id: charge_id))
           pay_charge.with_lock do
-            pay_charge.update!(attrs)
+            pay_charge.update!(attributes)
           end
           pay_charge
         else
-          pay_customer.charges.create!(attrs.merge(processor_id: object.id))
+          pay_customer.charges.create!(attributes.merge(processor_id: charge_id))
         end
       end
     end

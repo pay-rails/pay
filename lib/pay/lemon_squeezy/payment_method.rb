@@ -6,20 +6,17 @@ module Pay
       delegate :customer, :processor_id, to: :pay_payment_method
 
       def self.sync(pay_customer:, attributes:)
-        details = attributes.method_details
+        return unless pay_customer.subscription
+
+        payment_method = pay_customer.default_payment_method || pay_customer.build_default_payment_method
+        payment_method.processor_id ||= NanoId.generate
+
         attrs = {
-          type: details.type.downcase
+          type: "card",
+          brand: attributes.card_brand,
+          last4: attributes.card_last_four
         }
 
-        case details.type.downcase
-        when "card"
-          attrs[:brand] = details.card.type
-          attrs[:last4] = details.card.last4
-          attrs[:exp_month] = details.card.expiry_month
-          attrs[:exp_year] = details.card.expiry_year
-        end
-
-        payment_method = pay_customer.payment_methods.find_or_initialize_by(processor_id: attributes.stored_payment_method_id)
         payment_method.update!(attrs)
         payment_method
       end
