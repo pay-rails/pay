@@ -34,7 +34,7 @@ module Pay
         digest = OpenSSL::Digest.new("sha256")
 
         hmac = OpenSSL::HMAC.hexdigest(digest, key, data)
-        hmac == signature
+        ActiveSupport::SecurityUtils.secure_compare(hmac, signature)
       end
 
       def verify_params
