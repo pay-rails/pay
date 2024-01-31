@@ -45,7 +45,7 @@ module Pay
       end
 
       def charge(amount, options = {})
-        # pass
+        raise Pay::Error, "LemonSqueezy does not support one-off charges"
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
@@ -57,7 +57,7 @@ module Pay
       end
 
       def trial_end_date(subscription)
-        return unless subscription.state == "trialing"
+        return unless subscription.state == "on-trial"
         Time.zone.parse(subscription.renews_at).end_of_day
       end
 
