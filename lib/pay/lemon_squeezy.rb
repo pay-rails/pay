@@ -39,10 +39,6 @@ module Pay
       owner.to_sgid.to_s
     end
 
-    def self.parse_passthrough(passthrough)
-      JSON.parse(passthrough)
-    end
-
     def self.owner_from_passthrough(passthrough)
       GlobalID::Locator.locate_signed passthrough
     rescue JSON::ParserError
