@@ -61,14 +61,6 @@ module Pay
         Time.zone.parse(subscription.renews_at).end_of_day
       end
 
-      def customer_portal
-        return unless pay_customer.subscription
-        sub = ::LemonSqueezy::Subscription.retrieve(id: pay_customer.subscription.processor_id)
-        sub.urls.customer_portal
-      rescue ::LemonSqueezy::Error => e
-        raise Pay::LemonSqueezy::Error, e
-      end
-
       def processor_subscription(subscription_id, options = {})
         ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
       rescue ::LemonSqueezy::Error => e

@@ -88,6 +88,20 @@ module Pay
         @lemon_squeezy_subscription ||= ::LemonSqueezy::Subscription.retrieve(id: processor_id)
       end
 
+      def portal_url
+        sub = ::LemonSqueezy::Subscription.retrieve(id: pay_subscription.processor_id)
+        sub.urls.customer_portal
+      rescue ::LemonSqueezy::Error => e
+        raise Pay::LemonSqueezy::Error, e
+      end
+
+      def update_url
+        sub = ::LemonSqueezy::Subscription.retrieve(id: pay_subscription.processor_id)
+        sub.urls.update_payment_method
+      rescue ::LemonSqueezy::Error => e
+        raise Pay::LemonSqueezy::Error, e
+      end
+
       def cancel(**options)
         return if canceled?
         response = ::LemonSqueezy::Subscription.cancel(id: processor_id)
