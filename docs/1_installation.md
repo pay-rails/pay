@@ -107,7 +107,7 @@ Pay will include attributes when creating a Customer and update them when the Cu
 
 By adding `pay_customer` to your model, the `Pay::Billable::SyncCustomer` concern will be included. It's responsible for syncing your customer's data from your application to the payment processor in an `after_commit` callback if the method `pay_should_sync_customer?` returns `true`.
 
-By default, `pay_should_sync_customer?` will respond with `saved_change_to_email?`, which means Pay will automatically sync your customer with your payment processor when it's e-mail changes.
+By default, `pay_should_sync_customer?` will respond with `saved_change_to_email?`, which means Pay will automatically sync your customer with your payment processor when its e-mail changes.
 
 If you want to automatically sync whenever any other attribute changes, override `pay_should_sync_customer?` in your model. For instance, if you want to sync when your model's name changes, or you are using `stripe_attributes` above to send Stripe the customer's address, it might be a good idea to also sync when these attributes change:
 
