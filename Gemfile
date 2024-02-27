@@ -20,7 +20,7 @@ gem "vcr"
 gem "webmock"
 
 gem "braintree", ">= 2.92.0"
-gem "stripe", "~> 10.4"
+gem "stripe", "~> 10.6"
 gem "paddle", "~> 2.1"
 
 gem "receipts"
@@ -29,7 +29,7 @@ gem "prawn", github: "prawnpdf/prawn"
 # Test against different databases
 gem "pg"
 gem "mysql2"
-gem "sqlite3", "~> 1.7.0"
+gem "sqlite3", "~> 1.7.2"
 
 # Used for the dummy Rails app integration
 gem "puma"

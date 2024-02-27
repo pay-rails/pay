@@ -44,7 +44,7 @@ Want to add a new payment provider? Contributions are welcome.
 * **Payment Processors**
   * [Stripe](docs/stripe/1_overview.md)
   * [Braintree](docs/braintree/1_overview.md)
-  * [Paddle](docs/paddle/1_overview.md)
+  * [Paddle](docs/paddle_billing/1_overview.md)
   * [Fake Processor](docs/fake_processor/1_overview.md)
 * **Marketplaces**
   * [Stripe Connect](docs/marketplaces/stripe_connect.md)
