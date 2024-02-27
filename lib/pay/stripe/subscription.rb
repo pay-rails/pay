@@ -207,7 +207,7 @@ module Pay
       # cancel_now!(prorate: true)
       # cancel_now!(invoice_now: true)
       def cancel_now!(**options)
-        return if canceled?
+        return if canceled? && ends_at.past?
 
         @stripe_subscription = ::Stripe::Subscription.cancel(processor_id, options.merge(expand_options), stripe_options)
         pay_subscription.update(ends_at: Time.current, status: :canceled)

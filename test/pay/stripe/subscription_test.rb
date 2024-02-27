@@ -31,6 +31,18 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal 5, subscription.quantity
   end
 
+  test "cancel_now when scheduled for cancellation" do
+    @pay_customer.processor_id = nil
+    @pay_customer.payment_method_token = "pm_card_visa"
+    subscription = @pay_customer.subscribe(name: "default", plan: "default")
+    subscription.cancel
+    assert subscription.active?
+    assert subscription.ends_at?
+    subscription.cancel_now!
+    refute subscription.active?
+    assert subscription.ends_at.past?
+  end
+
   test "change stripe subscription quantity with nil subscription items" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     pay_subscription.update!(subscription_items: nil)
