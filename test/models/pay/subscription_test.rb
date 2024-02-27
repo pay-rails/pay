@@ -124,6 +124,12 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_includes subscriptions, trialing_subscription
   end
 
+  test "active scope should include previously trialed subscriptions" do
+    trialing_subscription = create_subscription(trial_ends_at: 7.days.ago)
+    subscriptions = Pay::Subscription.active
+    assert_includes subscriptions, trialing_subscription
+  end
+
   test "active scope should not include paused subscriptions" do
     paused_subscription = create_subscription(status: "paused")
     subscriptions = Pay::Subscription.active
