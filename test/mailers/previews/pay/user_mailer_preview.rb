@@ -23,7 +23,7 @@ class Pay::UserMailerPreview < ActionMailer::Preview
     Pay::UserMailer.with(
       pay_customer: Pay::Customer.first,
       pay_charge: Pay::Charge.first
-    ).receipt
+    ).refund
   end
 
   def subscription_renewing
