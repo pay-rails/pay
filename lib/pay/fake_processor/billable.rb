@@ -28,7 +28,8 @@ module Pay
         # Make to generate a processor_id
         customer
 
-        attributes = options.merge(
+        valid_attributes = options.slice(*Pay::Charge.attribute_names.map(&:to_sym))
+        attributes = {
           processor_id: NanoId.generate,
           amount: amount,
           data: {
@@ -38,7 +39,7 @@ module Pay
             exp_month: Date.today.month,
             exp_year: Date.today.year
           }
-        )
+        }.deep_merge(valid_attributes)
         pay_customer.charges.create!(attributes)
       end
 
