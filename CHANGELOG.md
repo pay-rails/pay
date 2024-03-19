@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Improve compatibility for fake processor charge with other payment processors by ignoring any non-attribute params. #965
+
 ### 7.1.1
 
 * Update `trial_ends_at` when Paddle Billing & Classic subscriptions change to `active` or `past_due` [#936](https://github.com/pay-rails/pay/pull/936)
