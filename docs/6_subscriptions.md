@@ -115,6 +115,48 @@ Or with Paddle Button Checkout:
 </a>
 ```
 
+##### Lemon Squeezy Subscriptions
+
+Lemon Squeezy does not allow you to create a subscription through the API. Instead, Pay uses webhooks to create the
+subscription in the database.
+
+Lemon Squeezy offer 2 checkout flows, a hosted checkout and a checkout overlay. When creating a Product in the
+Lemon Squeezy dashboard, clicking the "Share" button will provide you with the URLs for either checkout flow.
+
+For example, the hosted checkout flow:
+
+```html
+https://STORE.lemonsqueezy.com/checkout/buy/UUID
+```
+
+And the checkout overlay flow:
+
+```html
+<a href="https://STORE.lemonsqueezy.com/checkout/buy/UUID?embed=1" class="lemonsqueezy-button">Buy A Product</a>
+<script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
+```
+
+It's currently not possible to pass a pre-existing Customer ID to Lemon Squeezy, so you can use the passthrough
+method to associate the subscription with the correct `Pay::Customer`.
+
+You can pass additional options to the checkout session. You can view the [supported fields here](https://docs.lemonsqueezy.com/help/checkout/prefilling-checkout-fields)
+and the [custom data field here](https://docs.lemonsqueezy.com/help/checkout/passing-custom-data).
+
+###### Lemon Squeezy Passthrough Helper
+
+You can use the `Pay::LemonSqueezy.passthrough` helper to generate the `checkout[custom][passthrough]` field.
+
+You'll need to replace `storename` with your store URL slug & `UUID` with the UUID of the plan you want to use, which
+can be found by clicking Share on the product in Lemon Squeezy's dashboard.
+
+```html
+<a
+  class="lemonsqueezy-button"
+  href="https://storename.lemonsqueezy.com/checkout/buy/UUID?checkout[custom][passthrough]=<%= Pay::LemonSqueezy.passthrough(owner: @user) %>">
+  Sign up to Plan
+</a>
+```
+
 ## Retrieving a Subscription from the Database
 
 ```ruby
