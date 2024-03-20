@@ -54,5 +54,15 @@ module Pay
         events.subscribe "paddle_billing.transaction.completed", Pay::PaddleBilling::Webhooks::TransactionCompleted.new
       end
     end
+
+    def sync_transaction(transaction_id)
+      transaction = ::Paddle::Transaction.retrieve(id: transaction_id)
+
+      if transaction.subscription_id.present?
+        Pay::PaddleBilling::Subscription.sync(transaction.subscription_id)
+      else
+        Pay::PaddleBilling::Charge.sync(transaction_id, object: transaction)
+      end
+    end
   end
 end
