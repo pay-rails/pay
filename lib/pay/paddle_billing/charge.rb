@@ -37,8 +37,9 @@ module Pay
           subscription: pay_customer.subscriptions.find_by(processor_id: object.subscription_id)
         }
 
-        if object.payment
-          case object.payment.method_details.type.downcase
+        if object.payments.present?
+          details = object.payments.first.method_details
+          case details.type.downcase
           when "card"
             attrs[:payment_method_type] = "card"
             attrs[:brand] = details.card.type
