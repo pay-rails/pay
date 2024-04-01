@@ -24,7 +24,7 @@ gem "stripe", "~> 10.11"
 gem "paddle", "~> 2.1"
 
 gem "receipts"
-gem "prawn", github: "prawnpdf/prawn"
+gem "prawn"
 
 # Test against different databases
 gem "pg"
