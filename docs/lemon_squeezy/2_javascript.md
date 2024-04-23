@@ -19,15 +19,15 @@ class and turn them into a checkout button.
 It doesn't support sending attributes, so to customize the checkout button and session, you'll need to
 add additional parameters to the URL. You can view the [supported fields here](https://docs.lemonsqueezy.com/help/checkout/prefilling-checkout-fields) and the [custom data field here](https://docs.lemonsqueezy.com/help/checkout/passing-custom-data).
 
-You can use the `Pay::LemonSqueezy.passthrough` helper to generate the `checkout[custom][passthrough]` field.
-
-You'll need to replace `storename` with your store URL slug & `UUID` with the UUID of the plan you want to use, which
+You'll need to replace `STORE` with your store URL slug & `UUID` with the UUID of the plan you want to use, which
 can be found by clicking Share on the product in Lemon Squeezy's dashboard.
+
+Passing the customer's email address to the checkout URL will link it to the customer created in Lemon Squeezy.
 
 ```html
 <a
   class="lemonsqueezy-button"
-  href="https://storename.lemonsqueezy.com/checkout/buy/UUID?checkout[email]=<%= @user.email %>&checkout[custom][passthrough]=<%= Pay::LemonSqueezy.passthrough(owner: @user) %>">
+  href="https://STORE.lemonsqueezy.com/checkout/buy/UUID?checkout[email]=<%= CGI.escape(@user.email) %>">
   Sign up to Plan
 </a>
 ```
