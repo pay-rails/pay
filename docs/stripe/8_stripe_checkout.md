@@ -90,9 +90,9 @@ For one-time payments, you'll need to add a webhook listener for the Checkout `s
 
 For subscriptions, Pay will automatically create the `Pay::Subscription` record for you.
 
+To create custom webhook listeners for specific events, you can create your custom webhook listener classes under a folder like `app/webhooks`, like this:
 ```ruby
-Pay::Webhooks.delegator.subscribe "stripe.checkout.session.completed", FulfillCheckout.new
-Pay::Webhooks.delegator.subscribe "stripe.checkout.session.async_payment_succeeded", FulfillCheckout.new
+# app/webhooks/fulfill_checkout.rb
 
 class FulfillCheckout
   def call(event)
@@ -102,6 +102,14 @@ class FulfillCheckout
 
     # Handle fulfillment
   end
+end
+```
+
+And then subscribe your custom webhook listener class to specific Stripe events on `config/initializers/pay.rb`:
+```ruby
+ActiveSupport.on_load(:pay) do
+  Pay::Webhooks.delegator.subscribe "stripe.checkout.session.completed", FulfillCheckout.new
+  Pay::Webhooks.delegator.subscribe "stripe.checkout.session.async_payment_succeeded", FulfillCheckout.new
 end
 ```
 
