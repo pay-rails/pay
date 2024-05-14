@@ -22,7 +22,6 @@ services:
     - 45678:45678
     depends_on:
     - selenium
-    - redis
     - mysql
     - postgres
 
@@ -31,14 +30,6 @@ services:
     restart: unless-stopped
     networks:
     - default
-
-  redis:
-    image: redis:7.2
-    restart: unless-stopped
-    networks:
-    - default
-    volumes:
-    - redis-data:/data
 
   mysql:
     image: mysql/mysql-server:8.0
@@ -63,6 +54,5 @@ services:
         POSTGRES_PASSWORD: postgres
 
 volumes:
-  redis-data:
   mysql-data:
   postgres-data:
