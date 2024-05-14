@@ -72,6 +72,20 @@ You can also add a payment method without making it the default.
 @user.payment_processor.add_payment_method(params[:payment_method_token], default: false)
 ```
 
+## Importing Payment Methods
+
+### Paddle Billing
+
+If a Paymment Method doesn't exist in Pay, then you can use the following method to create it from Paddle Billing:
+
+It takes a `Pay::Customer` and a Paddle Transaction ID as arguments.
+
+```ruby
+Pay::PaddleBilling::PaymentMethod.sync_from_transaction pay_customer: @user.payment_processor, transaction: "txn_abc123"
+```
+
+If a Payment Method already exists with the token, then it will be updated with the latest details from Paddle.
+
 ## Next
 
 See [Charges](5_charges.md)
