@@ -55,6 +55,10 @@ Want to add a new payment provider? Contributions are welcome.
 
 If you have an issue you'd like to submit, please do so using the issue tracker in GitHub. In order for us to help you in the best way possible, please be as detailed as you can.
 
+For those using devcontainers, if you want to test the application with different databases:
+1. Uncomment the `DATABASE_URL` corresponding to the database type you wish to use in the `.devcontainer/devcontainer.json` file.
+2. Rebuild the devcontainer, which will configure the application to use the selected database for your development environment.
+
 If you'd like to open a PR please make sure the following things pass:
 
 ```ruby

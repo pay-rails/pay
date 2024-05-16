@@ -30,7 +30,7 @@ module Pay
 
     extend Env
 
-    REQUIRED_VERSION = "~> 10"
+    REQUIRED_VERSION = "~> 11"
 
     # A list of database model names that include Pay
     # Used for safely looking up models with client_reference_id
