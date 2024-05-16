@@ -29,7 +29,6 @@ gem "prawn"
 # Test against different databases
 gem "pg"
 gem "mysql2"
-gem "sqlite3", "~> 2.0.1"
 
 # Used for the dummy Rails app integration
 gem "puma"
