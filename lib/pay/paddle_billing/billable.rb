@@ -33,7 +33,13 @@ module Pay
           sc
         end
       rescue ::Paddle::Error => e
-        raise Pay::PaddleBilling::Error, e
+        sc = Paddle::Customer.list(email:).first
+        if sc.present?
+          pay_customer.update!(processor_id: sc.id)
+          sc
+        else
+          raise Pay::PaddleBilling::Error, e
+        end
       end
 
       # Syncs name and email to Paddle::Customer
