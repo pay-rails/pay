@@ -33,7 +33,7 @@ module Pay
           sc
         end
       rescue ::Paddle::Error => e
-        sc = Paddle::Customer.list(email:).first
+        sc = Paddle::Customer.list(email:).data.first
         if sc.present?
           pay_customer.update!(processor_id: sc.id)
           sc
