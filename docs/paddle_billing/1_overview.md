@@ -51,8 +51,8 @@ set the Environment value to `sandbox`. By default, this is set to `production`.
 
 Paddle uses a signing secret to verify that webhooks are coming from Paddle. You can find
 this after creating a webhook in the Paddle dashboard. You'll find this page
-[here for Production](https://vendors.paddle.com/notifications) or
-[here for Sandbox](https://sandbox-vendors.paddle.com/notifications).
+[here for Production](https://vendors.paddle.com/authentication) or
+[here for Sandbox](https://sandbox-vendors.paddle.com/authentication).
 
 ### Environment Variables
 
