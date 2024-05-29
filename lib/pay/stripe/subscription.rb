@@ -274,7 +274,7 @@ module Pay
 
       # Unpauses a subscription
       def unpause
-        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {pause_collection: nil}.merge(expand_options), stripe_options)
+        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {pause_collection: ""}.merge(expand_options), stripe_options)
         pay_subscription.update(
           pause_behavior: nil,
           pause_resumes_at: nil,
