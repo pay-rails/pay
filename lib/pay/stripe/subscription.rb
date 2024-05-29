@@ -261,6 +261,8 @@ module Pay
       #
       # pause_behavior of `void` is considered active until the end of the current period and not active after that. The current_period_end is stored as `pause_starts_at`
       # Other pause_behaviors do not set `pause_starts_at` because they are used for offering free services
+      #
+      # https://docs.stripe.com/billing/subscriptions/pause-payment
       def pause(**options)
         attributes = {pause_collection: options.reverse_merge(behavior: "void")}
         @stripe_subscription = ::Stripe::Subscription.update(processor_id, attributes.merge(expand_options), stripe_options)
@@ -273,8 +275,10 @@ module Pay
       end
 
       # Unpauses a subscription
+      #
+      # https://docs.stripe.com/billing/subscriptions/pause-payment#unpausing
       def unpause
-        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {pause_collection: nil}.merge(expand_options), stripe_options)
+        @stripe_subscription = ::Stripe::Subscription.update(processor_id, {pause_collection: ""}.merge(expand_options), stripe_options)
         pay_subscription.update(
           pause_behavior: nil,
           pause_resumes_at: nil,

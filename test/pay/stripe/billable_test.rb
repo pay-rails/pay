@@ -421,16 +421,20 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
       @pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
 
       @pay_subscription.pause(behavior: "void", resumes_at: 1.month.from_now.to_i)
-
       assert @pay_subscription.paused?
       assert_equal "void", @pay_subscription.pause_behavior
       assert @pay_subscription.pause_resumes_at > 21.days.from_now
 
-      @pay_subscription.resume
+      # Ensure Stripe record is paused
+      assert_equal "void", @pay_subscription.processor_subscription.pause_collection.behavior
 
+      @pay_subscription.resume
       refute @pay_subscription.paused?
       assert_nil @pay_subscription.pause_behavior
       assert_nil @pay_subscription.pause_resumes_at
+
+      # Ensure Stripe record is unpaused
+      assert_nil @pay_subscription.processor_subscription.pause_collection
     end
   end
 
