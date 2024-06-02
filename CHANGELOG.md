@@ -2,6 +2,17 @@
 
 ### Unreleased
 
+### 7.2.1
+
+* Use empty string to resume / unpause Stripe subscriptions. #992
+
+### 7.2.0
+
+* Add devcontainer for easier development #988
+* Stripe 11.x #980
+* Update Paddle billing payment method sync #946
+* Improve compatibility for fake processor charge with other payment processors by ignoring any non-attribute params. #965
+
 ### 7.1.1
 
 * Update `trial_ends_at` when Paddle Billing & Classic subscriptions change to `active` or `past_due` [#936](https://github.com/pay-rails/pay/pull/936)

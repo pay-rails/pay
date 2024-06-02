@@ -1,0 +1,44 @@
+name: Publish Gem
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: true
+        type: string
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  push:
+    needs: test
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      # Set up
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ruby
+
+      - name: Update version
+        run: |
+          sed -i 's/".*"/"${{ inputs.version }}"/' lib/pay/version.rb
+          bundle config set --local deployment 'false'
+          bundle
+          bundle exec appraisal
+          git config user.name 'GitHub Actions'
+          git config user.email github-actions@github.com
+          git add Gemfile.lock gemfiles lib
+          git commit -m "Version bump"
+          git push
+
+      # Release
+      - uses: rubygems/release-gem@v1

@@ -27,6 +27,12 @@ class Pay::FakeProcessor::Billable::Test < ActiveSupport::TestCase
     end
   end
 
+  test "fake processor charge options" do
+    assert_difference "Pay::Charge.count" do
+      @pay_customer.charge(10_00, {description: "Hello world"})
+    end
+  end
+
   test "fake processor subscribe" do
     assert_difference "Pay::Subscription.count" do
       @pay_customer.subscribe

@@ -32,15 +32,19 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "cancel_now when scheduled for cancellation" do
-    @pay_customer.processor_id = nil
-    @pay_customer.payment_method_token = "pm_card_visa"
-    subscription = @pay_customer.subscribe(name: "default", plan: "default")
-    subscription.cancel
-    assert subscription.active?
-    assert subscription.ends_at?
-    subscription.cancel_now!
-    refute subscription.active?
-    assert subscription.ends_at.past?
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+      @pay_customer.processor_id = nil
+      @pay_customer.payment_method_token = "pm_card_visa"
+      subscription = @pay_customer.subscribe(name: "default", plan: "default")
+      subscription.cancel
+      assert subscription.active?
+      assert subscription.ends_at?
+      subscription.cancel_now!
+      # Travel since we froze time
+      travel 1.minute
+      refute subscription.active?
+      assert subscription.ends_at.past?
+    end
   end
 
   test "change stripe subscription quantity with nil subscription items" do
