@@ -54,6 +54,17 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
     assert_enqueued_emails 0
   end
 
+  test "sync! is called with stripe_account" do
+    event = @trial_ended_event.clone
+    event.account = "connect_account_id"
+
+    pay_subscription = Pay::Subscription.new
+    Pay::Subscription.stubs(:find_by_processor_and_id).returns(pay_subscription)
+    pay_subscription.expects(:sync!).with(stripe_account: "connect_account_id")
+
+    Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(event)
+  end
+
   private
 
   def create_subscription(processor_id:, trial_ends_at:)
