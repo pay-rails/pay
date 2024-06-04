@@ -21,6 +21,7 @@ stripe:
   private_key: xxxx
   public_key: yyyy
   signing_secret:
+  webhook_receive_test_events: true
   - aaaa
   - bbbb
 braintree:
@@ -56,6 +57,7 @@ Pay will also check environment variables for API keys:
 * `STRIPE_PUBLIC_KEY`
 * `STRIPE_PRIVATE_KEY`
 * `STRIPE_SIGNING_SECRET`
+* `STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS`
 * `BRAINTREE_MERCHANT_ID`
 * `BRAINTREE_PUBLIC_KEY`
 * `BRAINTREE_PRIVATE_KEY`
@@ -70,6 +72,9 @@ Pay will also check environment variables for API keys:
 * `PADDLE_CLASSIC_PUBLIC_KEY_FILE`
 * `PADDLE_CLASSIC_PUBLIC_KEY_BASE64`
 * `PADDLE_CLASSIC_ENVIRONMENT`
+
+#### STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS (Default to TRUE)
+As per the guidance from https://support.stripe.com/questions/connect-account-webhook-configurations: "When a connected account is linked solely in live mode to your platform, both live and test events are sent to your live Connect Webhook Endpoint." Therefore, you can set this to false if you wish to receive only live events in Production.
 
 ## Generators
 
