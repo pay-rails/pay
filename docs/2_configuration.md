@@ -71,6 +71,14 @@ Pay will also check environment variables for API keys:
 * `PADDLE_CLASSIC_PUBLIC_KEY_BASE64`
 * `PADDLE_CLASSIC_ENVIRONMENT`
 
+> [!TIP]
+>
+> Are you using any of these payment processors for the very first time? Take a look at their respective configuration doc for generating these keys:
+>
+> - [Stripe](/docs/stripe/2_credentials.md)
+> - [Paddle Billing](/docs/paddle_billing/1_overview.md#configuration)
+> - [Paddle Classic](/docs/paddle_classic/1_overview.md#paddle-public-key)
+
 ## Generators
 
 If you want to modify the Stripe SCA template or any other views, you can copy over the view files using:
