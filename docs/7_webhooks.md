@@ -16,7 +16,7 @@ Pay comes with a bunch of different webhook handlers built-in. Each payment proc
 
 Webhooks are automatically mounted at `/pay/webhooks/:provider`
 
-To configure webhooks on your payment processor, use the following URLs (with your domain):
+To configure webhooks on your payment processor, use the following URLs while replacing `example.org` with your own domain:
 
 * **Stripe** - `https://example.org/pay/webhooks/stripe`
 * **Braintree** - `https://example.org/pay/webhooks/braintree`

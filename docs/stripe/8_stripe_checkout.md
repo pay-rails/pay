@@ -2,7 +2,10 @@
 
 [Stripe Checkout](https://stripe.com/docs/payments/checkout) allows you to simply redirect to Stripe for handling payments. The main benefit is that it's super fast to setup payments in your application, they're SCA compatible, and they will get improved automatically by Stripe.
 
-📝 **Warning**: You need to configure webhooks before using Stripe Checkout otherwise your application won't be updated with the correct data.
+> [!WARNING]
+> You need to configure webhooks before using Stripe Checkout otherwise your application won't be updated with the correct data.
+>
+> See [Webhooks](/docs/stripe/5_webhooks.md) section on how to do that.
 
 ![stripe checkout example](https://i.imgur.com/nFsCBCK.gif)
 
