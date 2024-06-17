@@ -37,8 +37,9 @@ module Pay
         pay_customer = Pay::Customer.find_by(processor: :lemon_squeezy, processor_id: attrs.customer_id)
 
         # If passthrough exists (only on webhooks) we can use it to create the Pay::Customer
-        if pay_customer.nil? && object.meta.custom_data && object.meta.custom_data.passthrough
-          owner = Pay::LemonSqueezy.owner_from_passthrough(object.meta.custom_data.passthrough)
+        if pay_customer.nil?
+          email = attrs.user_email
+          owner = Pay::LemonSqueezy.owner_by_email(email) if email.present?
           pay_customer = owner&.set_payment_processor(:lemon_squeezy, processor_id: attrs.customer_id)
         end
 

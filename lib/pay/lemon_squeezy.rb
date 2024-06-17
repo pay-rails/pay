@@ -13,6 +13,8 @@ module Pay
 
     extend Env
 
+    mattr_accessor :model_names, default: Set.new
+
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:lemon_squeezy) && defined?(::LemonSqueezy)
 
@@ -41,6 +43,10 @@ module Pay
         events.subscribe "lemon_squeezy.subscription_created", Pay::LemonSqueezy::Webhooks::Subscription.new
         events.subscribe "lemon_squeezy.subscription_updated", Pay::LemonSqueezy::Webhooks::Subscription.new
       end
+    end
+
+    def self.owner_by_email(email)
+      model_names.first.constantize.find_by(email:)
     end
   end
 end

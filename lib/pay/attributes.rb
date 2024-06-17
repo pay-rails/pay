@@ -20,6 +20,7 @@ module Pay
         after_commit :cancel_active_pay_subscriptions!, on: [:destroy]
 
         Pay::Stripe.model_names << name if Pay::Stripe.enabled?
+        Pay::LemonSqueezy.model_names << name if Pay::LemonSqueezy.enabled?
       end
 
       # Changes a user's payment processor
