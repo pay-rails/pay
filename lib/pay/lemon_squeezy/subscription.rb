@@ -22,11 +22,6 @@ module Pay
         :trial_ends_at,
         to: :pay_subscription
 
-      def self.sync_from_transaction(transaction_id)
-        transaction = ::Paddle::Transaction.retrieve(id: transaction_id)
-        sync(transaction.subscription_id) if transaction.subscription_id
-      end
-
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         # Passthrough is not return from this API, so we can't use that
         object ||= ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
