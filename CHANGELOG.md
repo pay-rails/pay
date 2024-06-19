@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 7.2.1
+
+* Use empty string to resume / unpause Stripe subscriptions. #992
+
 ### 7.2.0
 
 * Add devcontainer for easier development #988

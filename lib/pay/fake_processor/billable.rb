@@ -79,7 +79,11 @@ module Pay
           }
         )
 
-        pay_customer.reload_default_payment_method if default
+        if default
+          pay_customer.payment_methods.where.not(id: pay_payment_method.id).update_all(default: false)
+          pay_customer.reload_default_payment_method
+        end
+
         pay_payment_method
       end
 
