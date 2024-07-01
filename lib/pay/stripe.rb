@@ -66,6 +66,11 @@ module Pay
       find_value_by_name(:stripe, :signing_secret)
     end
 
+    def self.webhook_receive_test_events
+      value = find_value_by_name(:stripe, :webhook_receive_test_events)
+      value.blank? ? true : ActiveModel::Type::Boolean.new.cast(value)
+    end
+
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
         # Listen to the charge event to make sure we get non-subscription
