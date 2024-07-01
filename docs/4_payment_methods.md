@@ -64,6 +64,25 @@ Paddle uses an [Update Payment Details URL](https://developer.paddle.com/guides/
 
 You may either redirect to this URL or use Paddle's Javascript to render as an overlay or inline.
 
+##### Lemon Squeezy
+
+Much like Paddle, Lemon Squeezy uses an Update Payment Details URL for each customer which allows them to update
+the payment method. This URL expires after 24 hours, so this method retrieves a new one from the API each time.
+
+```ruby
+@user.payment_processor.subscription.update_url
+```
+
+Lemon Squeezy also offer a [Customer Portal](https://www.lemonsqueezy.com/features/customer-portal) where customers
+can manage their subscriptions and payment methods. You can link to this portal using the `portal_url` method.
+Just like the Update URL, this URL expires after 24 hours, so this method retrieves a new one from the API each time.
+
+```ruby
+@user.payment_processor.subscription.portal_url
+```
+
+You may either redirect to this URL or use Paddle's Javascript to render as an overlay or inline.
+
 ## Adding other Payment Methods
 
 You can also add a payment method without making it the default.
