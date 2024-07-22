@@ -202,7 +202,7 @@ module Pay
       # Syncs a customer's subscriptions from Stripe to the database.
       # Note that by default canceled subscriptions are NOT returned by Stripe. In order to include them, use `sync_subscriptions(status: "all")`.
       def sync_subscriptions(**options)
-        subscriptions = ::Stripe::Subscription.list(options.merge(customer: customer), stripe_options)
+        subscriptions = ::Stripe::Subscription.list(options.with_defaults(customer: processor_id), stripe_options)
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id)
         end
