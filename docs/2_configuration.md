@@ -20,8 +20,8 @@ They should be formatted like the following:
 stripe:
   private_key: xxxx
   public_key: yyyy
-  signing_secret:
   webhook_receive_test_events: true
+  signing_secret:
   - aaaa
   - bbbb
 braintree:
