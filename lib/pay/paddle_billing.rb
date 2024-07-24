@@ -55,7 +55,7 @@ module Pay
       end
     end
 
-    def sync_transaction(transaction_id)
+    def self.sync_transaction(transaction_id)
       transaction = ::Paddle::Transaction.retrieve(id: transaction_id)
 
       if transaction.subscription_id.present?
