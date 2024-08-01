@@ -1,18 +1,18 @@
 module Pay
   module PaddleClassic
-    autoload :Billable, "pay/paddle_classic/billable"
-    autoload :Charge, "pay/paddle_classic/charge"
-    autoload :Error, "pay/paddle_classic/error"
-    autoload :PaymentMethod, "pay/paddle_classic/payment_method"
-    autoload :Subscription, "pay/paddle_classic/subscription"
+    autoload :Billable, 'pay/paddle_classic/billable'
+    autoload :Charge, 'pay/paddle_classic/charge'
+    autoload :Error, 'pay/paddle_classic/error'
+    autoload :PaymentMethod, 'pay/paddle_classic/payment_method'
+    autoload :Subscription, 'pay/paddle_classic/subscription'
 
     module Webhooks
-      autoload :SignatureVerifier, "pay/paddle_classic/webhooks/signature_verifier"
-      autoload :SubscriptionCreated, "pay/paddle_classic/webhooks/subscription_created"
-      autoload :SubscriptionCancelled, "pay/paddle_classic/webhooks/subscription_cancelled"
-      autoload :SubscriptionPaymentRefunded, "pay/paddle_classic/webhooks/subscription_payment_refunded"
-      autoload :SubscriptionPaymentSucceeded, "pay/paddle_classic/webhooks/subscription_payment_succeeded"
-      autoload :SubscriptionUpdated, "pay/paddle_classic/webhooks/subscription_updated"
+      autoload :SignatureVerifier, 'pay/paddle_classic/webhooks/signature_verifier'
+      autoload :SubscriptionCreated, 'pay/paddle_classic/webhooks/subscription_created'
+      autoload :SubscriptionCancelled, 'pay/paddle_classic/webhooks/subscription_cancelled'
+      autoload :SubscriptionPaymentRefunded, 'pay/paddle_classic/webhooks/subscription_payment_refunded'
+      autoload :SubscriptionPaymentSucceeded, 'pay/paddle_classic/webhooks/subscription_payment_succeeded'
+      autoload :SubscriptionUpdated, 'pay/paddle_classic/webhooks/subscription_updated'
     end
 
     extend Env
@@ -20,14 +20,15 @@ module Pay
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_classic) && defined?(::Paddle)
 
-      Pay::Engine.version_matches?(required: "~> 2.1", current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 2.1")
+      Pay::Engine.version_matches?(required: '~> 2.4',
+                                   current: ::Paddle::VERSION) || (raise '[Pay] paddle gem must be version ~> 2.4')
     end
 
     def self.client
       @client ||= Paddle::Classic::Client.new(
-        vendor_id: vendor_id,
-        vendor_auth_code: vendor_auth_code,
-        sandbox: environment != "production"
+        vendor_id:,
+        vendor_auth_code:,
+        sandbox: environment != 'production'
       )
     end
 
@@ -40,7 +41,7 @@ module Pay
     end
 
     def self.environment
-      find_value_by_name(:paddle_classic, :environment) || "production"
+      find_value_by_name(:paddle_classic, :environment) || 'production'
     end
 
     def self.public_key
@@ -64,18 +65,21 @@ module Pay
     end
 
     def self.owner_from_passthrough(passthrough)
-      GlobalID::Locator.locate_signed parse_passthrough(passthrough)["owner_sgid"]
+      GlobalID::Locator.locate_signed parse_passthrough(passthrough)['owner_sgid']
     rescue JSON::ParserError
       nil
     end
 
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
-        events.subscribe "paddle_classic.subscription_created", Pay::PaddleClassic::Webhooks::SubscriptionCreated.new
-        events.subscribe "paddle_classic.subscription_updated", Pay::PaddleClassic::Webhooks::SubscriptionUpdated.new
-        events.subscribe "paddle_classic.subscription_cancelled", Pay::PaddleClassic::Webhooks::SubscriptionCancelled.new
-        events.subscribe "paddle_classic.subscription_payment_succeeded", Pay::PaddleClassic::Webhooks::SubscriptionPaymentSucceeded.new
-        events.subscribe "paddle_classic.subscription_payment_refunded", Pay::PaddleClassic::Webhooks::SubscriptionPaymentRefunded.new
+        events.subscribe 'paddle_classic.subscription_created', Pay::PaddleClassic::Webhooks::SubscriptionCreated.new
+        events.subscribe 'paddle_classic.subscription_updated', Pay::PaddleClassic::Webhooks::SubscriptionUpdated.new
+        events.subscribe 'paddle_classic.subscription_cancelled',
+                         Pay::PaddleClassic::Webhooks::SubscriptionCancelled.new
+        events.subscribe 'paddle_classic.subscription_payment_succeeded',
+                         Pay::PaddleClassic::Webhooks::SubscriptionPaymentSucceeded.new
+        events.subscribe 'paddle_classic.subscription_payment_refunded',
+                         Pay::PaddleClassic::Webhooks::SubscriptionPaymentRefunded.new
       end
     end
   end
