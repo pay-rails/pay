@@ -21,7 +21,7 @@ gem "webmock"
 
 gem "braintree", ">= 2.92.0"
 gem "stripe", "~> 12.0"
-gem "paddle", "~> 2.2"
+gem "paddle", "~> 2.3"
 
 gem "receipts"
 gem "prawn"
