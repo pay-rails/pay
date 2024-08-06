@@ -299,7 +299,7 @@ module Pay
       # Includes the `session_id` param for Stripe Checkout with existing params (and makes sure the curly braces aren't escaped)
       def merge_session_id_param(url)
         uri = URI.parse(url)
-        uri.query = URI.encode_www_form(URI.decode_www_form(uri.query.to_s).to_h.merge("session_id" => "{CHECKOUT_SESSION_ID}").to_a)
+        uri.query = URI.encode_www_form(URI.decode_www_form(uri.query.to_s).to_h.merge("stripe_checkout_session_id" => "{CHECKOUT_SESSION_ID}").to_a)
         uri.to_s.gsub("%7BCHECKOUT_SESSION_ID%7D", "{CHECKOUT_SESSION_ID}")
       end
     end
