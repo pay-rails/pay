@@ -36,5 +36,5 @@ class Pay::LemonSqueezy::Subscription::Test < ActiveSupport::TestCase
     subscription.update!(status: :on_trial, trial_ends_at: 1.month.from_now)
     assert subscription.on_trial?
     assert_includes Pay::Subscription.on_trial, subscription
-   end
+  end
 end
