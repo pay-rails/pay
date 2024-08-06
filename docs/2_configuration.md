@@ -73,6 +73,14 @@ Pay will also check environment variables for API keys:
 * `PADDLE_CLASSIC_PUBLIC_KEY_BASE64`
 * `PADDLE_CLASSIC_ENVIRONMENT`
 
+> [!TIP]
+>
+> Are you using any of these payment processors for the very first time? Take a look at their respective configuration doc for generating these keys:
+>
+> - [Stripe](/docs/stripe/2_credentials.md)
+> - [Paddle Billing](/docs/paddle_billing/1_overview.md#configuration)
+> - [Paddle Classic](/docs/paddle_classic/1_overview.md#paddle-public-key)
+
 #### STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS (Default to TRUE)
 As per the guidance from https://support.stripe.com/questions/connect-account-webhook-configurations: "When a connected account is linked solely in live mode to your platform, both live and test events are sent to your live Connect Webhook Endpoint." Therefore, you can set this to false if you wish to receive only live events in Production.
 

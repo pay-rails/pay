@@ -39,6 +39,6 @@ class Pay::PaddleClassic::Charge::Test < ActiveSupport::TestCase
       created_at: Time.zone.now
     )
 
-    assert_raises(Pay::Error) { charge.refund! }
+    assert_raises(Pay::PaddleClassic::Error) { charge.refund! }
   end
 end
