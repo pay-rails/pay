@@ -131,4 +131,12 @@ module Pay
       option
     end
   end
+
+  def self.sync(params)
+    if (session_id = params[:session_id])
+      Pay::Stripe.sync_checkout_session(session_id)
+    elsif (transaction_id = params[:transaction_id])
+      Pay::PaddleBilling.sync_transaction(transaction_id)
+    end
+  end
 end

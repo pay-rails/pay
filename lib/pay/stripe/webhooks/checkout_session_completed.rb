@@ -10,7 +10,7 @@ module Pay
 
           if (payment_intent_id = event.data.object.payment_intent)
             payment_intent = ::Stripe::PaymentIntent.retrieve({id: payment_intent_id}, {stripe_account: event.try(:account)}.compact)
-            Pay::Stripe::Charge.sync(payment_intent.latest_charge, stripe_account: event.try(:account))
+            Pay::Stripe::Charge.sync(payment_intent.latest_charge, stripe_account: event.try(:account)) if payment_intent.latest_charge
           end
 
           if (subscription_id = event.data.object.subscription)

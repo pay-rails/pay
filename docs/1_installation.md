@@ -10,13 +10,13 @@ Add these lines to your application's Gemfile:
 gem "pay", "~> 7.0"
 
 # To use Stripe, also include:
-gem "stripe", "~> 10.0"
+gem "stripe", "~> 12.0"
 
 # To use Braintree + PayPal, also include:
 gem "braintree", "~> 4.7"
 
 # To use Paddle Billing or Paddle Classic, also include:
-gem "paddle", "~> 2.1"
+gem "paddle", "~> 2.5"
 
 # To use Lemon Squeezy, also include:
 gem "lemonsqueezy", "~> 1.0"

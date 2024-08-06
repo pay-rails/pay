@@ -6,12 +6,25 @@ class Pay::Stripe::Test < ActiveSupport::TestCase
     ENV.update(
       "STRIPE_PUBLIC_KEY" => "public",
       "STRIPE_PRIVATE_KEY" => "private",
-      "STRIPE_SIGNING_SECRET" => "secret"
+      "STRIPE_SIGNING_SECRET" => "secret",
+      "STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS" => "false"
     )
 
     assert_equal "public", Pay::Stripe.public_key
     assert_equal "private", Pay::Stripe.private_key
     assert_equal "secret", Pay::Stripe.signing_secret
+    assert_equal false, Pay::Stripe.webhook_receive_test_events
+  ensure
+    ENV.update(old_env)
+  end
+
+  test "webhook_receive_test_events default to true" do
+    old_env = ENV.to_hash
+    ENV.update(
+      "STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS" => nil
+    )
+
+    assert_equal true, Pay::Stripe.webhook_receive_test_events
   ensure
     ENV.update(old_env)
   end

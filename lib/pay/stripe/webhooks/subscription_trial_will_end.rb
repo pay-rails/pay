@@ -8,7 +8,7 @@ module Pay
           pay_subscription = Pay::Subscription.find_by_processor_and_id(:stripe, object.id)
           return if pay_subscription.nil?
 
-          pay_subscription.sync!
+          pay_subscription.sync!(stripe_account: event.try(:account))
 
           pay_user_mailer = Pay.mailer.with(pay_customer: pay_subscription.customer, pay_subscription: pay_subscription)
 

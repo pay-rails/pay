@@ -6,7 +6,8 @@ module Pay
       end
 
       def create
-        queue_event(verified_event)
+        event = verified_event
+        queue_event(event) if event.livemode || Pay::Stripe.webhook_receive_test_events
         head :ok
       rescue ::Stripe::SignatureVerificationError => e
         log_error(e)

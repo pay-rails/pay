@@ -142,15 +142,10 @@ module Pay
 
       # Adds a credit note to a Stripe Invoice
       def credit_note!(**options)
-        raise Pay::Stripe::Error, "no Stripe invoice_id on Pay::Charge" if invoice_id.blank?
+        raise Pay::Stripe::Error, "no Stripe invoice_id on Pay::Charge" if pay_charge.invoice_id.blank?
         ::Stripe::CreditNote.create({invoice: invoice_id}.merge(options), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
-      end
-
-      def credit_notes(**options)
-        raise Pay::Stripe::Error, "no Stripe invoice_id on Pay::Charge" if invoice_id.blank?
-        ::Stripe::CreditNote.list({invoice: invoice_id}.merge(options), stripe_options)
       end
 
       # https://stripe.com/docs/payments/capture-later
