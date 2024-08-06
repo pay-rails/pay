@@ -52,6 +52,10 @@ Paddle Classic requires an active subscription on the customer in order to creat
 @user.payment_processor.charge(1500, {charge_name: "Test"}) # $15.00 USD
 ```
 
+##### Lemon Squeezy Charges
+
+Lemon Squeezy currently doesn't support one-time charges.
+
 ## Retrieving Charges
 
 To see a list of charges for a customer, you can access them with:

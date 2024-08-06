@@ -11,6 +11,7 @@ Before you can process payments, you need to assign a payment processor for the 
 @user.set_payment_processor :braintree
 @user.set_payment_processor :paddle_billing
 @user.set_payment_processor :paddle_classic
+@user.set_payment_processor :lemon_squeezy
 @user.set_payment_processor :fake_processor, allow_fake: true
 ```
 
@@ -50,11 +51,16 @@ Only one `Pay::Customer` can be the default which is used for `payment_processor
 
 ## Retrieving a Customer object from the Payment Processor
 
-If you need to access the API object directly from the payment processor like the `Stripe::Customer`. You can retrieve the object with:
+For Paddle Billing and Lemon Squeezy, using the `customer` method will create a new customer on the payment processor.
+
+If the `processor_id` is already set, it will retrieve the customer from the payment processor and return the object
+directly from the API. Like so:
 
 ```ruby
 @user.payment_processor.customer
 #=> #<Stripe::Customer>
+#=> #<Paddle::Customer>
+#=> #<LemonSqueezy::Customer>
 ```
 
 ##### Paddle Classic:
