@@ -30,4 +30,11 @@ class Pay::LemonSqueezy::Subscription::Test < ActiveSupport::TestCase
     assert_equal 225676, @pay_customer.subscription.processor_subscription.variant_id
     assert_equal "active", @pay_customer.subscription.status
   end
+
+  test "lemon squeezy on_trial" do
+    subscription = @pay_customer.subscription
+    subscription.update!(status: :on_trial, trial_ends_at: 1.month.from_now)
+    assert subscription.on_trial?
+    assert_includes Pay::Subscription.on_trial, subscription
+   end
 end

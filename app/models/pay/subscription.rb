@@ -9,7 +9,7 @@ module Pay
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
-    scope :on_trial, -> { where(status: ["trialing", "active"]).where("trial_ends_at > ?", Time.current) }
+    scope :on_trial, -> { where(status: ["on_trial", "trialing", "active"]).where("trial_ends_at > ?", Time.current) }
     scope :canceled, -> { where.not(ends_at: nil) }
     scope :cancelled, -> { canceled }
     scope :on_grace_period, -> { where("#{table_name}.ends_at IS NOT NULL AND #{table_name}.ends_at > ?", Time.current) }
