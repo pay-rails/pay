@@ -48,22 +48,24 @@ module Pay
       #
       # Returns a Stripe::Customer object
       def customer
-        stripe_customer = if processor_id?
-          ::Stripe::Customer.retrieve({id: processor_id, expand: ["tax", "invoice_credit_balance"]}, stripe_options)
-        else
-          sc = ::Stripe::Customer.create(customer_attributes.merge(expand: ["tax"]), stripe_options)
-          pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
-          sc
-        end
+        Pay::Customer.find(pay_customer.id).with_lock do
+          stripe_customer = if processor_id?
+            ::Stripe::Customer.retrieve({id: processor_id, expand: ["tax", "invoice_credit_balance"]}, stripe_options)
+          else
+            sc = ::Stripe::Customer.create(customer_attributes.merge(expand: ["tax"]), stripe_options)
+            pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
+            sc
+          end
 
-        if payment_method_token?
-          add_payment_method(payment_method_token, default: true)
-          pay_customer.payment_method_token = nil
-        end
+          if payment_method_token?
+            add_payment_method(payment_method_token, default: true)
+            pay_customer.payment_method_token = nil
+          end
 
-        stripe_customer
-      rescue ::Stripe::StripeError => e
-        raise Pay::Stripe::Error, e
+          stripe_customer
+        rescue ::Stripe::StripeError => e
+          raise Pay::Stripe::Error, e
+        end
       end
 
       # Syncs name and email to Stripe::Customer
@@ -202,7 +204,7 @@ module Pay
       # Syncs a customer's subscriptions from Stripe to the database.
       # Note that by default canceled subscriptions are NOT returned by Stripe. In order to include them, use `sync_subscriptions(status: "all")`.
       def sync_subscriptions(**options)
-        subscriptions = ::Stripe::Subscription.list(options.merge(customer: customer), stripe_options)
+        subscriptions = ::Stripe::Subscription.list(options.with_defaults(customer: processor_id), stripe_options)
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id)
         end

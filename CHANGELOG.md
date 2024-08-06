@@ -2,6 +2,12 @@
 
 ### Unreleased
 
+### 7.3.0
+
+* Stripe v12
+* Accept Stripe Connect live and test webhooks in production #1001
+* Only sync Stripe Checkout Session charge if it exists
+
 ### 7.2.1
 
 * Use empty string to resume / unpause Stripe subscriptions. #992

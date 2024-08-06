@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 8000217130cf9c70b0736fbff2ccb26c8fb162df
+  revision: 2c8a5ab3bb143588f6bf3e8fcd14fbff1db63c60
   branch: main
   specs:
     actioncable (8.0.0.alpha)
@@ -69,8 +69,9 @@ GIT
       connection_pool (>= 2.2.5)
       drb
       i18n (>= 1.6, < 2)
-      logger
+      logger (>= 1.4.2)
       minitest (>= 5.1)
+      securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
     rails (8.0.0.alpha)
       actioncable (= 8.0.0.alpha)
@@ -107,19 +108,19 @@ GIT
 PATH
   remote: ..
   specs:
-    pay (7.2.1)
+    pay (7.3.0)
       rails (>= 6.0.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.6)
-      public_suffix (>= 2.0.2, < 6.0)
+    addressable (2.8.7)
+      public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.2)
     base64 (0.2.0)
     bigdecimal (3.1.8)
     bindex (0.8.1)
-    braintree (4.20.0)
+    braintree (4.21.0)
       builder (>= 3.2.4)
       rexml (>= 3.1.9)
     builder (3.3.0)
@@ -133,10 +134,11 @@ GEM
     crass (1.0.6)
     date (3.3.4)
     drb (2.2.1)
-    erubi (1.12.0)
-    faraday (2.9.1)
+    erubi (1.13.0)
+    faraday (2.10.1)
       faraday-net_http (>= 2.0, < 3.2)
-    faraday-net_http (3.1.0)
+      logger
+    faraday-net_http (3.1.1)
       net-http
     globalid (1.2.1)
       activesupport (>= 6.1)
@@ -149,7 +151,7 @@ GEM
       railties (>= 6.0.0)
     iniparse (1.5.0)
     io-console (0.7.2)
-    irb (1.13.1)
+    irb (1.14.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.7.2)
@@ -167,13 +169,13 @@ GEM
     marcel (1.0.4)
     matrix (0.4.2)
     mini_mime (1.1.5)
-    minitest (5.23.1)
-    mocha (2.3.0)
+    minitest (5.24.1)
+    mocha (2.4.5)
       ruby2_keywords (>= 0.0.5)
     mysql2 (0.5.6)
     net-http (0.4.1)
       uri
-    net-imap (0.4.12)
+    net-imap (0.4.14)
       date
       net-protocol
     net-pop (0.1.2)
@@ -183,24 +185,24 @@ GEM
     net-smtp (0.5.0)
       net-protocol
     nio4r (2.7.3)
-    nokogiri (1.16.5-arm64-darwin)
+    nokogiri (1.16.7-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.5-x86_64-darwin)
+    nokogiri (1.16.7-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.5-x86_64-linux)
+    nokogiri (1.16.7-x86_64-linux)
       racc (~> 1.4)
-    overcommit (0.63.0)
+    overcommit (0.64.0)
       childprocess (>= 0.6.3, < 6)
       iniparse (~> 1.4)
       rexml (~> 3.2)
-    paddle (2.2.0)
+    paddle (2.5.0)
       faraday (~> 2.0)
     parallel (1.25.1)
-    parser (3.3.2.0)
+    parser (3.3.4.0)
       ast (~> 2.4.1)
       racc
     pdf-core (0.10.0)
-    pg (1.5.6)
+    pg (1.5.7)
     prawn (2.5.0)
       matrix (~> 0.4)
       pdf-core (~> 0.10.0)
@@ -209,11 +211,11 @@ GEM
       prawn (>= 1.3.0, < 3.0.0)
     psych (5.1.2)
       stringio
-    public_suffix (5.0.5)
+    public_suffix (6.0.1)
     puma (6.4.2)
       nio4r (~> 2.0)
-    racc (1.8.0)
-    rack (3.1.2)
+    racc (1.8.1)
+    rack (3.1.7)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -236,9 +238,9 @@ GEM
       prawn (>= 1.3.0, < 3.0.0)
       prawn-table (~> 0.2.1)
     regexp_parser (2.9.2)
-    reline (0.5.8)
+    reline (0.5.9)
       io-console (~> 0.5)
-    rexml (3.3.0)
+    rexml (3.3.4)
       strscan
     rubocop (1.64.1)
       json (~> 2.3)
@@ -253,22 +255,23 @@ GEM
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.31.3)
       parser (>= 3.3.1.0)
-    rubocop-performance (1.21.0)
+    rubocop-performance (1.21.1)
       rubocop (>= 1.48.1, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
+    securerandom (0.3.1)
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
-    sprockets-rails (3.5.1)
+    sprockets-rails (3.5.2)
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
-    sqlite3 (2.0.2-arm64-darwin)
-    sqlite3 (2.0.2-x86_64-darwin)
-    sqlite3 (2.0.2-x86_64-linux-gnu)
-    standard (1.37.0)
+    sqlite3 (2.0.3-arm64-darwin)
+    sqlite3 (2.0.3-x86_64-darwin)
+    sqlite3 (2.0.3-x86_64-linux-gnu)
+    standard (1.39.2)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
       rubocop (~> 1.64.0)
@@ -282,14 +285,14 @@ GEM
       rubocop-performance (~> 1.21.0)
     stimulus-rails (1.3.3)
       railties (>= 6.0.0)
-    stringio (3.1.0)
-    stripe (11.6.0)
+    stringio (3.1.1)
+    stripe (12.4.0)
     strscan (3.1.0)
     thor (1.3.1)
     timeout (0.4.1)
     ttfunk (1.8.0)
       bigdecimal (~> 3.1)
-    turbo-rails (2.0.5)
+    turbo-rails (2.0.6)
       actionpack (>= 6.0.0)
       activejob (>= 6.0.0)
       railties (>= 6.0.0)
@@ -312,7 +315,7 @@ GEM
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.6.15)
+    zeitwerk (2.6.17)
 
 PLATFORMS
   arm64-darwin-21
@@ -321,6 +324,7 @@ PLATFORMS
   x86_64-darwin-20
   x86_64-darwin-21
   x86_64-darwin-22
+  x86_64-darwin-23
   x86_64-linux
 
 DEPENDENCIES
@@ -334,7 +338,7 @@ DEPENDENCIES
   net-pop
   net-smtp
   overcommit
-  paddle (~> 2.2)
+  paddle (~> 2.4)
   pay!
   pg
   prawn
@@ -345,11 +349,11 @@ DEPENDENCIES
   sqlite3 (~> 2.0)
   standard
   stimulus-rails
-  stripe (~> 11.0)
+  stripe (~> 12.0)
   turbo-rails
   vcr
   web-console
   webmock
 
 BUNDLED WITH
-   2.5.11
+   2.5.14
