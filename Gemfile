@@ -23,6 +23,8 @@ gem "braintree", ">= 2.92.0"
 gem "stripe", "~> 12.0"
 gem "paddle", "~> 2.2"
 
+gem 'dotenv', groups: [:development, :test]
+
 gem 'faraday'
 
 gem "receipts"
