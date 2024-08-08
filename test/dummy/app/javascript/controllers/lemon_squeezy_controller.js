@@ -1,12 +1,7 @@
-<<<<<<< Updated upstream
-// app/javascript/controllers/lemon_squeezy_controller.js
-=======
->>>>>>> Stashed changes
 import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="lemon-squeezy"
 export default class extends Controller {
-<<<<<<< Updated upstream
   static targets = ["redirectUrl", "storeId", "variantId"]
 
   submit(event) {
@@ -61,8 +56,5 @@ export default class extends Controller {
   getMetaValue(name) {
     const element = document.querySelector(`meta[name="${name}"]`)
     return element ? element.getAttribute('content') : null
-=======
-  connect() {
->>>>>>> Stashed changes
   }
 }

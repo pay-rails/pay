@@ -25,7 +25,11 @@ class LemonSqueezy::SubscriptionsController < ApplicationController
     end
 
     def new
+<<<<<<< Updated upstream
     end
+=======
+    endg
+>>>>>>> Stashed changes
 
     def create
       lemon_squeezy_service = LemonSqueezyService.new(ENV['LEMON_SQUEEZY_API_KEY'])
