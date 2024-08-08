@@ -19,7 +19,6 @@ Rails.application.routes.draw do
   end
 
   namespace :lemon_squeezy do
-    resource :payment_method, namespace: :lemon_squeezy
     resources :subscriptions do
       member do
         patch :cancel

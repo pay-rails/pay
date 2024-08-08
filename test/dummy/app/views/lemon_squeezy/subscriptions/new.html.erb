@@ -24,4 +24,19 @@
 
     <%= link_to "All Test Cards", "https://developers.braintreepayments.com/reference/general/testing/ruby", target: :_blank, class: "btn btn-outline-dark btn-sm mt-3" %>
   </div>
+
+
+    <h1>Subscribe to Our Service</h1>
+    <%= form_with url: lemon_squeezy_subscriptions_path, method: :post, data: { controller: "lemon-squeezy", action: "submit->lemon-squeezy#submit" } do %>
+      <%= hidden_field_tag :redirect_url, "https://myapp.com", id: "redirect_url", data: { target: "lemon-squeezy.redirectUrl" } %>
+      <%= hidden_field_tag :store_id, "109239", id: "store_id", data: { target: "lemon-squeezy.storeId" } %>
+      <%= hidden_field_tag :variant_id, "477097", id: "variant_id", data: { target: "lemon-squeezy.variantId" } %>
+      <div class="form-group">
+        <%= submit_tag "Subscribe", class: 'btn btn-primary' %>
+      </div>
+    <% end %>
+
+
+
+
 </div>
