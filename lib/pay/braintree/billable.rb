@@ -7,8 +7,6 @@ module Pay
         :processor_id?,
         :email,
         :customer_name,
-        :payment_method_token,
-        :payment_method_token?,
         to: :pay_customer
 
       def initialize(pay_customer)
@@ -36,27 +34,13 @@ module Pay
       # Retrieve the Braintree::Customer object
       #
       # - If no processor_id is present, creates a Customer.
-      # - When 'payment_method_token' is present, it will also set the default payment method
       def customer
         if processor_id?
-          customer = gateway.customer.find(processor_id)
-
-          if payment_method_token?
-            add_payment_method(payment_method_token, default: true)
-            pay_customer.payment_method_token = nil
-          end
-
-          customer
+          gateway.customer.find(processor_id)
         else
-          result = gateway.customer.create(customer_attributes.merge(payment_method_nonce: payment_method_token))
+          result = gateway.customer.create(customer_attributes)
           raise Pay::Braintree::Error, result unless result.success?
           pay_customer.update!(processor_id: result.customer.id)
-
-          if payment_method_token?
-            save_payment_method(result.customer.payment_methods.last, default: true)
-            pay_customer.payment_method_token = nil
-          end
-
           result.customer
         end
       rescue ::Braintree::AuthorizationError => e
@@ -100,10 +84,7 @@ module Pay
         end
 
         metadata = options.delete(:metadata)
-        subscription_options = options.merge(
-          payment_method_token: token,
-          plan_id: plan
-        )
+        subscription_options = options.merge(payment_method_token: token, plan_id: plan)
 
         result = gateway.subscription.create(subscription_options)
         raise Pay::Braintree::Error, result unless result.success?
