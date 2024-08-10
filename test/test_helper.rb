@@ -29,7 +29,6 @@ require "receipts"
 require File.expand_path("dummy/config/environment.rb", __dir__)
 ActiveRecord::Migrator.migrations_paths = [File.expand_path("dummy/db/migrate", __dir__), File.expand_path("../db/migrate", __dir__)]
 require "rails/test_help"
-require "byebug"
 require "minitest/mock"
 require "mocha/minitest"
 
