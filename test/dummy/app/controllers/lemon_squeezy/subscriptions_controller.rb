@@ -6,31 +6,20 @@ module LemonSqueezy
       @subscriptions = Pay::Subscription.joins(:customer).where(pay_customers: {processor: :lemon_squeezy}).order(created_at: :desc)
     end
 
-
     def create
-      raise
-      begin
-        lemon_squeezy_service = LemonSqueezyService.new(ENV['LEMONSQUEEZY_API_KEY'])
-        result = lemon_squeezy_service.create_checkout_session(checkout_params)
-
-        if result[:success]
-          render json: { checkout_url: result[:checkout_url] }, status: :ok
-        else
-          render json: { error: result[:error] }, status: :unprocessable_entity
-        end
-
-      rescue StandardError => e
-        render json: { error: e.message }, status: :internal_server_error
+      current_user.set_payment_processor(params[:processor])
+      current_user.payment_processor.payment_method_token = params[:card_token]
+      
+      subscription = current_user.payment_processor.subscribe(plan: params[:plan_id])
+      
+      if subscription.persisted?
+        render json: { url: lemon_squeezy_subscriptions_path }, status: :ok
+      else
+        render json: { error: 'Failed to create subscription' }, status: :unprocessable_entity
       end
-    end
 
-    private
-
-    def checkout_params
-      params.require(:data).permit(
-        attributes: [:redirect_url],
-        relationships: [:store, :variant]
-      )
+    rescue Pay::Error => e
+      render json: { error: e.message }, status: :unprocessable_entity
     end
   end
 end

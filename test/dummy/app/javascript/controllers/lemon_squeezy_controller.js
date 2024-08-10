@@ -2,63 +2,50 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="lemon-squeezy"
 export default class extends Controller {
-  static targets = ["redirectUrl", "storeId", "variantId"]
-
   connect() {
     window.createLemonSqueezy()
-  }
 
-  submit(event) {
-    // event.preventDefault()
-
-    // Collect form data
-    const data = {
-      data: {
-        attributes: {
-          redirect_url: this.redirectUrlTarget.value
-        },
-        relationships: {
-          store: {
-            data: {
-              type: "stores",
-              id: this.storeIdTarget.value
-            }
-          },
-          variant: {
-            data: {
-              type: "variants",
-              id: this.variantIdTarget.value
-            }
+    LemonSqueezy.Setup({
+      eventHandler: (event) => {
+        if (event.event === "Checkout.Success") {
+          const data = {
+            processor: 'lemon_squeezy', // Assuming 'lemon_squeezy' is the processor name
+            customer_id: event.data.order.data.attributes.customer_id,
+            name: 'default',
+            processor_id: event.data.order.data.attributes.first_order_item.order_id,
+            processor_plan: 'default',
+            status: 'active',
+            plan_id: event.data.order.data.attributes.first_order_item.variant_id, // assuming variant_id is the plan ID
+            card_token: event.data.order.data.attributes.card_token // assuming card_token is available
           }
+
+          fetch('/lemon_squeezy/subscriptions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+          .then(response => {
+            if (!response.ok) {
+              return response.json().then(err => {
+                throw new Error(err.error || 'Unknown error')
+              })
+            }
+            return response.json()
+          })
+          .then(result => {
+            if (result.error) {
+              alert(`Error: ${result.error}`)
+            } else {
+              window.location.href = '/lemon_squeezy/subscriptions'
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error)
+          })
         }
       }
-    }
-
-    // Send data to Rails backend
-    fetch('/lemon_squeezy/subscriptions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
     })
-    .then(response => response.json())
-    .then(result => {
-      if (result.error) {
-        alert(`Error: ${result.error}`)
-      } else {
-        // Redirect or display a message to the user
-        window.location.href = result.url
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error)
-    })
-  }
-
-  // Helper function to get meta tag value
-  getMetaValue(name) {
-    const element = document.querySelector(`meta[name="${name}"]`)
-    return element ? element.getAttribute('content') : null
   }
 }
