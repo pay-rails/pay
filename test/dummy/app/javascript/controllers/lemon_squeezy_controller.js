@@ -4,8 +4,12 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["redirectUrl", "storeId", "variantId"]
 
+  connect() {
+    window.createLemonSqueezy()
+  }
+
   submit(event) {
-    event.preventDefault()
+    // event.preventDefault()
 
     // Collect form data
     const data = {

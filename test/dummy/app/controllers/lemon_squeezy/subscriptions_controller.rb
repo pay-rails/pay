@@ -8,8 +8,7 @@ module LemonSqueezy
 
 
     def create
-      Rails.logger.info "Reached create action"
-      raise 'Test exception'
+      raise
       begin
         lemon_squeezy_service = LemonSqueezyService.new(ENV['LEMONSQUEEZY_API_KEY'])
         result = lemon_squeezy_service.create_checkout_session(checkout_params)

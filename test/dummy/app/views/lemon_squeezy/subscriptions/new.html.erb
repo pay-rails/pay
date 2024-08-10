@@ -1,42 +1,45 @@
-<div class="row">
+<div class="row" data-controller="lemon-squeezy">
   <div class="col-sm-6">
-    <%= form_with url: lemon_squeezy_subscriptions_path,
-      method: :post, data: { controller: "lemon-squeezy" } do |form| %>
+    <%= form_with url: lemon_squeezy_subscriptions_path, method: :post, data: { action: "submit->lemon-squeezy#submit" } do %>
+      <%= hidden_field_tag :redirect_url, "https://myapp.com", id: "redirect_url", data: { target: "lemon-squeezy.redirectUrl" } %>
+      <%= hidden_field_tag :store_id, "109239", id: "store_id", data: { target: "lemon-squeezy.storeId" } %>
+      <%= hidden_field_tag :variant_id, "477097", id: "variant_id", data: { target: "lemon-squeezy.variantId" } %>
 
       <div class="form-group">
-        <%= form.label :plan_id, "Plan ID" %>
-        <%= form.text_field :plan_id, value: "default", class: "form-control" %>
+        <a class="lemonsqueezy-button btn btn-primary" href="https://teststore95.lemonsqueezy.com/buy/b112fcf3-3b08-4dd1-a667-fcfd8bbe8618">
+          Subscribe
+        </a>
       </div>
 
-      <div class="my-8 text-center">
-        <%= form.button "Checkout", class: "btn btn-primary" %>
-      </div>
+      <%# <div class="form-group"> %>
+        <%#= submit_tag "Subscribe", class: 'btn btn-primary' %>
+      <%# </div> %>
     <% end %>
+    
+
+
   </div>
 
 
   <div class="col-sm-6">
     <h6>Test cards</h6>
     <div>
-      <code class="mr-3">4111111111111111</code>
+      <code class="mr-3">4242 4242 4242 4242</code>
       Visa
+    </div>
+    
+    <div>
+      <code class="mr-3">5555 5555 5555 4444</code>
+      Mastercard
+    </div>
+
+    <div>
+      <code class="mr-3">3782 822463 10005</code>
+      American Express
     </div>
 
     <%= link_to "All Test Cards", "https://developers.braintreepayments.com/reference/general/testing/ruby", target: :_blank, class: "btn btn-outline-dark btn-sm mt-3" %>
   </div>
-
-
-    <h1>Subscribe to Our Service</h1>
-    <%= form_with url: lemon_squeezy_subscriptions_path, method: :post, data: { controller: "lemon-squeezy", action: "submit->lemon-squeezy#submit" } do %>
-      <%= hidden_field_tag :redirect_url, "https://myapp.com", id: "redirect_url", data: { target: "lemon-squeezy.redirectUrl" } %>
-      <%= hidden_field_tag :store_id, "109239", id: "store_id", data: { target: "lemon-squeezy.storeId" } %>
-      <%= hidden_field_tag :variant_id, "477097", id: "variant_id", data: { target: "lemon-squeezy.variantId" } %>
-      <div class="form-group">
-        <%= submit_tag "Subscribe", class: 'btn btn-primary' %>
-      </div>
-    <% end %>
-
-
 
 
 </div>
