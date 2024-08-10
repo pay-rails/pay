@@ -5,10 +5,13 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:braintree)
     @pay_customer.update(processor_id: nil)
+    @pay_customer.charges.delete_all
+    @pay_customer.payment_methods.delete_all
+    @pay_customer.subscriptions.delete_all
   end
 
   test "can partially refund a transaction" do
-    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
 
     charge = @pay_customer.charge(29_00)
     assert charge.present?
@@ -18,7 +21,7 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
   end
 
   test "can fully refund a transaction" do
-    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
 
     charge = @pay_customer.charge(37_00)
     assert charge.present?
@@ -42,7 +45,7 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
   end
 
   test "braintree saves currency on charge" do
-    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
     charge = @pay_customer.charge(29_00)
     assert_equal "USD", charge.currency
   end

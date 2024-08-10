@@ -5,26 +5,26 @@ http_interactions:
     uri: https://api.stripe.com/v<VENDOR_ID>/customers
     body:
       encoding: UTF-8
-      string: email=stripe%40e<VENDOR_AUTH_CODE>ample.org&name=Stripe+User&e<VENDOR_AUTH_CODE>pand[0]=ta<VENDOR_AUTH_CODE>
+      string: email=stripe%40e<VENDOR_AUTH_CODE>ample.org&name=Stripe+User&e<VENDOR_AUTH_CODE>pand[0]=ta<VENDOR_AUTH_CODE>&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=invoice_credit_balance
     headers:
       User-Agent:
-      - Stripe/v<VENDOR_ID> RubyBindings/9.0.0 PayRails/6.7.2 (https://github.com/pay-rails/pay)
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>2.4.0 PayRails/8.0.0 (https://github.com/pay-rails/pay)
       Authorization:
       - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_8idkKIHt3PZGYH","request_duration_ms":403}}'
+      - '{"last_request_metrics":{"request_id":"req_qybsMCNAZ34Ufc","request_duration_ms":232}}'
       Idempotency-Key:
-      - 5ff<VENDOR_ID>2b3e-37da-4caf-9325-62c3bff5a095
+      - 36<VENDOR_ID><VENDOR_ID>f2d8-3078-4f62-9c73-8d0c8274d8fe
       Stripe-Version:
-      - 2023-08-<VENDOR_ID>6
+      - '2024-06-20'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"6.7.2"},"bindings_version":"9.0.0","lang":"ruby","lang_version":"3.2.2
-        p53 (2023-03-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.localdomain 22.6.0 Darwin Kernel Version 22.6.0: Wed Jul  5 22:2<VENDOR_ID>:56
-        PDT 2023; root:<VENDOR_AUTH_CODE>nu-8796.<VENDOR_ID>4<VENDOR_ID>.3~6/RELEASE_X86_64
-        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.localdomain"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.0.0"},"bindings_version":"<VENDOR_ID>2.4.0","lang":"ruby","lang_version":"3.3.2
+        p78 (2024-05-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin23","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 23.5.0 Darwin Kernel Version 23.5.0: Wed May  <VENDOR_ID>
+        20:09:52 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>0063.<VENDOR_ID>2<VENDOR_ID>.3~5/RELEASE_X86_64
+        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.local"}'
       Accept-Encoding:
       - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -37,35 +37,51 @@ http_interactions:
       Server:
       - ngin<VENDOR_AUTH_CODE>
       Date:
-      - Mon, 2<VENDOR_ID> Aug 2023 20:27:09 GMT
+      - Sat, <VENDOR_ID>0 Aug 2024 <VENDOR_ID>6:06:56 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '746'
+      - '778'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
       - 'true'
       Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
+      - GET,HEAD,PUT,PATCH,POST,DELETE
       Access-Control-Allow-Origin:
       - "*"
       Cache-Control:
       - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fcustomers; block-all-mi<VENDOR_AUTH_CODE>ed-content;
+        default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
       Idempotency-Key:
-      - 5ff<VENDOR_ID>2b3e-37da-4caf-9325-62c3bff5a095
+      - 36<VENDOR_ID><VENDOR_ID>f2d8-3078-4f62-9c73-8d0c8274d8fe
       Original-Request:
-      - req_uZf4RzblZzvYVQ
+      - req_QJZpK7FYZQStYG
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report?s=mono-bapi-srv"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report?s=mono-bapi-srv"
       Request-Id:
-      - req_uZf4RzblZzvYVQ
+      - req_QJZpK7FYZQStYG
       Stripe-Should-Retry:
       - 'false'
       Stripe-Version:
-      - 2023-08-<VENDOR_ID>6
+      - '2024-06-20'
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
       Strict-Transport-Security:
       - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
       Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
         X-Stripe-Privileged-Session-Required
       Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
       - '300'
@@ -75,18 +91,19 @@ http_interactions:
       encoding: UTF-8
       string: |-
         {
-          "id": "cus_OUdypkgm5b8psb",
+          "id": "cus_QdYwmkQrXdT0pz",
           "object": "customer",
           "address": null,
           "balance": 0,
-          "created": <VENDOR_ID>692649629,
+          "created": <VENDOR_ID>7233060<VENDOR_ID>6,
           "currency": null,
           "default_source": null,
           "delinquent": false,
           "description": null,
           "discount": null,
           "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
-          "invoice_prefi<VENDOR_AUTH_CODE>": "DC259660",
+          "invoice_credit_balance": {},
+          "invoice_prefi<VENDOR_AUTH_CODE>": "<VENDOR_ID>53779B<VENDOR_ID>",
           "invoice_settings": {
             "custom_fields": null,
             "default_payment_method": null,
@@ -108,32 +125,32 @@ http_interactions:
           "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
           "test_clock": null
         }
-  recorded_at: Mon, 21 Aug 2023 20:27:09 GMT
+  recorded_at: Sat, 10 Aug 2024 16:06:55 GMT
 - request:
     method: post
     uri: https://api.stripe.com/v<VENDOR_ID>/payment_methods/pm_card_visa/attach
     body:
       encoding: UTF-8
-      string: customer=cus_OUdypkgm5b8psb
+      string: customer=cus_QdYwmkQrXdT0pz
     headers:
       User-Agent:
-      - Stripe/v<VENDOR_ID> RubyBindings/9.0.0 PayRails/6.7.2 (https://github.com/pay-rails/pay)
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>2.4.0 PayRails/8.0.0 (https://github.com/pay-rails/pay)
       Authorization:
       - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_uZf4RzblZzvYVQ","request_duration_ms":39<VENDOR_ID>}}'
+      - '{"last_request_metrics":{"request_id":"req_QJZpK7FYZQStYG","request_duration_ms":297}}'
       Idempotency-Key:
-      - 7bbcbc9d-4709-43df-82af-b6f<VENDOR_ID><VENDOR_ID>deca0ab
+      - 830eef46-c26<VENDOR_ID>-4a<VENDOR_ID>9-888b-3896c85dce07
       Stripe-Version:
-      - 2023-08-<VENDOR_ID>6
+      - '2024-06-20'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"6.7.2"},"bindings_version":"9.0.0","lang":"ruby","lang_version":"3.2.2
-        p53 (2023-03-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.localdomain 22.6.0 Darwin Kernel Version 22.6.0: Wed Jul  5 22:2<VENDOR_ID>:56
-        PDT 2023; root:<VENDOR_AUTH_CODE>nu-8796.<VENDOR_ID>4<VENDOR_ID>.3~6/RELEASE_X86_64
-        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.localdomain"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.0.0"},"bindings_version":"<VENDOR_ID>2.4.0","lang":"ruby","lang_version":"3.3.2
+        p78 (2024-05-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin23","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 23.5.0 Darwin Kernel Version 23.5.0: Wed May  <VENDOR_ID>
+        20:09:52 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>0063.<VENDOR_ID>2<VENDOR_ID>.3~5/RELEASE_X86_64
+        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.local"}'
       Accept-Encoding:
       - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -146,35 +163,52 @@ http_interactions:
       Server:
       - ngin<VENDOR_AUTH_CODE>
       Date:
-      - Mon, 2<VENDOR_ID> Aug 2023 20:27:<VENDOR_ID>0 GMT
+      - Sat, <VENDOR_ID>0 Aug 2024 <VENDOR_ID>6:06:56 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '939'
+      - "<VENDOR_ID>006"
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
       - 'true'
       Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
+      - GET,HEAD,PUT,PATCH,POST,DELETE
       Access-Control-Allow-Origin:
       - "*"
       Cache-Control:
       - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fpayment_methods%2F%3Apayment_method%2Fattach;
+        block-all-mi<VENDOR_AUTH_CODE>ed-content; default-src 'none'; base-uri 'none';
+        form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'
+        'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
       Idempotency-Key:
-      - 7bbcbc9d-4709-43df-82af-b6f<VENDOR_ID><VENDOR_ID>deca0ab
+      - 830eef46-c26<VENDOR_ID>-4a<VENDOR_ID>9-888b-3896c85dce07
       Original-Request:
-      - req_Jv2LmeyeLK3Sc4
+      - req_vgMgz5tQLReyf<VENDOR_AUTH_CODE>
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report?s=payins-bapi-srv"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report?s=payins-bapi-srv"
       Request-Id:
-      - req_Jv2LmeyeLK3Sc4
+      - req_vgMgz5tQLReyf<VENDOR_AUTH_CODE>
       Stripe-Should-Retry:
       - 'false'
       Stripe-Version:
-      - 2023-08-<VENDOR_ID>6
+      - '2024-06-20'
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
       Strict-Transport-Security:
       - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
       Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
         X-Stripe-Privileged-Session-Required
       Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
       - '300'
@@ -184,8 +218,9 @@ http_interactions:
       encoding: UTF-8
       string: |-
         {
-          "id": "pm_<VENDOR_ID>NhegrKXBGcbgpbZskLzmHgJ",
+          "id": "pm_<VENDOR_ID>PmHoiKXBGcbgpbZFeG6OX0O",
           "object": "payment_method",
+          "allow_redisplay": "unspecified",
           "billing_details": {
             "address": {
               "city": null,
@@ -204,11 +239,12 @@ http_interactions:
             "checks": {
               "address_line<VENDOR_ID>_check": null,
               "address_postal_code_check": null,
-              "cvc_check": null
+              "cvc_check": "pass"
             },
             "country": "US",
+            "display_brand": "visa",
             "e<VENDOR_AUTH_CODE>p_month": 8,
-            "e<VENDOR_AUTH_CODE>p_year": 2024,
+            "e<VENDOR_AUTH_CODE>p_year": 2025,
             "fingerprint": "w4XDzQOFakih5EZM",
             "funding": "credit",
             "generated_from": null,
@@ -224,38 +260,38 @@ http_interactions:
             },
             "wallet": null
           },
-          "created": <VENDOR_ID>692649629,
-          "customer": "cus_OUdypkgm5b8psb",
+          "created": <VENDOR_ID>7233060<VENDOR_ID>6,
+          "customer": "cus_QdYwmkQrXdT0pz",
           "livemode": false,
           "metadata": {},
           "type": "card"
         }
-  recorded_at: Mon, 21 Aug 2023 20:27:09 GMT
+  recorded_at: Sat, 10 Aug 2024 16:06:55 GMT
 - request:
     method: post
-    uri: https://api.stripe.com/v<VENDOR_ID>/customers/cus_OUdypkgm5b8psb
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers/cus_QdYwmkQrXdT0pz
     body:
       encoding: UTF-8
-      string: invoice_settings[default_payment_method]=pm_<VENDOR_ID>NhegrKXBGcbgpbZskLzmHgJ
+      string: invoice_settings[default_payment_method]=pm_<VENDOR_ID>PmHoiKXBGcbgpbZFeG6OX0O
     headers:
       User-Agent:
-      - Stripe/v<VENDOR_ID> RubyBindings/9.0.0 PayRails/6.7.2 (https://github.com/pay-rails/pay)
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>2.4.0 PayRails/8.0.0 (https://github.com/pay-rails/pay)
       Authorization:
       - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_Jv2LmeyeLK3Sc4","request_duration_ms":6<VENDOR_ID>0}}'
+      - '{"last_request_metrics":{"request_id":"req_vgMgz5tQLReyf<VENDOR_AUTH_CODE>","request_duration_ms":5<VENDOR_ID>4}}'
       Idempotency-Key:
-      - 5ff59c69-2dab-4d97-ad6a-b<VENDOR_ID>dbec9f9cf5
+      - 5909c4<VENDOR_ID>3-d3b6-44<VENDOR_ID>5-97d3-aa3605733fa9
       Stripe-Version:
-      - 2023-08-<VENDOR_ID>6
+      - '2024-06-20'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"6.7.2"},"bindings_version":"9.0.0","lang":"ruby","lang_version":"3.2.2
-        p53 (2023-03-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.localdomain 22.6.0 Darwin Kernel Version 22.6.0: Wed Jul  5 22:2<VENDOR_ID>:56
-        PDT 2023; root:<VENDOR_AUTH_CODE>nu-8796.<VENDOR_ID>4<VENDOR_ID>.3~6/RELEASE_X86_64
-        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.localdomain"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.0.0"},"bindings_version":"<VENDOR_ID>2.4.0","lang":"ruby","lang_version":"3.3.2
+        p78 (2024-05-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin23","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 23.5.0 Darwin Kernel Version 23.5.0: Wed May  <VENDOR_ID>
+        20:09:52 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>0063.<VENDOR_ID>2<VENDOR_ID>.3~5/RELEASE_X86_64
+        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.local"}'
       Accept-Encoding:
       - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -268,7 +304,7 @@ http_interactions:
       Server:
       - ngin<VENDOR_AUTH_CODE>
       Date:
-      - Mon, 2<VENDOR_ID> Aug 2023 20:27:<VENDOR_ID>0 GMT
+      - Sat, <VENDOR_ID>0 Aug 2024 <VENDOR_ID>6:06:57 GMT
       Content-Type:
       - application/json
       Content-Length:
@@ -278,25 +314,42 @@ http_interactions:
       Access-Control-Allow-Credentials:
       - 'true'
       Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
+      - GET,HEAD,PUT,PATCH,POST,DELETE
       Access-Control-Allow-Origin:
       - "*"
       Cache-Control:
       - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fcustomers%2F%3Acustomer;
+        block-all-mi<VENDOR_AUTH_CODE>ed-content; default-src 'none'; base-uri 'none';
+        form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'
+        'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
       Idempotency-Key:
-      - 5ff59c69-2dab-4d97-ad6a-b<VENDOR_ID>dbec9f9cf5
+      - 5909c4<VENDOR_ID>3-d3b6-44<VENDOR_ID>5-97d3-aa3605733fa9
       Original-Request:
-      - req_7eVGLNp8AYG342
+      - req_ephn<VENDOR_ID>wtB5WmyoT
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report?s=mono-bapi-srv"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report?s=mono-bapi-srv"
       Request-Id:
-      - req_7eVGLNp8AYG342
+      - req_ephn<VENDOR_ID>wtB5WmyoT
       Stripe-Should-Retry:
       - 'false'
       Stripe-Version:
-      - 2023-08-<VENDOR_ID>6
+      - '2024-06-20'
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
       Strict-Transport-Security:
       - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
       Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
         X-Stripe-Privileged-Session-Required
       Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
       - '300'
@@ -306,21 +359,21 @@ http_interactions:
       encoding: UTF-8
       string: |-
         {
-          "id": "cus_OUdypkgm5b8psb",
+          "id": "cus_QdYwmkQrXdT0pz",
           "object": "customer",
           "address": null,
           "balance": 0,
-          "created": <VENDOR_ID>692649629,
+          "created": <VENDOR_ID>7233060<VENDOR_ID>6,
           "currency": null,
           "default_source": null,
           "delinquent": false,
           "description": null,
           "discount": null,
           "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
-          "invoice_prefi<VENDOR_AUTH_CODE>": "DC259660",
+          "invoice_prefi<VENDOR_AUTH_CODE>": "<VENDOR_ID>53779B<VENDOR_ID>",
           "invoice_settings": {
             "custom_fields": null,
-            "default_payment_method": "pm_<VENDOR_ID>NhegrKXBGcbgpbZskLzmHgJ",
+            "default_payment_method": "pm_<VENDOR_ID>PmHoiKXBGcbgpbZFeG6OX0O",
             "footer": null,
             "rendering_options": null
           },
@@ -334,32 +387,30 @@ http_interactions:
           "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
           "test_clock": null
         }
-  recorded_at: Mon, 21 Aug 2023 20:27:09 GMT
+  recorded_at: Sat, 10 Aug 2024 16:06:55 GMT
 - request:
-    method: post
-    uri: https://api.stripe.com/v<VENDOR_ID>/subscriptions
+    method: get
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers/cus_QdYwmkQrXdT0pz?e<VENDOR_AUTH_CODE>pand%5B%5D=invoice_credit_balance&e<VENDOR_AUTH_CODE>pand%5B%5D=ta<VENDOR_AUTH_CODE>
     body:
-      encoding: UTF-8
-      string: e<VENDOR_AUTH_CODE>pand[0]=pending_setup_intent&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=latest_invoice.payment_intent&e<VENDOR_AUTH_CODE>pand[2]=latest_invoice.charge&e<VENDOR_AUTH_CODE>pand[3]=latest_invoice.total_discount_amounts.discount&e<VENDOR_AUTH_CODE>pand[4]=latest_invoice.total_ta<VENDOR_AUTH_CODE>_amounts.ta<VENDOR_AUTH_CODE>_rate&items[0][plan]=small-monthly&trial_period_days=<VENDOR_ID>5&customer=cus_OUdypkgm5b8psb
+      encoding: US-ASCII
+      string: ''
     headers:
       User-Agent:
-      - Stripe/v<VENDOR_ID> RubyBindings/9.0.0 PayRails/6.7.2 (https://github.com/pay-rails/pay)
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>2.4.0 PayRails/8.0.0 (https://github.com/pay-rails/pay)
       Authorization:
       - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
       - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
       X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_7eVGLNp8AYG342","request_duration_ms":260}}'
-      Idempotency-Key:
-      - f60cf94c-db4f-4cd5-8ad8-80467539f6<VENDOR_ID>9
+      - '{"last_request_metrics":{"request_id":"req_ephn<VENDOR_ID>wtB5WmyoT","request_duration_ms":277}}'
       Stripe-Version:
-      - 2023-08-<VENDOR_ID>6
+      - '2024-06-20'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"6.7.2"},"bindings_version":"9.0.0","lang":"ruby","lang_version":"3.2.2
-        p53 (2023-03-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin22","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.localdomain 22.6.0 Darwin Kernel Version 22.6.0: Wed Jul  5 22:2<VENDOR_ID>:56
-        PDT 2023; root:<VENDOR_AUTH_CODE>nu-8796.<VENDOR_ID>4<VENDOR_ID>.3~6/RELEASE_X86_64
-        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.localdomain"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.0.0"},"bindings_version":"<VENDOR_ID>2.4.0","lang":"ruby","lang_version":"3.3.2
+        p78 (2024-05-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin23","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 23.5.0 Darwin Kernel Version 23.5.0: Wed May  <VENDOR_ID>
+        20:09:52 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>0063.<VENDOR_ID>2<VENDOR_ID>.3~5/RELEASE_X86_64
+        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.local"}'
       Accept-Encoding:
       - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -372,35 +423,46 @@ http_interactions:
       Server:
       - ngin<VENDOR_AUTH_CODE>
       Date:
-      - Mon, 2<VENDOR_ID> Aug 2023 20:27:<VENDOR_ID>2 GMT
+      - Sat, <VENDOR_ID>0 Aug 2024 <VENDOR_ID>6:06:57 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '9556'
+      - '803'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
       - 'true'
       Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
+      - GET,HEAD,PUT,PATCH,POST,DELETE
       Access-Control-Allow-Origin:
       - "*"
       Cache-Control:
       - no-cache, no-store
-      Idempotency-Key:
-      - f60cf94c-db4f-4cd5-8ad8-80467539f6<VENDOR_ID>9
-      Original-Request:
-      - req_mlGJG5YlQg9QIV
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fcustomers%2F%3Acustomer;
+        block-all-mi<VENDOR_AUTH_CODE>ed-content; default-src 'none'; base-uri 'none';
+        form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'
+        'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report?s=mono-bapi-srv"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report?s=mono-bapi-srv"
       Request-Id:
-      - req_mlGJG5YlQg9QIV
-      Stripe-Should-Retry:
-      - 'false'
+      - req_zbDXcjbKvGQCje
       Stripe-Version:
-      - 2023-08-<VENDOR_ID>6
+      - '2024-06-20'
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
       Strict-Transport-Security:
       - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
       Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
         X-Stripe-Privileged-Session-Required
       Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
       - '300'
@@ -410,14 +472,143 @@ http_interactions:
       encoding: UTF-8
       string: |-
         {
-          "id": "sub_<VENDOR_ID>NhegsKXBGcbgpbZJjeYY8oY",
+          "id": "cus_QdYwmkQrXdT0pz",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": <VENDOR_ID>7233060<VENDOR_ID>6,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+          "invoice_credit_balance": {},
+          "invoice_prefi<VENDOR_AUTH_CODE>": "<VENDOR_ID>53779B<VENDOR_ID>",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": "pm_<VENDOR_ID>PmHoiKXBGcbgpbZFeG6OX0O",
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "ta<VENDOR_AUTH_CODE>": {
+            "automatic_ta<VENDOR_AUTH_CODE>": "unrecognized_location",
+            "ip_address": null,
+            "location": null
+          },
+          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+          "test_clock": null
+        }
+  recorded_at: Sat, 10 Aug 2024 16:06:55 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/subscriptions
+    body:
+      encoding: UTF-8
+      string: e<VENDOR_AUTH_CODE>pand[0]=default_payment_method&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=pending_setup_intent&e<VENDOR_AUTH_CODE>pand[2]=latest_invoice.payment_intent&e<VENDOR_AUTH_CODE>pand[3]=latest_invoice.charge&e<VENDOR_AUTH_CODE>pand[4]=latest_invoice.total_discount_amounts.discount&e<VENDOR_AUTH_CODE>pand[5]=latest_invoice.total_ta<VENDOR_AUTH_CODE>_amounts.ta<VENDOR_AUTH_CODE>_rate&items[0][plan]=small-monthly&trial_period_days=<VENDOR_ID>5&customer=cus_QdYwmkQrXdT0pz
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>2.4.0 PayRails/8.0.0 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_zbDXcjbKvGQCje","request_duration_ms":222}}'
+      Idempotency-Key:
+      - cd539ad8-<VENDOR_ID>8db-4cee-aefc-<VENDOR_ID>55ba4e3<VENDOR_ID>b<VENDOR_ID>8
+      Stripe-Version:
+      - '2024-06-20'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.0.0"},"bindings_version":"<VENDOR_ID>2.4.0","lang":"ruby","lang_version":"3.3.2
+        p78 (2024-05-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin23","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.local 23.5.0 Darwin Kernel Version 23.5.0: Wed May  <VENDOR_ID>
+        20:09:52 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>0063.<VENDOR_ID>2<VENDOR_ID>.3~5/RELEASE_X86_64
+        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.local"}'
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Sat, <VENDOR_ID>0 Aug 2024 <VENDOR_ID>6:06:58 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - "<VENDOR_ID>0047"
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET,HEAD,PUT,PATCH,POST,DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fsubscriptions;
+        block-all-mi<VENDOR_AUTH_CODE>ed-content; default-src 'none'; base-uri 'none';
+        form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'
+        'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
+      Idempotency-Key:
+      - cd539ad8-<VENDOR_ID>8db-4cee-aefc-<VENDOR_ID>55ba4e3<VENDOR_ID>b<VENDOR_ID>8
+      Original-Request:
+      - req_opyvccw4p7DWbv
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report?s=billing-api-srv"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report?s=billing-api-srv"
+      Request-Id:
+      - req_opyvccw4p7DWbv
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2024-06-20'
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "sub_<VENDOR_ID>PmHojKXBGcbgpbZpS5m9a8G",
           "object": "subscription",
           "application": null,
           "application_fee_percent": null,
           "automatic_ta<VENDOR_AUTH_CODE>": {
-            "enabled": false
+            "enabled": false,
+            "liability": null
           },
-          "billing_cycle_anchor": <VENDOR_ID>693945630,
+          "billing_cycle_anchor": <VENDOR_ID>7246020<VENDOR_ID>7,
+          "billing_cycle_anchor_config": null,
           "billing_thresholds": null,
           "cancel_at": null,
           "cancel_at_period_end": false,
@@ -428,26 +619,34 @@ http_interactions:
             "reason": null
           },
           "collection_method": "charge_automatically",
-          "created": <VENDOR_ID>692649630,
+          "created": <VENDOR_ID>7233060<VENDOR_ID>7,
           "currency": "usd",
-          "current_period_end": <VENDOR_ID>693945630,
-          "current_period_start": <VENDOR_ID>692649630,
-          "customer": "cus_OUdypkgm5b8psb",
+          "current_period_end": <VENDOR_ID>7246020<VENDOR_ID>7,
+          "current_period_start": <VENDOR_ID>7233060<VENDOR_ID>7,
+          "customer": "cus_QdYwmkQrXdT0pz",
           "days_until_due": null,
           "default_payment_method": null,
           "default_source": null,
           "default_ta<VENDOR_AUTH_CODE>_rates": [],
           "description": null,
           "discount": null,
+          "discounts": [],
           "ended_at": null,
+          "invoice_settings": {
+            "account_ta<VENDOR_AUTH_CODE>_ids": null,
+            "issuer": {
+              "type": "self"
+            }
+          },
           "items": {
             "object": "list",
             "data": [
               {
-                "id": "si_OUdylmc3sfevLj",
+                "id": "si_QdYwhbdjE9GwKX",
                 "object": "subscription_item",
                 "billing_thresholds": null,
-                "created": <VENDOR_ID>69264963<VENDOR_ID>,
+                "created": <VENDOR_ID>7233060<VENDOR_ID>7,
+                "discounts": [],
                 "metadata": {},
                 "plan": {
                   "id": "small-monthly",
@@ -463,6 +662,7 @@ http_interactions:
                   "interval_count": <VENDOR_ID>,
                   "livemode": false,
                   "metadata": {},
+                  "meter": null,
                   "nickname": "Small Monthly",
                   "product": "prod_EYTX7RYhRjcwKD",
                   "tiers_mode": null,
@@ -487,6 +687,7 @@ http_interactions:
                     "aggregate_usage": null,
                     "interval": "month",
                     "interval_count": <VENDOR_ID>,
+                    "meter": null,
                     "trial_period_days": null,
                     "usage_type": "licensed"
                   },
@@ -498,16 +699,16 @@ http_interactions:
                   "unit_amount_decimal": "2500"
                 },
                 "quantity": <VENDOR_ID>,
-                "subscription": "sub_<VENDOR_ID>NhegsKXBGcbgpbZJjeYY8oY",
+                "subscription": "sub_<VENDOR_ID>PmHojKXBGcbgpbZpS5m9a8G",
                 "ta<VENDOR_AUTH_CODE>_rates": []
               }
             ],
             "has_more": false,
             "total_count": <VENDOR_ID>,
-            "url": "/v<VENDOR_ID>/subscription_items?subscription=sub_<VENDOR_ID>NhegsKXBGcbgpbZJjeYY8oY"
+            "url": "/v<VENDOR_ID>/subscription_items?subscription=sub_<VENDOR_ID>PmHojKXBGcbgpbZpS5m9a8G"
           },
           "latest_invoice": {
-            "id": "in_<VENDOR_ID>NhegsKXBGcbgpbZwhmtp4p3",
+            "id": "in_<VENDOR_ID>PmHojKXBGcbgpbZKGmmj4b5",
             "object": "invoice",
             "account_country": "US",
             "account_name": "Pay",
@@ -523,15 +724,17 @@ http_interactions:
             "auto_advance": false,
             "automatic_ta<VENDOR_AUTH_CODE>": {
               "enabled": false,
+              "liability": null,
               "status": null
             },
+            "automatically_finalizes_at": null,
             "billing_reason": "subscription_create",
             "charge": null,
             "collection_method": "charge_automatically",
-            "created": <VENDOR_ID>692649630,
+            "created": <VENDOR_ID>7233060<VENDOR_ID>7,
             "currency": "usd",
             "custom_fields": null,
-            "customer": "cus_OUdypkgm5b8psb",
+            "customer": "cus_QdYwmkQrXdT0pz",
             "customer_address": null,
             "customer_email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
             "customer_name": "Stripe User",
@@ -546,19 +749,22 @@ http_interactions:
             "discount": null,
             "discounts": [],
             "due_date": null,
-            "effective_at": <VENDOR_ID>692649630,
+            "effective_at": <VENDOR_ID>7233060<VENDOR_ID>7,
             "ending_balance": 0,
             "footer": null,
             "from_invoice": null,
-            "hosted_invoice_url": "https://invoice.stripe.com/i/acct_<VENDOR_ID>E4bfnKXBGcbgpbZ/test_YWNjdF8<VENDOR_AUTH_CODE>RTRiZm5LWEJHY2JncGJaLF9PVWR5M0h<VENDOR_AUTH_CODE>U2hEdU5nenNSdE54M09mekZ0NHpFQ0lQLDgzMTkwNDMy0200shpw24wh?s=ap",
-            "invoice_pdf": "https://pay.stripe.com/invoice/acct_<VENDOR_ID>E4bfnKXBGcbgpbZ/test_YWNjdF8<VENDOR_AUTH_CODE>RTRiZm5LWEJHY2JncGJaLF9PVWR5M0h<VENDOR_AUTH_CODE>U2hEdU5nenNSdE54M09mekZ0NHpFQ0lQLDgzMTkwNDMy0200shpw24wh/pdf?s=ap",
+            "hosted_invoice_url": "https://invoice.stripe.com/i/acct_<VENDOR_ID>E4bfnKXBGcbgpbZ/test_YWNjdF8<VENDOR_AUTH_CODE>RTRiZm5LWEJHY2JncGJaLF9RZFl3dDltZ0pGRXBiemhzYVl5S<VENDOR_ID>hUeGJacVRSZk9OLDE<VENDOR_AUTH_CODE>Mzg0Njg<VENDOR_AUTH_CODE>OA0200N<VENDOR_ID>Cj0inl?s=ap",
+            "invoice_pdf": "https://pay.stripe.com/invoice/acct_<VENDOR_ID>E4bfnKXBGcbgpbZ/test_YWNjdF8<VENDOR_AUTH_CODE>RTRiZm5LWEJHY2JncGJaLF9RZFl3dDltZ0pGRXBiemhzYVl5S<VENDOR_ID>hUeGJacVRSZk9OLDE<VENDOR_AUTH_CODE>Mzg0Njg<VENDOR_AUTH_CODE>OA0200N<VENDOR_ID>Cj0inl/pdf?s=ap",
+            "issuer": {
+              "type": "self"
+            },
             "last_finalization_error": null,
             "latest_revision": null,
             "lines": {
               "object": "list",
               "data": [
                 {
-                  "id": "il_<VENDOR_ID>NhegsKXBGcbgpbZF0Y3YNky",
+                  "id": "il_<VENDOR_ID>PmHojKXBGcbgpbZnOvyV0XQ",
                   "object": "line_item",
                   "amount": 0,
                   "amount_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": 0,
@@ -567,11 +773,12 @@ http_interactions:
                   "discount_amounts": [],
                   "discountable": true,
                   "discounts": [],
+                  "invoice": "in_<VENDOR_ID>PmHojKXBGcbgpbZKGmmj4b5",
                   "livemode": false,
                   "metadata": {},
                   "period": {
-                    "end": <VENDOR_ID>693945630,
-                    "start": <VENDOR_ID>692649630
+                    "end": <VENDOR_ID>7246020<VENDOR_ID>7,
+                    "start": <VENDOR_ID>7233060<VENDOR_ID>7
                   },
                   "plan": {
                     "id": "small-monthly",
@@ -587,6 +794,7 @@ http_interactions:
                     "interval_count": <VENDOR_ID>,
                     "livemode": false,
                     "metadata": {},
+                    "meter": null,
                     "nickname": "Small Monthly",
                     "product": "prod_EYTX7RYhRjcwKD",
                     "tiers_mode": null,
@@ -611,6 +819,7 @@ http_interactions:
                       "aggregate_usage": null,
                       "interval": "month",
                       "interval_count": <VENDOR_ID>,
+                      "meter": null,
                       "trial_period_days": null,
                       "usage_type": "licensed"
                     },
@@ -626,8 +835,8 @@ http_interactions:
                     "credited_items": null
                   },
                   "quantity": <VENDOR_ID>,
-                  "subscription": "sub_<VENDOR_ID>NhegsKXBGcbgpbZJjeYY8oY",
-                  "subscription_item": "si_OUdylmc3sfevLj",
+                  "subscription": "sub_<VENDOR_ID>PmHojKXBGcbgpbZpS5m9a8G",
+                  "subscription_item": "si_QdYwhbdjE9GwKX",
                   "ta<VENDOR_AUTH_CODE>_amounts": [],
                   "ta<VENDOR_AUTH_CODE>_rates": [],
                   "type": "subscription",
@@ -636,12 +845,12 @@ http_interactions:
               ],
               "has_more": false,
               "total_count": <VENDOR_ID>,
-              "url": "/v<VENDOR_ID>/invoices/in_<VENDOR_ID>NhegsKXBGcbgpbZwhmtp4p3/lines"
+              "url": "/v<VENDOR_ID>/invoices/in_<VENDOR_ID>PmHojKXBGcbgpbZKGmmj4b5/lines"
             },
             "livemode": false,
             "metadata": {},
             "ne<VENDOR_AUTH_CODE>t_payment_attempt": null,
-            "number": "DC259660-000<VENDOR_ID>",
+            "number": "<VENDOR_ID>53779B<VENDOR_ID>-000<VENDOR_ID>",
             "on_behalf_of": null,
             "paid": true,
             "paid_out_of_band": false,
@@ -651,25 +860,25 @@ http_interactions:
               "payment_method_options": null,
               "payment_method_types": null
             },
-            "period_end": <VENDOR_ID>692649630,
-            "period_start": <VENDOR_ID>692649630,
+            "period_end": <VENDOR_ID>7233060<VENDOR_ID>7,
+            "period_start": <VENDOR_ID>7233060<VENDOR_ID>7,
             "post_payment_credit_notes_amount": 0,
             "pre_payment_credit_notes_amount": 0,
             "quote": null,
             "receipt_number": null,
-            "rendering_options": null,
+            "rendering": null,
             "shipping_cost": null,
             "shipping_details": null,
             "starting_balance": 0,
             "statement_descriptor": null,
             "status": "paid",
             "status_transitions": {
-              "finalized_at": <VENDOR_ID>692649630,
+              "finalized_at": <VENDOR_ID>7233060<VENDOR_ID>7,
               "marked_uncollectible_at": null,
-              "paid_at": <VENDOR_ID>692649630,
+              "paid_at": <VENDOR_ID>7233060<VENDOR_ID>7,
               "voided_at": null
             },
-            "subscription": "sub_<VENDOR_ID>NhegsKXBGcbgpbZJjeYY8oY",
+            "subscription": "sub_<VENDOR_ID>PmHojKXBGcbgpbZpS5m9a8G",
             "subscription_details": {
               "metadata": {}
             },
@@ -682,7 +891,7 @@ http_interactions:
             "total_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": 0,
             "total_ta<VENDOR_AUTH_CODE>_amounts": [],
             "transfer_data": null,
-            "webhooks_delivered_at": <VENDOR_ID>692649630
+            "webhooks_delivered_at": <VENDOR_ID>7233060<VENDOR_ID>7
           },
           "livemode": false,
           "metadata": {},
@@ -711,6 +920,7 @@ http_interactions:
             "interval_count": <VENDOR_ID>,
             "livemode": false,
             "metadata": {},
+            "meter": null,
             "nickname": "Small Monthly",
             "product": "prod_EYTX7RYhRjcwKD",
             "tiers_mode": null,
@@ -720,17 +930,17 @@ http_interactions:
           },
           "quantity": <VENDOR_ID>,
           "schedule": null,
-          "start_date": <VENDOR_ID>692649630,
+          "start_date": <VENDOR_ID>7233060<VENDOR_ID>7,
           "status": "trialing",
           "test_clock": null,
           "transfer_data": null,
-          "trial_end": <VENDOR_ID>693945630,
+          "trial_end": <VENDOR_ID>7246020<VENDOR_ID>7,
           "trial_settings": {
             "end_behavior": {
               "missing_payment_method": "create_invoice"
             }
           },
-          "trial_start": <VENDOR_ID>692649630
+          "trial_start": <VENDOR_ID>7233060<VENDOR_ID>7
         }
-  recorded_at: Mon, 21 Aug 2023 20:27:09 GMT
+  recorded_at: Sat, 10 Aug 2024 16:06:55 GMT
 recorded_with: VCR 6.2.0

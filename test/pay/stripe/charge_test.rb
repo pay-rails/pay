@@ -74,9 +74,9 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_equal "https://pay.stripe.com/receipts/test_receipt", pay_charge.stripe_receipt_url
   end
 
-  test "performing multiple refunds increments total refund amount" do
+  test "stripe performing multiple refunds increments total refund amount" do
     @pay_customer.update(processor_id: nil)
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     charge = @pay_customer.charge(30_00)
     charge.refund!(10_00)
     charge.refund!(5_00)

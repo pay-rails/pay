@@ -85,7 +85,7 @@ class ActiveSupport::TestCase
   end
 
   def travel_to_cassette
-    travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
       yield
     end
   end
