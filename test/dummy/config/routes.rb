@@ -19,10 +19,6 @@ Rails.application.routes.draw do
   end
 
   namespace :lemon_squeezy do
-<<<<<<< Updated upstream
-=======
-    resource :payment_method, namespace: :lemon_squeezy
->>>>>>> Stashed changes
     resources :subscriptions do
       member do
         patch :cancel
