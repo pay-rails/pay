@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::Stripe::Test < ActiveSupport::TestCase
+class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
   test "finds API keys from env" do
     old_env = ENV.to_hash
     ENV.update(

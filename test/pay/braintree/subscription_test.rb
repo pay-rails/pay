@@ -3,7 +3,7 @@ require "test_helper"
 class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   setup do
     @pay_customer = Pay::Customer.create!(processor: :braintree, owner: users(:none))
-    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
   end
 
   test "braintree cancel" do
@@ -47,6 +47,9 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
       @pay_customer.subscribe(trial_period_days: 14)
       pay_subscription = @pay_customer.subscription
       pay_subscription.cancel_now!
+
+      # Account for time hitting the API because we've frozen time and ends_at is ahead
+      travel 2.seconds
 
       # Canceling during a trial ends the subscription, but continues to give access during the trial period
       assert_equal "canceled", pay_subscription.status

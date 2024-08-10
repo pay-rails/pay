@@ -12,9 +12,7 @@ gemspec
 # your gem to rubygems.org.
 
 gem "appraisal", github: "thoughtbot/appraisal"
-gem "byebug"
 gem "mocha"
-gem "overcommit"
 gem "standard"
 gem "vcr"
 gem "webmock"

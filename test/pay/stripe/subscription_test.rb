@@ -21,9 +21,9 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     refute pay_subscription.active?
   end
 
-  test "change stripe subscription quantity" do
+  test "stripe change subscription quantity" do
     @pay_customer.processor_id = nil
-    @pay_customer.payment_method_token = "pm_card_visa"
+    @pay_customer.update_payment_method "pm_card_visa"
     subscription = @pay_customer.subscribe(name: "default", plan: "default")
     subscription.change_quantity(5)
     stripe_subscription = subscription.processor_subscription
@@ -34,7 +34,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "cancel_now when scheduled for cancellation" do
     travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
       @pay_customer.processor_id = nil
-      @pay_customer.payment_method_token = "pm_card_visa"
+      @pay_customer.update_payment_method "pm_card_visa"
       subscription = @pay_customer.subscribe(name: "default", plan: "default")
       subscription.cancel
       assert subscription.active?
@@ -47,14 +47,14 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
-  test "change stripe subscription quantity with nil subscription items" do
+  test "stripe change subscription quantity with nil subscription items" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     pay_subscription.update!(subscription_items: nil)
     ::Stripe::Subscription.stubs(:update)
     assert pay_subscription.change_quantity(5)
   end
 
-  test "change stripe subscription quantity with [] subscription items" do
+  test "stripe change subscription quantity with [] subscription items" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     pay_subscription.update!(subscription_items: [])
     ::Stripe::Subscription.stubs(:update)
@@ -167,7 +167,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe resume on grace period" do
     travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
       @pay_customer.processor_id = nil
-      @pay_customer.payment_method_token = "pm_card_visa"
+      @pay_customer.update_payment_method "pm_card_visa"
       subscription = @pay_customer.subscribe(name: "default", plan: "default")
       subscription.cancel
       assert_not_nil subscription.ends_at
@@ -315,9 +315,9 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal payment_method, pay_subscription.payment_method
   end
 
-  test "change stripe subscription default payment method" do
+  test "stripe change subscription default payment method" do
     @pay_customer.processor_id = nil
-    @pay_customer.payment_method_token = "pm_card_visa"
+    @pay_customer.update_payment_method "pm_card_visa"
     subscription = @pay_customer.subscribe(name: "default", plan: "default")
 
     payment_method = ::Stripe::PaymentMethod.attach("pm_card_discover", {customer: @pay_customer.processor_id})

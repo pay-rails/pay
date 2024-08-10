@@ -37,28 +37,25 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   end
 
   test "braintree can store card" do
-    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
     @pay_customer.customer
 
     assert_equal "Visa", @pay_customer.default_payment_method.brand
-    assert_nil @pay_customer.payment_method_token
   end
 
   test "braintree fails with invalid cards" do
     # This requires Card Verification to be enabled in the Braintree account
-    @pay_customer.payment_method_token = "fake-processor-declined-visa-nonce"
-    err = assert_raises(Pay::Braintree::Error) { @pay_customer.customer }
+    err = assert_raises(Pay::Braintree::Error) { @pay_customer.update_payment_method "fake-processor-declined-visa-nonce" }
     assert_equal "Do Not Honor", err.message
   end
 
   test "braintree can update card" do
     @pay_customer.update_payment_method "fake-valid-discover-nonce"
     assert_equal "Discover", @pay_customer.default_payment_method.brand
-    assert_nil @pay_customer.payment_method_token
   end
 
   test "braintree can charge card with credit card" do
-    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
     charge = @pay_customer.charge(29_00)
     assert_equal "card", charge.payment_method_type
     assert_equal "Visa", charge.brand
@@ -66,7 +63,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
 
   # Disable because you have to enable Apple Pay in Braintree
   # test "braintree can charge card with Apple Pay Card" do
-  #  @pay_customer.payment_method_token = "fake-apple-pay-visa-nonce"
+  #  @pay_customer.update_payment_method "fake-apple-pay-visa-nonce"
   #  charge = @pay_customer.charge(29_00)
   #  assert_equal "card", charge.payment_method_type
   #  assert_equal "Apple Pay - Visa", charge.brand
@@ -74,35 +71,35 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
 
   test "braintree can charge card with Google Pay Card" do
     # If Braintree ever introduces fake google pay nonces, we can update this
-    @pay_customer.payment_method_token = "fake-android-pay-visa-nonce"
+    @pay_customer.update_payment_method "fake-android-pay-visa-nonce"
     charge = @pay_customer.charge(29_00)
     assert_equal "card", charge.payment_method_type
     assert_equal "Visa", charge.brand
   end
 
   test "braintree can charge card with Samsung Pay Card" do
-    @pay_customer.payment_method_token = "tokensam_fake_mastercard"
+    @pay_customer.update_payment_method "tokensam_fake_mastercard"
     charge = @pay_customer.charge(29_00)
     assert_equal "card", charge.payment_method_type
     assert_equal "MasterCard", charge.brand
   end
 
   test "braintree can charge card with Visa Checkout Card" do
-    @pay_customer.payment_method_token = "fake-visa-checkout-amex-nonce"
+    @pay_customer.update_payment_method "fake-visa-checkout-amex-nonce"
     charge = @pay_customer.charge(29_00)
     assert_equal "card", charge.payment_method_type
     assert_equal "American Express", charge.brand
   end
 
   # test "braintree can charge card with PayPal Account" do
-  #   @pay_customer.payment_method_token = "fake-paypal-billing-agreement-nonce"
+  #   @pay_customer.update_payment_method "fake-paypal-billing-agreement-nonce"
   #   charge = @pay_customer.charge(29_00)
   #   assert_equal "paypal", charge.payment_method_type
   #   assert_equal "PayPal", charge.brand
   # end
 
   test "braintree can charge card with Venmo" do
-    @pay_customer.payment_method_token = "fake-venmo-account-nonce"
+    @pay_customer.update_payment_method "fake-venmo-account-nonce"
     charge = @pay_customer.charge(29_00)
     assert_equal "venmo", charge.payment_method_type
     assert_equal "Venmo", charge.brand
@@ -154,19 +151,19 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
   # Invalid amount will cause the transaction to fail
   # https://developers.braintreepayments.com/reference/general/testing/ruby#amount-200000-300099
   test "braintree handles charge failures" do
-    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
     @pay_customer.customer
     assert_raises(Pay::Braintree::Error) { @pay_customer.charge(2000_00) }
   end
 
   test "braintree fails with paypal processor declined" do
-    @pay_customer.payment_method_token = "fake-paypal-billing-agreement-nonce	"
+    @pay_customer.update_payment_method "fake-paypal-billing-agreement-nonce	"
     @pay_customer.customer
     assert_raises(Pay::Braintree::Error) { @pay_customer.charge(5001_01) }
   end
 
   test "braintree can create a subscription" do
-    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
     @pay_customer.subscribe
     assert @pay_customer.subscribed?
   end
@@ -180,7 +177,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
 
   test "braintree trial period options" do
     travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
-      @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+      @pay_customer.update_payment_method "fake-valid-visa-nonce"
       subscription = @pay_customer.subscribe(trial_period_days: 15)
       # Braintree subscriptions don't use trialing status for simplicity
       assert_equal "active", subscription.status
@@ -190,17 +187,19 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
     end
   end
 
+  # $2000.00 - 2999.99 returns a Processor Declined
   test "braintree fails charges with invalid cards" do
-    # This requires Card Verification to be enabled in the Braintree account
-    @pay_customer.payment_method_token = "fake-processor-declined-visa-nonce"
-    err = assert_raises(Pay::Braintree::Error) { @pay_customer.charge(10_00) }
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
+    err = assert_raises(Pay::Braintree::Error) { @pay_customer.charge(2000_00) }
     assert_equal "Do Not Honor", err.message
   end
 
   test "braintree fails subscribing with invalid cards" do
     # This requires Card Verification to be enabled in the Braintree account
-    @pay_customer.payment_method_token = "fake-processor-declined-visa-nonce"
-    err = assert_raises(Pay::Braintree::Error) { @pay_customer.subscribe }
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
+    err = assert_raises(Pay::Braintree::Error) do
+      @pay_customer.subscribe(plan: "do-not-honor")
+    end
     assert_equal "Do Not Honor", err.message
     assert_equal Braintree::ErrorResult, err.cause.class
   end
@@ -214,7 +213,7 @@ class Pay::Braintree::Billable::Test < ActiveSupport::TestCase
     assert_nil @pay_customer.data
     @pay_customer.update_payment_method "fake-valid-discover-nonce"
     assert_equal "Discover", @pay_customer.default_payment_method.brand
-    @pay_customer.payment_method_token = "fake-valid-visa-nonce"
+    @pay_customer.update_payment_method "fake-valid-visa-nonce"
     @pay_customer.subscribe
     assert_equal "Visa", @pay_customer.default_payment_method.brand
   end

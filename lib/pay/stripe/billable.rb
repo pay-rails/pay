@@ -9,8 +9,6 @@ module Pay
         :processor_id?,
         :email,
         :customer_name,
-        :payment_method_token,
-        :payment_method_token?,
         :stripe_account,
         to: :pay_customer
 
@@ -44,25 +42,16 @@ module Pay
       # Finds an existing Stripe::Customer if processor_id exists
       # Creates a new Stripe::Customer using `customer_attributes` if empty processor_id
       #
-      # Updates the default payment method automatically if a payment_method_token is set
-      #
       # Returns a Stripe::Customer object
       def customer
         Pay::Customer.find(pay_customer.id).with_lock do
-          stripe_customer = if processor_id?
+          if processor_id?
             ::Stripe::Customer.retrieve({id: processor_id, expand: ["tax", "invoice_credit_balance"]}, stripe_options)
           else
-            sc = ::Stripe::Customer.create(customer_attributes.merge(expand: ["tax"]), stripe_options)
+            sc = ::Stripe::Customer.create(customer_attributes.merge(expand: ["tax", "invoice_credit_balance"]), stripe_options)
             pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
             sc
           end
-
-          if payment_method_token?
-            add_payment_method(payment_method_token, default: true)
-            pay_customer.payment_method_token = nil
-          end
-
-          stripe_customer
         rescue ::Stripe::StripeError => e
           raise Pay::Stripe::Error, e
         end
@@ -81,8 +70,6 @@ module Pay
 
       # Charges an amount to the customer's default payment method
       def charge(amount, options = {})
-        add_payment_method(payment_method_token, default: true) if payment_method_token?
-
         payment_method = pay_customer.default_payment_method
         args = {
           confirm: true,

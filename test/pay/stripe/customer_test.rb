@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::Stripe::BillableTest < ActiveSupport::TestCase
+class Pay::Stripe::CustomerCustomerTest < ActiveSupport::TestCase
   setup do
     @user = users(:stripe)
     @pay_customer = @user.payment_processor
@@ -15,7 +15,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
 
   test "stripe creates customer when no processor id" do
     assert_nil @pay_customer.processor_id
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     @pay_customer.customer
     assert_not_nil @pay_customer.processor_id
     assert_equal "card", @pay_customer.default_payment_method.type
@@ -24,23 +24,25 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can create a charge" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     charge = @pay_customer.charge(2900)
     assert_equal Pay::Charge, charge.class
     assert_equal 2900, charge.amount
   end
 
   test "stripe handles card declined" do
-    @pay_customer.payment_method_token = "pm_card_chargeDeclined"
-    assert_raises(Pay::Stripe::Error) { @pay_customer.charge(2900) }
+    assert_raises(Pay::Stripe::Error) do
+      @pay_customer.update_payment_method "pm_card_chargeDeclined"
+    end
   end
 
   test "stripe raises action required error when SCA required" do
-    exception = assert_raises(Pay::ActionRequired) {
-      @pay_customer.payment_method_token = sca_payment_method
+    exception = assert_raises(Pay::ActionRequired) do
+      @pay_customer.update_payment_method sca_payment_method
       @pay_customer.charge(2900)
-    }
-    assert_equal "This payment attempt failed because additional action is required before it can be completed.", exception.message
+    end
+    assert_equal "This payment attempt failed because additional action is required before it can be completed.",
+      exception.message
   end
 
   test "stripe can create a subscription" do
@@ -48,7 +50,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
       # We select the subscription by newest created_at, so we want to make sure existing subscriptions are in the past
       @pay_customer.subscriptions.update_all(created_at: 1.hour.ago)
 
-      @pay_customer.payment_method_token = payment_method
+      @pay_customer.update_payment_method payment_method
       pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
 
       assert @pay_customer.subscribed?
@@ -58,7 +60,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
 
   test "stripe subscribe also saves initial charge" do
     assert_difference "@pay_customer.charges.count" do
-      @pay_customer.payment_method_token = payment_method
+      @pay_customer.update_payment_method payment_method
       @pay_customer.subscribe(name: "default", plan: "small-monthly")
     end
 
@@ -67,7 +69,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can swap a subscription" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
     subscription.swap("small-annual")
     assert_equal "default", subscription.name
@@ -75,7 +77,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can swap a subscription and reset billing cycle" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
     subscription.swap("small-annual", billing_cycle_anchor: "now")
     assert_equal "default", subscription.name
@@ -83,7 +85,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can swap and invoice a subscription" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
     subscription.swap_and_invoice("small-annual")
     assert_equal "default", subscription.name
@@ -91,19 +93,20 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe fails when subscribing with no payment method" do
-    exception = assert_raises(Pay::Stripe::Error) {
+    exception = assert_raises(Pay::Stripe::Error) do
       @pay_customer.subscribe(name: "default", plan: "small-monthly")
-    }
+    end
     assert_match "This customer has no attached payment source or default payment method.", exception.message
   end
 
   test "stripe fails when subscribing with SCA card" do
-    exception = assert_raises(Pay::ActionRequired) {
-      @pay_customer.payment_method_token = sca_payment_method
+    exception = assert_raises(Pay::ActionRequired) do
+      @pay_customer.update_payment_method sca_payment_method
       @pay_customer.subscribe(name: "default", plan: "small-monthly")
-    }
+    end
 
-    assert_equal "This payment attempt failed because additional action is required before it can be completed.", exception.message
+    assert_equal "This payment attempt failed because additional action is required before it can be completed.",
+      exception.message
   end
 
   test "stripe can update card" do
@@ -111,7 +114,6 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
 
     assert_equal "card", @pay_customer.default_payment_method.type
     assert_equal "Visa", @pay_customer.default_payment_method.brand
-    assert_nil @pay_customer.payment_method_token
 
     @pay_customer.update_payment_method "pm_card_discover"
     assert_equal "Discover", @pay_customer.default_payment_method.brand
@@ -123,7 +125,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_equal @pay_customer.processor_subscription(subscription.id), subscription
   end
 
-  test "can create an invoice" do
+  test "stripe can create an invoice" do
     @pay_customer.update_payment_method(payment_method)
 
     ::Stripe::InvoiceItem.create(
@@ -133,11 +135,11 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
       description: "One-time setup fee"
     )
 
-    assert_equal 1000, @pay_customer.invoice!.total
+    assert_equal 1000, @pay_customer.invoice!(pending_invoice_items_behavior: :include).total
   end
 
   test "stripe card gets updated automatically when retrieving customer" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     @pay_customer.customer
     assert_equal "card", @pay_customer.default_payment_method.type
     assert_equal "Visa", @pay_customer.default_payment_method.brand
@@ -162,8 +164,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe handles exception when creating a customer" do
-    @pay_customer.payment_method_token = "invalid"
-    exception = assert_raises(Pay::Stripe::Error) { @pay_customer.customer }
+    exception = assert_raises(Pay::Stripe::Error) { @pay_customer.update_payment_method "invalid" }
     assert_match "No such PaymentMethod: 'invalid'", exception.message
   end
 
@@ -184,14 +185,14 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe handles coupons" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     subscription = @pay_customer.subscribe(plan: "small-monthly", coupon: "10BUCKS")
     assert_equal "10BUCKS", subscription.processor_subscription.discount.coupon.id
   end
 
   test "stripe trial period options" do
     travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
-      @pay_customer.payment_method_token = payment_method
+      @pay_customer.update_payment_method payment_method
       subscription = @pay_customer.subscribe(plan: "small-monthly", trial_period_days: 15)
       assert_equal "trialing", subscription.status
       assert_not_nil subscription.trial_ends_at
@@ -206,7 +207,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can pass shipping information to charge" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     charge = @pay_customer.charge(25_00, shipping: {
       name: "Recipient",
       address: {
@@ -220,7 +221,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe allows subscription quantities" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     subscription = @pay_customer.subscribe(plan: "small-monthly", quantity: 10)
     assert_equal 10, subscription.processor_subscription.quantity
     assert_equal 10, subscription.quantity
@@ -228,13 +229,13 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
 
   test "stripe card is automatically updated on subscribe" do
     assert_nil @pay_customer.data
-    @pay_customer.payment_method_token = "pm_card_amex"
+    @pay_customer.update_payment_method "pm_card_amex"
     @pay_customer.subscribe
     assert_equal "card", @pay_customer.default_payment_method.type
   end
 
   test "stripe subscription and one time charge" do
-    @pay_customer.payment_method_token = "pm_card_visa"
+    @pay_customer.update_payment_method "pm_card_visa"
     @pay_customer.subscribe(
       name: "default",
       plan: "default",
@@ -251,19 +252,20 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
 
   test "stripe prices api" do
     price_id = "price_1JNJJkKXBGcbgpbZuOiH3XJK"
-    @pay_customer.payment_method_token = "pm_card_visa"
+    @pay_customer.update_payment_method "pm_card_visa"
     pay_subscription = @pay_customer.subscribe plan: price_id
     assert_equal price_id, pay_subscription.processor_plan
   end
 
   test "stripe saves currency on charge" do
-    @pay_customer.payment_method_token = "pm_card_visa"
+    @pay_customer.update_payment_method "pm_card_visa"
     charge = @pay_customer.charge(29_00)
     assert_equal "usd", charge.currency
   end
 
   test "stripe saves acss_debit" do
-    pm = Stripe::PaymentMethod.create(type: "acss_debit", acss_debit: {account_number: "00123456789", institution_number: "000", transit_number: "11000"}, billing_details: {email: "test@example.org", name: "Test User"})
+    pm = Stripe::PaymentMethod.create(type: "acss_debit",
+      acss_debit: {account_number: "00123456789", institution_number: "000", transit_number: "11000"}, billing_details: {email: "test@example.org", name: "Test User"})
     @pay_customer.save_payment_method(pm, default: true)
     assert_equal "acss_debit", @pay_customer.default_payment_method.type
     assert_equal "STRIPE TEST BANK", @pay_customer.default_payment_method.bank
@@ -271,7 +273,11 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe saves afterpay_clearpay" do
-    pm = Stripe::PaymentMethod.create(type: "afterpay_clearpay", billing_details: {address: {line1: "1 Fake Street", city: "Cupertino", state: "CA", country: "US", postal_code: "95102"}, email: "test@example.org", name: "Test User"})
+    pm = Stripe::PaymentMethod.create(type: "afterpay_clearpay",
+      billing_details: {
+        address: {line1: "1 Fake Street", city: "Cupertino", state: "CA", country: "US",
+                  postal_code: "95102"}, email: "test@example.org", name: "Test User"
+      })
     @pay_customer.save_payment_method(pm, default: true)
     assert_equal "afterpay_clearpay", @pay_customer.default_payment_method.type
   end
@@ -305,7 +311,8 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe saves boleto" do
-    pm = Stripe::PaymentMethod.create(type: "boleto", boleto: {tax_id: "000.000.000-00"}, billing_details: {email: "test@example.org", name: "Test User", address: {line1: "1 Fake Street", city: "Salvador", state: "BA", country: "BR", postal_code: "41940-340"}})
+    pm = Stripe::PaymentMethod.create(type: "boleto", boleto: {tax_id: "000.000.000-00"},
+      billing_details: {email: "test@example.org", name: "Test User", address: {line1: "1 Fake Street", city: "Salvador", state: "BA", country: "BR", postal_code: "41940-340"}})
     @pay_customer.save_payment_method(pm, default: true)
     assert_equal "boleto", @pay_customer.default_payment_method.type
   end
@@ -319,7 +326,8 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   # end
 
   test "stripe saves eps bank" do
-    pm = Stripe::PaymentMethod.create(type: "eps", eps: {bank: "bank_austria"}, billing_details: {name: "Test User"})
+    pm = Stripe::PaymentMethod.create(type: "eps", eps: {bank: "bank_austria"},
+      billing_details: {name: "Test User"})
     @pay_customer.save_payment_method(pm, default: true)
     assert_equal "eps", @pay_customer.default_payment_method.type
     assert_equal "bank_austria", @pay_customer.default_payment_method.bank
@@ -373,7 +381,8 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe saves sepa_debit" do
-    pm = Stripe::PaymentMethod.create(type: "sepa_debit", sepa_debit: {iban: "DK5000400440116243"}, billing_details: {email: "test@example.org", name: "Test User"})
+    pm = Stripe::PaymentMethod.create(type: "sepa_debit", sepa_debit: {iban: "DK5000400440116243"},
+      billing_details: {email: "test@example.org", name: "Test User"})
     @pay_customer.save_payment_method(pm, default: true)
     assert_equal "sepa_debit", @pay_customer.default_payment_method.type
     assert_equal "6243", @pay_customer.default_payment_method.last4
@@ -417,7 +426,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
 
   test "stripe can pause and resume a subscription" do
     travel_to_cassette do
-      @pay_customer.payment_method_token = payment_method
+      @pay_customer.update_payment_method(payment_method)
       @pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
 
       @pay_subscription.pause(behavior: "void", resumes_at: 1.month.from_now.to_i)
@@ -439,14 +448,14 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can authorize a charge" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     charge = @pay_customer.authorize(29_00)
     assert_equal Pay::Charge, charge.class
     assert_equal 0, charge.amount_captured
   end
 
   test "stripe can capture an authorized charge" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     charge = @pay_customer.authorize(29_00)
     assert_equal 0, charge.amount_captured
 
@@ -456,7 +465,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
   end
 
   test "stripe can issue credit note for a refund for Stripe tax" do
-    @pay_customer.payment_method_token = payment_method
+    @pay_customer.update_payment_method payment_method
     pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
     pay_subscription.charges.last.refund!(5_00)
     pay_subscription.payment_processor.reload!
@@ -465,7 +474,7 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_equal 5_00, pay_subscription.charges.last.amount_refunded
   end
 
-  test "sync_subscriptions" do
+  test "stripe sync_subscriptions" do
     @pay_customer.processor_id = "test_id"
     ::Stripe::Subscription.expects(:list).with({customer: @pay_customer.processor_id}, {}).returns([])
     @pay_customer.sync_subscriptions
