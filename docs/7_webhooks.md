@@ -16,12 +16,13 @@ Pay comes with a bunch of different webhook handlers built-in. Each payment proc
 
 Webhooks are automatically mounted at `/pay/webhooks/:provider`
 
-To configure webhooks on your payment processor, use the following URLs (with your domain):
+To configure webhooks on your payment processor, use the following URLs while replacing `example.org` with your own domain:
 
 * **Stripe** - `https://example.org/pay/webhooks/stripe`
 * **Braintree** - `https://example.org/pay/webhooks/braintree`
 * **Paddle Billing** - `https://example.org/pay/webhooks/paddle_billing`
 * **Paddle Classic** - `https://example.org/pay/webhooks/paddle_classic`
+* **Lemon Squeezy** - `https://example.org/pay/webhooks/lemon_squeezy`
 
 #### Mount path
 
@@ -53,6 +54,7 @@ Since we support multiple payment providers, each event type is prefixed with th
 "braintree.subscription_charged_successfully"
 "paddle_billing.subscription.created"
 "paddle_classic.subscription_created"
+"lemon_squeezy.subscription_created"
 ```
 
 ## Custom Webhook Listeners

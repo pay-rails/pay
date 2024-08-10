@@ -44,7 +44,7 @@ module Pay
     store_accessor :data, :refunds # array of refunds
 
     # Helpers for payment processors
-    %w[braintree stripe paddle_billing paddle_classic fake_processor].each do |processor_name|
+    %w[braintree stripe paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
       define_method :"#{processor_name}?" do
         customer.processor == processor_name
       end
@@ -52,7 +52,7 @@ module Pay
       scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
     end
 
-    delegate :capture, :credit_note!, :credit_notes, to: :payment_processor
+    delegate :capture, :credit_note!, to: :payment_processor
 
     def self.find_by_processor_and_id(processor, processor_id)
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})

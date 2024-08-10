@@ -11,38 +11,38 @@ gemspec
 # Git. Remember to move these dependencies to your gemspec before releasing
 # your gem to rubygems.org.
 
-gem "byebug"
 gem "appraisal", github: "thoughtbot/appraisal"
+gem "byebug"
+gem "mocha"
 gem "overcommit"
 gem "standard"
-gem "mocha"
 gem "vcr"
 gem "webmock"
 
 gem "braintree", ">= 2.92.0"
+gem "lemonsqueezy", "~> 1.0"
+gem "paddle", "~> 2.4"
 gem "stripe", "~> 12.0"
-gem "paddle", "~> 2.2"
-
-gem 'dotenv', groups: [:development, :test]
 
 gem 'faraday'
 
 gem "receipts"
 gem "prawn"
+gem "receipts"
 
 # Test against different databases
-gem "pg"
 gem "mysql2"
+gem "pg"
 gem "sqlite3", "~> 1.7"
 
 # Used for the dummy Rails app integration
 gem "puma"
 gem "web-console", group: :development
 
-gem "sprockets-rails"
 gem "importmap-rails"
-gem "turbo-rails"
+gem "sprockets-rails"
 gem "stimulus-rails"
+gem "turbo-rails"
 
 # Ruby 3.1+ drops these built-in gems
 gem "net-imap", require: false

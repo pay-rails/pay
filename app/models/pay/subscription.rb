@@ -9,7 +9,7 @@ module Pay
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
-    scope :on_trial, -> { where(status: ["trialing", "active"]).where("trial_ends_at > ?", Time.current) }
+    scope :on_trial, -> { where(status: ["on_trial", "trialing", "active"]).where("trial_ends_at > ?", Time.current) }
     scope :canceled, -> { where.not(ends_at: nil) }
     scope :cancelled, -> { canceled }
     scope :on_grace_period, -> { where("#{table_name}.ends_at IS NOT NULL AND #{table_name}.ends_at > ?", Time.current) }
@@ -43,7 +43,7 @@ module Pay
     delegate_missing_to :payment_processor
 
     # Helper methods for payment processors
-    %w[braintree stripe paddle_billing paddle_classic fake_processor].each do |processor_name|
+    %w[braintree stripe paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
       define_method :"#{processor_name}?" do
         customer.processor == processor_name
       end

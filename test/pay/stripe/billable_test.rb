@@ -465,6 +465,12 @@ class Pay::Stripe::BillableTest < ActiveSupport::TestCase
     assert_equal 5_00, pay_subscription.charges.last.amount_refunded
   end
 
+  test "sync_subscriptions" do
+    @pay_customer.processor_id = "test_id"
+    ::Stripe::Subscription.expects(:list).with({customer: @pay_customer.processor_id}, {}).returns([])
+    @pay_customer.sync_subscriptions
+  end
+
   private
 
   def payment_method

@@ -20,7 +20,8 @@ module Pay
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_classic) && defined?(::Paddle)
 
-      Pay::Engine.version_matches?(required: "~> 2.1", current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 2.1")
+      Pay::Engine.version_matches?(required: "~> 2.5",
+        current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 2.5")
     end
 
     def self.client
@@ -73,9 +74,12 @@ module Pay
       Pay::Webhooks.configure do |events|
         events.subscribe "paddle_classic.subscription_created", Pay::PaddleClassic::Webhooks::SubscriptionCreated.new
         events.subscribe "paddle_classic.subscription_updated", Pay::PaddleClassic::Webhooks::SubscriptionUpdated.new
-        events.subscribe "paddle_classic.subscription_cancelled", Pay::PaddleClassic::Webhooks::SubscriptionCancelled.new
-        events.subscribe "paddle_classic.subscription_payment_succeeded", Pay::PaddleClassic::Webhooks::SubscriptionPaymentSucceeded.new
-        events.subscribe "paddle_classic.subscription_payment_refunded", Pay::PaddleClassic::Webhooks::SubscriptionPaymentRefunded.new
+        events.subscribe "paddle_classic.subscription_cancelled",
+          Pay::PaddleClassic::Webhooks::SubscriptionCancelled.new
+        events.subscribe "paddle_classic.subscription_payment_succeeded",
+          Pay::PaddleClassic::Webhooks::SubscriptionPaymentSucceeded.new
+        events.subscribe "paddle_classic.subscription_payment_refunded",
+          Pay::PaddleClassic::Webhooks::SubscriptionPaymentRefunded.new
       end
     end
   end

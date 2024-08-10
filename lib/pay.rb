@@ -19,6 +19,7 @@ module Pay
   autoload :FakeProcessor, "pay/fake_processor"
   autoload :PaddleBilling, "pay/paddle_billing"
   autoload :PaddleClassic, "pay/paddle_classic"
+  autoload :LemonSqueezy, "pay/lemon_squeezy"
   autoload :Stripe, "pay/stripe"
 
   autoload :Webhooks, "pay/webhooks"
@@ -56,7 +57,7 @@ module Pay
   @@routes_path = "/pay"
 
   mattr_accessor :enabled_processors
-  @@enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic]
+  @@enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic, :lemon_squeezy]
 
   mattr_accessor :send_emails
   @@send_emails = true
@@ -128,6 +129,14 @@ module Pay
       option.call(*remaining_args)
     else
       option
+    end
+  end
+
+  def self.sync(params)
+    if (session_id = params[:stripe_checkout_session_id] || params[:session_id])
+      Pay::Stripe.sync_checkout_session(session_id)
+    elsif (transaction_id = params[:paddle_billing_transaction_id] || params[:transaction_id])
+      Pay::PaddleBilling.sync_transaction(transaction_id)
     end
   end
 end

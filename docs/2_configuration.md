@@ -20,8 +20,8 @@ They should be formatted like the following:
 stripe:
   private_key: xxxx
   public_key: yyyy
-  signing_secret:
   webhook_receive_test_events: true
+  signing_secret:
   - aaaa
   - bbbb
 braintree:
@@ -39,6 +39,10 @@ paddle_classic:
   vendor_auth_code: yyyy
   public_key_base64: MII...==
   environment: sandbox
+lemon_squeezy:
+  api_key: xxxx
+  store_id: yyyy
+  signing_secret: aaaa
 ```
 
 You can also nest these credentials under the Rails environment if using a shared credentials file.
@@ -72,6 +76,17 @@ Pay will also check environment variables for API keys:
 * `PADDLE_CLASSIC_PUBLIC_KEY_FILE`
 * `PADDLE_CLASSIC_PUBLIC_KEY_BASE64`
 * `PADDLE_CLASSIC_ENVIRONMENT`
+* `LEMON_SQUEEZY_API_KEY`
+* `LEMON_SQUEEZY_STORE_ID`
+* `LEMON_SQUEEZY_SIGNING_SECRET`
+
+> [!TIP]
+>
+> Are you using any of these payment processors for the very first time? Take a look at their respective configuration doc for generating these keys:
+>
+> - [Stripe](/docs/stripe/2_credentials.md)
+> - [Paddle Billing](/docs/paddle_billing/1_overview.md#configuration)
+> - [Paddle Classic](/docs/paddle_classic/1_overview.md#paddle-public-key)
 
 #### STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS (Default to TRUE)
 As per the guidance from https://support.stripe.com/questions/connect-account-webhook-configurations: "When a connected account is linked solely in live mode to your platform, both live and test events are sent to your live Connect Webhook Endpoint." Therefore, you can set this to false if you wish to receive only live events in Production.
@@ -123,7 +138,7 @@ Pay.setup do |config|
   config.automount_routes = true
   config.routes_path = "/pay" # Only when automount_routes is true
   # All processors are enabled by default. If a processor is already implemented in your application, you can omit it from this list and the processor will not be set up through the Pay gem.
-  config.enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic]
+  config.enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic, :lemon_squeezy]
 
   # To disable all emails, set the following configuration option to false:
   config.send_emails = true

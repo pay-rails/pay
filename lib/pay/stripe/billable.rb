@@ -48,22 +48,24 @@ module Pay
       #
       # Returns a Stripe::Customer object
       def customer
-        stripe_customer = if processor_id?
-          ::Stripe::Customer.retrieve({id: processor_id, expand: ["tax", "invoice_credit_balance"]}, stripe_options)
-        else
-          sc = ::Stripe::Customer.create(customer_attributes.merge(expand: ["tax"]), stripe_options)
-          pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
-          sc
-        end
+        Pay::Customer.find(pay_customer.id).with_lock do
+          stripe_customer = if processor_id?
+            ::Stripe::Customer.retrieve({id: processor_id, expand: ["tax", "invoice_credit_balance"]}, stripe_options)
+          else
+            sc = ::Stripe::Customer.create(customer_attributes.merge(expand: ["tax"]), stripe_options)
+            pay_customer.update!(processor_id: sc.id, stripe_account: stripe_account)
+            sc
+          end
 
-        if payment_method_token?
-          add_payment_method(payment_method_token, default: true)
-          pay_customer.payment_method_token = nil
-        end
+          if payment_method_token?
+            add_payment_method(payment_method_token, default: true)
+            pay_customer.payment_method_token = nil
+          end
 
-        stripe_customer
-      rescue ::Stripe::StripeError => e
-        raise Pay::Stripe::Error, e
+          stripe_customer
+        rescue ::Stripe::StripeError => e
+          raise Pay::Stripe::Error, e
+        end
       end
 
       # Syncs name and email to Stripe::Customer
@@ -202,7 +204,7 @@ module Pay
       # Syncs a customer's subscriptions from Stripe to the database.
       # Note that by default canceled subscriptions are NOT returned by Stripe. In order to include them, use `sync_subscriptions(status: "all")`.
       def sync_subscriptions(**options)
-        subscriptions = ::Stripe::Subscription.list(options.merge(customer: customer), stripe_options)
+        subscriptions = ::Stripe::Subscription.list(options.with_defaults(customer: processor_id), stripe_options)
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id)
         end
@@ -299,7 +301,7 @@ module Pay
       # Includes the `session_id` param for Stripe Checkout with existing params (and makes sure the curly braces aren't escaped)
       def merge_session_id_param(url)
         uri = URI.parse(url)
-        uri.query = URI.encode_www_form(URI.decode_www_form(uri.query.to_s).to_h.merge("session_id" => "{CHECKOUT_SESSION_ID}").to_a)
+        uri.query = URI.encode_www_form(URI.decode_www_form(uri.query.to_s).to_h.merge("stripe_checkout_session_id" => "{CHECKOUT_SESSION_ID}").to_a)
         uri.to_s.gsub("%7BCHECKOUT_SESSION_ID%7D", "{CHECKOUT_SESSION_ID}")
       end
     end

@@ -2,6 +2,12 @@
 
 ### Unreleased
 
+### 8.0.0
+
+* Add Lemon Squeezy support
+* Add `Pay.sync(params)` for automatically syncing Stripe Checkout Sessions and Paddle Billing transactions.
+* Lock Pay::Customer record when creating or updating Stripe customer to handle race conditions. #1027
+
 ### 7.3.0
 
 * Stripe v12

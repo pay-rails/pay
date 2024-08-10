@@ -16,7 +16,8 @@ module Pay
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_billing) && defined?(::Paddle)
 
-      Pay::Engine.version_matches?(required: "~> 2.1", current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 2.1")
+      Pay::Engine.version_matches?(required: "~> 2.5",
+        current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 2.5")
     end
 
     def self.setup
@@ -55,7 +56,7 @@ module Pay
       end
     end
 
-    def sync_transaction(transaction_id)
+    def self.sync_transaction(transaction_id)
       transaction = ::Paddle::Transaction.retrieve(id: transaction_id)
 
       if transaction.subscription_id.present?
