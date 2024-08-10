@@ -21,12 +21,16 @@ module Pay
       # Retrieves a Paddle::Customer object
       #
       # Finds an existing Paddle::Customer if processor_id exists
+      # Finds and attaches a processor_id to the Pay::Customer if it exists in Paddle
       # Creates a new Paddle::Customer using `email` and `customer_name` if empty processor_id
       #
       # Returns a Paddle::Customer object
       def customer
         if processor_id?
           ::Paddle::Customer.retrieve(id: processor_id)
+        elsif (sc = ::Paddle::Customer.list(email:).data&.first)
+          pay_customer.update!(processor_id: sc.id)
+          sc
         else
           sc = ::Paddle::Customer.create(email: email, name: customer_name)
           pay_customer.update!(processor_id: sc.id)
