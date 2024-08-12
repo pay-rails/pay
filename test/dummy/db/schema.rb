@@ -92,8 +92,8 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.json "metadata"
     t.json "data"
     t.string "stripe_account"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", null: false, precision: 6
+    t.datetime "updated_at", null: false, precision: 6
     t.boolean "metered"
     t.string "pause_behavior"
     t.datetime "pause_starts_at"
