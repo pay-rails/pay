@@ -9,6 +9,8 @@ rails pay:install:migrations
 rails db:migrate
 ```
 
+The `PaymentMethod#type` column has been renamed to `payment_method_type`. If you're displaying payment method details, you'll need to update your views to use the new column name.
+
 ## **Pay 6.0 to Pay 7.0**
 
 Pay 7 introduces some changes for Stripe and requires a few additional columns.
