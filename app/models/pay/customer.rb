@@ -21,7 +21,6 @@ module Pay
     store_accessor :data, :currency
 
     delegate :email, to: :owner
-    delegate_missing_to :pay_processor
 
     %w[stripe braintree paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
       scope processor_name, -> { where(processor: processor_name) }
@@ -29,15 +28,6 @@ module Pay
       define_method :"#{processor_name}?" do
         processor == processor_name
       end
-    end
-
-    def self.pay_processor_for(name)
-      "Pay::#{name.to_s.classify}::Billable".constantize
-    end
-
-    def pay_processor
-      return if processor.blank?
-      @pay_processor ||= self.class.pay_processor_for(processor).new(self)
     end
 
     def update_payment_method(payment_method_id)
@@ -49,8 +39,7 @@ module Pay
     end
 
     def subscribed?(name: Pay.default_product_name, processor_plan: nil)
-      query = {name: name, processor_plan: processor_plan}.compact
-      subscriptions.active.where(query).exists?
+      subscriptions.active.where({name: name, processor_plan: processor_plan}.compact).exists?
     end
 
     def on_trial?(name: Pay.default_product_name, plan: nil)

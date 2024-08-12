@@ -9,7 +9,7 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
   end
 
   test "connect account customer" do
-    assert_equal ::Stripe::Customer, @user.payment_processor.customer.class
+    assert_equal ::Stripe::Customer, @user.payment_processor.api_record.class
   end
 
   test "connect customer is not on parent account" do
@@ -34,7 +34,7 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
       transfer_data: {destination: @stripe_account_id}
     )
 
-    assert_equal @stripe_account_id, pay_charge.processor_charge.destination
+    assert_equal @stripe_account_id, pay_charge.api_record.destination
   end
 
   test "connect direct subscription" do

@@ -7,7 +7,7 @@ class Pay::FakeProcessor::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "fake processor subscription" do
-    assert_equal @subscription, @subscription.processor_subscription
+    assert_equal @subscription, @subscription.api_record
   end
 
   test "fake processor cancel" do

@@ -22,18 +22,18 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe change subscription quantity" do
-    @pay_customer.processor_id = nil
+    @pay_customer.update(processor_id: nil)
     @pay_customer.update_payment_method "pm_card_visa"
     subscription = @pay_customer.subscribe(name: "default", plan: "default")
     subscription.change_quantity(5)
-    stripe_subscription = subscription.processor_subscription
+    stripe_subscription = subscription.api_record
     assert_equal 5, stripe_subscription.quantity
     assert_equal 5, subscription.quantity
   end
 
   test "cancel_now when scheduled for cancellation" do
     travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
-      @pay_customer.processor_id = nil
+      @pay_customer.update(processor_id: nil)
       @pay_customer.update_payment_method "pm_card_visa"
       subscription = @pay_customer.subscribe(name: "default", plan: "default")
       subscription.cancel
@@ -166,7 +166,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "stripe resume on grace period" do
     travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
-      @pay_customer.processor_id = nil
+      @pay_customer.update(processor_id: nil)
       @pay_customer.update_payment_method "pm_card_visa"
       subscription = @pay_customer.subscribe(name: "default", plan: "default")
       subscription.cancel
@@ -316,17 +316,17 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe change subscription default payment method" do
-    @pay_customer.processor_id = nil
+    @pay_customer.update(processor_id: nil)
     @pay_customer.update_payment_method "pm_card_visa"
     subscription = @pay_customer.subscribe(name: "default", plan: "default")
 
     payment_method = ::Stripe::PaymentMethod.attach("pm_card_discover", {customer: @pay_customer.processor_id})
     subscription.update_payment_method payment_method.id
     assert_equal payment_method.id, subscription.payment_method_id
-    assert_equal payment_method.id, subscription.processor_subscription.default_payment_method.id
+    assert_equal payment_method.id, subscription.api_record.default_payment_method.id
 
     subscription.update_payment_method ""
     assert_nil subscription.payment_method_id
-    assert_nil subscription.processor_subscription.default_payment_method
+    assert_nil subscription.api_record.default_payment_method
   end
 end

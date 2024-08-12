@@ -15,6 +15,7 @@ module Pay
 
     test "should parse a paddle classic webhook" do
       user = User.create!
+      user.set_payment_processor :paddle_classic
       params = fake_event "paddle_classic/subscription_created"
 
       GlobalID::Locator.expects(:locate_signed).returns(user)
@@ -26,7 +27,7 @@ module Pay
         end
       end
 
-      assert_difference("user.subscriptions.count") do
+      assert_difference("user.payment_processor.subscriptions.count") do
         perform_enqueued_jobs
       end
     end

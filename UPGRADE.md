@@ -2,6 +2,13 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+### ** Pay 7.0 to Pay 8.0**
+
+```bash
+rails pay:install:migrations
+rails db:migrate
+```
+
 ## **Pay 6.0 to Pay 7.0**
 
 Pay 7 introduces some changes for Stripe and requires a few additional columns.

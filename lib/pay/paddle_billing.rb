@@ -1,10 +1,8 @@
 module Pay
   module PaddleBilling
-    autoload :Billable, "pay/paddle_billing/billable"
-    autoload :Charge, "pay/paddle_billing/charge"
-    autoload :Error, "pay/paddle_billing/error"
-    autoload :PaymentMethod, "pay/paddle_billing/payment_method"
-    autoload :Subscription, "pay/paddle_billing/subscription"
+    class Error < Pay::Error
+      delegate :message, to: :cause
+    end
 
     module Webhooks
       autoload :Subscription, "pay/paddle_billing/webhooks/subscription"

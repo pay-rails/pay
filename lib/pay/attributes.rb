@@ -31,9 +31,12 @@ module Pay
       def set_payment_processor(processor_name, allow_fake: false, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
+        klass = "Pay::#{processor_name.to_s.classify}::Customer"
+        klass.constantize
+
         ActiveRecord::Base.transaction do
           pay_customers.update_all(default: false)
-          pay_customer = pay_customers.active.where(processor: processor_name).first_or_initialize
+          pay_customer = pay_customers.active.where(processor: processor_name, type: klass).first_or_initialize
           pay_customer.update!(attributes.merge(default: true))
         end
 
@@ -44,7 +47,7 @@ module Pay
       def add_payment_processor(processor_name, allow_fake: false, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
-        pay_customer = pay_customers.active.where(processor: processor_name).first_or_initialize
+        pay_customer = pay_customers.active.where(processor: processor_name, type: "Pay::#{processor_name.to_s.classify}::Customer").first_or_initialize
         pay_customer.update!(attributes)
         pay_customer
       end
@@ -75,7 +78,7 @@ module Pay
       def set_merchant_processor(processor_name, **attributes)
         ActiveRecord::Base.transaction do
           pay_merchants.update_all(default: false)
-          pay_merchant = pay_merchants.where(processor: processor_name).first_or_initialize
+          pay_merchant = pay_merchants.where(processor: processor_name, type: "Pay::#{processor_name.to_s.classify}::Merchant").first_or_initialize
           pay_merchant.update!(attributes.merge(default: true))
         end
 

@@ -1,7 +1,5 @@
 module Pay
   class PaymentMethod < Pay::ApplicationRecord
-    self.inheritance_column = nil
-
     belongs_to :customer
 
     store_accessor :data, :brand # Visa, Mastercard, Discover, PayPal
@@ -11,9 +9,6 @@ module Pay
     store_accessor :data, :email # PayPal, Stripe Link, etc
     store_accessor :data, :username
     store_accessor :data, :bank
-
-    # Aliases to share PaymentMethodAttributes
-    alias_attribute :payment_method_type, :type
 
     validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
 

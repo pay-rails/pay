@@ -41,8 +41,8 @@ class Pay::PaddleClassic::Webhooks::SubscriptionUpdatedTest < ActiveSupport::Tes
 
   test "subscription is updated with subscription status = paused and on_trial? = true" do
     @data.status = "paused"
-    Pay::Subscription.any_instance.stubs(:on_trial?).returns(true)
-    Pay::Subscription.any_instance.stubs(:trial_ends_at).returns(3.days.from_now.beginning_of_day)
+    Pay::PaddleClassic::Subscription.any_instance.stubs(:on_trial?).returns(true)
+    Pay::PaddleClassic::Subscription.any_instance.stubs(:trial_ends_at).returns(3.days.from_now.beginning_of_day)
     Pay::PaddleClassic::Webhooks::SubscriptionUpdated.new.call(@data)
     assert_equal 3.days.from_now.beginning_of_day, subscription.reload.ends_at
   end

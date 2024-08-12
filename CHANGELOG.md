@@ -5,6 +5,9 @@
 ### 8.0.0
 
 * [Breaking] Remove `pay_customer.payment_method_token` virtual attribute. Use `@pay_customer.update_payment_method(token)` instead.
+* [Breaking] Rename `customer` to `api_record`
+* [Breaking] Rename `update_customer!` to `update_api_record`
+* [Breaking] Rename `Pay::PaymentMethod#type` to `Pay::PaymentMethod#payment_method_type`
 * Add Lemon Squeezy support
 * Add `Pay.sync(params)` for automatically syncing Stripe Checkout Sessions and Paddle Billing transactions.
 * Lock Pay::Customer record when creating or updating Stripe customer to handle race conditions. #1027

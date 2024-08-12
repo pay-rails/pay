@@ -9,7 +9,7 @@ class Pay::Stripe::ErrorTest < ActiveSupport::TestCase
 
   test "re-raised stripe exceptions keep the same message" do
     exception = assert_raises(Pay::Stripe::Error) { @pay_customer.charge(0) }
-    assert_equal "This value must be greater than or equal to 1.", exception.message
+    assert_match "The amount must be greater than or equal to", exception.message
     assert_equal ::Stripe::InvalidRequestError, exception.cause.class
   end
 end

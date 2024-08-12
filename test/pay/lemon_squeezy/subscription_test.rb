@@ -5,8 +5,8 @@ class Pay::LemonSqueezy::Subscription::Test < ActiveSupport::TestCase
     @pay_customer = pay_customers(:lemon_squeezy)
   end
 
-  test "lemon squeezy processor subscription" do
-    assert_equal @pay_customer.subscription.processor_subscription.class, ::LemonSqueezy::Subscription
+  test "lemon squeezy api_record" do
+    assert_equal @pay_customer.subscription.api_record.class, ::LemonSqueezy::Subscription
     assert_equal "active", @pay_customer.subscription.status
   end
 
@@ -27,7 +27,7 @@ class Pay::LemonSqueezy::Subscription::Test < ActiveSupport::TestCase
 
   test "lemon squeezy can swap plans" do
     @pay_customer.subscription.swap("174873", variant_id: "225676")
-    assert_equal 225676, @pay_customer.subscription.processor_subscription.variant_id
+    assert_equal 225676, @pay_customer.subscription.api_record.variant_id
     assert_equal "active", @pay_customer.subscription.status
   end
 

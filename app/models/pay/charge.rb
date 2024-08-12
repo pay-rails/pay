@@ -1,7 +1,5 @@
 module Pay
   class Charge < Pay::ApplicationRecord
-    self.inheritance_column = nil
-
     # Associations
     belongs_to :customer
     belongs_to :subscription, optional: true
@@ -52,31 +50,12 @@ module Pay
       scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
     end
 
-    delegate :capture, :credit_note!, to: :payment_processor
-
     def self.find_by_processor_and_id(processor, processor_id)
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})
     end
 
-    def self.pay_processor_for(name)
-      "Pay::#{name.to_s.classify}::Charge".constantize
-    end
-
-    def payment_processor
-      @payment_processor ||= self.class.pay_processor_for(customer.processor).new(self)
-    end
-
-    def processor_charge
-      payment_processor.charge
-    end
-
     def captured?
       amount_captured > 0
-    end
-
-    def refund!(refund_amount = nil)
-      refund_amount ||= amount
-      payment_processor.refund!(refund_amount)
     end
 
     def refunded?
