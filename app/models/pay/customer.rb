@@ -39,8 +39,7 @@ module Pay
     end
 
     def subscribed?(name: Pay.default_product_name, processor_plan: nil)
-      query = {name: name, processor_plan: processor_plan}.compact
-      subscriptions.active.where(query).exists?
+      subscriptions.active.where({name: name, processor_plan: processor_plan}.compact).exists?
     end
 
     def on_trial?(name: Pay.default_product_name, plan: nil)
