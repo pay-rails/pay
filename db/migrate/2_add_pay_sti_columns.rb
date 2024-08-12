@@ -1,4 +1,4 @@
-class AddStiColumns < ActiveRecord::Migration[6.0]
+class AddPayStiColumns < ActiveRecord::Migration[6.0]
   def change
     add_column :pay_customers, :type, :string
     add_column :pay_charges, :type, :string
