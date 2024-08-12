@@ -1,10 +1,8 @@
 module Pay
   module PaddleClassic
-    autoload :Billable, "pay/paddle_classic/billable"
-    autoload :Charge, "pay/paddle_classic/charge"
-    autoload :Error, "pay/paddle_classic/error"
-    autoload :PaymentMethod, "pay/paddle_classic/payment_method"
-    autoload :Subscription, "pay/paddle_classic/subscription"
+    class Error < Pay::Error
+      delegate :message, to: :cause
+    end
 
     module Webhooks
       autoload :SignatureVerifier, "pay/paddle_classic/webhooks/signature_verifier"

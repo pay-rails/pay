@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::Charge::Test < ActiveSupport::TestCase
   test "belongs to a Pay::Customer" do
-    assert_equal Pay::Customer, pay_charges(:stripe).customer.class
+    assert_equal Pay::Stripe::Customer, pay_charges(:stripe).customer.class
   end
 
   test "braintree scope" do

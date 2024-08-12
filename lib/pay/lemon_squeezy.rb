@@ -1,10 +1,8 @@
 module Pay
   module LemonSqueezy
-    autoload :Billable, "pay/lemon_squeezy/billable"
-    autoload :Charge, "pay/lemon_squeezy/charge"
-    autoload :Error, "pay/lemon_squeezy/error"
-    autoload :PaymentMethod, "pay/lemon_squeezy/payment_method"
-    autoload :Subscription, "pay/lemon_squeezy/subscription"
+    class Error < Pay::Error
+      delegate :message, to: :cause
+    end
 
     module Webhooks
       autoload :Subscription, "pay/lemon_squeezy/webhooks/subscription"

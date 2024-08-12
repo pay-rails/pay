@@ -1,11 +1,30 @@
 module Pay
   module Braintree
-    autoload :AuthorizationError, "pay/braintree/authorization_error"
-    autoload :Billable, "pay/braintree/billable"
-    autoload :Charge, "pay/braintree/charge"
-    autoload :Error, "pay/braintree/error"
-    autoload :PaymentMethod, "pay/braintree/payment_method"
-    autoload :Subscription, "pay/braintree/subscription"
+    class Error < Pay::Error
+      # For any manually raised Braintree error results (for failure responses)
+      # we can raise this exception manually but treat it as if we wrapped an exception
+
+      attr_reader :result
+
+      def initialize(result)
+        if result.is_a?(::Braintree::ErrorResult)
+          super(result.message)
+          @result = result
+        else
+          super
+        end
+      end
+
+      def cause
+        super || result
+      end
+    end
+
+    class AuthorizationError < Error
+      def message
+        I18n.t("pay.errors.braintree.authorization")
+      end
+    end
 
     module Webhooks
       autoload :SubscriptionCanceled, "pay/braintree/webhooks/subscription_canceled"

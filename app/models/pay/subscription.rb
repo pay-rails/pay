@@ -40,8 +40,6 @@ module Pay
     validates :quantity, presence: true, numericality: {only_integer: true, greater_than_or_equal_to: 0}
     validates :status, presence: true
 
-    delegate_missing_to :payment_processor
-
     # Helper methods for payment processors
     %w[braintree stripe paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
       define_method :"#{processor_name}?" do
@@ -55,16 +53,8 @@ module Pay
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})
     end
 
-    def self.pay_processor_for(name)
-      "Pay::#{name.to_s.classify}::Subscription".constantize
-    end
-
-    def payment_processor
-      @payment_processor ||= self.class.pay_processor_for(customer.processor).new(self)
-    end
-
     def sync!(**options)
-      self.class.pay_processor_for(customer.processor).sync(processor_id, **options)
+      self.class.sync(processor_id, **options)
       reload
     end
 
@@ -105,6 +95,10 @@ module Pay
       ends_at? && ends_at <= Time.current
     end
 
+    def on_grace_period?
+      ends_at? && ends_at > Time.current
+    end
+
     # If you cancel during a trial, you should still retain access until the end of the trial
     # Otherwise a subscription is active unless it has ended or is currently paused
     # Check the subscription status so we don't accidentally consider "incomplete", "unpaid", or other statuses as active
@@ -129,33 +123,9 @@ module Pay
       past_due? || incomplete?
     end
 
-    def change_quantity(quantity, **options)
-      payment_processor.change_quantity(quantity, **options)
-      update(quantity: quantity)
-    end
-
-    def resume
-      payment_processor.resume
-      update(ends_at: nil, status: :active)
-      self
-    end
-
-    def swap(plan, **options)
-      raise ArgumentError, "plan must be a string. Got `#{plan.inspect}` instead." unless plan.is_a?(String)
-      payment_processor.swap(plan, **options)
-    end
-
     def swap_and_invoice(plan)
       swap(plan)
       customer.invoice!(subscription: processor_id)
-    end
-
-    def processor_subscription(**options)
-      payment_processor.subscription(**options)
-    end
-
-    def latest_payment
-      processor_subscription(expand: ["latest_invoice.payment_intent"]).latest_invoice.payment_intent
     end
 
     private

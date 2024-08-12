@@ -19,13 +19,13 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert pay_customers(:deleted).deleted?
   end
 
-  test "update_customer!" do
-    assert pay_customers(:fake).respond_to?(:update_customer!)
+  test "update_api_record" do
+    assert pay_customers(:fake).respond_to?(:update_api_record)
   end
 
-  test "update_customer! with a promotion code" do
+  test "update_api_record with a promotion code" do
     pay_customer = pay_customers(:fake)
-    assert pay_customer.update_customer!(promotion_code: "promo_xxx123")
+    assert pay_customer.update_api_record(promotion_code: "promo_xxx123")
   end
 
   test "not_fake scope" do

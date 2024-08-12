@@ -2,26 +2,155 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.stripe.com/v1/payment_intents
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers
     body:
       encoding: UTF-8
-      string: amount=0&confirm=true&confirmation_method=automatic&currency=usd
+      string: email=stripe%40e<VENDOR_AUTH_CODE>ample.org&name=Stripe+User&e<VENDOR_AUTH_CODE>pand[0]=ta<VENDOR_AUTH_CODE>&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=invoice_credit_balance
     headers:
       User-Agent:
-      - Stripe/v1 RubyBindings/5.38.0 PayRails/3.0.0 (https://github.com/pay-rails/pay)
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>2.4.0 PayRails/8.0.0 (https://github.com/pay-rails/pay)
       Authorization:
-      - Bearer sk_test_ex0JDdQGDv6z2QmAIVQUOyE6
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
       Content-Type:
-      - application/x-www-form-urlencoded
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Idempotency-Key:
+      - 8e07<VENDOR_ID>49b-34bf-42a7-a98<VENDOR_ID>-784<VENDOR_ID>aad544bf
       Stripe-Version:
-      - '2020-08-27'
+      - '2024-06-20'
       X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"3.0.0"},"bindings_version":"5.38.0","lang":"ruby","lang_version":"3.0.2
-        p107 (2021-07-07)","platform":"x86_64-darwin20","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Chriss-iMac.local 20.5.0 Darwin Kernel Version 20.5.0: Sat May  8 05:10:33
-        PDT 2021; root:xnu-7195.121.3~9/RELEASE_X86_64 x86_64","hostname":"Chriss-iMac.local"}'
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.0.0"},"bindings_version":"<VENDOR_ID>2.4.0","lang":"ruby","lang_version":"3.3.2
+        p78 (2024-05-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin23","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 23.5.0 Darwin Kernel Version 23.5.0: Wed May  <VENDOR_ID>
+        20:09:52 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>0063.<VENDOR_ID>2<VENDOR_ID>.3~5/RELEASE_X86_64
+        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.localdomain"}'
       Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Mon, <VENDOR_ID>2 Aug 2024 <VENDOR_ID>4:50:22 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '778'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET,HEAD,PUT,PATCH,POST,DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fcustomers; block-all-mi<VENDOR_AUTH_CODE>ed-content;
+        default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
+      Idempotency-Key:
+      - 8e07<VENDOR_ID>49b-34bf-42a7-a98<VENDOR_ID>-784<VENDOR_ID>aad544bf
+      Original-Request:
+      - req_8lYQVgjiflbdWa
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report?s=mono-bapi-srv"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report?s=mono-bapi-srv"
+      Request-Id:
+      - req_8lYQVgjiflbdWa
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2024-06-20'
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_QeIA0kIldCpisl",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": <VENDOR_ID>723474222,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+          "invoice_credit_balance": {},
+          "invoice_prefi<VENDOR_AUTH_CODE>": "<VENDOR_ID>46CA27A",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": null,
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "ta<VENDOR_AUTH_CODE>": {
+            "automatic_ta<VENDOR_AUTH_CODE>": "unrecognized_location",
+            "ip_address": null,
+            "location": null
+          },
+          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+          "test_clock": null
+        }
+  recorded_at: Mon, 12 Aug 2024 14:50:22 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/payment_intents
+    body:
+      encoding: UTF-8
+      string: amount=0&currency=usd&customer=cus_QeIA0kIldCpisl&e<VENDOR_AUTH_CODE>pand[0]=latest_charge.refunds&return_url=http%3A%2F%2Flocalhost%3A3000%2F&confirm=true
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>2.4.0 PayRails/8.0.0 (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_8lYQVgjiflbdWa","request_duration_ms":423}}'
+      Idempotency-Key:
+      - 8500d239-afcb-45b9-9e59-90c57cf<VENDOR_ID>df96
+      Stripe-Version:
+      - '2024-06-20'
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.0.0"},"bindings_version":"<VENDOR_ID>2.4.0","lang":"ruby","lang_version":"3.3.2
+        p78 (2024-05-30)","platform":"<VENDOR_AUTH_CODE>86_64-darwin23","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Chriss-iMac.localdomain 23.5.0 Darwin Kernel Version 23.5.0: Wed May  <VENDOR_ID>
+        20:09:52 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>0063.<VENDOR_ID>2<VENDOR_ID>.3~5/RELEASE_X86_64
+        <VENDOR_AUTH_CODE>86_64","hostname":"Chriss-iMac.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - "*/*"
   response:
@@ -30,35 +159,57 @@ http_interactions:
       message: Bad Request
     headers:
       Server:
-      - nginx
+      - ngin<VENDOR_AUTH_CODE>
       Date:
-      - Wed, 01 Sep 2021 15:23:09 GMT
+      - Mon, <VENDOR_ID>2 Aug 2024 <VENDOR_ID>4:50:23 GMT
       Content-Type:
       - application/json
       Content-Length:
-      - '266'
+      - '663'
       Connection:
       - keep-alive
       Access-Control-Allow-Credentials:
       - 'true'
       Access-Control-Allow-Methods:
-      - GET, POST, HEAD, OPTIONS, DELETE
+      - GET,HEAD,PUT,PATCH,POST,DELETE
       Access-Control-Allow-Origin:
       - "*"
-      Access-Control-Expose-Headers:
-      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
-      Access-Control-Max-Age:
-      - '300'
       Cache-Control:
       - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fpayment_intents;
+        block-all-mi<VENDOR_AUTH_CODE>ed-content; default-src 'none'; base-uri 'none';
+        form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'
+        'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
+      Idempotency-Key:
+      - 8500d239-afcb-45b9-9e59-90c57cf<VENDOR_ID>df96
+      Original-Request:
+      - req_eZCX54sYhD5a2X
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report?s=payins-bapi-srv"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report?s=payins-bapi-srv"
       Request-Id:
-      - req_qcOhTPKXHubXGx
+      - req_eZCX54sYhD5a2X
       Stripe-Version:
-      - '2020-08-27'
-      X-Stripe-C-Cost:
-      - '0'
+      - '2024-06-20'
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
       Strict-Transport-Security:
-      - max-age=31556926; includeSubDomains; preload
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
     body:
       encoding: UTF-8
       string: |
@@ -66,10 +217,11 @@ http_interactions:
           "error": {
             "code": "parameter_invalid_integer",
             "doc_url": "https://stripe.com/docs/error-codes/parameter-invalid-integer",
-            "message": "This value must be greater than or equal to 1.",
+            "message": "The amount must be greater than or equal to the minimum charge amount allowed for your account and the currency set (https://docs.stripe.com/currencies#minimum-and-ma<VENDOR_AUTH_CODE>imum-charge-amounts).  If you want to save a Payment Method for future use without an immediate payment, use a Setup Intent instead: https://docs.stripe.com/payments/setup-intents",
             "param": "amount",
+            "request_log_url": "https://dashboard.stripe.com/test/logs/req_eZCX54sYhD5a2X?t=<VENDOR_ID>723474222",
             "type": "invalid_request_error"
           }
         }
-  recorded_at: Wed, 01 Sep 2021 15:23:09 GMT
-recorded_with: VCR 6.0.0
+  recorded_at: Mon, 12 Aug 2024 14:50:22 GMT
+recorded_with: VCR 6.2.0

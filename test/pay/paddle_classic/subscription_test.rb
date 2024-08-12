@@ -7,7 +7,7 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
 
   test "paddle classic cancel" do
     subscription = @pay_customer.subscription
-    next_payment_date = Time.parse(subscription.processor_subscription.next_payment[:date])
+    next_payment_date = Time.parse(subscription.api_record.next_payment[:date])
     assert_difference "@pay_customer.payment_methods.count", -1 do
       subscription.cancel
     end
@@ -18,7 +18,7 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
 
   test "paddle classic cancel with future ends_at" do
     subscription = @pay_customer.subscription
-    next_payment_date = Time.parse(subscription.processor_subscription.next_payment[:date])
+    next_payment_date = Time.parse(subscription.api_record.next_payment[:date])
     travel_to next_payment_date - 1.month
     assert_difference "@pay_customer.payment_methods.count", -1 do
       subscription.cancel
@@ -41,13 +41,13 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "paddle classic processor subscription" do
-    assert_equal @pay_customer.subscription.processor_subscription.class, Paddle::Classic::User
+    assert_equal @pay_customer.subscription.api_record.class, Paddle::Classic::User
     assert_equal "active", @pay_customer.subscription.status
   end
 
   test "paddle classic pause" do
     subscription = @pay_customer.subscription
-    next_payment_date = Time.zone.parse(subscription.processor_subscription.next_payment[:date])
+    next_payment_date = Time.zone.parse(subscription.api_record.next_payment[:date])
     subscription.pause
     assert subscription.paused?
     assert_equal next_payment_date, subscription.pause_starts_at
@@ -80,7 +80,7 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
       subscription = @pay_customer.subscription
       subscription.update!(status: :trialing, trial_ends_at: 3.days.from_now)
       subscription.pause
-      assert_equal subscription.pause_starts_at.to_date, subscription.processor_subscription.next_payment[:date].to_date
+      assert_equal subscription.pause_starts_at.to_date, subscription.api_record.next_payment[:date].to_date
 
       subscription.resume
       assert_nil subscription.pause_starts_at
@@ -90,7 +90,7 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
 
   test "paddle classic can swap plans" do
     @pay_customer.subscription.swap("594470")
-    assert_equal 594470, @pay_customer.subscription.processor_subscription.plan_id
+    assert_equal 594470, @pay_customer.subscription.api_record.plan_id
     assert_equal "active", @pay_customer.subscription.status
   end
 
@@ -102,7 +102,7 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
   test "paddle classic cancel paused subscription" do
     subscription = @pay_customer.subscription
     subscription.update(status: :paused, pause_starts_at: "Sat, 04 Jul 2020 00:00:00.000000000 UTC +00:00")
-    assert_nil subscription.processor_subscription.next_payment
+    assert_nil subscription.api_record.next_payment
     assert_difference "@pay_customer.payment_methods.count", -1 do
       subscription.cancel
     end

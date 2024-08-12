@@ -14,6 +14,17 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     assert user.payment_processor
   end
 
+  test "set payment processor types" do
+    user = users(:none)
+    refute user.payment_processor
+
+    assert_equal Pay::FakeProcessor::Customer, user.set_payment_processor(:fake_processor, allow_fake: true).class
+    assert_equal Pay::LemonSqueezy::Customer, user.set_payment_processor(:lemon_squeezy).class
+    assert_equal Pay::PaddleBilling::Customer, user.set_payment_processor(:paddle_billing).class
+    assert_equal Pay::PaddleClassic::Customer, user.set_payment_processor(:paddle_classic).class
+    assert_equal Pay::Stripe::Customer, user.set_payment_processor(:stripe).class
+  end
+
   test "set payment processor with previously deleted processor" do
     user = users(:deleted_customer)
     assert user.pay_customers.last.deleted_at?

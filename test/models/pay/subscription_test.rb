@@ -360,9 +360,9 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     end
   end
 
-  test "processor subscription" do
-    @subscription.payment_processor.stubs(:subscription).returns(:result)
-    assert_equal :result, @subscription.processor_subscription
+  test "api_record" do
+    @subscription.stubs(:api_record).returns(:result)
+    assert_equal :result, @subscription.api_record
   end
 
   test "can swap plans" do

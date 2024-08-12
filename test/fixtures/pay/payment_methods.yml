@@ -1,10 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  type: Pay::Stripe::PaymentMethod
   customer: stripe
   processor_id: pm_1000
   default: true
-  type: card
+  payment_method_type: card
   data:
     brand: "Visa"
     last4: "4242"
@@ -12,22 +13,25 @@ one:
     exp_year: "2021"
 
 two:
+  type: Pay::Stripe::PaymentMethod
   customer: stripe
   processor_id: pm_1001
   default: true
-  type: card
+  payment_method_type: card
   data:
 
 paddle_billing:
+  type: Pay::PaddleBilling::PaymentMethod
   customer: paddle_billing
   processor_id: txn_123
   default: true
-  type: card
+  payment_method_type: card
   data:
 
 paddle_classic:
+  type: Pay::PaddleClassic::PaymentMethod
   customer: paddle_classic
   processor_id: 1000
   default: true
-  type: card
+  payment_method_type: card
   data:

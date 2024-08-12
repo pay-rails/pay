@@ -4,7 +4,6 @@ class Pay::Stripe::CheckoutTest < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:stripe)
     @pay_customer.update(processor_id: nil)
-    @pay_customer.customer
   end
 
   test "checkout success_url includes session_id" do

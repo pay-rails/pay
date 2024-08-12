@@ -1,54 +1,63 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 stripe:
+  type: Pay::Stripe::Customer
   owner: stripe (User)
   processor: stripe
   processor_id: cus_1234
   default: true
 
 braintree:
+  type: Pay::Braintree::Customer
   owner: braintree (User)
   processor: braintree
   processor_id: bt_1234
   default: true
 
 paddle_billing:
+  type: Pay::PaddleBilling::Customer
   owner: paddle_billing (User)
   processor: paddle_billing
   processor_id: ctm_0123
   default: true
 
 paddle_classic:
+  type: Pay::PaddleClassic::Customer
   owner: paddle_classic (User)
   processor: paddle_classic
   processor_id: 17368056
   default: true
 
 lemon_squeezy:
+  type: Pay::LemonSqueezy::Customer
   owner: lemon_squeezy (User)
   processor: lemon_squeezy
   processor_id: 2194219
   default: true
 
 fake:
+  type: Pay::FakeProcessor::Customer
   owner: fake (User)
   processor: fake_processor
   processor_id: fake_1234
   default: true
 
 multiple_first:
+  type: Pay::Stripe::Customer
   owner: multiple (User)
   processor: stripe
   processor_id: cus_1235
   default: true
 
 multiple_second:
+  type: Pay::Braintree::Customer
   owner: multiple (User)
   processor: braintree
   processor_id: bt_1235
   default: true
 
 deleted:
+  type: Pay::Stripe::Customer
   owner: deleted_customer (User)
   processor: stripe
   processor_id: 9999
@@ -56,6 +65,7 @@ deleted:
   deleted_at: <%= Time.current %>
 
 deleted2:
+  type: Pay::Stripe::Customer
   owner: deleted_customer (User)
   processor: stripe
   processor_id: 9998
@@ -63,6 +73,7 @@ deleted2:
   deleted_at: <%= Time.current %>
 
 pending_stripe:
+  type: Pay::Stripe::Customer
   owner: pending (User)
   processor: stripe
   processor_id:
