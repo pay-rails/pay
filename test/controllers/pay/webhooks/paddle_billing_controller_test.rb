@@ -18,7 +18,7 @@ module Pay
 
       assert_difference("Pay::Webhook.count") do
         assert_enqueued_with(job: Pay::Webhooks::ProcessJob) do
-          post webhooks_paddle_billing_path, params: fake_event("paddle_billing/subscription.created")
+          post webhooks_paddle_billing_path, params: json_fixture("paddle_billing/subscription.created")
           assert_response :success
         end
       end

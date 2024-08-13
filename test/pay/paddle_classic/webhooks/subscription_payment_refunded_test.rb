@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::PaddleClassic::Webhooks::SubscriptionPaymentRefundedTest < ActiveSupport::TestCase
   setup do
-    @data = OpenStruct.new JSON.parse(File.read("test/support/fixtures/paddle_classic/subscription_payment_refunded.json"))
+    @data = OpenStruct.new json_fixture("paddle_classic/subscription_payment_refunded")
     @pay_customer = pay_customers(:paddle_classic)
     @pay_customer.update(processor_id: @data.user_id)
   end

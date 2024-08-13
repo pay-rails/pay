@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::PaddleClassic::Webhooks::SignatureVerifierTest < ActiveSupport::TestCase
   setup do
-    @data = JSON.parse(File.read("test/support/fixtures/paddle_classic/subscription_created.json"))
+    @data = json_fixture("paddle_classic/subscription_created")
   end
 
   test "webhook signature is verified correctly" do

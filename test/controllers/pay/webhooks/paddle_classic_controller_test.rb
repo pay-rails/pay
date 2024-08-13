@@ -16,7 +16,7 @@ module Pay
     test "should parse a paddle classic webhook" do
       user = User.create!
       user.set_payment_processor :paddle_classic
-      params = fake_event "paddle_classic/subscription_created"
+      params = json_fixture("paddle_classic/subscription_created")
 
       GlobalID::Locator.expects(:locate_signed).returns(user)
 

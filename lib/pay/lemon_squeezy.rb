@@ -48,9 +48,9 @@ module Pay
       Pay::Webhooks.configure do |events|
         events.subscribe "lemon_squeezy.order_created", Pay::LemonSqueezy::Webhooks::Order.new
         events.subscribe "lemon_squeezy.subscription_created", Pay::LemonSqueezy::Webhooks::Subscription.new
+        events.subscribe "lemon_squeezy.subscription_updated", Pay::LemonSqueezy::Webhooks::Subscription.new
         events.subscribe "lemon_squeezy.subscription_payment_refunded", Pay::LemonSqueezy::Webhooks::SubscriptionPayment.new
         events.subscribe "lemon_squeezy.subscription_payment_success", Pay::LemonSqueezy::Webhooks::SubscriptionPayment.new
-        events.subscribe "lemon_squeezy.subscription_updated", Pay::LemonSqueezy::Webhooks::Subscription.new
       end
     end
 

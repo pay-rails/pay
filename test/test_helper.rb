@@ -11,7 +11,7 @@ ENV["STRIPE_SIGNING_SECRET"] ||= "whsec_x"
 # Paddle Classic configuration
 require "openssl"
 require "base64"
-paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/support/fixtures/paddle_classic/verification/paddle_public_key.pem"))
+paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/fixtures/files/paddle_classic/verification/paddle_public_key.pem"))
 ENV["PADDLE_CLASSIC_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
 ENV["PADDLE_CLASSIC_ENVIRONMENT"] ||= "sandbox"
 ENV["PADDLE_CLASSIC_VENDOR_ID"] ||= "1"
@@ -51,7 +51,7 @@ elsif ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActiveSupport::TestCase.fixture_path = File.expand_path("../fixtures", __FILE__)
   ActionDispatch::IntegrationTest.fixture_path = ActiveSupport::TestCase.fixture_path
 end
-
+ActiveSupport::TestCase.file_fixture_path = File.expand_path("../fixtures/files", __FILE__)
 ActiveSupport::TestCase.fixtures :all
 
 class ActiveSupport::TestCase
@@ -59,28 +59,24 @@ class ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
   def json_fixture(name)
-    JSON.parse File.read("test/support/fixtures/#{name}.json")
-  end
-
-  def fake_event(name, format: :json)
-    JSON.parse File.read("test/support/fixtures/#{name}.#{format}")
+    JSON.load file_fixture(name + ".json")
   end
 
   def braintree_event(name)
-    raw = fake_event "braintree/#{name}"
+    raw = json_fixture("braintree/#{name}")
     Pay.braintree_gateway.webhook_notification.parse(raw["bt_signature"], raw["bt_payload"])
   end
 
   def paddle_billing_event(name)
-    OpenStruct.new fake_event("paddle_billing/#{name}")
+    OpenStruct.new json_fixture("paddle_billing/#{name}")
   end
 
   def paddle_classic_event(name, overrides: {})
-    OpenStruct.new fake_event("paddle_classic/#{name}").deep_merge(overrides)
+    OpenStruct.new json_fixture("paddle_classic/#{name}").deep_merge(overrides)
   end
 
   def stripe_event(name, overrides: {})
-    data = fake_event("stripe/#{name}")
+    data = json_fixture("stripe/#{name}")
     ::Stripe::Event.construct_from({data: data.deep_merge(overrides)})
   end
 

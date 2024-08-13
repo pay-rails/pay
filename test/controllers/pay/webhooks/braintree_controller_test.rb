@@ -14,7 +14,7 @@ module Pay
     end
 
     test "should parse a braintree webhook" do
-      params = fake_event "braintree/subscription_charged_successfully"
+      params = json_fixture("braintree/subscription_charged_successfully")
 
       pay_customer = pay_customers(:braintree)
       pay_customer.update(processor_id: "108696401")

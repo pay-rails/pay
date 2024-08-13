@@ -66,7 +66,7 @@ module Pay
         "object" => "event",
         "api_version" => "2020-08-27",
         "created" => 1628480731,
-        "data" => fake_event("stripe/charge.succeeded"),
+        "data" => json_fixture("stripe/charge.succeeded"),
         "livemode" => livemode,
         "pending_webhooks" => 3,
         "request" => {

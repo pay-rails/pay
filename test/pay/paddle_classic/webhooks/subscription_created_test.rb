@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::PaddleClassic::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
   setup do
-    @data = OpenStruct.new JSON.parse(File.read("test/support/fixtures/paddle_classic/subscription_created.json"))
+    @data = OpenStruct.new json_fixture("paddle_classic/subscription_created")
     @user = users(:paddle_classic)
   end
 
