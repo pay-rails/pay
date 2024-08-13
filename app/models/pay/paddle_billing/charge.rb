@@ -1,6 +1,8 @@
 module Pay
   module PaddleBilling
     class Charge < Pay::Charge
+      store_accessor :data, :paddle_receipt_url
+
       def self.sync(charge_id, object: nil, try: 0, retries: 1)
         # Skip loading the latest charge details from the API if we already have it
         object ||= ::Paddle::Transaction.retrieve(id: charge_id)

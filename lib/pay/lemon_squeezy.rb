@@ -5,8 +5,9 @@ module Pay
     end
 
     module Webhooks
+      autoload :Order, "pay/lemon_squeezy/webhooks/Order"
       autoload :Subscription, "pay/lemon_squeezy/webhooks/subscription"
-      autoload :Payment, "pay/lemon_squeezy/webhooks/payment"
+      autoload :SubscriptionPayment, "pay/lemon_squeezy/webhooks/subscription_payment"
     end
 
     extend Env
@@ -45,9 +46,26 @@ module Pay
 
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
-        events.subscribe "lemon_squeezy.subscription_payment_success", Pay::LemonSqueezy::Webhooks::Payment.new
+        events.subscribe "lemon_squeezy.order_created", Pay::LemonSqueezy::Webhooks::Order.new
         events.subscribe "lemon_squeezy.subscription_created", Pay::LemonSqueezy::Webhooks::Subscription.new
+        events.subscribe "lemon_squeezy.subscription_payment_refunded", Pay::LemonSqueezy::Webhooks::SubscriptionPayment.new
+        events.subscribe "lemon_squeezy.subscription_payment_success", Pay::LemonSqueezy::Webhooks::SubscriptionPayment.new
         events.subscribe "lemon_squeezy.subscription_updated", Pay::LemonSqueezy::Webhooks::Subscription.new
+      end
+    end
+
+    # An Order may have subscriptions or be a one-time purchase
+    def sync_order(order_id)
+      subscriptions = ::LemonSqueezy::Subscription.list(order_id: order_id).data
+      subscriptions.each do |subscription|
+        Pay::LemonSqueezy::Subscription.sync(subscription.id, object: subscription)
+        ::LemonSqueezy::SubscriptionInvoice.list(subscription_id: "528111").data.each do |invoice|
+          Pay::LemonSqueezy::Charge.sync_subscription_invoice(invoice.id, object: invoice)
+        end
+      end
+
+      if subscriptions.empty?
+        Pay::LemonSqueezy::Charge.sync_order(order_id)
       end
     end
   end

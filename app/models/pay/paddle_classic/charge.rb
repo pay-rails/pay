@@ -1,6 +1,8 @@
 module Pay
   module PaddleClassic
     class Charge < Pay::Charge
+      store_accessor :data, :paddle_receipt_url
+
       def api_record
         return unless customer.subscription
 

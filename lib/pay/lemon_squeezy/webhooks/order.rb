@@ -1,9 +1,9 @@
 module Pay
   module LemonSqueezy
     module Webhooks
-      class Payment
+      class Order
         def call(event)
-          Pay::LemonSqueezy::Charge.sync(event.data.id)
+          Pay::LemonSqueezy.sync(event.data.id)
         end
       end
     end

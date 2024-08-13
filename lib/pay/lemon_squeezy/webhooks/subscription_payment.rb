@@ -1,9 +1,9 @@
 module Pay
   module LemonSqueezy
     module Webhooks
-      class Subscription
+      class SubscriptionPayment
         def call(event)
-          Pay::LemonSqueezy::Subscription.sync(event.data.id)
+          Pay::LemonSqueezy::Charge.sync_subscription_invoice(event.data.id)
         end
       end
     end

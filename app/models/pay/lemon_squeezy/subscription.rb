@@ -5,36 +5,27 @@ module Pay
         # Passthrough is not return from this API, so we can't use that
         object ||= ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
 
-        attrs = object.data.attributes if object.respond_to?(:data)
-        attrs ||= object
-
-        pay_customer = Pay::Customer.find_by(processor: :lemon_squeezy, processor_id: attrs.customer_id)
-
-        # If passthrough exists (only on webhooks) we can use it to create the Pay::Customer
-        if pay_customer.nil? && object.meta.custom_data && object.meta.custom_data.passthrough
-          owner = Pay::LemonSqueezy.owner_from_passthrough(object.meta.custom_data.passthrough)
-          pay_customer = owner&.set_payment_processor(:lemon_squeezy, processor_id: attrs.customer_id)
-        end
-
+        pay_customer = Pay::Customer.find_by(processor: :lemon_squeezy, processor_id: object.customer_id)
         return unless pay_customer
 
         attributes = {
-          current_period_end: attrs.renews_at,
-          current_period_start: attrs.created_at,
-          ends_at: (attrs.ends_at ? Time.parse(attrs.ends_at) : nil),
-          pause_starts_at: (attrs.pause&.resumes_at ? Time.parse(attrs.pause.resumes_at) : nil),
-          status: attrs.status
+          current_period_end: object.renews_at,
+          current_period_start: object.created_at,
+          ends_at: (object.ends_at ? Time.parse(object.ends_at) : nil),
+          pause_starts_at: (object.pause&.resumes_at ? Time.parse(object.pause.resumes_at) : nil),
+          status: object.status,
+          processor_plan: object.first_subscription_item.price_id,
+          quantity: object.first_subscription_item.quantity,
+          created_at: (object.created_at ? Time.parse(object.created_at) : nil),
+          updated_at: (object.updated_at ? Time.parse(object.updated_at) : nil)
         }
-
-        attributes[:processor_plan] = attrs.first_subscription_item.price_id
-        attributes[:quantity] = attrs.first_subscription_item.quantity
 
         case attributes[:status]
         when "cancelled"
           # Remove payment methods since customer cannot be reused after cancelling
-          Pay::PaymentMethod.where(customer_id: attrs.customer_id).destroy_all
+          Pay::PaymentMethod.where(customer_id: object.customer_id).destroy_all
         when "on_trial"
-          attributes[:trial_ends_at] = Time.parse(attrs.trial_ends_at)
+          attributes[:trial_ends_at] = Time.parse(object.trial_ends_at)
         when "paused"
           # attributes[:pause_starts_at] = Time.parse(object.paused_at)
         when "active", "past_due"
@@ -44,18 +35,20 @@ module Pay
         end
 
         # Update or create the subscription
-        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: subscription_id))
+        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id))
           pay_subscription.with_lock do
             pay_subscription.update!(attributes)
           end
           pay_subscription
         else
-          pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: subscription_id))
+          pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
         end
       end
 
       def api_record(**options)
         @api_record ||= ::LemonSqueezy::Subscription.retrieve(id: processor_id)
+      rescue ::LemonSqueezy::Error => e
+        raise Pay::LemonSqueezy::Error, e
       end
 
       def portal_url

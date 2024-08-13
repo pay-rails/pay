@@ -137,6 +137,8 @@ module Pay
       Pay::Stripe.sync_checkout_session(session_id)
     elsif (transaction_id = params[:paddle_billing_transaction_id] || params[:transaction_id])
       Pay::PaddleBilling.sync_transaction(transaction_id)
+    elsif (order_id = params[:lemon_squeezy_order_id])
+      Pay::LemonSqueezy.sync_order(order_id)
     end
   end
 end

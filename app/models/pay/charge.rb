@@ -13,10 +13,6 @@ module Pay
     validates :amount, presence: true
     validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
 
-    # Store the payment method kind (card, paypal, etc)
-    store_accessor :data, :paddle_receipt_url
-    store_accessor :data, :stripe_receipt_url
-
     # Payment method attributes
     store_accessor :data, :payment_method_type # card, paypal, sepa, etc
     store_accessor :data, :brand # Visa, Mastercard, Discover, PayPal
