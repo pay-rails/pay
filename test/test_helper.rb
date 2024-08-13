@@ -59,7 +59,7 @@ class ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
   def json_fixture(name)
-    JSON.load file_fixture(name + ".json")
+    JSON.parse File.read(file_fixture(name + ".json"))
   end
 
   def braintree_event(name)
