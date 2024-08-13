@@ -1,6 +1,6 @@
 # Stripe JavaScript
 
-Here's some example Javascript for handling your payment forms with [Stripe.js](https://stripe.com/docs/stripe-js) and [Hotwire / Turbo](https://hotwired.dev).
+Here's some example Javascript for handling your payment forms with [Stripe.js](https://docs.stripe.com/js) and [Hotwire / Turbo](https://hotwired.dev).
 
 #### Form HTML
 
