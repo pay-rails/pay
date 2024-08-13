@@ -1,11 +1,5 @@
 module Pay
   module LemonSqueezy
-    MAPPINGS = {
-      "orders" => ::LemonSqueezy::Order,
-      "subscriptions" => ::LemonSqueezy::Subscription,
-      "subscription-invoices" => ::LemonSqueezy::SubscriptionInvoice
-    }
-
     class Error < Pay::Error
       delegate :message, to: :cause
     end
@@ -68,7 +62,11 @@ module Pay
           construct_from_webhook_event(object)
         end
       when Hash
-        type = MAPPINGS.fetch(data["type"])
+        type = {
+          "orders" => ::LemonSqueezy::Order,
+          "subscriptions" => ::LemonSqueezy::Subscription,
+          "subscription-invoices" => ::LemonSqueezy::SubscriptionInvoice
+        }.fetch(data["type"])
 
         type.new(data)
       end
