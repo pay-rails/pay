@@ -1,11 +1,17 @@
 module Pay
   module LemonSqueezy
+    MAPPINGS = {
+      "orders" => ::LemonSqueezy::Order,
+      "subscriptions" => ::LemonSqueezy::Subscription,
+      "subscription-invoices" => ::LemonSqueezy::SubscriptionInvoice
+    }
+
     class Error < Pay::Error
       delegate :message, to: :cause
     end
 
     module Webhooks
-      autoload :Order, "pay/lemon_squeezy/webhooks/Order"
+      autoload :Order, "pay/lemon_squeezy/webhooks/order"
       autoload :Subscription, "pay/lemon_squeezy/webhooks/subscription"
       autoload :SubscriptionPayment, "pay/lemon_squeezy/webhooks/subscription_payment"
     end
@@ -54,8 +60,22 @@ module Pay
       end
     end
 
+    def self.construct_from_webhook_event(event)
+      data = event["data"]
+      case data
+      when Array
+        data.map do |object|
+          construct_from_webhook_event(object)
+        end
+      when Hash
+        type = MAPPINGS.fetch(data["type"])
+
+        type.new(data)
+      end
+    end
+
     # An Order may have subscriptions or be a one-time purchase
-    def sync_order(order_id)
+    def self.sync_order(order_id, object: nil)
       subscriptions = ::LemonSqueezy::Subscription.list(order_id: order_id).data
       subscriptions.each do |subscription|
         Pay::LemonSqueezy::Subscription.sync(subscription.id, object: subscription)
@@ -65,7 +85,7 @@ module Pay
       end
 
       if subscriptions.empty?
-        Pay::LemonSqueezy::Charge.sync_order(order_id)
+        Pay::LemonSqueezy::Charge.sync_order(order_id, object: object)
       end
     end
   end

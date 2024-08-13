@@ -6,19 +6,19 @@ module Pay
       def self.sync_order(order_id, object: nil, try: 0, retries: 1)
         object ||= ::LemonSqueezy::Order.retrieve(id: order_id)
 
-        pay_customer = Pay::Customer.find_by(processor: :lemon_squeezy, processor_id: object.customer_id)
+        pay_customer = Pay::Customer.find_by(type: "Pay::LemonSqueezy::Customer", processor_id: object.customer_id)
         return unless pay_customer
 
         processor_id = "order:#{object.id}"
         attributes = {
           processor_id: processor_id,
+          currency: object.currency,
+          subtotal: object.subtotal,
+          tax: object.tax,
           amount: object.total,
           amount_refunded: object.refunded_amount,
           created_at: (object.created_at ? Time.parse(object.created_at) : nil),
-          updated_at: (object.updated_at ? Time.parse(object.updated_at) : nil),
-          currency: object.currency,
-          subtotal: object.subtotal,
-          tax: object.tax
+          updated_at: (object.updated_at ? Time.parse(object.updated_at) : nil)
         }
 
         # Update or create the charge
@@ -36,24 +36,24 @@ module Pay
         # Skip loading the latest subscription invoice details from the API if we already have it
         object ||= ::LemonSqueezy::SubscriptionInvoice.retrieve(id: subscription_invoice_id)
 
-        pay_customer = Pay::Customer.find_by(processor: :lemon_squeezy, processor_id: object.customer_id)
+        pay_customer = Pay::Customer.find_by(type: "Pay::LemonSqueezy::Customer", processor_id: object.customer_id)
         return unless pay_customer
 
         processor_id = "subscription_invoice:#{object.id}"
         subscription = Pay::LemonSqueezy::Subscription.find_by(processor_id: object.subscription_id)
         attributes = {
           processor_id: processor_id,
+          currency: object.currency,
           amount: object.total,
           amount_refunded: object.refunded_amount,
-          created_at: (object.created_at ? Time.parse(object.created_at) : nil),
-          updated_at: (object.updated_at ? Time.parse(object.updated_at) : nil),
-          currency: object.currency,
           subtotal: object.subtotal,
           tax: object.tax,
           subscription: subscription,
           payment_method_type: ("card" if object.card_brand.present?),
           brand: object.card_brand,
-          last4: object.card_last_four
+          last4: object.card_last_four,
+          created_at: (object.created_at ? Time.parse(object.created_at) : nil),
+          updated_at: (object.updated_at ? Time.parse(object.updated_at) : nil)
         }
 
         # Update customer's payment method

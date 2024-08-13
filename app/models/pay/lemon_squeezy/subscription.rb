@@ -2,7 +2,6 @@ module Pay
   module LemonSqueezy
     class Subscription < Pay::Subscription
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
-        # Passthrough is not return from this API, so we can't use that
         object ||= ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
 
         pay_customer = Pay::Customer.find_by(processor: :lemon_squeezy, processor_id: object.customer_id)
@@ -10,8 +9,7 @@ module Pay
 
         attributes = {
           current_period_end: object.renews_at,
-          current_period_start: object.created_at,
-          ends_at: (object.ends_at ? Time.parse(object.ends_at) : nil),
+          ends_at: (object.ends_at ? Time.parse(object..ends_at) : nil),
           pause_starts_at: (object.pause&.resumes_at ? Time.parse(object.pause.resumes_at) : nil),
           status: object.status,
           processor_plan: object.first_subscription_item.price_id,

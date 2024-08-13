@@ -22,7 +22,7 @@ module Pay
       when "paddle_classic"
         to_recursive_ostruct(event)
       when "lemon_squeezy"
-        to_recursive_ostruct(event)
+        Pay::LemonSqueezy.construct_from_webhook_event(event)
       when "stripe"
         ::Stripe::Event.construct_from(event)
       else

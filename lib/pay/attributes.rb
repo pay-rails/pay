@@ -31,12 +31,13 @@ module Pay
       def set_payment_processor(processor_name, allow_fake: false, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
-        klass = "Pay::#{processor_name.to_s.classify}::Customer"
-        klass.constantize
+        # Safety check to make sure this is a valid Pay processor
+        klass = "Pay::#{processor_name.to_s.classify}::Customer".constantize
+        raise ArgumentError, "not a valid payment processor" if klass.ancestors.exclude?(Pay::Customer)
 
         ActiveRecord::Base.transaction do
           pay_customers.update_all(default: false)
-          pay_customer = pay_customers.active.where(processor: processor_name, type: klass).first_or_initialize
+          pay_customer = pay_customers.active.where(processor: processor_name, type: klass.name).first_or_initialize
           pay_customer.update!(attributes.merge(default: true))
         end
 
@@ -47,7 +48,11 @@ module Pay
       def add_payment_processor(processor_name, allow_fake: false, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
-        pay_customer = pay_customers.active.where(processor: processor_name, type: "Pay::#{processor_name.to_s.classify}::Customer").first_or_initialize
+        # Safety check to make sure this is a valid Pay processor
+        klass = "Pay::#{processor_name.to_s.classify}::Customer".constantize
+        raise ArgumentError, "not a valid payment processor" if klass.ancestors.exclude?(Pay::Customer)
+
+        pay_customer = pay_customers.active.where(processor: processor_name, type: klass.name).first_or_initialize
         pay_customer.update!(attributes)
         pay_customer
       end
