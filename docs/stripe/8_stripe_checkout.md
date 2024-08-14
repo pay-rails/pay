@@ -44,7 +44,7 @@ class SubscriptionsController < ApplicationController
     @checkout_session = current_user.payment_processor.checkout(mode: "setup")
 
     # If you want to redirect directly to checkout
-    redirect_to @checkout_session.url, allow_other_host: true, status: :see_other
+    # redirect_to @checkout_session.url, allow_other_host: true, status: :see_other
   end
 end
 ```
@@ -52,12 +52,17 @@ end
 Then link to it in your view:
 
 ```erb
-<%= link_to "Checkout", checkout_path, data: { turbo: false } %>
+<%= link_to "Checkout", @checkout_session.url %>
 ```
 
-**NOTE:** Due to a [bug](https://github.com/hotwired/turbo/issues/211#issuecomment-966570923) in the browser's `fetch` implementation, you will need to disable Turbo if redirecting to Stripe checkout server-side.
+> [!NOTE]
+> Due to a [bug](https://github.com/hotwired/turbo/issues/211#issuecomment-966570923) in the browser's `fetch` implementation, you will need to disable Turbo if redirecting to Stripe checkout server-side.
+>
+> ```erb
+> <%= link_to "Checkout", checkout_path, data: { turbo: false } %>
+> ```
 
-The `session_id` param will be included on success and cancel URLs automatically. This allows you to lookup the checkout session on your success page and confirm the payment was successful before fulfilling the customer's purchase.
+The `stripe_checkout_session_id` param will be included on success and cancel URLs automatically. This allows you to lookup the checkout session on your success page and confirm the payment was successful before fulfilling the customer's purchase.
 
 https://stripe.com/docs/payments/checkout/custom-success-page
 

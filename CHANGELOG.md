@@ -8,7 +8,9 @@
 * [Breaking] Rename `customer` to `api_record`
 * [Breaking] Rename `update_customer!` to `update_api_record`
 * [Breaking] Rename `Pay::PaymentMethod#type` to `Pay::PaymentMethod#payment_method_type`
+* [Breaking] Remove Stripe `checkout_button` partial. Use the Checkout Session `url` directly in a link or server-side redirect.
 * Add Lemon Squeezy support
+  Supports one-time payments and subscriptions
 * Add `Pay.sync(params)` for automatically syncing Stripe Checkout Sessions and Paddle Billing transactions.
 * Lock Pay::Customer record when creating or updating Stripe customer to handle race conditions. #1027
 
