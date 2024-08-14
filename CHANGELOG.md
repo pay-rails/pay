@@ -13,6 +13,7 @@
   Supports one-time payments and subscriptions
 * Add `Pay.sync(params)` for automatically syncing Stripe Checkout Sessions and Paddle Billing transactions.
 * Lock Pay::Customer record when creating or updating Stripe customer to handle race conditions. #1027
+* LemonSqueezy & Paddle Billing will now find Customers by email since they do not allow duplicates. #1043
 
 ### 7.3.0
 

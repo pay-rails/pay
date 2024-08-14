@@ -19,6 +19,9 @@ module Pay
       def api_record
         if processor_id?
           ::Paddle::Customer.retrieve(id: processor_id)
+        elsif (pc = ::Paddle::Customer.list(email: email).data&.first)
+          update!(processor_id: pc.id)
+          pc
         else
           pc = ::Paddle::Customer.create(email: email, name: customer_name)
           update!(processor_id: sc.id)

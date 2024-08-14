@@ -19,6 +19,9 @@ module Pay
       def api_record
         if processor_id?
           ::LemonSqueezy::Customer.retrieve(id: processor_id)
+        elsif (lsc = ::LemonSqueezy::Customer.list(email: email).data.first)
+          update!(processor_id: lsc.id)
+          lsc
         else
           lsc = ::LemonSqueezy::Customer.create(store_id: Pay::LemonSqueezy.store_id, **api_record_attributes)
           update!(processor_id: lsc.id)
