@@ -19,7 +19,12 @@ Rails.application.routes.draw do
   end
 
   namespace :lemon_squeezy do
-    resources :subscriptions, only: [:index, :new, :create]
+    resources :charges do
+      collection do
+        get :sync
+      end
+    end
+    resources :subscriptions
   end
 
   namespace :paddle_billing do

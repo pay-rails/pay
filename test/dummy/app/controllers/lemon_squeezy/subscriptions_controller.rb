@@ -3,23 +3,23 @@ module LemonSqueezy
     skip_before_action :verify_authenticity_token, only: [:create] # For testing purposes only
 
     def index
-      @subscriptions = Pay::Subscription.joins(:customer).where(pay_customers: {processor: :lemon_squeezy}).order(created_at: :desc)
+      @subscriptions = Pay::LemonSqueezy::Subscription.joins(:customer).where(pay_customers: {processor: :lemon_squeezy}).order(created_at: :desc)
     end
 
-    def create
-      current_user.set_payment_processor(params[:processor])
-      current_user.payment_processor.payment_method_token = params[:card_token]
-      
-      subscription = current_user.payment_processor.subscribe(plan: params[:plan_id])
-      
-      if subscription.persisted?
-        render json: { url: lemon_squeezy_subscriptions_path }, status: :ok
-      else
-        render json: { error: 'Failed to create subscription' }, status: :unprocessable_entity
-      end
+    def show
+      @subscription = Pay::LemonSqueezy::Subscription.find(params[:id])
+    end
 
-    rescue Pay::Error => e
-      render json: { error: e.message }, status: :unprocessable_entity
+    def new
+      current_user.add_payment_processor(:lemon_squeezy)
+      #@checkout = ::LemonSqueezy::Checkout.create(store_id: Pay::LemonSqueezy.store_id, variant_id: 479603)
+      @checkout = ::LemonSqueezy::Checkout.create(store_id: Pay::LemonSqueezy.store_id, variant_id: 482626, product_options: {redirect_url: sync_lemon_squeezy_charges_url + "?lemon_squeezy_order_id=[order_id]"})
+      redirect_to @checkout.url, allow_other_host: true
+    end
+
+    def sync
+      Pay.sync(params)
+      redirect_to lemon_squeey
     end
   end
 end

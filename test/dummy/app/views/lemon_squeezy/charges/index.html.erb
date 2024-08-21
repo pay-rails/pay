@@ -1,0 +1,14 @@
+<div class="d-flex justify-content-between">
+  <h1>Lemon Squeezy Charges</h1>
+
+  <div>
+    <%= link_to "New Charge", new_lemon_squeezy_charge_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% @charges.each do |charge| %>
+  <div>
+    <%= link_to "Pay::Charge #{charge.id}", lemon_squeezy_charge_path(charge) %>
+  </div>
+<% end %>
+
