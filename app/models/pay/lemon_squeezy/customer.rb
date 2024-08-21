@@ -1,6 +1,8 @@
 module Pay
   module LemonSqueezy
     class Customer < Pay::Customer
+      include Pay::Routing
+
       has_many :charges, dependent: :destroy, class_name: "Pay::LemonSqueezy::Charge"
       has_many :subscriptions, dependent: :destroy, class_name: "Pay::LemonSqueezy::Subscription"
       has_many :payment_methods, dependent: :destroy, class_name: "Pay::LemonSqueezy::PaymentMethod"
@@ -46,6 +48,23 @@ module Pay
       end
 
       def add_payment_method(token = nil, default: true)
+      end
+
+      # checkout(variant_id: "1234")
+      # checkout(variant_id: "1234", product_options: {return_url: return_url})
+      def checkout(**options)
+        options[:product_options] ||= {}
+        options[:product_options][:return_url] = merge_order_id_param(options.dig(:product_options, :return_url) || root_url)
+
+        ::LemonSqueezy::Checkout.create(options)
+      end
+
+      private
+
+      def merge_order_id_param(url)
+        uri = URI.parse(url)
+        uri.query = URI.encode_www_form(URI.decode_www_form(uri.query.to_s).to_h.merge("lemon_squeezy_order_id" => "[order_id]").to_a)
+        uri.to_s.gsub("%5Border_id%5D", "[order_id]")
       end
     end
   end
