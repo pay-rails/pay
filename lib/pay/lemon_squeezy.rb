@@ -77,7 +77,7 @@ module Pay
       subscriptions = ::LemonSqueezy::Subscription.list(order_id: order_id).data
       subscriptions.each do |subscription|
         Pay::LemonSqueezy::Subscription.sync(subscription.id, object: subscription)
-        ::LemonSqueezy::SubscriptionInvoice.list(subscription_id: "528111").data.each do |invoice|
+        ::LemonSqueezy::SubscriptionInvoice.list(subscription_id: subscription.id).data.each do |invoice|
           Pay::LemonSqueezy::Charge.sync_subscription_invoice(invoice.id, object: invoice)
         end
       end

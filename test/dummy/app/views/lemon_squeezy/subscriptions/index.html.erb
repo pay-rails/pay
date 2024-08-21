@@ -1,0 +1,13 @@
+<div class="d-flex justify-content-between">
+  <h1>Lemon Squeezy Subscriptions</h1>
+  <div>
+    <%= link_to "New Lemon Squeezy Subscription", new_lemon_squeezy_subscription_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% @subscriptions.each do |subscription| %>
+  <div>
+    <%= link_to "Pay::Subscription #{subscription.id}", lemon_squeezy_subscription_path(subscription) %>
+  </div>
+<% end %>
+
