@@ -50,17 +50,11 @@ module Pay
       end
 
       def portal_url
-        sub = ::LemonSqueezy::Subscription.retrieve(id: processor_id)
-        sub.urls.customer_portal
-      rescue ::LemonSqueezy::Error => e
-        raise Pay::LemonSqueezy::Error, e
+        api_record.urls.customer_portal
       end
 
       def update_url
-        sub = ::LemonSqueezy::Subscription.retrieve(id: processor_id)
-        sub.urls.update_payment_method
-      rescue ::LemonSqueezy::Error => e
-        raise Pay::LemonSqueezy::Error, e
+        api_record.urls.update_payment_method
       end
 
       def cancel(**options)
@@ -72,18 +66,14 @@ module Pay
       end
 
       def cancel_now!(**options)
-        # Lemon Squeezy doesn't support cancelling immediately
+        raise Pay::Error, "Lemon Squeezy does not support cancelling immediately through the API."
       end
 
       def change_quantity(quantity, **options)
-        items = [{
-          price_id: processor_plan,
-          quantity: quantity
-        }]
-
-        ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
+        subscription_item = api_record.first_subscription_item
+        ::LemonSqueezy::SubscriptionItem.update(id: subscription_item.id, quantity: quantity)
         update(quantity: quantity)
-      rescue ::Paddle::Error => e
+      rescue ::LemonSqueezy::Error => e
         raise Pay::LemonSqueezy::Error, e
       end
 
@@ -133,10 +123,6 @@ module Pay
         ::LemonSqueezy::Subscription.change_plan id: processor_id, plan_id: plan, variant_id: options[:variant_id]
 
         update(processor_plan: options[:variant_id], ends_at: nil, status: :active)
-      end
-
-      # Retries the latest invoice for a Past Due subscription
-      def retry_failed_payment
       end
     end
   end
