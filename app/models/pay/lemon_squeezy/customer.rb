@@ -51,13 +51,13 @@ module Pay
       end
 
       # checkout(variant_id: "1234")
-      # checkout(variant_id: "1234", product_options: {return_url: return_url})
+      # checkout(variant_id: "1234", product_options: {redirect_url: redirect_url})
       def checkout(**options)
         api_record unless processor_id?
 
         options[:store_id] = Pay::LemonSqueezy.store_id
         options[:product_options] ||= {}
-        options[:product_options][:return_url] = merge_order_id_param(options.dig(:product_options, :return_url) || root_url)
+        options[:product_options][:redirect_url] = merge_order_id_param(options.dig(:product_options, :redirect_url) || root_url)
 
         ::LemonSqueezy::Checkout.create(**options)
       end
