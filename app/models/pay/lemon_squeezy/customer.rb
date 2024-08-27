@@ -55,6 +55,7 @@ module Pay
       def checkout(**options)
         api_record unless processor_id?
 
+        options[:store_id] = Pay::LemonSqueezy.store_id
         options[:product_options] ||= {}
         options[:product_options][:return_url] = merge_order_id_param(options.dig(:product_options, :return_url) || root_url)
 
