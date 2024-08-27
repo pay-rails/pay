@@ -61,6 +61,10 @@ module Pay
         ::LemonSqueezy::Checkout.create(options)
       end
 
+      def portal_url
+        api_record.urls.customer_portal
+      end
+
       private
 
       def merge_order_id_param(url)
