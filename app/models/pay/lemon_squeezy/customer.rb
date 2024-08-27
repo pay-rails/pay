@@ -59,7 +59,7 @@ module Pay
         options[:product_options] ||= {}
         options[:product_options][:return_url] = merge_order_id_param(options.dig(:product_options, :return_url) || root_url)
 
-        ::LemonSqueezy::Checkout.create(options)
+        ::LemonSqueezy::Checkout.create(**options)
       end
 
       def portal_url
