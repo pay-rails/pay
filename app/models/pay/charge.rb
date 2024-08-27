@@ -3,7 +3,7 @@ module Pay
     self.table_name = Pay.chargeable_table
 
     # Only serialize for non-json columns
-    serialize :data unless json_column?("data")
+    serialize :data, coder: JSON unless json_column?("data")
 
     # Associations
     belongs_to :owner, polymorphic: true
