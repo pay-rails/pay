@@ -8,7 +8,7 @@ module Pay
       Pay::Webhooks.instrument type: "#{processor}.#{event_type}", event: rehydrated_event
 
       # Remove after successfully processing
-      # destroy
+      destroy
     end
 
     # Events have already been verified by the webhook, so we just store the raw data
