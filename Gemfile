@@ -28,7 +28,7 @@ gem "receipts"
 # Test against different databases
 gem "mysql2"
 gem "pg"
-gem "sqlite3", "~> 1.7"
+gem "sqlite3"
 
 # Used for the dummy Rails app integration
 gem "puma"
