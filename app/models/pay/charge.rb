@@ -79,7 +79,13 @@ module Pay
       when "card"
         "#{brand.titleize} (**** **** **** #{last4})"
       when "paypal"
-        "#{brand} (#{email})"
+        # Sometimes brand and email are missing (Stripe)
+        brand ||= "PayPal"
+        if email.present?
+          brand + " (#{email})"
+        else
+          brand
+        end
 
       # Braintree
       when "venmo"

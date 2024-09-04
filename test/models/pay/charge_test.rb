@@ -41,6 +41,12 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert_equal "PayPal (test@example.org)", pay_charges(:braintree).charged_to
   end
 
+  test "#charged_to paypal without email" do
+    charge = pay_charges(:braintree)
+    charge.update(email: nil)
+    assert_equal "PayPal", charge.charged_to
+  end
+
   test "stores data about the charge" do
     charge = pay_charges(:stripe)
     data = {"foo" => "bar"}
