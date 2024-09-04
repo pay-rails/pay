@@ -39,6 +39,7 @@ invoice.payment_action_required
 customer.subscription.created
 customer.subscription.updated
 customer.subscription.deleted
+customer.subscription.trial_will_end
 customer.updated
 customer.deleted
 
