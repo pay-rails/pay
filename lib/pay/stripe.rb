@@ -145,7 +145,9 @@ module Pay
       checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id, expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)
       case checkout_session.mode
       when "payment"
-        Pay::Stripe::Charge.sync(checkout_session.payment_intent.latest_charge.id, stripe_account: stripe_account)
+        if (id = checkout_session.payment_intent.try(:latest_charge)&.id)
+          Pay::Stripe::Charge.sync(id, stripe_account: stripe_account)
+        end
       when "subscription"
         Pay::Stripe::Subscription.sync(checkout_session.subscription, stripe_account: stripe_account)
       end
