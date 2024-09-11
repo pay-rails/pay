@@ -9,7 +9,7 @@ module Pay
           # Couldn't find user, we can skip
           return unless pay_customer.present?
 
-          stripe_customer = pay_customer.customer
+          stripe_customer = pay_customer.api_record
 
           # Sync default card
           if (payment_method_id = stripe_customer.invoice_settings.default_payment_method)
