@@ -9,7 +9,7 @@ Metered billing are subscriptions where the price fluctuates monthly. For exampl
 This will create a new metered billing subscription. You can then create meter events to bill for usage:
 
 ```ruby
-pay_subscription.create_meter_event(:api_request, value: 1)
+@user.payment_processor.create_meter_event(:api_request, payload: { value: 1 })
 ```
 
 If your price is using the legacy usage records system, you will need to use the below method:

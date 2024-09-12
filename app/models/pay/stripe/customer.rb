@@ -236,6 +236,18 @@ module Pay
         charge(amount, options.merge(capture_method: :manual))
       end
 
+      # Creates a meter event to bill for usage
+      #
+      # create_meter_event(:api_request, value: 1)
+      # create_meter_event(:api_request, token: 7)
+      def create_meter_event(event_name, payload: {}, **options)
+        api_record unless processor_id?
+        ::Stripe::Billing::MeterEvent.create({
+          event_name: event_name,
+          payload: {stripe_customer_id: processor_id}.merge(payload)
+        }.merge(options))
+      end
+
       private
 
       # Options for Stripe requests
