@@ -301,21 +301,6 @@ module Pay
         raise Pay::Stripe::Error, e
       end
 
-      # Creates a meter event to bill for usage
-      #
-      # create_meter_event(:api_request, value: 1)
-      # create_meter_event(:api_request, token: 7)
-      def create_meter_event(event_name, **payload)
-        api_record unless processor_id?
-        ::Stripe::Billing::MeterEvent.create({
-          event_name: event_name,
-          payload: {
-            stripe_customer_id: processor_id,
-            **payload
-          }
-        })
-      end
-
       # Creates a metered billing usage record
       #
       # Uses the first subscription_item ID unless `subscription_item_id: "si_1234"` is passed
