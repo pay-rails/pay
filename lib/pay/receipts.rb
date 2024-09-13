@@ -1,9 +1,5 @@
 module Pay
   module Receipts
-    def product
-      Pay.application_name
-    end
-
     def receipt_filename
       "receipt-#{created_at.strftime("%Y-%m-%d")}.pdf"
     end
@@ -19,6 +15,10 @@ module Pay
         [I18n.t("pay.receipt.date"), I18n.l(created_at, format: :long)],
         [I18n.t("pay.receipt.payment_method"), charged_to]
       ]
+    end
+
+    def pdf_product_name
+      Pay.application_name
     end
 
     def pdf_line_items
@@ -45,7 +45,7 @@ module Pay
           end
         end
       else
-        items << [product, 1, Pay::Currency.format(amount, currency: currency), Pay::Currency.format(amount, currency: currency)]
+        items << [pdf_product_name, 1, Pay::Currency.format(amount, currency: currency), Pay::Currency.format(amount, currency: currency)]
       end
 
       # If no subtotal, we will display the total
