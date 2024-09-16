@@ -232,6 +232,12 @@ module Pay
         ::Stripe::BillingPortal::Session.create(args.merge(options), stripe_options)
       end
 
+      def customer_session(**options)
+        api_record unless processor_id?
+        args = { customer: processor_id }
+        ::Stripe::CustomerSession.create(args.merge(options), stripe_options)
+      end
+
       def authorize(amount, options = {})
         charge(amount, options.merge(capture_method: :manual))
       end
