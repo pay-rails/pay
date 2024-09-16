@@ -234,7 +234,7 @@ module Pay
 
       def customer_session(**options)
         api_record unless processor_id?
-        args = { customer: processor_id }
+        args = {customer: processor_id}
         ::Stripe::CustomerSession.create(args.merge(options), stripe_options)
       end
 
