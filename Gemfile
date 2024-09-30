@@ -19,7 +19,7 @@ gem "webmock"
 
 gem "braintree", ">= 2.92.0"
 gem "lemonsqueezy", "~> 1.0"
-gem "paddle", "~> 2.4"
+gem "paddle", "~> 2.6"
 gem "stripe", "~> 12.6"
 
 gem "prawn"
