@@ -1,3 +1,5 @@
+require "ostruct"
+
 module Pay
   module Braintree
     class Subscription < Pay::Subscription

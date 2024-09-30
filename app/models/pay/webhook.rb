@@ -1,3 +1,5 @@
+require "ostruct"
+
 module Pay
   class Webhook < Pay::ApplicationRecord
     validates :processor, presence: true
