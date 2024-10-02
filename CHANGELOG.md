@@ -2,6 +2,11 @@
 
 ### Unreleased
 
+### 8.1.0
+
+* Stripe v13
+* Remove OpenStruct dependency
+
 ### 8.0.0
 
 * [Breaking] Remove `pay_customer.payment_method_token` virtual attribute. Use `@pay_customer.update_payment_method(token)` instead.
