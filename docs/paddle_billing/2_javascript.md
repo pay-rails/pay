@@ -11,8 +11,8 @@ Add the Paddle.js script in your application layout and initialize it with your 
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script type="text/javascript">
   Paddle.Environment.set("sandbox");
-  Paddle.Setup({
-    token: <%= Pay::PaddleBilling.client_token %>
+  Paddle.Initialize({
+    token: "<%= Pay::PaddleBilling.client_token %>"
   });
 </script>
 ```
