@@ -191,7 +191,7 @@ module Pay
 
       def discount_for_switching_to_monthly(current_plan, plan)
         cycles = (money_remaining_on_yearly_plan(current_plan) / plan.price).floor
-        OpenStruct.new(
+        ActiveSupport::InheritableOptions.new(
           amount: plan.price,
           number_of_billing_cycles: cycles
         )
@@ -209,7 +209,7 @@ module Pay
           end
         end
 
-        OpenStruct.new(amount: amount, number_of_billing_cycles: 1)
+        ActiveSupport::InheritableOptions.new(amount: amount, number_of_billing_cycles: 1)
       end
 
       def swap_across_frequencies(plan)

@@ -32,7 +32,7 @@ module Pay
 
     def to_recursive_ostruct(obj)
       if obj.is_a?(Hash)
-        OpenStruct.new(obj.map { |key, val| [key, to_recursive_ostruct(val)] }.to_h)
+        ActiveSupport::InheritableOptions.new(obj.map { |key, val| [key.to_sym, to_recursive_ostruct(val)] }.to_h)
       elsif obj.is_a?(Array)
         obj.map { |o| to_recursive_ostruct(o) }
       else # Assumed to be a primitive value
