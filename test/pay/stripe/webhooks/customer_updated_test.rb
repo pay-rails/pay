@@ -22,7 +22,7 @@ class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
 
   test "stripe invoice credit balance is updated" do
     event = stripe_event("customer.updated")
-    Pay::Stripe::Customer.any_instance.expects(:api_record).returns(OpenStruct.new(invoice_credit_balance: Stripe::Util.convert_to_stripe_object(usd: 12345), invoice_settings: OpenStruct.new(default_payment_method: nil), currency: "usd"))
+    Pay::Stripe::Customer.any_instance.expects(:api_record).returns(ActiveSupport::InheritableOptions.new(invoice_credit_balance: Stripe::Util.convert_to_stripe_object({usd: 12345}), invoice_settings: OpenStruct.new(default_payment_method: nil), currency: "usd"))
     Pay::Stripe::Webhooks::CustomerUpdated.new.call(event)
     @pay_customer.reload
     assert_equal "usd", @pay_customer.currency
