@@ -2,17 +2,17 @@ require "test_helper"
 
 class Pay::PaddleClassic::Webhooks::SubscriptionCancelledTest < ActiveSupport::TestCase
   setup do
-    @data = OpenStruct.new json_fixture("paddle_classic/subscription_cancelled")
+    @data = paddle_classic_event("subscription_cancelled")
     @pay_customer = pay_customers(:paddle_classic)
     @pay_customer.update(processor_id: @data.user_id)
   end
 
   test "it sets ends_at on the subscription" do
-    @pay_customer.subscription.update!(processor_id: @data["subscription_id"])
+    @pay_customer.subscription.update!(processor_id: @data.subscription_id)
     Pay::Subscription.any_instance.expects(:update!).with(
       status: :canceled,
       trial_ends_at: nil,
-      ends_at: Time.zone.parse(@data["cancellation_effective_date"])
+      ends_at: Time.zone.parse(@data.cancellation_effective_date)
     )
     Pay::PaddleClassic::Webhooks::SubscriptionCancelled.new.call(@data)
   end
@@ -22,7 +22,7 @@ class Pay::PaddleClassic::Webhooks::SubscriptionCancelledTest < ActiveSupport::T
     @data = paddle_classic_event("subscription_cancelled", overrides: {
       cancellation_effective_date: 1.month.from_now.to_formatted_s(:db)
     })
-    @pay_customer.subscription.update!(processor_id: @data["subscription_id"])
+    @pay_customer.subscription.update!(processor_id: @data.subscription_id)
     Pay::Subscription.any_instance.expects(:update!).with(
       status: :active,
       trial_ends_at: nil,
@@ -32,7 +32,7 @@ class Pay::PaddleClassic::Webhooks::SubscriptionCancelledTest < ActiveSupport::T
   end
 
   test "it sets trial_ends_at on subscription with trial" do
-    @pay_customer.subscription.update!(processor_id: @data["subscription_id"], trial_ends_at: 1.month.ago)
+    @pay_customer.subscription.update!(processor_id: @data.subscription_id, trial_ends_at: 1.month.ago)
     Pay::Subscription.any_instance.expects(:update!).with(
       status: :canceled,
       trial_ends_at: Time.zone.parse(@data["cancellation_effective_date"]),

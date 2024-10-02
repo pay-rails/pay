@@ -8,7 +8,7 @@ class Pay::LemonSqueezy::WebhooksTest < ActiveSupport::TestCase
     user = users(:none)
     user.set_payment_processor :lemon_squeezy, processor_id: event.customer_id
 
-    ::LemonSqueezy::Subscription.expects(:list).returns(OpenStruct.new({data: []}))
+    ::LemonSqueezy::Subscription.expects(:list).returns(ActiveSupport::InheritableOptions.new({data: []}))
 
     assert_difference "Pay::Charge.count" do
       Pay::LemonSqueezy::Webhooks::Order.new.call(event)

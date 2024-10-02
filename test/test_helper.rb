@@ -68,11 +68,11 @@ class ActiveSupport::TestCase
   end
 
   def paddle_billing_event(name)
-    OpenStruct.new json_fixture("paddle_billing/#{name}")
+    ActiveSupport::InheritableOptions.new json_fixture("paddle_billing/#{name}").deep_symbolize_keys
   end
 
   def paddle_classic_event(name, overrides: {})
-    OpenStruct.new json_fixture("paddle_classic/#{name}").deep_merge(overrides)
+    ActiveSupport::InheritableOptions.new json_fixture("paddle_classic/#{name}").deep_merge(overrides).deep_symbolize_keys
   end
 
   def stripe_event(name, overrides: {})
