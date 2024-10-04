@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::PaddleClassic::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
   setup do
-    @data = OpenStruct.new json_fixture("paddle_classic/subscription_created")
+    @data = paddle_classic_event("subscription_created")
     @user = users(:paddle_classic)
   end
 

@@ -1,17 +1,19 @@
-# **Upgrade Guide**
+# Upgrade Guide
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
-### ** Pay 7.0 to Pay 8.0**
+## Pay 7.0 to Pay 8.0
+
+Pay has moved to using Single Table Inheritance to handle each payment processor's functionality. To do this, we've provided a migration to update the existing records.
 
 ```bash
 rails pay:install:migrations
 rails db:migrate
 ```
 
-The `PaymentMethod#type` column has been renamed to `payment_method_type`. If you're displaying payment method details, you'll need to update your views to use the new column name.
+The `PaymentMethod#type` column has been renamed to `payment_method_type` to prevent conflicting with STI. If you're displaying payment method details, you'll need to update your views to use the new column name.
 
-## **Pay 6.0 to Pay 7.0**
+## Pay 6.0 to Pay 7.0
 
 Pay 7 introduces some changes for Stripe and requires a few additional columns.
 
@@ -52,7 +54,7 @@ The secrets/environment variables for Paddle have also been renamed to from `PAD
 
 The `paddle_pay` gem requirement has been replaced with `paddle`, which contains APIs for both Paddle Billing and Classic.
 
-## **Pay 5.0 to 6.0**
+## Pay 5.0 to 6.0
 This version adds support for accessing the start and end of the current billing period of a subscription. This currently only works with Stripe subscriptions.
 
 Fields changed:
@@ -93,11 +95,11 @@ end
 Stripe subscriptions created before this upgrade will gain the `current_period_start` and `current_period_end` attributes the next time they are synced. You can manually sync a Stripe subscription by running `Pay::Stripe::Subscription.sync("STRIPE_SUBSCRIPTION_ID")`
 
 
-## **Pay 3.0 to 4.0**
+## Pay 3.0 to 4.0
 
 This is a major change to add Stripe tax support, Stripe metered billing, new configuration options for payment processors and emails, syncing additional customer attributes to Stripe and Braintree, and improving the architecture of Pay.
 
-### **Jump to a topic**
+### Jump to a topic
 - [Method Additions and Changes](#method-additions-and-changes)
 - [Custom Email Sending Configuration](#custom-email-sending-configuration)
 - [Customer Attributes](#customer-attributes)
@@ -106,7 +108,7 @@ This is a major change to add Stripe tax support, Stripe metered billing, new co
 - [Enabling Payment Processors](#enabling-payment-processors)
 - [Supported Dependency Notifications](#supported-dependency-notifications)
 
-### **Method Additions and Changes**
+### Method Additions and Changes
 
 In an effort to keep a consistant naming convention, the email parameters of `subscription` and `charge` have been updated to have `pay_` prepended to them (`pay_subscription` and `pay_charge` respectively). If you are directly using any of the built in emails or created custom Pay views, you will want to be sure to update your parameter names to the updated names.
 
@@ -126,7 +128,7 @@ The `set_payment_processor` method has a `make_default` optional argument that d
 
 Setting the `metadata["pay_name"]` option on a `Stripe::Subscription` object will now set the subscription name if present. Otherwise the `Pay.default_product_name` will be used to set the name.
 
-### **Custom Email Sending Configuration**
+### Custom Email Sending Configuration
 
 Previously, Pay would send out the following emails based on the value of the `send_emails` configuration variable, which was set to true by default:
 
@@ -150,7 +152,7 @@ end
 ```
 The above example shows the exact defaults that come pre-configured from Pay. The `config.emails.subscription_renewing` example is specific to Stripe but illustrates how a lambda can be used as a way to evaluate more complex conditions to determine whether an email should be sent. All of these settings can be overridden using the initializer mentioned previously and setting your own values for each email.
 
-### **Customer Attributes**
+### Customer Attributes
 
 The `pay_customer` macro now accepts options for `stripe_attributes` and `braintree_attributes`. These options can accept a method name or a lambda that returns a hash of `pay_customer` attributes. For example:
 ```ruby
@@ -176,7 +178,7 @@ end
 
 Being able to send additional customer attributes to Stripe such as the customers address gives you the ability to leverage Stripe's tax support!
 
-### **Stripe Tax Support**
+### Stripe Tax Support
 
 Using `pay_customer stripe_attributes: :method_name`, you can add an `address` key to `Stripe::Customer` objects which will be used for calculating taxes. `total_tax_amounts` are recorded to `Pay::Charge` records. This includes details for each tax applied to the charge, for example if there are multiple jurisdictions involved. Additionally, when subscribing a customer to a plan the `automatic_tax:` parameter can be enabled as shown here:
 
@@ -184,7 +186,7 @@ Using `pay_customer stripe_attributes: :method_name`, you can add an `address` k
 @user.payment_processor.subscribe(plan: "growth", automatic_tax: { enabled: true })
 ```
 
-### **Stripe Metered Billing Support**
+### Stripe Metered Billing Support
 
 Stripe metered billing support removes `quantity` when creating a new subscription (metered billing prices do not allow quantity). Adds `create_usage_record` to `Pay::Subscription` for reporting usage on metered billing plans. The `create_usage_record` method takes a hash of options, see the example below:
 ```ruby
@@ -192,7 +194,7 @@ create_usage_record(subscription_item_id: "si_1234", quantity: 100, action: :set
 ```
 To learn more about creating usage records, see [reporting usage](https://stripe.com/docs/products-prices/pricing-models#reporting-usage)
 
-### **Enabling Payment Processors**
+### Enabling Payment Processors
 
 Previously, all payment processors were enabled by default. With this new release, Pay now allows you to enable any of the payment processors independently. The use case here is that perhaps you already have an implementation in place in your application for one of the processors that we allow integration with and do not want the Pay implementation to conflict. In such a case you can create or add to an initializer at `config/initializers/pay.rb` the following line, including in the array only the process that you wish Pay to setup in your application:
 ```ruby
@@ -204,7 +206,7 @@ Pay.setup do |config|
 end
 ```
 
-### **Supported Dependency Notifications**
+### Supported Dependency Notifications
 
 As Pay is working to setup the payment processors that you have enabled it performs a version check on each to ensure that you are using a compatible version.
 
@@ -218,11 +220,11 @@ If you are using a non-compatible version Pay will raise an error message to not
 
 ---
 
-## **Pay 2.x to Pay 3.0**
+## Pay 2.x to Pay 3.0
 
 This is a major change to add support for multiple payment methods, fixing bugs, and improving the architecture of Pay.
 
-### **Jump to a topic**
+### Jump to a topic
 - [Database Migrations](#database-migrations)
 - [Pay::Customer](#paycustomer)
 - [Payment Processor](#payment-processor)
@@ -231,7 +233,7 @@ This is a major change to add support for multiple payment methods, fixing bugs,
 - [Payment Methods](#payment-methods)
 - [Configuration Changes](#configuration-changes)
 
-### **Database Migrations**
+### Database Migrations
 
 Upgrading from Pay 2.x to 3.0 requires moving data for several things:
 
@@ -438,7 +440,7 @@ After running migrations, run the following to sync the customer default payment
 rake pay:payment_methods:sync_default
 ```
 
-### **Pay::Customer**
+### Pay::Customer
 
 The `Pay::Billable` module has been removed and is replaced with `pay_customer` method on your models.
 
@@ -465,7 +467,7 @@ user.pay_customers
 #=> Returns all the pay customers associated with this User
 ```
 
-### **Payment Processor**
+### Payment Processor
 
 Instead of calling `@user.charge`, Pay 3 moves the `charge`, `subscribe`, and other methods to the `payment_processor` association. This significantly reduces the methods added to the User model.
 
@@ -486,7 +488,7 @@ user.payment_processor.subscribe(plan: "whatever")
 # Creates Pay::Subscription record for the subscription
 ```
 
-### **Generic Trials**
+### Generic Trials
 
 Generic trials are now done using the fake payment processor
 
@@ -496,11 +498,11 @@ user.payment_processor.subscribe(trial_ends_at: 14.days.from_now, ends_at: 14.da
 user.payment_processor.on_trial? #=> true
 ```
 
-### **Charges & Subscriptions**
+### Charges & Subscriptions
 
 `Pay::Charge` and `Pay::Subscription` are associated `Pay::Customer` and no longer directly connected to the `owner`
 
-### **Payment Methods**
+### Payment Methods
 
 Pay 3 now keeps track of multiple payment methods. Each is associated with a Pay::Customer and one is marked as the default.
 
@@ -517,7 +519,7 @@ charge.payment_method_type #=> "paypal"
 charge.email #=> "test@example.org"
 ```
 
-### **Configuration Changes**
+### Configuration Changes
 
 We've removed several configuration options since Pay 3+ will always use the models from the gem for charges, subscriptions, etc.
 

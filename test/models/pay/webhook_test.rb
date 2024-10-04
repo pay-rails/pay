@@ -4,8 +4,13 @@ class Pay::Webhook::Test < ActiveSupport::TestCase
   test "rehydrates a Paddle Classic event" do
     pay_webhook = Pay::Webhook.create processor: :paddle_classic, event_type: :example, event: json_fixture("paddle_classic/subscription_payment_succeeded")
     event = pay_webhook.rehydrated_event
-    assert_equal OpenStruct, event.class
     assert_equal "visa", event.payment_method.card_type
+  end
+
+  test "rehydrates a Paddle Billing event" do
+    pay_webhook = Pay::Webhook.create processor: :paddle_billing, event_type: :example, event: json_fixture("paddle_billing/subscription.created")
+    event = pay_webhook.rehydrated_event
+    assert_equal "month", event.billing_cycle.interval
   end
 
   test "rehydrates a Stripe event" do
