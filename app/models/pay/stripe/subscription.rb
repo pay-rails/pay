@@ -332,7 +332,7 @@ module Pay
 
       # Retries the latest invoice for a Past Due subscription and attempts to pay it
       def retry_failed_payment(payment_intent_id: nil)
-        payment_intent_id ||= subscription.latest_invoice.payment_intent.id
+        payment_intent_id ||= api_record.latest_invoice.payment_intent.id
         payment_intent = ::Stripe::PaymentIntent.retrieve({id: payment_intent_id}, stripe_options)
 
         payment_intent = if payment_intent.status == "requires_payment_method"
