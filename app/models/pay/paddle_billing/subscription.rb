@@ -160,8 +160,8 @@ module Pay
         }]
 
         ::Paddle::Subscription.update(
-          id: processor_id, 
-          items: items, 
+          id: processor_id,
+          items: items,
           proration_billing_mode: options.delete(:proration_billing_mode) || "prorated_immediately"
         )
         update(processor_plan: plan, ends_at: nil, status: :active)
