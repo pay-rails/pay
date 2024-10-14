@@ -9,7 +9,7 @@ module Pay
 
         attributes = {
           current_period_end: object.renews_at,
-          ends_at: (object.ends_at ? Time.parse(object..ends_at) : nil),
+          ends_at: (object.ends_at ? Time.parse(object.ends_at) : nil),
           pause_starts_at: (object.pause&.resumes_at ? Time.parse(object.pause.resumes_at) : nil),
           status: object.status,
           processor_plan: object.first_subscription_item.price_id,
