@@ -6,7 +6,7 @@ module Pay
         sync(transaction.subscription_id) if transaction.subscription_id
       end
 
-      def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
+      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, try: 0, retries: 1)
         # Passthrough is not return from this API, so we can't use that
         object ||= ::Paddle::Subscription.retrieve(id: subscription_id)
 
@@ -61,6 +61,14 @@ module Pay
           pay_subscription
         else
           pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: subscription_id))
+        end
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
         end
       end
 
