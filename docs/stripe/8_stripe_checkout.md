@@ -76,6 +76,9 @@ First, create a session in your controller:
 class SubscriptionsController < ApplicationController
   def index
     @portal_session = current_user.payment_processor.billing_portal
+
+    # You can customize the billing_portal return_url (default is root_url):
+    # @portal_session = current_user.payment_processor.billing_portal(return_url: your_url)
   end
 end
 ```

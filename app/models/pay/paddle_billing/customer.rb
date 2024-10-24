@@ -24,7 +24,7 @@ module Pay
           pc
         else
           pc = ::Paddle::Customer.create(email: email, name: customer_name)
-          update!(processor_id: sc.id)
+          update!(processor_id: pc.id)
           pc
         end
       rescue ::Paddle::Error => e

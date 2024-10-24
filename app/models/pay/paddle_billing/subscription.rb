@@ -110,7 +110,11 @@ module Pay
           quantity: quantity
         }]
 
-        ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
+        ::Paddle::Subscription.update(
+          id: processor_id,
+          items: items,
+          proration_billing_mode: options.delete(:proration_billing_mode) || "prorated_immediately"
+        )
         update(quantity: quantity)
       rescue ::Paddle::Error => e
         raise Pay::PaddleBilling::Error, e
@@ -156,12 +160,18 @@ module Pay
       end
 
       def swap(plan, **options)
+        raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
+
         items = [{
           price_id: plan,
           quantity: quantity || 1
         }]
 
-        ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
+        ::Paddle::Subscription.update(
+          id: processor_id,
+          items: items,
+          proration_billing_mode: options.delete(:proration_billing_mode) || "prorated_immediately"
+        )
         update(processor_plan: plan, ends_at: nil, status: :active)
       end
 
