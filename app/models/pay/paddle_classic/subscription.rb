@@ -116,7 +116,7 @@ module Pay
 
       def resume
         unless resumable?
-          raise StandardError, "You can only resume paused subscriptions."
+          raise Error, "You can only resume paused subscriptions."
         end
 
         PaddleClassic.client.users.unpause(subscription_id: processor_id)

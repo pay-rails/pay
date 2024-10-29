@@ -143,7 +143,7 @@ module Pay
 
       def resume
         unless resumable?
-          raise StandardError, "You can only resume paused subscriptions."
+          raise Error, "You can only resume paused subscriptions."
         end
 
         # Paddle Billing API only allows "resuming" subscriptions when they are paused

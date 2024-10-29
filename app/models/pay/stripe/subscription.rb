@@ -256,7 +256,7 @@ module Pay
 
       def resume
         unless resumable?
-          raise StandardError, "You can only resume subscriptions within their grace period."
+          raise Error, "You can only resume subscriptions within their grace period."
         end
 
         if paused?

@@ -177,6 +177,15 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
+  test "it will throw an error if subscription cannot be resumed" do
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+
+    refute @pay_customer.subscription.resumable?
+    assert_raises Pay::Error do
+      @pay_customer.subscription.resume
+    end
+  end
+
   test "syncing multiple subscription items" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(items: {
       object: "list",
