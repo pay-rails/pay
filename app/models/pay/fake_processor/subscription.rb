@@ -37,7 +37,7 @@ module Pay
 
       def resume
         unless resumable?
-          raise StandardError, "You can only resume subscriptions within their grace period."
+          raise Error, "You can only resume subscriptions within their grace period."
         end
 
         update(status: :active, trial_ends_at: nil, ends_at: nil)

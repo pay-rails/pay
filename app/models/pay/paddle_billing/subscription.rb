@@ -6,7 +6,7 @@ module Pay
         sync(transaction.subscription_id) if transaction.subscription_id
       end
 
-      def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
+      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, try: 0, retries: 1)
         # Passthrough is not return from this API, so we can't use that
         object ||= ::Paddle::Subscription.retrieve(id: subscription_id)
 
@@ -62,6 +62,14 @@ module Pay
         else
           pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: subscription_id))
         end
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
+        end
       end
 
       def api_record(**options)
@@ -102,7 +110,11 @@ module Pay
           quantity: quantity
         }]
 
-        ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
+        ::Paddle::Subscription.update(
+          id: processor_id,
+          items: items,
+          proration_billing_mode: options.delete(:proration_billing_mode) || "prorated_immediately"
+        )
         update(quantity: quantity)
       rescue ::Paddle::Error => e
         raise Pay::PaddleBilling::Error, e
@@ -131,7 +143,7 @@ module Pay
 
       def resume
         unless resumable?
-          raise StandardError, "You can only resume paused subscriptions."
+          raise Error, "You can only resume paused subscriptions."
         end
 
         # Paddle Billing API only allows "resuming" subscriptions when they are paused
@@ -148,12 +160,18 @@ module Pay
       end
 
       def swap(plan, **options)
+        raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
+
         items = [{
           price_id: plan,
           quantity: quantity || 1
         }]
 
-        ::Paddle::Subscription.update(id: processor_id, items: items, proration_billing_mode: "prorated_immediately")
+        ::Paddle::Subscription.update(
+          id: processor_id,
+          items: items,
+          proration_billing_mode: options.delete(:proration_billing_mode) || "prorated_immediately"
+        )
         update(processor_plan: plan, ends_at: nil, status: :active)
       end
 

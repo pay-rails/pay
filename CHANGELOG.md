@@ -2,6 +2,20 @@
 
 ### Unreleased
 
+### 8.1.3
+
+* Raise `Pay::Error` instead of `StandardError` consistently
+
+### 8.1.2
+
+* Allow proration mode argument for Paddle Billing subscriptions
+* Fix Lemon Squeezy sync subscription
+* Fix typo in Paddle Billing customer `api_record`
+
+### 8.1.1
+
+* Fix `retry_failed_payment` for Stripe subscriptions #1084
+
 ### 8.1.0
 
 * Stripe v13

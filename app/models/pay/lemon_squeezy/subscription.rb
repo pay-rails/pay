@@ -9,7 +9,7 @@ module Pay
 
         attributes = {
           current_period_end: object.renews_at,
-          ends_at: (object.ends_at ? Time.parse(object..ends_at) : nil),
+          ends_at: (object.ends_at ? Time.parse(object.ends_at) : nil),
           pause_starts_at: (object.pause&.resumes_at ? Time.parse(object.pause.resumes_at) : nil),
           status: object.status,
           processor_plan: object.first_subscription_item.price_id,
@@ -100,7 +100,7 @@ module Pay
 
       def resume
         unless resumable?
-          raise StandardError, "You can only resume paused or cancelled subscriptions"
+          raise Error, "You can only resume paused or cancelled subscriptions"
         end
 
         if paused? && pause_starts_at? && Time.current < pause_starts_at
@@ -117,8 +117,8 @@ module Pay
       # Lemon Squeezy requires both the Product ID and Variant ID.
       # The Variant ID will be saved as the processor_plan
       def swap(plan, **options)
-        raise StandardError, "A plan_id is required to swap a subscription" unless plan
-        raise StandardError, "A variant_id is required to swap a subscription" unless options[:variant_id]
+        raise Error, "A plan_id is required to swap a subscription" unless plan
+        raise Error, "A variant_id is required to swap a subscription" unless options[:variant_id]
 
         ::LemonSqueezy::Subscription.change_plan id: processor_id, plan_id: plan, variant_id: options[:variant_id]
 

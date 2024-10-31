@@ -56,6 +56,14 @@ module Pay
         else
           pay_customer.charges.create!(attrs.merge(processor_id: object.id))
         end
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+        try += 1
+        if try <= retries
+          sleep 0.1
+          retry
+        else
+          raise
+        end
       end
     end
   end
