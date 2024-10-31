@@ -91,7 +91,7 @@ module Pay
       end
 
       def cancel_now!(**options)
-        cancel(options.merge(effective_from: "immediately"))
+        cancel(**options.merge(effective_from: "immediately"))
       rescue ::Paddle::Error => e
         raise Pay::PaddleBilling::Error, e
       end
