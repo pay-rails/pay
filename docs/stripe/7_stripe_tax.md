@@ -24,7 +24,7 @@ end
 To update the customer address anytime it's changed, call the following method:
 
 ```ruby
-@user.payment_processor.update_customer!
+@user.payment_processor.update_api_record
 ```
 
 This will make an API request to update the Stripe::Customer with the current `stripe_attributes`.
