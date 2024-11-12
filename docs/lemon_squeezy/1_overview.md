@@ -7,14 +7,23 @@ Lemon Squeezy works differently than most of the other payment processors so it 
 
 ## Creating Customers
 
-You can create a customer, which subscriptions belong to.
+First, you tell Pay which payment processor to use:
 
 ```ruby
 # Set the payment processor
 @user.set_payment_processor :lemon_squeezy
+```
 
-# Create the customer on Lemon Squeezy
-@user.payment_processor.customer
+Then you can create a [Checkout](https://docs.lemonsqueezy.com/api/checkouts/create-checkout) to let the user purchase a product.
+
+```ruby
+@user.payment_processor.checkout(variant_id: "xyz")
+```
+
+Customers are lazy created, so they won't be created until you create a Checkout or ask for the Lemon Squeezy customer object through Pay.
+
+```ruby
+@user.payment_processor.api_record
 ```
 
 ## Subscriptions

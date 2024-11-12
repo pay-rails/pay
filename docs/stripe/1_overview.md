@@ -34,7 +34,7 @@ Promotion codes are customer-facing coupon codes that can be applied in several 
 You can apply a promotion code on the Stripe::Customer to have it automatically apply to all Subscriptions.
 
 ```ruby
-@user.payment_processor.update_customer!(promotion_code: "promo_1234")
+@user.payment_processor.update_api_record(promotion_code: "promo_1234")
 ```
 
 Promotion codes can also be applied directly to a subscription:
