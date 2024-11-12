@@ -11,7 +11,7 @@ gemspec
 # Git. Remember to move these dependencies to your gemspec before releasing
 # your gem to rubygems.org.
 
-gem "appraisal", github: "thoughtbot/appraisal"
+gem "appraisal"
 gem "mocha"
 gem "standard"
 gem "vcr"
