@@ -51,13 +51,13 @@ Only one `Pay::Customer` can be the default which is used for `payment_processor
 
 ## Retrieving a Customer object from the Payment Processor
 
-For Paddle Billing and Lemon Squeezy, using the `customer` method will create a new customer on the payment processor.
+For Paddle Billing and Lemon Squeezy, using the `api_record` method will create a new customer on the payment processor.
 
 If the `processor_id` is already set, it will retrieve the customer from the payment processor and return the object
 directly from the API. Like so:
 
 ```ruby
-@user.payment_processor.customer
+@user.payment_processor.api_record
 #=> #<Stripe::Customer>
 #=> #<Paddle::Customer>
 #=> #<LemonSqueezy::Customer>
