@@ -32,7 +32,11 @@ module Pay
       end
 
       def resumable?
-        on_grace_period? || paused?
+        if data&.has_key?("resumable")
+          data["resumable"]
+        else
+          on_grace_period? || paused?
+        end
       end
 
       def resume

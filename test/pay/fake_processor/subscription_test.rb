@@ -61,4 +61,12 @@ class Pay::FakeProcessor::Subscription::Test < ActiveSupport::TestCase
     assert @subscription.ends_at <= Time.current
     assert_equal @subscription.ends_at, @subscription.trial_ends_at
   end
+
+  test "fake nonresumable subscription" do
+    @subscription.update(ends_at: 1.week.from_now, data: {resumable: false})
+    @subscription.reload
+    assert @subscription.on_grace_period?
+    assert @subscription.canceled?
+    refute @subscription.resumable?
+  end
 end
