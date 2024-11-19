@@ -2,6 +2,14 @@
 
 ### Unreleased
 
+### 8.2.0
+
+* FakeProcessor subscriptions can be marked as nonresumable. This is helpful for giving users a limited subscription.
+
+```ruby
+pay_customer.subscribe(ends_at: 1.year.from_now, data: {resumable: false})
+```
+
 ### 8.1.3
 
 * Raise `Pay::Error` instead of `StandardError` consistently
