@@ -1,6 +1,12 @@
 require "test_helper"
 
 class Pay::LemonSqueezy::WebhooksTest < ActiveSupport::TestCase
+  test "lemon squeezy webhook metadata" do
+    object = Pay::LemonSqueezy.construct_from_webhook_event json_fixture("lemon_squeezy/order_created")
+    assert_equal ::LemonSqueezy::Order, object.class
+    assert_equal {"event_name" => "order_created"}, object.meta
+  end
+
   test "lemon squeezy order_created webhook" do
     json = json_fixture("lemon_squeezy/order_created")
     event = Pay::Webhook.new(processor: :lemon_squeezy, event: json).rehydrated_event

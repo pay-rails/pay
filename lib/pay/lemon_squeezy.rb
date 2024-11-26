@@ -68,7 +68,9 @@ module Pay
           "subscription-invoices" => ::LemonSqueezy::SubscriptionInvoice
         }.fetch(data["type"])
 
-        type.new(data)
+        object = type.new(data)
+        object.meta = event["meta"]
+        object
       end
     end
 
