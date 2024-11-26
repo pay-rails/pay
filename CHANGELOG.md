@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 8.2.1
+
+* Add `meta` to LemonSqueezy webhook objects. LemonSqueezy does not store metadata and they're only temporarily accessible via the webhook meta.
+
 ### 8.2.0
 
 * FakeProcessor subscriptions can be marked as nonresumable. This is helpful for giving users a limited subscription.

@@ -10,6 +10,22 @@ on:
   workflow_call:
 
 jobs:
+  lint:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: StandardRb check
+        run: bundle exec standardrb
+
   sqlite:
     runs-on: ubuntu-latest
     strategy:
@@ -22,7 +38,6 @@ jobs:
           - rails_7.2
           - rails_8.0
           - rails_main
-
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -38,8 +53,6 @@ jobs:
           bundler: default
           bundler-cache: true
           rubygems: latest
-      - name: StandardRb check
-        run: bundle exec standardrb
       - name: Run tests
         env:
           DATABASE_URL: "sqlite3:pay_test"
@@ -82,8 +95,6 @@ jobs:
           bundler: default
           bundler-cache: true
           rubygems: latest
-      - name: StandardRb check
-        run: bundle exec standardrb
       - name: Run tests
         env:
           STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
@@ -126,8 +137,6 @@ jobs:
           bundler: default
           bundler-cache: true
           rubygems: latest
-      - name: StandardRb check
-        run: bundle exec standardrb
       - name: Run tests
         env:
           STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
