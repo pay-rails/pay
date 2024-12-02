@@ -1,0 +1,1278 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers
+    body:
+      encoding: UTF-8
+      string: email=stripe%40e<VENDOR_AUTH_CODE>ample.org&name=Stripe+User&e<VENDOR_AUTH_CODE>pand[0]=ta<VENDOR_AUTH_CODE>&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=invoice_credit_balance
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>3.2.0 PayRails/8.2.<VENDOR_ID>
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      Idempotency-Key:
+      - efa38979-3d7b-4f78-ad0a-97c79<VENDOR_ID>83bdf2
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.2.<VENDOR_ID>"},"bindings_version":"<VENDOR_ID>3.2.0","lang":"ruby","lang_version":"3.3.6
+        p<VENDOR_ID>08 (2024-<VENDOR_ID><VENDOR_ID>-05)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        e<VENDOR_AUTH_CODE>cid3-mbp.local 24.<VENDOR_ID>.0 Darwin Kernel Version 24.<VENDOR_ID>.0:
+        Thu Oct <VENDOR_ID>0 2<VENDOR_ID>:03:<VENDOR_ID>5 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID><VENDOR_ID>2<VENDOR_ID>5.4<VENDOR_ID>.3~2/RELEASE_ARM64_T6000
+        arm64","hostname":"e<VENDOR_AUTH_CODE>cid3-mbp.local"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Mon, 02 Dec 2024 22:4<VENDOR_ID>:05 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '778'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fcustomers; block-all-mi<VENDOR_AUTH_CODE>ed-content;
+        default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
+      Idempotency-Key:
+      - efa38979-3d7b-4f78-ad0a-97c79<VENDOR_ID>83bdf2
+      Original-Request:
+      - req_oprhjHjuX0KDVz
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report"
+      Request-Id:
+      - req_oprhjHjuX0KDVz
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - A
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_RKN2De0U9Uu4B3",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": <VENDOR_ID>733<VENDOR_ID>79265,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+          "invoice_credit_balance": {},
+          "invoice_prefi<VENDOR_AUTH_CODE>": "2546<VENDOR_ID>D<VENDOR_ID>2",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": null,
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "ta<VENDOR_AUTH_CODE>": {
+            "automatic_ta<VENDOR_AUTH_CODE>": "unrecognized_location",
+            "ip_address": null,
+            "location": null
+          },
+          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+          "test_clock": null
+        }
+  recorded_at: Mon, 02 Dec 2024 22:41:04 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/payment_methods/pm_card_visa/attach
+    body:
+      encoding: UTF-8
+      string: customer=cus_RKN2De0U9Uu4B3
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>3.2.0 PayRails/8.2.<VENDOR_ID>
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_oprhjHjuX0KDVz","request_duration_ms":333}}'
+      Idempotency-Key:
+      - 4f5a0b49-8f<VENDOR_ID>d-4687-af06-5f4fb9<VENDOR_ID><VENDOR_ID>7edd
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.2.<VENDOR_ID>"},"bindings_version":"<VENDOR_ID>3.2.0","lang":"ruby","lang_version":"3.3.6
+        p<VENDOR_ID>08 (2024-<VENDOR_ID><VENDOR_ID>-05)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        e<VENDOR_AUTH_CODE>cid3-mbp.local 24.<VENDOR_ID>.0 Darwin Kernel Version 24.<VENDOR_ID>.0:
+        Thu Oct <VENDOR_ID>0 2<VENDOR_ID>:03:<VENDOR_ID>5 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID><VENDOR_ID>2<VENDOR_ID>5.4<VENDOR_ID>.3~2/RELEASE_ARM64_T6000
+        arm64","hostname":"e<VENDOR_AUTH_CODE>cid3-mbp.local"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Mon, 02 Dec 2024 22:4<VENDOR_ID>:05 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - "<VENDOR_ID>007"
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fpayment_methods%2F%3Apayment_method%2Fattach;
+        block-all-mi<VENDOR_AUTH_CODE>ed-content; default-src 'none'; base-uri 'none';
+        form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'
+        'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
+      Idempotency-Key:
+      - 4f5a0b49-8f<VENDOR_ID>d-4687-af06-5f4fb9<VENDOR_ID><VENDOR_ID>7edd
+      Original-Request:
+      - req_2XICc9U2aVYIJQ
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report"
+      Request-Id:
+      - req_2XICc9U2aVYIJQ
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - A
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "pm_<VENDOR_ID>QRiIfKXBGcbgpbZP9Wkzp6v",
+          "object": "payment_method",
+          "allow_redisplay": "unspecified",
+          "billing_details": {
+            "address": {
+              "city": null,
+              "country": null,
+              "line<VENDOR_ID>": null,
+              "line2": null,
+              "postal_code": null,
+              "state": null
+            },
+            "email": null,
+            "name": null,
+            "phone": null
+          },
+          "card": {
+            "brand": "visa",
+            "checks": {
+              "address_line<VENDOR_ID>_check": null,
+              "address_postal_code_check": null,
+              "cvc_check": "pass"
+            },
+            "country": "US",
+            "display_brand": "visa",
+            "e<VENDOR_AUTH_CODE>p_month": <VENDOR_ID>2,
+            "e<VENDOR_AUTH_CODE>p_year": 2025,
+            "fingerprint": "w4XDzQOFakih5EZM",
+            "funding": "credit",
+            "generated_from": null,
+            "last4": "4242",
+            "networks": {
+              "available": [
+                "visa"
+              ],
+              "preferred": null
+            },
+            "three_d_secure_usage": {
+              "supported": true
+            },
+            "wallet": null
+          },
+          "created": <VENDOR_ID>733<VENDOR_ID>79265,
+          "customer": "cus_RKN2De0U9Uu4B3",
+          "livemode": false,
+          "metadata": {},
+          "type": "card"
+        }
+  recorded_at: Mon, 02 Dec 2024 22:41:04 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers/cus_RKN2De0U9Uu4B3
+    body:
+      encoding: UTF-8
+      string: invoice_settings[default_payment_method]=pm_<VENDOR_ID>QRiIfKXBGcbgpbZP9Wkzp6v
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>3.2.0 PayRails/8.2.<VENDOR_ID>
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_2XICc9U2aVYIJQ","request_duration_ms":6<VENDOR_ID>9}}'
+      Idempotency-Key:
+      - a4e6977f-ef<VENDOR_ID>4-49c7-82<VENDOR_ID>b-bd6458<VENDOR_ID>8<VENDOR_ID>dc0
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.2.<VENDOR_ID>"},"bindings_version":"<VENDOR_ID>3.2.0","lang":"ruby","lang_version":"3.3.6
+        p<VENDOR_ID>08 (2024-<VENDOR_ID><VENDOR_ID>-05)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        e<VENDOR_AUTH_CODE>cid3-mbp.local 24.<VENDOR_ID>.0 Darwin Kernel Version 24.<VENDOR_ID>.0:
+        Thu Oct <VENDOR_ID>0 2<VENDOR_ID>:03:<VENDOR_ID>5 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID><VENDOR_ID>2<VENDOR_ID>5.4<VENDOR_ID>.3~2/RELEASE_ARM64_T6000
+        arm64","hostname":"e<VENDOR_AUTH_CODE>cid3-mbp.local"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Mon, 02 Dec 2024 22:4<VENDOR_ID>:06 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '664'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fcustomers%2F%3Acustomer;
+        block-all-mi<VENDOR_AUTH_CODE>ed-content; default-src 'none'; base-uri 'none';
+        form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'
+        'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
+      Idempotency-Key:
+      - a4e6977f-ef<VENDOR_ID>4-49c7-82<VENDOR_ID>b-bd6458<VENDOR_ID>8<VENDOR_ID>dc0
+      Original-Request:
+      - req_nNrLlRW<VENDOR_ID>V8GWML
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report"
+      Request-Id:
+      - req_nNrLlRW<VENDOR_ID>V8GWML
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - A
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_RKN2De0U9Uu4B3",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": <VENDOR_ID>733<VENDOR_ID>79265,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+          "invoice_prefi<VENDOR_AUTH_CODE>": "2546<VENDOR_ID>D<VENDOR_ID>2",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": "pm_<VENDOR_ID>QRiIfKXBGcbgpbZP9Wkzp6v",
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+          "test_clock": null
+        }
+  recorded_at: Mon, 02 Dec 2024 22:41:04 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/subscriptions
+    body:
+      encoding: UTF-8
+      string: e<VENDOR_AUTH_CODE>pand[0]=default_payment_method&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=pending_setup_intent&e<VENDOR_AUTH_CODE>pand[2]=latest_invoice.payment_intent&e<VENDOR_AUTH_CODE>pand[3]=latest_invoice.charge&e<VENDOR_AUTH_CODE>pand[4]=latest_invoice.total_discount_amounts.discount&e<VENDOR_AUTH_CODE>pand[5]=latest_invoice.total_ta<VENDOR_AUTH_CODE>_amounts.ta<VENDOR_AUTH_CODE>_rate&items[0][plan]=default&trial_period_days=<VENDOR_ID>4&customer=cus_RKN2De0U9Uu4B3
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>3.2.0 PayRails/8.2.<VENDOR_ID>
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_nNrLlRW<VENDOR_ID>V8GWML","request_duration_ms":228}}'
+      Idempotency-Key:
+      - fec944c4-<VENDOR_ID>08<VENDOR_ID>-4ef5-96b8-<VENDOR_ID>9b4d<VENDOR_ID><VENDOR_ID>277e2
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.2.<VENDOR_ID>"},"bindings_version":"<VENDOR_ID>3.2.0","lang":"ruby","lang_version":"3.3.6
+        p<VENDOR_ID>08 (2024-<VENDOR_ID><VENDOR_ID>-05)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        e<VENDOR_AUTH_CODE>cid3-mbp.local 24.<VENDOR_ID>.0 Darwin Kernel Version 24.<VENDOR_ID>.0:
+        Thu Oct <VENDOR_ID>0 2<VENDOR_ID>:03:<VENDOR_ID>5 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID><VENDOR_ID>2<VENDOR_ID>5.4<VENDOR_ID>.3~2/RELEASE_ARM64_T6000
+        arm64","hostname":"e<VENDOR_AUTH_CODE>cid3-mbp.local"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Mon, 02 Dec 2024 22:4<VENDOR_ID>:07 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - "<VENDOR_ID>0<VENDOR_ID>29"
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fsubscriptions;
+        block-all-mi<VENDOR_AUTH_CODE>ed-content; default-src 'none'; base-uri 'none';
+        form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'
+        'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
+      Idempotency-Key:
+      - fec944c4-<VENDOR_ID>08<VENDOR_ID>-4ef5-96b8-<VENDOR_ID>9b4d<VENDOR_ID><VENDOR_ID>277e2
+      Original-Request:
+      - req_5HqPdiz<VENDOR_AUTH_CODE>j8BI77
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report"
+      Request-Id:
+      - req_5HqPdiz<VENDOR_AUTH_CODE>j8BI77
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - A
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F",
+          "object": "subscription",
+          "application": null,
+          "application_fee_percent": null,
+          "automatic_ta<VENDOR_AUTH_CODE>": {
+            "disabled_reason": null,
+            "enabled": false,
+            "liability": null
+          },
+          "billing_cycle_anchor": <VENDOR_ID>734388866,
+          "billing_cycle_anchor_config": null,
+          "billing_thresholds": null,
+          "cancel_at": null,
+          "cancel_at_period_end": false,
+          "canceled_at": null,
+          "cancellation_details": {
+            "comment": null,
+            "feedback": null,
+            "reason": null
+          },
+          "collection_method": "charge_automatically",
+          "created": <VENDOR_ID>733<VENDOR_ID>79266,
+          "currency": "usd",
+          "current_period_end": <VENDOR_ID>734388866,
+          "current_period_start": <VENDOR_ID>733<VENDOR_ID>79266,
+          "customer": "cus_RKN2De0U9Uu4B3",
+          "days_until_due": null,
+          "default_payment_method": null,
+          "default_source": null,
+          "default_ta<VENDOR_AUTH_CODE>_rates": [],
+          "description": null,
+          "discount": null,
+          "discounts": [],
+          "ended_at": null,
+          "invoice_settings": {
+            "account_ta<VENDOR_AUTH_CODE>_ids": null,
+            "issuer": {
+              "type": "self"
+            }
+          },
+          "items": {
+            "object": "list",
+            "data": [
+              {
+                "id": "si_RKN2eXNNOAP7MG",
+                "object": "subscription_item",
+                "billing_thresholds": null,
+                "created": <VENDOR_ID>733<VENDOR_ID>79266,
+                "discounts": [],
+                "metadata": {},
+                "plan": {
+                  "id": "default",
+                  "object": "plan",
+                  "active": true,
+                  "aggregate_usage": null,
+                  "amount": <VENDOR_ID>000,
+                  "amount_decimal": "<VENDOR_ID>000",
+                  "billing_scheme": "per_unit",
+                  "created": <VENDOR_ID>583852982,
+                  "currency": "usd",
+                  "interval": "month",
+                  "interval_count": <VENDOR_ID>,
+                  "livemode": false,
+                  "metadata": {},
+                  "meter": null,
+                  "nickname": "Default",
+                  "product": "prod_EYTX7RYhRjcwKD",
+                  "tiers_mode": null,
+                  "transform_usage": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "price": {
+                  "id": "default",
+                  "object": "price",
+                  "active": true,
+                  "billing_scheme": "per_unit",
+                  "created": <VENDOR_ID>583852982,
+                  "currency": "usd",
+                  "custom_unit_amount": null,
+                  "livemode": false,
+                  "lookup_key": null,
+                  "metadata": {},
+                  "nickname": "Default",
+                  "product": "prod_EYTX7RYhRjcwKD",
+                  "recurring": {
+                    "aggregate_usage": null,
+                    "interval": "month",
+                    "interval_count": <VENDOR_ID>,
+                    "meter": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "ta<VENDOR_AUTH_CODE>_behavior": "unspecified",
+                  "tiers_mode": null,
+                  "transform_quantity": null,
+                  "type": "recurring",
+                  "unit_amount": <VENDOR_ID>000,
+                  "unit_amount_decimal": "<VENDOR_ID>000"
+                },
+                "quantity": <VENDOR_ID>,
+                "subscription": "sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F",
+                "ta<VENDOR_AUTH_CODE>_rates": []
+              }
+            ],
+            "has_more": false,
+            "total_count": <VENDOR_ID>,
+            "url": "/v<VENDOR_ID>/subscription_items?subscription=sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F"
+          },
+          "latest_invoice": {
+            "id": "in_<VENDOR_ID>QRiIgKXBGcbgpbZhMDmTckz",
+            "object": "invoice",
+            "account_country": "US",
+            "account_name": "Pay",
+            "account_ta<VENDOR_AUTH_CODE>_ids": null,
+            "amount_due": 0,
+            "amount_paid": 0,
+            "amount_remaining": 0,
+            "amount_shipping": 0,
+            "application": null,
+            "application_fee_amount": null,
+            "attempt_count": 0,
+            "attempted": true,
+            "auto_advance": false,
+            "automatic_ta<VENDOR_AUTH_CODE>": {
+              "disabled_reason": null,
+              "enabled": false,
+              "liability": null,
+              "status": null
+            },
+            "automatically_finalizes_at": null,
+            "billing_reason": "subscription_create",
+            "charge": null,
+            "collection_method": "charge_automatically",
+            "created": <VENDOR_ID>733<VENDOR_ID>79266,
+            "currency": "usd",
+            "custom_fields": null,
+            "customer": "cus_RKN2De0U9Uu4B3",
+            "customer_address": null,
+            "customer_email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+            "customer_name": "Stripe User",
+            "customer_phone": null,
+            "customer_shipping": null,
+            "customer_ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+            "customer_ta<VENDOR_AUTH_CODE>_ids": [],
+            "default_payment_method": null,
+            "default_source": null,
+            "default_ta<VENDOR_AUTH_CODE>_rates": [],
+            "description": null,
+            "discount": null,
+            "discounts": [],
+            "due_date": null,
+            "effective_at": <VENDOR_ID>733<VENDOR_ID>79266,
+            "ending_balance": 0,
+            "footer": null,
+            "from_invoice": null,
+            "hosted_invoice_url": "https://invoice.stripe.com/i/acct_<VENDOR_ID>E4bfnKXBGcbgpbZ/test_YWNjdF8<VENDOR_AUTH_CODE>RTRiZm5LWEJHY2JncGJaLF9SS04yMG<VENDOR_AUTH_CODE>DNjA0R29kU3lJa<VENDOR_ID>NWaFZTY2Z6WkVtMEhWLDEyMzcyMDA2Nw02007<VENDOR_ID>BO4s2l?s=ap",
+            "invoice_pdf": "https://pay.stripe.com/invoice/acct_<VENDOR_ID>E4bfnKXBGcbgpbZ/test_YWNjdF8<VENDOR_AUTH_CODE>RTRiZm5LWEJHY2JncGJaLF9SS04yMG<VENDOR_AUTH_CODE>DNjA0R29kU3lJa<VENDOR_ID>NWaFZTY2Z6WkVtMEhWLDEyMzcyMDA2Nw02007<VENDOR_ID>BO4s2l/pdf?s=ap",
+            "issuer": {
+              "type": "self"
+            },
+            "last_finalization_error": null,
+            "latest_revision": null,
+            "lines": {
+              "object": "list",
+              "data": [
+                {
+                  "id": "il_<VENDOR_ID>QRiIgKXBGcbgpbZl3Bwd58N",
+                  "object": "line_item",
+                  "amount": 0,
+                  "amount_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": 0,
+                  "currency": "usd",
+                  "description": "Trial period for Test Subscription (per user)",
+                  "discount_amounts": [],
+                  "discountable": true,
+                  "discounts": [],
+                  "invoice": "in_<VENDOR_ID>QRiIgKXBGcbgpbZhMDmTckz",
+                  "livemode": false,
+                  "metadata": {},
+                  "period": {
+                    "end": <VENDOR_ID>734388866,
+                    "start": <VENDOR_ID>733<VENDOR_ID>79266
+                  },
+                  "plan": {
+                    "id": "default",
+                    "object": "plan",
+                    "active": true,
+                    "aggregate_usage": null,
+                    "amount": <VENDOR_ID>000,
+                    "amount_decimal": "<VENDOR_ID>000",
+                    "billing_scheme": "per_unit",
+                    "created": <VENDOR_ID>583852982,
+                    "currency": "usd",
+                    "interval": "month",
+                    "interval_count": <VENDOR_ID>,
+                    "livemode": false,
+                    "metadata": {},
+                    "meter": null,
+                    "nickname": "Default",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "tiers_mode": null,
+                    "transform_usage": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "preta<VENDOR_AUTH_CODE>_credit_amounts": [],
+                  "price": {
+                    "id": "default",
+                    "object": "price",
+                    "active": true,
+                    "billing_scheme": "per_unit",
+                    "created": <VENDOR_ID>583852982,
+                    "currency": "usd",
+                    "custom_unit_amount": null,
+                    "livemode": false,
+                    "lookup_key": null,
+                    "metadata": {},
+                    "nickname": "Default",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "recurring": {
+                      "aggregate_usage": null,
+                      "interval": "month",
+                      "interval_count": <VENDOR_ID>,
+                      "meter": null,
+                      "trial_period_days": null,
+                      "usage_type": "licensed"
+                    },
+                    "ta<VENDOR_AUTH_CODE>_behavior": "unspecified",
+                    "tiers_mode": null,
+                    "transform_quantity": null,
+                    "type": "recurring",
+                    "unit_amount": <VENDOR_ID>000,
+                    "unit_amount_decimal": "<VENDOR_ID>000"
+                  },
+                  "proration": false,
+                  "proration_details": {
+                    "credited_items": null
+                  },
+                  "quantity": <VENDOR_ID>,
+                  "subscription": "sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F",
+                  "subscription_item": "si_RKN2eXNNOAP7MG",
+                  "ta<VENDOR_AUTH_CODE>_amounts": [],
+                  "ta<VENDOR_AUTH_CODE>_rates": [],
+                  "type": "subscription",
+                  "unit_amount_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": "0"
+                }
+              ],
+              "has_more": false,
+              "total_count": <VENDOR_ID>,
+              "url": "/v<VENDOR_ID>/invoices/in_<VENDOR_ID>QRiIgKXBGcbgpbZhMDmTckz/lines"
+            },
+            "livemode": false,
+            "metadata": {},
+            "ne<VENDOR_AUTH_CODE>t_payment_attempt": null,
+            "number": "2546<VENDOR_ID>D<VENDOR_ID>2-000<VENDOR_ID>",
+            "on_behalf_of": null,
+            "paid": true,
+            "paid_out_of_band": false,
+            "payment_intent": null,
+            "payment_settings": {
+              "default_mandate": null,
+              "payment_method_options": null,
+              "payment_method_types": null
+            },
+            "period_end": <VENDOR_ID>733<VENDOR_ID>79266,
+            "period_start": <VENDOR_ID>733<VENDOR_ID>79266,
+            "post_payment_credit_notes_amount": 0,
+            "pre_payment_credit_notes_amount": 0,
+            "quote": null,
+            "receipt_number": null,
+            "rendering": null,
+            "shipping_cost": null,
+            "shipping_details": null,
+            "starting_balance": 0,
+            "statement_descriptor": null,
+            "status": "paid",
+            "status_transitions": {
+              "finalized_at": <VENDOR_ID>733<VENDOR_ID>79266,
+              "marked_uncollectible_at": null,
+              "paid_at": <VENDOR_ID>733<VENDOR_ID>79266,
+              "voided_at": null
+            },
+            "subscription": "sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F",
+            "subscription_details": {
+              "metadata": {}
+            },
+            "subtotal": 0,
+            "subtotal_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": 0,
+            "ta<VENDOR_AUTH_CODE>": null,
+            "test_clock": null,
+            "total": 0,
+            "total_discount_amounts": [],
+            "total_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": 0,
+            "total_preta<VENDOR_AUTH_CODE>_credit_amounts": [],
+            "total_ta<VENDOR_AUTH_CODE>_amounts": [],
+            "transfer_data": null,
+            "webhooks_delivered_at": <VENDOR_ID>733<VENDOR_ID>79266
+          },
+          "livemode": false,
+          "metadata": {},
+          "ne<VENDOR_AUTH_CODE>t_pending_invoice_item_invoice": null,
+          "on_behalf_of": null,
+          "pause_collection": null,
+          "payment_settings": {
+            "payment_method_options": null,
+            "payment_method_types": null,
+            "save_default_payment_method": "off"
+          },
+          "pending_invoice_item_interval": null,
+          "pending_setup_intent": null,
+          "pending_update": null,
+          "plan": {
+            "id": "default",
+            "object": "plan",
+            "active": true,
+            "aggregate_usage": null,
+            "amount": <VENDOR_ID>000,
+            "amount_decimal": "<VENDOR_ID>000",
+            "billing_scheme": "per_unit",
+            "created": <VENDOR_ID>583852982,
+            "currency": "usd",
+            "interval": "month",
+            "interval_count": <VENDOR_ID>,
+            "livemode": false,
+            "metadata": {},
+            "meter": null,
+            "nickname": "Default",
+            "product": "prod_EYTX7RYhRjcwKD",
+            "tiers_mode": null,
+            "transform_usage": null,
+            "trial_period_days": null,
+            "usage_type": "licensed"
+          },
+          "quantity": <VENDOR_ID>,
+          "schedule": null,
+          "start_date": <VENDOR_ID>733<VENDOR_ID>79266,
+          "status": "trialing",
+          "test_clock": null,
+          "transfer_data": null,
+          "trial_end": <VENDOR_ID>734388866,
+          "trial_settings": {
+            "end_behavior": {
+              "missing_payment_method": "create_invoice"
+            }
+          },
+          "trial_start": <VENDOR_ID>733<VENDOR_ID>79266
+        }
+  recorded_at: Mon, 02 Dec 2024 22:41:04 GMT
+- request:
+    method: delete
+    uri: https://api.stripe.com/v<VENDOR_ID>/subscriptions/sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F?e<VENDOR_AUTH_CODE>pand%5B%5D=default_payment_method&e<VENDOR_AUTH_CODE>pand%5B%5D=latest_invoice.charge&e<VENDOR_AUTH_CODE>pand%5B%5D=latest_invoice.payment_intent&e<VENDOR_AUTH_CODE>pand%5B%5D=latest_invoice.total_discount_amounts.discount&e<VENDOR_AUTH_CODE>pand%5B%5D=latest_invoice.total_ta<VENDOR_AUTH_CODE>_amounts.ta<VENDOR_AUTH_CODE>_rate&e<VENDOR_AUTH_CODE>pand%5B%5D=pending_setup_intent
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>3.2.0 PayRails/8.2.<VENDOR_ID>
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_5HqPdiz<VENDOR_AUTH_CODE>j8BI77","request_duration_ms":<VENDOR_ID>797}}'
+      Idempotency-Key:
+      - b75<VENDOR_ID>4dd0-0f3d-4d09-b402-c974cc4cb93b
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"8.2.<VENDOR_ID>"},"bindings_version":"<VENDOR_ID>3.2.0","lang":"ruby","lang_version":"3.3.6
+        p<VENDOR_ID>08 (2024-<VENDOR_ID><VENDOR_ID>-05)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        e<VENDOR_AUTH_CODE>cid3-mbp.local 24.<VENDOR_ID>.0 Darwin Kernel Version 24.<VENDOR_ID>.0:
+        Thu Oct <VENDOR_ID>0 2<VENDOR_ID>:03:<VENDOR_ID>5 PDT 2024; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID><VENDOR_ID>2<VENDOR_ID>5.4<VENDOR_ID>.3~2/RELEASE_ARM64_T6000
+        arm64","hostname":"e<VENDOR_AUTH_CODE>cid3-mbp.local"}'
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Mon, 02 Dec 2024 22:4<VENDOR_ID>:08 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - "<VENDOR_ID>0<VENDOR_ID>6<VENDOR_ID>"
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - report-uri https://q.stripe.com/csp-report?p=v<VENDOR_ID>%2Fsubscriptions%2F%3Asubscription_e<VENDOR_AUTH_CODE>posed_id;
+        block-all-mi<VENDOR_AUTH_CODE>ed-content; default-src 'none'; base-uri 'none';
+        form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self'
+        'report-sample'; style-src 'self'
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="coop"
+      Idempotency-Key:
+      - b75<VENDOR_ID>4dd0-0f3d-4d09-b402-c974cc4cb93b
+      Report-To:
+      - '{"group":"coop","ma<VENDOR_AUTH_CODE>_age":8640,"endpoints":[{"url":"https://q.stripe.com/coop-report"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - coop="https://q.stripe.com/coop-report"
+      Request-Id:
+      - req_GrC9BBSBfZ0Gid
+      Stripe-Version:
+      - 2024-<VENDOR_ID><VENDOR_ID>-20.acacia
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - A
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F",
+          "object": "subscription",
+          "application": null,
+          "application_fee_percent": null,
+          "automatic_ta<VENDOR_AUTH_CODE>": {
+            "disabled_reason": null,
+            "enabled": false,
+            "liability": null
+          },
+          "billing_cycle_anchor": <VENDOR_ID>734388866,
+          "billing_cycle_anchor_config": null,
+          "billing_thresholds": null,
+          "cancel_at": null,
+          "cancel_at_period_end": false,
+          "canceled_at": <VENDOR_ID>733<VENDOR_ID>79268,
+          "cancellation_details": {
+            "comment": null,
+            "feedback": null,
+            "reason": "cancellation_requested"
+          },
+          "collection_method": "charge_automatically",
+          "created": <VENDOR_ID>733<VENDOR_ID>79266,
+          "currency": "usd",
+          "current_period_end": <VENDOR_ID>734388866,
+          "current_period_start": <VENDOR_ID>733<VENDOR_ID>79266,
+          "customer": "cus_RKN2De0U9Uu4B3",
+          "days_until_due": null,
+          "default_payment_method": null,
+          "default_source": null,
+          "default_ta<VENDOR_AUTH_CODE>_rates": [],
+          "description": null,
+          "discount": null,
+          "discounts": [],
+          "ended_at": <VENDOR_ID>733<VENDOR_ID>79268,
+          "invoice_settings": {
+            "account_ta<VENDOR_AUTH_CODE>_ids": null,
+            "issuer": {
+              "type": "self"
+            }
+          },
+          "items": {
+            "object": "list",
+            "data": [
+              {
+                "id": "si_RKN2eXNNOAP7MG",
+                "object": "subscription_item",
+                "billing_thresholds": null,
+                "created": <VENDOR_ID>733<VENDOR_ID>79266,
+                "discounts": [],
+                "metadata": {},
+                "plan": {
+                  "id": "default",
+                  "object": "plan",
+                  "active": true,
+                  "aggregate_usage": null,
+                  "amount": <VENDOR_ID>000,
+                  "amount_decimal": "<VENDOR_ID>000",
+                  "billing_scheme": "per_unit",
+                  "created": <VENDOR_ID>583852982,
+                  "currency": "usd",
+                  "interval": "month",
+                  "interval_count": <VENDOR_ID>,
+                  "livemode": false,
+                  "metadata": {},
+                  "meter": null,
+                  "nickname": "Default",
+                  "product": "prod_EYTX7RYhRjcwKD",
+                  "tiers_mode": null,
+                  "transform_usage": null,
+                  "trial_period_days": null,
+                  "usage_type": "licensed"
+                },
+                "price": {
+                  "id": "default",
+                  "object": "price",
+                  "active": true,
+                  "billing_scheme": "per_unit",
+                  "created": <VENDOR_ID>583852982,
+                  "currency": "usd",
+                  "custom_unit_amount": null,
+                  "livemode": false,
+                  "lookup_key": null,
+                  "metadata": {},
+                  "nickname": "Default",
+                  "product": "prod_EYTX7RYhRjcwKD",
+                  "recurring": {
+                    "aggregate_usage": null,
+                    "interval": "month",
+                    "interval_count": <VENDOR_ID>,
+                    "meter": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "ta<VENDOR_AUTH_CODE>_behavior": "unspecified",
+                  "tiers_mode": null,
+                  "transform_quantity": null,
+                  "type": "recurring",
+                  "unit_amount": <VENDOR_ID>000,
+                  "unit_amount_decimal": "<VENDOR_ID>000"
+                },
+                "quantity": <VENDOR_ID>,
+                "subscription": "sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F",
+                "ta<VENDOR_AUTH_CODE>_rates": []
+              }
+            ],
+            "has_more": false,
+            "total_count": <VENDOR_ID>,
+            "url": "/v<VENDOR_ID>/subscription_items?subscription=sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F"
+          },
+          "latest_invoice": {
+            "id": "in_<VENDOR_ID>QRiIgKXBGcbgpbZhMDmTckz",
+            "object": "invoice",
+            "account_country": "US",
+            "account_name": "Pay",
+            "account_ta<VENDOR_AUTH_CODE>_ids": null,
+            "amount_due": 0,
+            "amount_paid": 0,
+            "amount_remaining": 0,
+            "amount_shipping": 0,
+            "application": null,
+            "application_fee_amount": null,
+            "attempt_count": 0,
+            "attempted": true,
+            "auto_advance": false,
+            "automatic_ta<VENDOR_AUTH_CODE>": {
+              "disabled_reason": null,
+              "enabled": false,
+              "liability": null,
+              "status": null
+            },
+            "automatically_finalizes_at": null,
+            "billing_reason": "subscription_create",
+            "charge": null,
+            "collection_method": "charge_automatically",
+            "created": <VENDOR_ID>733<VENDOR_ID>79266,
+            "currency": "usd",
+            "custom_fields": null,
+            "customer": "cus_RKN2De0U9Uu4B3",
+            "customer_address": null,
+            "customer_email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+            "customer_name": "Stripe User",
+            "customer_phone": null,
+            "customer_shipping": null,
+            "customer_ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+            "customer_ta<VENDOR_AUTH_CODE>_ids": [],
+            "default_payment_method": null,
+            "default_source": null,
+            "default_ta<VENDOR_AUTH_CODE>_rates": [],
+            "description": null,
+            "discount": null,
+            "discounts": [],
+            "due_date": null,
+            "effective_at": <VENDOR_ID>733<VENDOR_ID>79266,
+            "ending_balance": 0,
+            "footer": null,
+            "from_invoice": null,
+            "hosted_invoice_url": "https://invoice.stripe.com/i/acct_<VENDOR_ID>E4bfnKXBGcbgpbZ/test_YWNjdF8<VENDOR_AUTH_CODE>RTRiZm5LWEJHY2JncGJaLF9SS04yMG<VENDOR_AUTH_CODE>DNjA0R29kU3lJa<VENDOR_ID>NWaFZTY2Z6WkVtMEhWLDEyMzcyMDA2OA02002jCaa7LO?s=ap",
+            "invoice_pdf": "https://pay.stripe.com/invoice/acct_<VENDOR_ID>E4bfnKXBGcbgpbZ/test_YWNjdF8<VENDOR_AUTH_CODE>RTRiZm5LWEJHY2JncGJaLF9SS04yMG<VENDOR_AUTH_CODE>DNjA0R29kU3lJa<VENDOR_ID>NWaFZTY2Z6WkVtMEhWLDEyMzcyMDA2OA02002jCaa7LO/pdf?s=ap",
+            "issuer": {
+              "type": "self"
+            },
+            "last_finalization_error": null,
+            "latest_revision": null,
+            "lines": {
+              "object": "list",
+              "data": [
+                {
+                  "id": "il_<VENDOR_ID>QRiIgKXBGcbgpbZl3Bwd58N",
+                  "object": "line_item",
+                  "amount": 0,
+                  "amount_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": 0,
+                  "currency": "usd",
+                  "description": "Trial period for Test Subscription (per user)",
+                  "discount_amounts": [],
+                  "discountable": true,
+                  "discounts": [],
+                  "invoice": "in_<VENDOR_ID>QRiIgKXBGcbgpbZhMDmTckz",
+                  "livemode": false,
+                  "metadata": {},
+                  "period": {
+                    "end": <VENDOR_ID>734388866,
+                    "start": <VENDOR_ID>733<VENDOR_ID>79266
+                  },
+                  "plan": {
+                    "id": "default",
+                    "object": "plan",
+                    "active": true,
+                    "aggregate_usage": null,
+                    "amount": <VENDOR_ID>000,
+                    "amount_decimal": "<VENDOR_ID>000",
+                    "billing_scheme": "per_unit",
+                    "created": <VENDOR_ID>583852982,
+                    "currency": "usd",
+                    "interval": "month",
+                    "interval_count": <VENDOR_ID>,
+                    "livemode": false,
+                    "metadata": {},
+                    "meter": null,
+                    "nickname": "Default",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "tiers_mode": null,
+                    "transform_usage": null,
+                    "trial_period_days": null,
+                    "usage_type": "licensed"
+                  },
+                  "preta<VENDOR_AUTH_CODE>_credit_amounts": [],
+                  "price": {
+                    "id": "default",
+                    "object": "price",
+                    "active": true,
+                    "billing_scheme": "per_unit",
+                    "created": <VENDOR_ID>583852982,
+                    "currency": "usd",
+                    "custom_unit_amount": null,
+                    "livemode": false,
+                    "lookup_key": null,
+                    "metadata": {},
+                    "nickname": "Default",
+                    "product": "prod_EYTX7RYhRjcwKD",
+                    "recurring": {
+                      "aggregate_usage": null,
+                      "interval": "month",
+                      "interval_count": <VENDOR_ID>,
+                      "meter": null,
+                      "trial_period_days": null,
+                      "usage_type": "licensed"
+                    },
+                    "ta<VENDOR_AUTH_CODE>_behavior": "unspecified",
+                    "tiers_mode": null,
+                    "transform_quantity": null,
+                    "type": "recurring",
+                    "unit_amount": <VENDOR_ID>000,
+                    "unit_amount_decimal": "<VENDOR_ID>000"
+                  },
+                  "proration": false,
+                  "proration_details": {
+                    "credited_items": null
+                  },
+                  "quantity": <VENDOR_ID>,
+                  "subscription": "sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F",
+                  "subscription_item": "si_RKN2eXNNOAP7MG",
+                  "ta<VENDOR_AUTH_CODE>_amounts": [],
+                  "ta<VENDOR_AUTH_CODE>_rates": [],
+                  "type": "subscription",
+                  "unit_amount_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": "0"
+                }
+              ],
+              "has_more": false,
+              "total_count": <VENDOR_ID>,
+              "url": "/v<VENDOR_ID>/invoices/in_<VENDOR_ID>QRiIgKXBGcbgpbZhMDmTckz/lines"
+            },
+            "livemode": false,
+            "metadata": {},
+            "ne<VENDOR_AUTH_CODE>t_payment_attempt": null,
+            "number": "2546<VENDOR_ID>D<VENDOR_ID>2-000<VENDOR_ID>",
+            "on_behalf_of": null,
+            "paid": true,
+            "paid_out_of_band": false,
+            "payment_intent": null,
+            "payment_settings": {
+              "default_mandate": null,
+              "payment_method_options": null,
+              "payment_method_types": null
+            },
+            "period_end": <VENDOR_ID>733<VENDOR_ID>79266,
+            "period_start": <VENDOR_ID>733<VENDOR_ID>79266,
+            "post_payment_credit_notes_amount": 0,
+            "pre_payment_credit_notes_amount": 0,
+            "quote": null,
+            "receipt_number": null,
+            "rendering": null,
+            "shipping_cost": null,
+            "shipping_details": null,
+            "starting_balance": 0,
+            "statement_descriptor": null,
+            "status": "paid",
+            "status_transitions": {
+              "finalized_at": <VENDOR_ID>733<VENDOR_ID>79266,
+              "marked_uncollectible_at": null,
+              "paid_at": <VENDOR_ID>733<VENDOR_ID>79266,
+              "voided_at": null
+            },
+            "subscription": "sub_<VENDOR_ID>QRiIgKXBGcbgpbZHnUcaH0F",
+            "subscription_details": {
+              "metadata": {}
+            },
+            "subtotal": 0,
+            "subtotal_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": 0,
+            "ta<VENDOR_AUTH_CODE>": null,
+            "test_clock": null,
+            "total": 0,
+            "total_discount_amounts": [],
+            "total_e<VENDOR_AUTH_CODE>cluding_ta<VENDOR_AUTH_CODE>": 0,
+            "total_preta<VENDOR_AUTH_CODE>_credit_amounts": [],
+            "total_ta<VENDOR_AUTH_CODE>_amounts": [],
+            "transfer_data": null,
+            "webhooks_delivered_at": <VENDOR_ID>733<VENDOR_ID>79266
+          },
+          "livemode": false,
+          "metadata": {},
+          "ne<VENDOR_AUTH_CODE>t_pending_invoice_item_invoice": null,
+          "on_behalf_of": null,
+          "pause_collection": null,
+          "payment_settings": {
+            "payment_method_options": null,
+            "payment_method_types": null,
+            "save_default_payment_method": "off"
+          },
+          "pending_invoice_item_interval": null,
+          "pending_setup_intent": null,
+          "pending_update": null,
+          "plan": {
+            "id": "default",
+            "object": "plan",
+            "active": true,
+            "aggregate_usage": null,
+            "amount": <VENDOR_ID>000,
+            "amount_decimal": "<VENDOR_ID>000",
+            "billing_scheme": "per_unit",
+            "created": <VENDOR_ID>583852982,
+            "currency": "usd",
+            "interval": "month",
+            "interval_count": <VENDOR_ID>,
+            "livemode": false,
+            "metadata": {},
+            "meter": null,
+            "nickname": "Default",
+            "product": "prod_EYTX7RYhRjcwKD",
+            "tiers_mode": null,
+            "transform_usage": null,
+            "trial_period_days": null,
+            "usage_type": "licensed"
+          },
+          "quantity": <VENDOR_ID>,
+          "schedule": null,
+          "start_date": <VENDOR_ID>733<VENDOR_ID>79266,
+          "status": "canceled",
+          "test_clock": null,
+          "transfer_data": null,
+          "trial_end": <VENDOR_ID>734388866,
+          "trial_settings": {
+            "end_behavior": {
+              "missing_payment_method": "create_invoice"
+            }
+          },
+          "trial_start": <VENDOR_ID>733<VENDOR_ID>79266
+        }
+  recorded_at: Mon, 02 Dec 2024 22:41:04 GMT
+recorded_with: VCR 6.3.1

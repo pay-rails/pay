@@ -47,6 +47,20 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
+  test "cancel_now when on trial" do
+    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+      @pay_customer.update(processor_id: nil)
+      @pay_customer.update_payment_method "pm_card_visa"
+      subscription = @pay_customer.subscribe(name: "default", plan: "default", trial_period_days: 14)
+      assert subscription.active?
+      assert subscription.on_trial?
+      subscription.cancel_now!
+      travel 1.minute
+      refute subscription.active?
+      refute subscription.on_trial?
+    end
+  end
+
   test "stripe change subscription quantity with nil subscription items" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     pay_subscription.update!(subscription_items: nil)

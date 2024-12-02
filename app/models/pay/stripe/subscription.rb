@@ -174,7 +174,7 @@ module Pay
         return if canceled? && ends_at.past?
 
         @api_record = ::Stripe::Subscription.cancel(processor_id, options.merge(expand_options), stripe_options)
-        update(ends_at: Time.current, status: :canceled)
+        update(trial_ends_at: Time.current, ends_at: Time.current, status: :canceled)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
