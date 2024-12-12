@@ -21,6 +21,7 @@ module Pay
   autoload :PaddleClassic, "pay/paddle_classic"
   autoload :LemonSqueezy, "pay/lemon_squeezy"
   autoload :Stripe, "pay/stripe"
+  autoload :AwsMarketplace, "pay/aws_marketplace"
 
   autoload :Webhooks, "pay/webhooks"
 
@@ -68,7 +69,7 @@ module Pay
   @@emails.payment_failed = true
   @@emails.receipt = true
   @@emails.refund = true
-  # This only applies to Stripe, therefor we supply the second argument of price
+  # This only applies to Stripe, therefore we supply the second argument of price
   @@emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
