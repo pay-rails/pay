@@ -5,7 +5,7 @@ module Pay
     ALPHABET_SIZE = ALPHABET.size
 
     def self.generate(size: 21)
-      id = ""
+      id = String.new
       size.times { id << ALPHABET[(Random.rand * ALPHABET_SIZE).floor] }
       id
     end
