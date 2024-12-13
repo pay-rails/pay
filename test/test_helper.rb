@@ -1,9 +1,6 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
-# Disable warnings locally
-$VERBOSE = ENV["CI"]
-
 # Configure all the payment providers for testing
 ENV["STRIPE_PRIVATE_KEY"] ||= "sk_test_fake"
 ENV["STRIPE_SIGNING_SECRET"] ||= "whsec_x"

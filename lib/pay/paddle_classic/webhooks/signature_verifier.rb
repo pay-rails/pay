@@ -61,7 +61,7 @@ module Pay
         # array will be assumed to be an associative array, and will be serialized
         # as a PHP associative array rather than a multidimensional array.
         def serialize(var, assoc = false)
-          s = ""
+          s = +""
           case var
           when Array
             s << "a:#{var.size}:{"
