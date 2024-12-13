@@ -57,6 +57,7 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: "sqlite3:pay_test"
+          RUBYOPT: "--enable-frozen-string-literal"
           STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
         run: |
           bin/rails db:test:prepare
@@ -98,8 +99,9 @@ jobs:
           rubygems: latest
       - name: Run tests
         env:
-          STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
           DATABASE_URL: postgres://postgres:password@localhost:5432/test
+          RUBYOPT: "--enable-frozen-string-literal"
+          STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
         run: |
           bin/rails db:test:prepare
           bin/rails test
@@ -140,8 +142,9 @@ jobs:
           rubygems: latest
       - name: Run tests
         env:
-          STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
           DATABASE_URL: mysql2://root:password@127.0.0.1:3306/test
+          RUBYOPT: "--enable-frozen-string-literal"
+          STRIPE_PRIVATE_KEY: ${{ secrets.STRIPE_PRIVATE_KEY }}
         run: |
           bin/rails db:test:prepare
           bin/rails test
