@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 8.2.2
+
+* Compatibility with frozen string literals
+
 ### 8.2.1
 
 * Add `meta` to LemonSqueezy webhook objects. LemonSqueezy does not store metadata and they're only temporarily accessible via the webhook meta.
