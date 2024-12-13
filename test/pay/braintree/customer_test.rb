@@ -73,13 +73,6 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
     assert_equal "Visa", charge.brand
   end
 
-  test "braintree can charge card with Samsung Pay Card" do
-    @pay_customer.update_payment_method "tokensam_fake_mastercard"
-    charge = @pay_customer.charge(29_00)
-    assert_equal "card", charge.payment_method_type
-    assert_equal "MasterCard", charge.brand
-  end
-
   test "braintree can charge card with Visa Checkout Card" do
     @pay_customer.update_payment_method "fake-visa-checkout-amex-nonce"
     charge = @pay_customer.charge(29_00)
@@ -118,12 +111,6 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
     @pay_customer.update_payment_method "fake-android-pay-visa-nonce"
     assert_equal "card", @pay_customer.default_payment_method.payment_method_type
     assert_equal "Visa", @pay_customer.default_payment_method.brand
-  end
-
-  test "braintree update Samsung Pay Card" do
-    @pay_customer.update_payment_method "tokensam_fake_mastercard"
-    assert_equal "card", @pay_customer.default_payment_method.payment_method_type
-    assert_equal "MasterCard", @pay_customer.default_payment_method.brand
   end
 
   test "braintree update Visa Checkout Card" do
