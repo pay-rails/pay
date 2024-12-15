@@ -22,7 +22,7 @@ module Pay
 
     delegate :email, to: :owner
 
-    %w[stripe braintree paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
+    %w[stripe braintree paddle_billing paddle_classic lemon_squeezy aws_marketplace fake_processor].each do |processor_name|
       scope processor_name, -> { where(processor: processor_name) }
 
       define_method :"#{processor_name}?" do
