@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::FakeProcessor::CustomerTest < ActiveSupport::TestCase
+class Pay::AwsMarketplace::CustomerTest < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:fake)
   end
