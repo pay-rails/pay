@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::AwsMarketplace::Subscription::Test < ActiveSupport::TestCase
   setup do
-    @pay_customer = pay_customers(:fake)
+    @pay_customer = pay_customers(:aws_marketplace)
     @subscription = @pay_customer.subscribe
   end
 

@@ -5,47 +5,41 @@ class Pay::AwsMarketplace::CustomerTest < ActiveSupport::TestCase
     @pay_customer = pay_customers(:fake)
   end
 
-  test "doesn't allow fake processor by default" do
-    assert_raises Pay::Error do
-      users(:none).set_payment_processor :fake_processor
-    end
-  end
-
-  test "allows fake processor if enabled" do
+  test "allows aws_marketplace processor" do
     assert_nothing_raised do
-      users(:none).set_payment_processor :fake_processor, allow_fake: true
+      users(:none).set_payment_processor :aws_marketplace
     end
   end
 
-  test "fake processor api_record" do
+  test "aws processor api_record" do
     assert_equal @pay_customer, @pay_customer.api_record
   end
 
-  test "fake processor charge" do
+  test "aws processor charge" do
     assert_difference "Pay::Charge.count" do
       @pay_customer.charge(10_00)
     end
   end
 
-  test "fake processor charge options" do
+  test "aws processor charge options" do
     assert_difference "Pay::Charge.count" do
       @pay_customer.charge(10_00, {description: "Hello world"})
     end
   end
 
-  test "fake processor subscribe" do
+  test "aws processor subscribe" do
     assert_difference "Pay::Subscription.count" do
       @pay_customer.subscribe
     end
   end
 
-  test "fake processor subscribe with promotion code" do
+  test "aws processor subscribe with promotion code" do
     assert_difference "Pay::Subscription.count" do
       @pay_customer.subscribe(promotion_code: "promo_xxx123")
     end
   end
 
-  test "fake processor add new default payment method" do
+  test "aws processor add new default payment method" do
     old_payment_method = @pay_customer.add_payment_method("old", default: true)
     assert_equal old_payment_method.id, @pay_customer.default_payment_method.id
 
@@ -60,9 +54,9 @@ class Pay::AwsMarketplace::CustomerTest < ActiveSupport::TestCase
     assert_equal "Fake", payment_method.brand
   end
 
-  test "generates fake processor_id" do
+  test "generates aws processor_id" do
     user = users(:none)
-    pay_customer = user.set_payment_processor :fake_processor, allow_fake: true
+    pay_customer = user.set_payment_processor :aws_processor, allow_fake: true
     assert_nil pay_customer.processor_id
     pay_customer.api_record
     assert_not_nil pay_customer.processor_id
@@ -70,7 +64,7 @@ class Pay::AwsMarketplace::CustomerTest < ActiveSupport::TestCase
 
   test "generic trial" do
     user = users(:none)
-    pay_customer = user.set_payment_processor :fake_processor, allow_fake: true
+    pay_customer = user.set_payment_processor :aws_processor, allow_fake: true
 
     refute pay_customer.on_generic_trial?
 

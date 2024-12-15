@@ -8,11 +8,11 @@ module Pay
       end
 
       def account_link(refresh_url:, return_url:, type: "account_onboarding", **options)
-        Struct.new(:url).new("/fake_processor/account_link")
+        Struct.new(:url).new("/aws_processor/account_link")
       end
 
       def login_link(**options)
-        Struct.new(:url).new("/fake_processor/login_link")
+        Struct.new(:url).new("/aws_processor/login_link")
       end
     end
   end
