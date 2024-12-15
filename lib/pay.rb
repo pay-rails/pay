@@ -15,13 +15,13 @@ module Pay
   autoload :Currency, "pay/currency"
 
   # Payment processors
+  autoload :AwsMarketplace, "pay/aws_marketplace"
   autoload :Braintree, "pay/braintree"
   autoload :FakeProcessor, "pay/fake_processor"
+  autoload :LemonSqueezy, "pay/lemon_squeezy"
   autoload :PaddleBilling, "pay/paddle_billing"
   autoload :PaddleClassic, "pay/paddle_classic"
-  autoload :LemonSqueezy, "pay/lemon_squeezy"
   autoload :Stripe, "pay/stripe"
-  autoload :AwsMarketplace, "pay/aws_marketplace"
 
   autoload :Webhooks, "pay/webhooks"
 
