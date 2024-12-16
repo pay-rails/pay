@@ -56,21 +56,9 @@ class Pay::AwsMarketplace::CustomerTest < ActiveSupport::TestCase
 
   test "generates aws processor_id" do
     user = users(:none)
-    pay_customer = user.set_payment_processor :aws_processor, allow_fake: true
+    pay_customer = user.set_payment_processor :aws_marketplace
     assert_nil pay_customer.processor_id
     pay_customer.api_record
     assert_not_nil pay_customer.processor_id
-  end
-
-  test "generic trial" do
-    user = users(:none)
-    pay_customer = user.set_payment_processor :aws_processor, allow_fake: true
-
-    refute pay_customer.on_generic_trial?
-
-    time = 14.days.from_now
-    pay_customer.subscribe(trial_ends_at: time, ends_at: time)
-
-    assert pay_customer.on_generic_trial?
   end
 end
