@@ -8,8 +8,9 @@ module Pay
 
           object = event.data.object
 
+          # Don't send email on incomplete Stripe subscriptions since they're just getting created and the JavaScript will handle SCA
           pay_subscription = Pay::Subscription.find_by_processor_and_id(:stripe, object.subscription)
-          return if pay_subscription.nil?
+          return if pay_subscription.nil? || pay_subscription.status == "incomplete"
 
           if Pay.send_email?(:payment_failed, pay_subscription)
             Pay.mailer.with(

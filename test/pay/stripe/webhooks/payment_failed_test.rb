@@ -16,6 +16,13 @@ class Pay::Stripe::Webhooks::PaymentFailedTest < ActiveSupport::TestCase
     end
   end
 
+  test "skips email if subscription is incomplete" do
+    create_subscription(processor_id: @payment_failed_event.data.object.subscription)
+    assert_no_enqueued_jobs do
+      Pay::Stripe::Webhooks::PaymentFailed.new.call(@payment_failed_event)
+    end
+  end
+
   private
 
   def create_subscription(processor_id:)
