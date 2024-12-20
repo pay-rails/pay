@@ -110,7 +110,7 @@ This is a major change to add Stripe tax support, Stripe metered billing, new co
 
 ### Method Additions and Changes
 
-In an effort to keep a consistant naming convention, the email parameters of `subscription` and `charge` have been updated to have `pay_` prepended to them (`pay_subscription` and `pay_charge` respectively). If you are directly using any of the built in emails or created custom Pay views, you will want to be sure to update your parameter names to the updated names.
+In an effort to keep a consistent naming convention, the email parameters of `subscription` and `charge` have been updated to have `pay_` prepended to them (`pay_subscription` and `pay_charge` respectively). If you are directly using any of the built in emails or created custom Pay views, you will want to be sure to update your parameter names to the updated names.
 
 You'll need to replace all references to:
 ```ruby
@@ -120,7 +120,7 @@ params[:subscription] with params[:pay_subscription]
 
 The `send_emails` configuration variable has been removed from Pay and replaced by the new configuration system which is discussed below. `Pay.send_emails` is primarily used internally, but if you have been using it in your application code you will need to update those areas to use the new method calls from the email configuration settings. For example, to check if the receipt email should be sent you can now call `Pay.send_email?(:receipt)`. If your email configuration option uses a lambda, you can pass any additional arguments to `send_email?` like so `Pay.send_email?(:receipt, pay_charge)` for use in the lambda.
 
-The `update_email!` method has been replaced with `update_customer!`. When dealing with a `Stripe::Billable` or `Braintree::Billable` object, a hash of additional attributes can be passed in that will be merged into the default atrributes.
+The `update_email!` method has been replaced with `update_customer!`. When dealing with a `Stripe::Billable` or `Braintree::Billable` object, a hash of additional attributes can be passed in that will be merged into the default attributes.
 
 The `Stripe::Subscription#cancel_now!` method now accepts a hash of options such as `cancel_now!(prorate: true, invoice_now: true)` which will be handled automatically by Stripe.
 

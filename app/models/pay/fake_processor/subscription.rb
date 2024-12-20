@@ -1,11 +1,15 @@
 module Pay
   module FakeProcessor
     class Subscription < Pay::Subscription
+      def self.sync(processor_id, **options)
+        # Bypass sync operation for FakeProcessor
+      end
+
       def api_record(**options)
         self
       end
 
-      # With trial, sets end to trial end (mimicing Stripe)
+      # With trial, sets end to trial end (mimicking Stripe)
       # Without trial, sets can ends_at to end of month
       def cancel(**options)
         return if canceled?
