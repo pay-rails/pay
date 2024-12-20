@@ -69,4 +69,10 @@ class Pay::FakeProcessor::Subscription::Test < ActiveSupport::TestCase
     assert @subscription.canceled?
     refute @subscription.resumable?
   end
+
+  test "fake processor sync!" do
+    assert_nothing_raised do
+      @subscription.sync!
+    end
+  end
 end
