@@ -16,22 +16,53 @@ module Pay
       end
 
       def charge(amount, options = {})
-        # Make to generate a processor_id
-        api_record
+        raise Pay::Error, "AWS Marketplace does not support one-off charges"
+      end
 
-        valid_attributes = options.slice(*Pay::Charge.attribute_names.map(&:to_sym))
-        attributes = {
-          processor_id: NanoId.generate,
-          amount: amount,
-          data: {
-            payment_method_type: :card,
-            brand: "AWS",
-            last4: 1234,
-            exp_month: Date.today.month,
-            exp_year: Date.today.year
+      # https://stripe.com/docs/api/checkout/sessions/create
+      #
+      # checkout(mode: "payment")
+      # checkout(mode: "setup")
+      # checkout(mode: "subscription")
+      #
+      # checkout(line_items: "price_12345", quantity: 2)
+      # checkout(line_items: [{ price: "price_123" }, { price: "price_456" }])
+      # checkout(line_items: "price_12345", allow_promotion_codes: true)
+      #
+      def checkout(**options)
+        api_record unless processor_id?
+        args = {
+          customer: processor_id,
+          mode: "payment"
+        }
+
+        # Hosted (the default) checkout sessions require a success_url and cancel_url
+        if ["", "hosted"].include? options[:ui_mode].to_s
+          args[:success_url] = merge_session_id_param(options.delete(:success_url) || root_url)
+          args[:cancel_url] = merge_session_id_param(options.delete(:cancel_url) || root_url)
+        end
+
+        if options[:return_url]
+          args[:return_url] = merge_session_id_param(options.delete(:return_url))
+        end
+
+        # Line items are optional
+        if (line_items = options.delete(:line_items))
+          quantity = options.delete(:quantity) || 1
+
+          args[:line_items] = Array.wrap(line_items).map { |item|
+            if item.is_a? Hash
+              item
+            else
+              {
+                price: item,
+                quantity: quantity
+              }
+            end
           }
-        }.deep_merge(valid_attributes)
-        charges.create!(attributes)
+        end
+
+        ::Stripe::Checkout::Session.create(args.merge(options), stripe_options)
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
