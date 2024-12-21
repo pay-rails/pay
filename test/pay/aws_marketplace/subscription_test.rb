@@ -3,67 +3,62 @@ require "test_helper"
 class Pay::AwsMarketplace::Subscription::Test < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:aws_marketplace)
-    @subscription = @pay_customer.subscribe
+    @subscription = pay_subscriptions(:aws_marketplace)
   end
 
-  test "fake processor subscription" do
+  test "aws processor subscription" do
     assert_equal @subscription, @subscription.api_record
   end
 
-  test "fake processor cancel" do
-    freeze_time do
+  test "aws processor cancel" do
+    assert_raises Pay::AwsMarketplace::UpdateError do
       @subscription.cancel
-      assert_equal Time.current.end_of_month.to_date, @subscription.ends_at.to_date
     end
   end
 
-  test "fake processor trial period" do
-    new_subscription = @pay_customer.subscribe(trial_period_days: 14)
-    assert new_subscription.on_trial?
-    assert new_subscription.trial_ends_at > Time.now
+  test "aws processor trial period" do
+    refute @subscription.on_trial?
   end
 
-  test "fake processor cancel_now!" do
-    @subscription.cancel_now!
-    assert_not @subscription.active?
-    assert_nil @subscription.trial_ends_at
+  test "aws processor cancel_now!" do
+    assert_raises Pay::AwsMarketplace::UpdateError do
+      @subscription.cancel_now!
+    end
   end
 
-  test "fake processor on_grace_period?" do
+  test "aws processor on_grace_period?" do
     freeze_time do
-      @subscription.cancel
+      @subscription.update(ends_at: 1.week.from_now)
       assert @subscription.on_grace_period?
     end
   end
 
-  test "fake processor resume" do
-    freeze_time do
-      @subscription.cancel
-      assert_not_nil @subscription.ends_at
+  test "aws processor resume" do
+    assert_raises Pay::AwsMarketplace::UpdateError do
       @subscription.resume
-      assert_nil @subscription.ends_at
     end
   end
 
-  test "fake processor swap" do
-    @subscription.swap("another_plan")
-    assert_equal "another_plan", @subscription.processor_plan
+  test "aws processor swap" do
+    assert_raises Pay::AwsMarketplace::UpdateError do
+      @subscription.swap("another_plan")
+    end
   end
 
-  test "fake change quantity" do
-    @subscription.change_quantity(3)
-    assert_equal 3, @subscription.quantity
+  test "aws change quantity" do
+    assert_raises Pay::AwsMarketplace::UpdateError do
+      @subscription.change_quantity(3)
+    end
   end
 
-  test "fake cancel_now! on trial" do
-    @subscription.update(trial_ends_at: 7.days.from_now)
-    @subscription.cancel_now!
-    assert @subscription.ends_at <= Time.current
-    assert_equal @subscription.ends_at, @subscription.trial_ends_at
+  test "aws cancel_now! on trial" do
+    assert_raises Pay::AwsMarketplace::UpdateError do
+      @subscription.cancel_now!
+    end
   end
 
-  test "fake nonresumable subscription" do
-    @subscription.update(ends_at: 1.week.from_now, data: {resumable: false})
+  test "aws nonresumable subscription" do
+    @subscription.update(ends_at: 1.week.from_now)
     @subscription.reload
     assert @subscription.on_grace_period?
     assert @subscription.canceled?
