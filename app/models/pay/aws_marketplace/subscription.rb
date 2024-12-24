@@ -1,6 +1,39 @@
 module Pay
   module AwsMarketplace
     class Subscription < Pay::Subscription
+      def self.sync(entitlement, customer: nil)
+        customer ||= Customer.find_by(processor_id: entitlement.customer_identifier)
+
+        unless customer
+          raise Pay::Error, "Customer with processor_id #{entitlement.customer_identifier} missing while syncing"
+        end
+
+        status = :active
+        ends_at = nil
+
+        # This class uses `ends_at` to track the time an already-scheduled cancellation request
+        # should take effect.  Amazon uses `expiration_date` to tell us when the contracted
+        # subscription period will end. As a result, we have to calculate the current status of the
+        # sub ourselves and put that into `status`.
+        if entitlement.expiration_date < Time.current
+          status = :cancelled
+          ends_at = entitlement.expiration_date
+        end
+
+        customer.subscriptions.find_or_initialize_by(
+          processor_plan: entitlement.product_code,
+        ).update!(
+          name: entitlement.dimension,
+          quantity: entitlement.value.integer_value,
+          ends_at: ends_at,
+          status: status
+        )
+      end
+
+      # AWS Marketplace Entitlements don't have IDs, but the marketplace does enforce a unique
+      # constraint per customer for each product. You can't subscribe to one product twice.
+      before_validation -> { self[:processor_id] ||= [processor_plan, customer_id].join("-") }
+
       def api_record(**options)
         self
       end
