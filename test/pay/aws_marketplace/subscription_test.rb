@@ -119,4 +119,35 @@ class Pay::AwsMarketplace::Subscription::Test < ActiveSupport::TestCase
     assert_equal 5, subscription.quantity
     assert_equal "team_ep", subscription.name
   end
+
+  def stub_aws_customer_subscription(resolve_customer: {}, get_entitlements: {})
+    aws_mm = Aws::MarketplaceMetering::Client.new(stub_responses: {
+      resolve_customer: {
+        customer_aws_account_id: "123456789",
+        customer_identifier: "QzOTBiMmRmN",
+        product_code: "et6zix1m4h3qlfta2qy6r7lnw"
+      }.merge(resolve_customer)
+    })
+    Aws::MarketplaceMetering::Client.expects(:new).returns(aws_mm)
+
+    aws_mes = Aws::MarketplaceEntitlementService::Client.new(stub_responses: {
+      get_entitlements: {
+        entitlements: [{
+          value: {integer_value: 5},
+          dimension: "team_ep",
+          product_code: "et6zix1m4h3qlfta2qy6r7lnw",
+          expiration_date: Time.parse("2024-10-26T13:43:42.608+00:00"),
+          customer_identifier: "QzOTBiMmRmN"
+        }.merge(get_entitlements)],
+        next_token: nil
+      }
+    })
+    Aws::MarketplaceEntitlementService::Client.expects(:new).returns(aws_mes)
+  end
+
+  test "aws sync from registration token" do
+    stub_aws_customer_subscription
+
+    Pay::AwsMarketplace::Subscription.sync_from_registration_token("abc123")
+  end
 end

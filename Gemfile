@@ -17,6 +17,8 @@ gem "standard"
 gem "vcr"
 gem "webmock"
 
+gem "aws-sdk-marketplaceentitlementservice", "~> 1.63"
+gem "aws-sdk-marketplacemetering", "~> 1.72"
 gem "braintree", ">= 2.92.0"
 gem "lemonsqueezy", "~> 1.0"
 gem "paddle", "~> 2.6"
