@@ -49,6 +49,7 @@ Want to add a new payment provider? Contributions are welcome.
   * [Paddle](docs/paddle_billing/1_overview.md)
   * [Lemon Squeezy](docs/lemon_squeezy/1_overview.md)
   * [Fake Processor](docs/fake_processor/1_overview.md)
+  * [Asaas (Community)](https://github.com/PedroAugustoRamalhoDuarte/pay-asaas)
 * **Marketplaces**
   * [Stripe Connect](docs/marketplaces/stripe_connect.md)
 * **Contributing**
