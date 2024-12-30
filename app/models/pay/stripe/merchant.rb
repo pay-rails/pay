@@ -2,15 +2,7 @@ module Pay
   module Stripe
     class Merchant < Pay::Merchant
       def create_account(**options)
-        defaults = {
-          type: "express",
-          capabilities: {
-            card_payments: {requested: true},
-            transfers: {requested: true}
-          }
-        }
-
-        stripe_account = ::Stripe::Account.create(defaults.merge(options))
+        stripe_account = ::Stripe::Account.create(options)
         update(processor_id: stripe_account.id)
         stripe_account
       rescue ::Stripe::StripeError => e

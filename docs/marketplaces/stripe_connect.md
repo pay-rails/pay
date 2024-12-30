@@ -36,8 +36,6 @@ end
 @user.merchant_processor.onboarding_complete? # Updates via webhook based on the Stripe::Account's #charges_enabled attribute
 ```
 
-**IMPORTANT:** [Stripe has updated their account creation mechanism](https://docs.stripe.com/connect/migrate-to-controller-properties) to offer more granularity by providing a `controller` parameter. If you want to use specific `controller` options when creating an account, you'll instead need to map your desired settings to a `type` [following this Stripe guide](https://docs.stripe.com/connect/migrate-to-controller-properties#mapping-account-types-to-controller-parameters). At the moment, Pay defaults to specifying a `type` in the `Merchant#create_account` method, and both parameters cannot be sent simultaneously to Stripe. If you need to use `controller` to have more granular settings, we welcome a PR.
-
 ## When Using Checkout Session
 
 You can add your stripe connect account by passing the connect id to the set_payment_processor

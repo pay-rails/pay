@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Remove default `type` for Stripe Merchant Account creation
+
 ### 8.3.0
 
 * Ignore Stripe `payment_failed` and `payment_action_required` webhooks on `incomplete` subscriptions as these are already handled by the JavaScript in-browser. #1121
