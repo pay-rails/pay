@@ -36,8 +36,8 @@ module Pay
 
         attributes = extract_attributes(object).merge(default: default, stripe_account: stripe_account)
 
-        pay_customer.payment_methods.update_all(default: false) if default
-        pay_payment_method = pay_customer.payment_methods.where(processor_id: object.id).first_or_initialize
+        where(customer: pay_customer).update_all(default: false) if default
+        pay_payment_method = where(customer: pay_customer, processor_id: object.id).first_or_initialize
         pay_payment_method.update!(attributes)
         pay_payment_method
       rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique

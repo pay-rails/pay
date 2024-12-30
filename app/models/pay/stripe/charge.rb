@@ -81,13 +81,11 @@ module Pay
         end
 
         # Update or create the charge
-        if (pay_charge = pay_customer.charges.find_by(processor_id: object.id))
-          pay_charge.with_lock do
-            pay_charge.update!(attrs)
-          end
+        if (pay_charge = find_by(customer: pay_customer, processor_id: object.id))
+          pay_charge.with_lock { pay_charge.update!(attrs) }
           pay_charge
         else
-          pay_customer.charges.create!(attrs.merge(processor_id: object.id))
+          create!(attrs.merge(customer: pay_customer, processor_id: object.id))
         end
       rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
         try += 1

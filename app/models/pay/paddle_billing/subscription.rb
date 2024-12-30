@@ -54,13 +54,11 @@ module Pay
         end
 
         # Update or create the subscription
-        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: subscription_id))
-          pay_subscription.with_lock do
-            pay_subscription.update!(attributes)
-          end
+        if (pay_subscription = find_by(customer: pay_customer, processor_id: subscription_id))
+          pay_subscription.with_lock { pay_subscription.update!(attributes) }
           pay_subscription
         else
-          pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: subscription_id))
+          create!(attributes.merge(customer: pay_customer, name: name, processor_id: subscription_id))
         end
       rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
         try += 1

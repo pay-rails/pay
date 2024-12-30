@@ -31,15 +31,12 @@ module Pay
           attributes[:ends_at] = object.paid_through_date.end_of_day
         end
 
-        pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
-        if pay_subscription
+        if (pay_subscription = find_by(customer: pay_customer, processor_id: object.id))
           pay_subscription.with_lock { pay_subscription.update!(attributes) }
         else
           name ||= Pay.default_product_name
-          pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
+          create!(attributes.merge(customer: pay_customer, name: name, processor_id: object.id))
         end
-
-        pay_subscription
       rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
         try += 1
         if try <= retries

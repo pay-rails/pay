@@ -81,7 +81,7 @@ module Pay
         end
 
         # Update or create the subscription
-        pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.id)
+        pay_subscription = find_by(customer: pay_customer, processor_id: object.id)
         if pay_subscription
           # If pause behavior is changing to `void`, record the pause start date
           # Any other pause status (or no pause at all) should have nil for start
@@ -95,7 +95,7 @@ module Pay
         else
           # Allow setting the subscription name in metadata, otherwise use the default
           name ||= object.metadata["pay_name"] || Pay.default_product_name
-          pay_subscription = pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.id))
+          pay_subscription = create!(attributes.merge(customer: pay_customer, name: name, processor_id: object.id))
         end
 
         # Cache the Stripe subscription on the Pay::Subscription that we return

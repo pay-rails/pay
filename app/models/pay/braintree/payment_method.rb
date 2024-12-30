@@ -4,7 +4,7 @@ module Pay
       def self.sync(id, object: nil, try: 0, retries: 1)
         object ||= Pay.braintree_gateway.payment_method.find(id)
 
-        pay_customer = Pay::Customer.find_by(processor: :braintree, processor_id: object.customer_id)
+        pay_customer = Pay::Braintree::Customer.find_by(processor_id: object.customer_id)
         return unless pay_customer
 
         pay_customer.save_payment_method(object, default: object.default?)
