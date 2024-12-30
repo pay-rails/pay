@@ -3,6 +3,12 @@
 ### Unreleased
 
 * [Breaking] Remove default `type` for Stripe Merchant Account creation
+* Refactor `Pay.sync(params)` into a Hash for easily extending
+
+```ruby
+Pay::SYNC_HANDLERS[:foo] = ->(id) { Pay::Foo.sync_checkout(id) }
+# Pay.sync(params) calls lambda if params[:foo] is present
+```
 
 ### 8.3.0
 

@@ -132,13 +132,20 @@ module Pay
     end
   end
 
+  SYNC_HANDLERS = {
+    lemon_squeezy_order_id: ->(param) { Pay::LemonSqueezy.sync_order(param) },
+    paddle_billing_transaction_id: ->(param) { Pay::PaddleBilling.sync_transaction(param) },
+    stripe_checkout_session_id: ->(param) { Pay::Stripe.sync_checkout_session(param) },
+    transaction_id: ->(param) { Pay::PaddleBilling.sync_transaction(param) },
+    session_id: ->(param) { Pay::Stripe.sync_checkout_session(param) }
+  }
+
   def self.sync(params)
-    if (session_id = params[:stripe_checkout_session_id] || params[:session_id])
-      Pay::Stripe.sync_checkout_session(session_id)
-    elsif (transaction_id = params[:paddle_billing_transaction_id] || params[:transaction_id])
-      Pay::PaddleBilling.sync_transaction(transaction_id)
-    elsif (order_id = params[:lemon_squeezy_order_id])
-      Pay::LemonSqueezy.sync_order(order_id)
+    SYNC_HANDLERS.each do |param_name, handler|
+      if (param = params[param_name])
+        return handler.call(param)
+      end
     end
+    nil
   end
 end
