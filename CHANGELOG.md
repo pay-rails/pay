@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Remove default `type` for Stripe Merchant Account creation
+* [Breaking] Remove default `type` for Stripe Merchant Account creation
 
 ### 8.3.0
 
