@@ -33,6 +33,7 @@ end
 @user.merchant_processor.account_link
 @user.merchant_processor.login_link
 @user.merchant_processor.transfer(amount: 25_00)
+@user.merchant_processor.onboarding_complete? # Updates via webhook based on the Stripe::Account's #charges_enabled attribute
 ```
 
 ## When Using Checkout Session
@@ -128,13 +129,13 @@ var stripe = Stripe("<%= @sample_credentials.test_publishable_key %>", {
 pay_charge = @user.charge(100_00, transfer_group: '{ORDER10}')
 
 # Create a Transfer to a connected account (later):
-@other_user.merchant.transfer(
+@other_user.merchant_processor.transfer(
   amount: 70_00,
   transfer_group: '{ORDER10}',
 )
 
 # Create a second Transfer to another connected account (later):
-@another_user.merchant.transfer(
+@another_user.merchant_processor.transfer(
   amount: 20_00,
   transfer_group: '{ORDER10}',
 )
@@ -145,8 +146,12 @@ Alternatively, the `source_transaction` parameter allows you to transfer only on
 See: https://stripe.com/docs/connect/charges-transfers#transfer-availability
 
 ```ruby
-@other_user.merchant.transfer(
+@other_user.merchant_processor.transfer(
   amount: 70_00,
   source_transaction: pay_charge.processor_id
 )
 ```
+
+### Verification
+
+By default, Pay sets up a webhook listener for the `account.updated` event that updates an `onboarding_complete` flag based on whether `charges_enabled` is true, which Stripe updates based on the account's current verification (or lack thereof) status as long as you request a charge or transfer capability when connecting the user's Stripe Connect account to your platform's Stripe account.
