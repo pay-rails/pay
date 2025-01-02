@@ -38,8 +38,3 @@ gem "importmap-rails"
 gem "sprockets-rails"
 gem "stimulus-rails"
 gem "turbo-rails"
-
-# Ruby 3.1+ drops these built-in gems
-gem "net-imap", require: false
-gem "net-pop", require: false
-gem "net-smtp", require: false
