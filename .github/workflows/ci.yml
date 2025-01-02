@@ -22,7 +22,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: "3.3"
+          ruby-version: "3.4"
 
       - name: StandardRb check
         run: bundle exec standardrb
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ["3.2", "3.3"]
+        ruby: ["3.2", "3.3", "3.4"]
         gemfile:
           - rails_6.1
           - rails_7.0
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ["3.2", "3.3"]
+        ruby: ["3.2", "3.3", "3.4"]
         gemfile:
           - rails_6.1
           - rails_7.0
@@ -81,7 +81,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14
+        image: postgres:17
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
@@ -110,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ["3.2", "3.3"]
+        ruby: ["3.2", "3.3", "3.4"]
         gemfile:
           - rails_6.1
           - rails_7.0
