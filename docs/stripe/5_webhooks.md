@@ -3,7 +3,7 @@
 Pay listens to Stripe's webhooks to keep the local payments data in sync. 
 
 For development, we use the Stripe CLI to forward webhooks to our local server. 
-In production, webhooks are directly sent directly to our app's domain.
+In production, webhooks are sent directly to our app's domain.
 
 ## Development webhooks with the Stripe CLI
 
