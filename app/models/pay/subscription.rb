@@ -4,9 +4,6 @@ module Pay
 
     STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid paused]
 
-    # Only serialize for non-json columns
-    serialize :data, coder: JSON unless json_column?("data")
-
     # Associations
     belongs_to :owner, polymorphic: true
 
