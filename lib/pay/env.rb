@@ -14,17 +14,12 @@ module Pay
     def find_value_by_name(scope, name)
       ENV["#{scope.upcase}_#{name.upcase}"] ||
         credentials&.dig(env, scope, name) ||
-        secrets&.dig(env, scope, name) ||
         credentials&.dig(scope, name) ||
         secrets&.dig(scope, name)
     end
 
     def env
       Rails.env.to_sym
-    end
-
-    def secrets
-      Rails.application.secrets
     end
 
     def credentials
