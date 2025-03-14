@@ -310,8 +310,10 @@ A user may wish to resume their canceled subscription during the grace period. Y
 
 #### Retrieving the raw Subscription object from the Processor
 
+This will make an API call to the processor to get the record.
+
 ```ruby
-@user.payment_processor.subscription.processor_subscription
+@user.payment_processor.subscription.api_record
 #=> #<Stripe::Subscription>
 ```
 
