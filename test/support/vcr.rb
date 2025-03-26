@@ -16,7 +16,7 @@ end
 class ActiveSupport::TestCase
   setup do
     # Test filenames are case sensitive in CI
-    VCR.insert_cassette name
+    VCR.insert_cassette name#, re_record_interval: 6.months
   end
 
   teardown do

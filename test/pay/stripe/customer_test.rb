@@ -259,7 +259,7 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
 
   test "stripe saves acss_debit" do
     pm = Stripe::PaymentMethod.create(type: "acss_debit",
-      acss_debit: {account_number: "00123456789", institution_number: "000", transit_number: "11000"}, billing_details: {email: "test@example.org", name: "Test User"})
+      acss_debit: {account_number: "000123456789", institution_number: "000", transit_number: "11000"}, billing_details: {email: "test@example.org", name: "Test User"})
     @pay_customer.save_payment_method(pm, default: true)
     assert_equal "acss_debit", @pay_customer.default_payment_method.payment_method_type
     assert_equal "STRIPE TEST BANK", @pay_customer.default_payment_method.bank
