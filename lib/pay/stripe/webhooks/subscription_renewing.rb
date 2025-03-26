@@ -14,11 +14,13 @@ module Pay
           # Stripe subscription items all have the same interval
           price = event.data.object.lines.data.first.price
 
-          if Pay.send_email?(:subscription_renewing, pay_subscription, price)
+          # For collection_method=send_invoice, Stripe will send an email and next_payment_attempt will be null
+          # https://docs.stripe.com/api/invoices/object#invoice_object-collection_method
+          if Pay.send_email?(:subscription_renewing, pay_subscription, price) && (next_payment_attempt = event.data.object.next_payment_attempt)
             Pay.mailer.with(
               pay_customer: pay_subscription.customer,
               pay_subscription: pay_subscription,
-              date: Time.zone.at(event.data.object.next_payment_attempt)
+              date: Time.zone.at(next_payment_attempt)
             ).subscription_renewing.deliver_later
           end
         end
