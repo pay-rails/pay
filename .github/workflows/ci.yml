@@ -3,7 +3,7 @@ name: Tests
 on:
   pull_request:
     branches:
-      - '*'
+      - "*"
   push:
     branches:
       - main
@@ -39,6 +39,16 @@ jobs:
           - rails_7.2
           - rails_8.0
           - rails_main
+        exclude:
+          # sqlite3 ~> 1.7 is not compatible with Ruby 3.4+
+          - gemfile: rails_6.1
+            ruby: "3.4"
+          - gemfile: rails_7.0
+            ruby: "3.4"
+          - gemfile: rails_7.1
+            ruby: "3.4"
+          - gemfile: rails_7.2
+            ruby: "3.4"
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -75,6 +85,17 @@ jobs:
           - rails_7.2
           - rails_8.0
           - rails_main
+        exclude:
+          # sqlite3 ~> 1.7 is not compatible with Ruby 3.4+
+          - gemfile: rails_6.1
+            ruby: "3.4"
+          - gemfile: rails_7.0
+            ruby: "3.4"
+          - gemfile: rails_7.1
+            ruby: "3.4"
+          - gemfile: rails_7.2
+            ruby: "3.4"
+
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -86,7 +107,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
           POSTGRES_DB: test
-        ports: ['5432:5432']
+        ports: ["5432:5432"]
 
     steps:
       - uses: actions/checkout@v4
@@ -118,6 +139,17 @@ jobs:
           - rails_7.2
           - rails_8.0
           - rails_main
+        exclude:
+          # sqlite3 ~> 1.7 is not compatible with Ruby 3.4+
+          - gemfile: rails_6.1
+            ruby: "3.4"
+          - gemfile: rails_7.0
+            ruby: "3.4"
+          - gemfile: rails_7.1
+            ruby: "3.4"
+          - gemfile: rails_7.2
+            ruby: "3.4"
+
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -128,7 +160,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: test
-        ports: ['3306:3306']
+        ports: ["3306:3306"]
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
