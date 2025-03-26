@@ -65,7 +65,7 @@ module Pay
 
     def self.webhook_receive_test_events
       value = find_value_by_name(:stripe, :webhook_receive_test_events)
-      value.blank? ? true : ActiveModel::Type::Boolean.new.cast(value)
+      value.blank? || ActiveModel::Type::Boolean.new.cast(value)
     end
 
     def self.configure_webhooks
