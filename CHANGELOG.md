@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 9.0.0
+
 * [Breaking] Remove default `type` for Stripe Merchant Account creation
 * Refactor `Pay.sync(params)` into a Hash for easily extending
 
@@ -9,6 +11,9 @@
 Pay::SYNC_HANDLERS[:foo] = ->(id) { Pay::Foo.sync_checkout(id) }
 # Pay.sync(params) calls lambda if params[:foo] is present
 ```
+
+* Add `balance_transaction` to Stripe Charges for accessing conversion rates
+* Skip subscription renewing webhook for Stripe subscriptions that are set to `send_invoice`
 
 ### 8.3.0
 
