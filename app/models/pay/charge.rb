@@ -36,6 +36,7 @@ module Pay
     store_accessor :data, :total_tax_amounts # array of tax details for each jurisdiction
     store_accessor :data, :credit_notes # array of credit notes for the Stripe Invoice
     store_accessor :data, :refunds # array of refunds
+    store_accessor :data, :balance_transaction
 
     # Helpers for payment processors
     %w[braintree stripe paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|

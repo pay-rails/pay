@@ -112,6 +112,11 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_equal "link", pay_charge.payment_method_type
   end
 
+  test "sync stripe charge balance_transaction" do
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
+    assert_equal "balance_transaction", pay_charge.balance_transaction.dig("object")
+  end
+
   private
 
   def fake_stripe_invoice(**values)
@@ -163,6 +168,23 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
       amount_captured: 19_00,
       amount_refunded: nil,
       application_fee_amount: 0,
+      balance_transaction: {
+        id: "txn_1MiN3gLkdIwHu7ixxapQrznl",
+        object: "balance_transaction",
+        amount: -400,
+        available_on: 1678043844,
+        created: 1678043844,
+        currency: "usd",
+        description: nil,
+        exchange_rate: nil,
+        fee: 0,
+        fee_details: [],
+        net: -400,
+        reporting_category: "transfer",
+        source: "tr_1MiN3gLkdIwHu7ixNCZvFdgA",
+        status: "available",
+        type: "transfer"
+      },
       created: 1546332337,
       currency: "usd",
       invoice: nil,

@@ -26,6 +26,7 @@ module Pay
           amount_captured: object.amount_captured,
           amount_refunded: object.amount_refunded,
           application_fee_amount: object.application_fee_amount,
+          balance_transaction: object.balance_transaction,
           bank: payment_method.try(:bank_name) || payment_method.try(:bank), # eps, fpx, ideal, p24, acss_debit, etc
           brand: payment_method.try(:brand)&.capitalize,
           created_at: Time.at(object.created),
