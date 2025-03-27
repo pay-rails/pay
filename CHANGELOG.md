@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 9.0.1
+
+* Fix Stripe Charge `balance_transaction` syncing
+
 ### 9.0.0
 
 * [Breaking] Remove default `type` for Stripe Merchant Account creation
