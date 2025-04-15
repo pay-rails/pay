@@ -68,6 +68,16 @@ module Pay
         end
       end
 
+      def save
+        ls_type, ls_id = processor_id.split(":", 2)
+        case ls_type
+        when "order"
+          self.class.sync_order(ls_id)
+        else "subscription_invoice"
+          self.class.sync_subscription_invoice(ls_id)
+        end
+      end
+
       def api_record
         ls_type, ls_id = processor_id.split(":", 2)
         case ls_type

@@ -51,6 +51,11 @@ module Pay
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})
     end
 
+    def sync!(**options)
+      self.class.sync(processor_id, **options)
+      reload
+    end
+
     def captured?
       amount_captured > 0
     end
