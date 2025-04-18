@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_15_151129) do
+ActiveRecord::Schema[6.0].define(version: 2025_04_15_151129) do
   create_table "accounts", force: :cascade do |t|
     t.string "email"
     t.string "merchant_processor"
