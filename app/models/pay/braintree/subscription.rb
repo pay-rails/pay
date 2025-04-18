@@ -131,8 +131,9 @@ module Pay
         end
 
         braintree_plan = find_braintree_plan(plan)
+        prorate = options.fetch(:prorate) { true }
 
-        if would_change_billing_frequency?(braintree_plan) && options[:prorate]
+        if would_change_billing_frequency?(braintree_plan) && prorate
           swap_across_frequencies(braintree_plan)
           return
         end
@@ -143,7 +144,7 @@ module Pay
           never_expires: true,
           number_of_billing_cycles: nil,
           options: {
-            prorate_charges: options[:prorate]
+            prorate_charges: prorate
           }
         })
         raise Error, "Braintree failed to swap plans: #{result.message}" unless result.success?

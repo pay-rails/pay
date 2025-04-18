@@ -280,6 +280,7 @@ module Pay
       def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
+        prorate = options.fetch(:prorate) { true }
         proration_behavior = options.delete(:proration_behavior) || (prorate ? "always_invoice" : "none")
 
         @api_record = ::Stripe::Subscription.update(

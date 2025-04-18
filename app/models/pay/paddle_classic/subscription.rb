@@ -131,7 +131,7 @@ module Pay
       def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
-        attributes = {plan_id: plan, prorate: options[:prorate]}
+        attributes = {plan_id: plan, prorate: options.fetch(:prorate) { true }}
         attributes[:quantity] = quantity if quantity?
         PaddleClassic.client.users.update(subscription_id: processor_id, **attributes)
 
