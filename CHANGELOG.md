@@ -11,6 +11,7 @@
   We recommend syncing records either in task after deployment or before the data is displayed in a request.
 
 * [Breaking] Removed `pay_subscription.prorate` virtual attribute. Pass proration options directly to actions instead.
+* [Breaking] Drops Rails 6.1 support
 
 ### 9.0.1
 

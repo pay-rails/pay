@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
     "README.md"
   ]
 
-  s.add_dependency "rails", ">= 6.0.0"
+  s.add_dependency "rails", ">= 7.0.0"
 end
