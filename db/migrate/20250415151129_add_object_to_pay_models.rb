@@ -1,4 +1,4 @@
-class AddObjectToPayModels < ActiveRecord::Migration[8.0]
+class AddObjectToPayModels < ActiveRecord::Migration[6.0]
   def change
     add_column :pay_charges, :object, Pay::Adapter.json_column_type
     add_column :pay_customers, :object, Pay::Adapter.json_column_type
