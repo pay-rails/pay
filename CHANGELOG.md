@@ -5,7 +5,11 @@
 * [Breaking] Stripe version upgrade including breaking changes. See https://docs.stripe.com/changelog#2025-03-31.basil
   Requires `stripe` gem `~> 15`
 * [Breaking] Stripe `Pay::Customer#upcoming_invoice` has been renamed to `Pay::Customer#preview_invoice`
-* [Breaking] Moved Stripe charge attributes to `pay_charge.stripe_invoice` to simplify
+* [Breaking] Moved Stripe charge attributes to `pay_charge.stripe_invoice` to simplify integrations and provide access to more data
+
+  This requires re-syncing Pay charges and subscriptions to update the cached data. Receipts and invoices expect to be able to access these details in the new format.
+  We recommend syncing records either in task after deployment or before the data is displayed in a request.
+
 * [Breaking] Removed `pay_subscription.prorate` virtual attribute. Pass proration options directly to actions instead.
 
 ### 9.0.1
