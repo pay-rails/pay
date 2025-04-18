@@ -120,38 +120,13 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert_equal "12 345 Ft", Pay::Charge.new(amount_refunded: 123_45, currency: :huf).amount_refunded_with_currency
   end
 
-  test "line items returns an array if empty" do
-    assert_equal [], pay_charges(:stripe).line_items
-  end
-
-  test "stores line items" do
-    charge = pay_charges(:stripe)
-    line_items = [
-      {id: "li_1", description: "Item 1", quantity: 1, amount: 100}.stringify_keys,
-      {id: "li_2", description: "Item 2", quantity: 2, amount: 200}.stringify_keys
-    ]
-    charge.update!(line_items: line_items)
-
-    assert_equal line_items, charge.reload.line_items
-  end
-
   test "renders receipts" do
     charge = pay_charges(:stripe)
-    line_items = [
-      {id: "li_1", description: "Item 1", quantity: 1, amount: 100}.stringify_keys,
-      {id: "li_2", description: "Item 2", quantity: 2, amount: 200}.stringify_keys
-    ]
-    charge.update!(line_items: line_items, tax: 4_37)
     assert charge.receipt
   end
 
   test "renders invoices" do
     charge = pay_charges(:stripe)
-    line_items = [
-      {id: "li_1", description: "Item 1", quantity: 1, amount: 100}.stringify_keys,
-      {id: "li_2", description: "Item 2", quantity: 2, amount: 200}.stringify_keys
-    ]
-    charge.update!(line_items: line_items, tax: 4_37)
     assert charge.invoice
   end
 end

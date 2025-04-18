@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* [Breaking] Stripe `Pay::Customer#upcoming_invoice` has been renamed to `Pay::Customer#preview_invoice`
+* [Breaking]
+
 ### 9.0.1
 
 * Fix Stripe Charge `balance_transaction` syncing

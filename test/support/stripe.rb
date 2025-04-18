@@ -62,6 +62,8 @@ class ActiveSupport::TestCase
           id: "si_KjcLsWCXBgVRuU",
           object: "subscription_item",
           created: 1638904425,
+          current_period_end: 1488987924,
+          current_period_start: 1486568724,
           metadata: {},
           price: {
             id: "large-monthly",
@@ -86,8 +88,6 @@ class ActiveSupport::TestCase
       cancel_at: nil,
       cancel_at_period_end: false,
       created: 1466783124,
-      current_period_end: 1488987924,
-      current_period_start: 1486568724,
       customer: "cus_1234",
       default_payment_method: nil,
       ended_at: nil,
@@ -116,6 +116,8 @@ class ActiveSupport::TestCase
             object: "subscription_item",
             billing_threshold: nil,
             created: 1638904425,
+            current_period_end: 1488987924,
+            current_period_start: 1486568724,
             metadata: {},
             price: {
               id: "default",

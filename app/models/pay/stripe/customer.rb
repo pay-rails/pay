@@ -58,8 +58,7 @@ module Pay
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
         quantity = options.delete(:quantity)
         opts = {
-          expand: ["pending_setup_intent", "latest_invoice.payment_intent", "latest_invoice.charge"],
-          items: [plan: plan, quantity: quantity]
+          items: [price: plan, quantity: quantity]
         }.merge(options)
 
         # Load the Stripe customer to verify it exists and update payment method if needed
@@ -73,7 +72,8 @@ module Pay
 
         # No trial, payment method requires SCA
         if options[:payment_behavior].to_s != "default_incomplete" && subscription.incomplete?
-          Pay::Payment.new(stripe_sub.latest_invoice.payment_intent).validate
+          payment_intent_id = stripe_sub.latest_invoice.payments.first.payment.payment_intent
+          Pay::Payment.from_id(payment_intent_id).validate
         end
 
         subscription

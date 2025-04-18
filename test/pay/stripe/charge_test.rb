@@ -6,17 +6,20 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
   end
 
   test "sync returns Pay::Charge" do
+    ::Stripe::InvoicePayment.stubs(:list).returns([])
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     assert pay_charge.is_a?(Pay::Charge)
   end
 
   test "sync stores charge metadata" do
+    ::Stripe::InvoicePayment.stubs(:list).returns([])
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     assert_equal({"license_id" => 1}, pay_charge.metadata)
   end
 
   test "sync stripe charge by ID" do
     assert_difference "Pay::Charge.count" do
+      ::Stripe::InvoicePayment.stubs(:list).returns([])
       ::Stripe::Charge.stubs(:retrieve).returns(fake_stripe_charge)
       Pay::Stripe::Charge.sync("123")
     end
@@ -41,35 +44,21 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
   end
 
   test "sync associates charge with stripe subscription" do
+    ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
     pay_subscription = @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
     assert_equal pay_subscription, pay_charge.subscription
   end
 
-  test "sync records stripe invoice ID" do
+  test "sync records stripe invoice" do
+    ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
-    assert_equal "in_1234", pay_charge.invoice_id
-  end
-
-  test "sync records tax from invoice" do
-    @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
-    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
-    assert_equal 3_00, pay_charge.tax
-  end
-
-  test "sync records subtotal from invoice" do
-    @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
-    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
-    assert_equal 21_49, pay_charge.subtotal
-  end
-
-  test "sync records total_tax_amounts from invoice" do
-    @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
-    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
-    assert_equal "sales_tax", pay_charge.total_tax_amounts.first.dig("tax_rate", "tax_type")
+    assert_instance_of ::Stripe::Invoice, pay_charge.stripe_invoice
+    assert_equal "in_1234", pay_charge.stripe_invoice.id
   end
 
   test "sync records stripe receipt_url" do
+    ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     assert_equal "https://pay.stripe.com/receipts/test_receipt", pay_charge.stripe_receipt_url
   end
@@ -83,22 +72,8 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_equal 15_00, charge.amount_refunded
   end
 
-  test "sync stripe charge with multiple refunds" do
-    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(refunds: {
-      object: "list",
-      data: [
-        {id: "re_1", object: "refund", amount: 500, balance_transaction: "txn_3LQOJoKXBGcbgpbZ1z7g9uuP", charge: "ch_3LQOJoKXBGcbgpbZ1ZhroS8X", created: 1658982465, currency: "usd", metadata: {}, payment_intent: "pi_3LQOJoKXBGcbgpbZ1Jej1QhS", reason: "requested_by_customer", receipt_number: "3727-4811", source_transfer_reversal: nil, status: "succeeded", transfer_reversal: nil},
-        {id: "re_2", object: "refund", amount: 500, balance_transaction: "txn_3LQOJoKXBGcbgpbZ1z7g9uuP", charge: "ch_3LQOJoKXBGcbgpbZ1ZhroS8X", created: 1658982465, currency: "usd", metadata: {}, payment_intent: "pi_3LQOJoKXBGcbgpbZ1Jej1QhS", reason: "requested_by_customer", receipt_number: "3727-4811", source_transfer_reversal: nil, status: "succeeded", transfer_reversal: nil}
-      ],
-      has_more: false,
-      total_count: 1,
-      url: "/v1/charges/ch_fake/refunds"
-    }))
-
-    assert_equal 2, pay_charge.refunds.length
-  end
-
   test "sync stripe charge with Link" do
+    ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(
       payment_method: "pm_0Mt5J5NFr9vQLFLbmIyjBdIM",
       payment_method_details: {
@@ -113,16 +88,45 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
   end
 
   test "sync stripe charge balance_transaction" do
+    ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
-    assert_equal "balance_transaction", pay_charge.balance_transaction.dig("object")
+    assert_instance_of ::Stripe::BalanceTransaction, pay_charge.stripe_object.balance_transaction
   end
 
   private
 
+  def fake_stripe_invoice_payment(**values)
+    values.reverse_merge!(
+      id: "inpay_1M3USa2eZvKYlo2CBjuwbq0N",
+      object: "invoice_payment",
+      amount_paid: 2000,
+      amount_requested: 2000,
+      created: 1391288554,
+      currency: "usd",
+      invoice: fake_stripe_invoice,
+      is_default: true,
+      livemode: false,
+      payment: {
+        type: "payment_intent",
+        payment_intent: "pi_103Q0w2eZvKYlo2C364X582Z"
+      },
+      status: "paid",
+      status_transitions: {
+        canceled_at: nil,
+        paid_at: 1391288554
+      }
+    )
+    ::Stripe::InvoicePayment.construct_from(values)
+  end
+
   def fake_stripe_invoice(**values)
     values.reverse_merge!(
       id: "in_1234",
-      subscription: "sub_1234",
+      parent: {
+        subscription_details: {
+          subscription: "sub_1234"
+        }
+      },
       period_start: Time.current,
       period_end: Time.current,
       lines: {object: "list", data: [], has_more: false},

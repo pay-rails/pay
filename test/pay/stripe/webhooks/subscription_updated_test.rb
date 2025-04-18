@@ -28,19 +28,23 @@ class Pay::Stripe::Webhooks::SubscriptionUpdatedTest < ActiveSupport::TestCase
 
   test "subscription is updated with cancel_at_period_end = true and on_trial? = false" do
     subscription = @pay_customer.subscriptions.create!(processor_id: @event.data.object.id, name: "default", processor_plan: "some-plan", status: "active")
-    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: true, current_period_end: @event.data.object.current_period_end, ended_at: nil, cancel_at: nil)
-
+    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: true, ended_at: nil, cancel_at: nil)
     Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
-    assert_equal Time.at(@event.data.object.current_period_end), subscription.reload.ends_at
+    assert_equal Time.at(@event.data.object.items.first.current_period_end), subscription.reload.ends_at
   end
 
   test "subscription is updated with cancel_at_period_end = true and on_trial? = true" do
     subscription = @pay_customer.subscriptions.create!(processor_id: @event.data.object.id, name: "default", processor_plan: "some-plan", status: "active")
     trial_end = 3.days.from_now.beginning_of_day
-    ::Stripe::Subscription.stubs(:retrieve).returns fake_stripe_subscription(cancel_at_period_end: true, current_period_end: trial_end.to_i, ended_at: nil, trial_end: trial_end.to_i, cancel_at: nil)
-
+    data = @event.data.object.to_hash.merge(
+      cancel_at_period_end: true,
+      ended_at: nil,
+      trial_end: trial_end.to_i,
+      cancel_at: nil
+    )
+    data[:items][:data][0][:current_period_end] = trial_end.to_i
+    ::Stripe::Subscription.stubs(:retrieve).returns ::Stripe::Subscription.construct_from(data)
     Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(@event)
-
     assert_equal 3.days.from_now.beginning_of_day, subscription.reload.ends_at
   end
 

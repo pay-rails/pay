@@ -170,7 +170,7 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
 
   test "stripe handles exception when creating a subscription" do
     exception = assert_raises(Pay::Stripe::Error) { @pay_customer.subscribe plan: "invalid" }
-    assert_equal "No such plan: 'invalid'", exception.message
+    assert_match "No such price: 'invalid'", exception.message
   end
 
   test "stripe handles exception when updating a card" do
@@ -180,8 +180,8 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
 
   test "stripe handles coupons" do
     @pay_customer.update_payment_method payment_method
-    subscription = @pay_customer.subscribe(plan: "small-monthly", coupon: "10BUCKS")
-    assert_equal "10BUCKS", subscription.api_record.discount.coupon.id
+    subscription = @pay_customer.subscribe(plan: "small-monthly", discounts: [{coupon: "10OFF"}])
+    assert_equal "10OFF", subscription.stripe_object.discounts.first.coupon.id
   end
 
   test "stripe trial period options" do
@@ -240,8 +240,8 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
 
     invoice = Pay::Subscription.last.api_record.latest_invoice
     assert_equal 25_00, invoice.total
-    assert_not_nil invoice.lines.data.find { |l| l.plan&.id == "default" }
-    assert_not_nil invoice.lines.data.find { |l| l.price&.id == "price_1ILVZaKXBGcbgpbZQ26kgXWG" }
+    assert_not_nil invoice.lines.data.find { |l| l.pricing.price_details.price == "default" }
+    assert_not_nil invoice.lines.data.find { |l| l.pricing.price_details.price == "price_1ILVZaKXBGcbgpbZQ26kgXWG" }
   end
 
   test "stripe prices api" do

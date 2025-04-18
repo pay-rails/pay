@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_31_153001) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_15_151129) do
   create_table "accounts", force: :cascade do |t|
     t.string "email"
     t.string "merchant_processor"
@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "type"
+    t.json "object"
     t.index ["customer_id", "processor_id"], name: "index_pay_charges_on_customer_id_and_processor_id", unique: true
     t.index ["subscription_id"], name: "index_pay_charges_on_subscription_id"
   end
@@ -47,6 +48,7 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "type"
+    t.json "object"
     t.index ["owner_type", "owner_id", "deleted_at", "default"], name: "pay_customer_owner_index"
     t.index ["processor", "processor_id"], name: "index_pay_customers_on_processor_and_processor_id", unique: true
   end
@@ -92,14 +94,15 @@ ActiveRecord::Schema.define(version: 2022_08_31_153001) do
     t.json "metadata"
     t.json "data"
     t.string "stripe_account"
-    t.datetime "created_at", null: false, precision: 6
-    t.datetime "updated_at", null: false, precision: 6
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.boolean "metered"
     t.string "pause_behavior"
     t.datetime "pause_starts_at"
     t.datetime "pause_resumes_at"
     t.string "payment_method_id"
     t.string "type"
+    t.json "object"
     t.index ["customer_id", "processor_id"], name: "index_pay_subscriptions_on_customer_id_and_processor_id", unique: true
     t.index ["metered"], name: "index_pay_subscriptions_on_metered"
     t.index ["pause_starts_at"], name: "index_pay_subscriptions_on_pause_starts_at"

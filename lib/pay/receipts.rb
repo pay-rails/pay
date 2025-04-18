@@ -31,17 +31,13 @@ module Pay
         ]
       ]
 
-      # Unit price is stored with the line item
-      # Negative amounts shouldn't display quantity
-      # Sort by line_items by period_end? oldest to newest
-      if line_items.any?
-        line_items.each do |li|
-          items << [li["description"], li["quantity"], Pay::Currency.format(li["unit_amount"], currency: currency), Pay::Currency.format(li["amount"], currency: currency)]
+      if stripe_invoice
+        stripe_invoice.lines.auto_paging_each do |line|
+          items << [line.description, line.quantity, Pay::Currency.format(line.unit_amount_excluding_tax, currency: line.currency), Pay::Currency.format(line.amount, currency: line.currency)]
 
-          Array.wrap(li["discounts"]).each do |discount_id|
-            if (discount = total_discount_amounts.find { |d| d.dig("discount", "id") == discount_id })
-              items << [discount_description(discount), nil, nil, Pay::Currency.format(-discount["amount"], currency: currency)]
-            end
+          line.discounts.each do |discount_id|
+            discount = stripe_invoice.total_discount_amounts.find { |d| d.discount.id == discount_id }
+            items << [discount_description(discount), nil, nil, Pay::Currency.format(-discount.amount, currency: currency)]
           end
         end
       else
@@ -49,42 +45,47 @@ module Pay
       end
 
       # If no subtotal, we will display the total
-      items << [nil, nil, I18n.t("pay.line_items.subtotal"), Pay::Currency.format(subtotal || amount, currency: currency)]
+      items << [nil, nil, I18n.t("pay.line_items.subtotal"), Pay::Currency.format(stripe_invoice&.subtotal || amount, currency: currency)]
 
       # Discounts on the invoice
-      Array.wrap(discounts).each do |discount_id|
-        if (discount = total_discount_amounts.find { |d| d.dig("discount", "id") == discount_id })
-          items << [nil, nil, discount_description(discount), Pay::Currency.format(-discount["amount"], currency: currency)]
-        end
+      stripe_invoice&.discounts&.each do |discount_id|
+        discount = stripe_invoice.total_discount_amounts.find { |d| d.discount.id == discount_id }
+        items << [nil, nil, discount_description(discount), Pay::Currency.format(-discount.amount, currency: currency)]
+      end
+
+      # Total excluding tax
+      if stripe_invoice
+        items << [nil, nil, I18n.t("pay.line_items.total"), Pay::Currency.format(stripe_invoice.total_excluding_tax, currency: currency)]
       end
 
       # Tax rates
-      Array.wrap(total_tax_amounts).each do |tax_amount|
-        next if tax_amount["amount"].zero?
-        items << [nil, nil, tax_description(tax_amount), Pay::Currency.format(tax_amount["amount"], currency: currency)]
+      stripe_invoice&.total_taxes&.each do |tax|
+        next if tax.amount.zero?
+        # tax_rate = ::Stripe::TaxRate.retrieve(tax.tax_rate_details.tax_rate)
+        items << [nil, nil, I18n.t("pay.line_items.tax"), Pay::Currency.format(tax.amount, currency: currency)]
       end
 
+      # Total
       items << [nil, nil, I18n.t("pay.line_items.total"), Pay::Currency.format(amount, currency: currency)]
       items
     end
 
     def discount_description(discount)
-      coupon = discount.dig("discount", "coupon")
-      name = coupon.dig("name")
+      coupon = discount.discount.coupon
+      name = coupon.name
 
-      if (percent = coupon["percent_off"])
+      if (percent = coupon.percent_off)
         I18n.t("pay.line_items.percent_discount", name: name, percent: ActiveSupport::NumberHelper.number_to_rounded(percent, strip_insignificant_zeros: true))
       else
-        I18n.t("pay.line_items.amount_discount", name: name, amount: Pay::Currency.format(coupon["amount_off"], currency: coupon["currency"]))
+        I18n.t("pay.line_items.amount_discount", name: name, amount: Pay::Currency.format(coupon.amount_off, currency: coupon.currency))
       end
     end
 
-    def tax_description(tax_amount)
-      tax_rate = tax_amount["tax_rate"]
-      percent = "#{ActiveSupport::NumberHelper.number_to_rounded(tax_rate["percentage"], strip_insignificant_zeros: true)}%"
-      percent += " inclusive" if tax_rate["inclusive"]
-      "#{tax_rate["display_name"]} - #{tax_rate["jurisdiction"]} (#{percent})"
-    end
+    # def tax_description(tax_rate)
+    #   percent = "#{ActiveSupport::NumberHelper.number_to_rounded(tax_rate.percentage, strip_insignificant_zeros: true)}%"
+    #   percent += " inclusive" if tax_rate.inclusive
+    #   "#{tax_rate.display_name} - #{tax_rate.jurisdiction} (#{percent})"
+    # end
 
     def receipt_line_items
       line_items = pdf_line_items
@@ -94,15 +95,15 @@ module Pay
 
       if refunded?
         # If we have a list of individual refunds, add each entry
-        if refunds&.any?
-          refunds.each do |refund|
-            next unless refund["status"] == "succeeded"
-            refunded_at = Time.at(refund["created"]).to_date
-            line_items << [nil, nil, I18n.t("pay.receipt.refunded_on", date: I18n.l(refunded_at, format: :long)), Pay::Currency.format(refund["amount"], currency: refund["currency"])]
-          end
-        else
-          line_items << [nil, nil, I18n.t("pay.receipt.refunded"), Pay::Currency.format(amount_refunded, currency: currency)]
-        end
+        # if refunds&.any?
+        #   refunds.each do |refund|
+        #     next unless refund["status"] == "succeeded"
+        #     refunded_at = Time.at(refund["created"]).to_date
+        #     line_items << [nil, nil, I18n.t("pay.receipt.refunded_on", date: I18n.l(refunded_at, format: :long)), Pay::Currency.format(refund["amount"], currency: refund["currency"])]
+        #   end
+        # else
+        line_items << [nil, nil, I18n.t("pay.receipt.refunded"), Pay::Currency.format(amount_refunded, currency: currency)]
+        # end
       end
 
       line_items

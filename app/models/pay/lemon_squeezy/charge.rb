@@ -73,7 +73,7 @@ module Pay
         case ls_type
         when "order"
           self.class.sync_order(ls_id)
-        else "subscription_invoice"
+        when "subscription_invoice"
           self.class.sync_subscription_invoice(ls_id)
         end
       end

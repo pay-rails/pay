@@ -6,6 +6,8 @@ class UserMailerTest < ActionMailer::TestCase
     @pay_customer = @charge.customer
     @user = @pay_customer.owner
     @user.update(extra_billing_info: "extra billing info")
+
+    @charge.update stripe_invoice: JSON.parse(file_fixture("stripe/invoice.json").read)
   end
 
   test "from address with Pay.support_email" do
