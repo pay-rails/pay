@@ -1,6 +1,9 @@
 module Pay
   module PaddleBilling
     class Subscription < Pay::Subscription
+      store_accessor :data, :paddle_update_url
+      store_accessor :data, :paddle_cancel_url
+
       def self.sync_from_transaction(transaction_id)
         transaction = ::Paddle::Transaction.retrieve(id: transaction_id)
         sync(transaction.subscription_id) if transaction.subscription_id

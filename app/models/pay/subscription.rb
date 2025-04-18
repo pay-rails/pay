@@ -27,11 +27,6 @@ module Pay
     # Callbacks
     before_destroy :cancel_if_active
 
-    store_accessor :data, :paddle_update_url
-    store_accessor :data, :paddle_cancel_url
-
-    attribute :prorate, :boolean, default: true
-
     # Validations
     validates :name, presence: true
     validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
@@ -55,10 +50,6 @@ module Pay
     def sync!(**options)
       self.class.sync(processor_id, **options)
       reload
-    end
-
-    def no_prorate
-      self.prorate = false
     end
 
     def skip_trial

@@ -1,6 +1,9 @@
 module Pay
   module PaddleClassic
     class Subscription < Pay::Subscription
+      store_accessor :data, :paddle_update_url
+      store_accessor :data, :paddle_cancel_url
+
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         # Passthrough is not return from this API, so we can't use that
         object ||= PaddleClassic.client.users.list(subscription_id: subscription_id).data.try(:first)
@@ -128,7 +131,7 @@ module Pay
       def swap(plan, **options)
         raise ArgumentError, "plan must be a string" unless plan.is_a?(String)
 
-        attributes = {plan_id: plan, prorate: prorate}
+        attributes = {plan_id: plan, prorate: options[:prorate]}
         attributes[:quantity] = quantity if quantity?
         PaddleClassic.client.users.update(subscription_id: processor_id, **attributes)
 
