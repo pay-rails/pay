@@ -2,6 +2,15 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Pay 9.0 to Pay 10.0
+
+Pay has introduced an `object` column on `pay_customers` `pay_charges` and `pay_subscriptions` to save a full copy of the Stripe objects to make future changes easier.
+
+```bash
+rails pay:install:migrations
+rails db:migrate
+```
+
 ## Pay 7.0 to Pay 8.0
 
 Pay has moved to using Single Table Inheritance to handle each payment processor's functionality. To do this, we've provided a migration to update the existing records.
