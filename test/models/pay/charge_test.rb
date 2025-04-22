@@ -121,12 +121,12 @@ class Pay::Charge::Test < ActiveSupport::TestCase
   end
 
   test "renders receipts" do
-    charge = pay_charges(:stripe)
+    charge = pay_charges(:fake_processor)
     assert charge.receipt
   end
 
   test "renders invoices" do
-    charge = pay_charges(:stripe)
+    charge = pay_charges(:fake_processor)
     assert charge.invoice
   end
 end

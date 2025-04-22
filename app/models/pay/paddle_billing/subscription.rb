@@ -89,7 +89,7 @@ module Pay
 
         response = ::Paddle::Subscription.cancel(
           id: processor_id,
-          effective_from: options.fetch(:effective_from, (paused? ? "immediately" : "next_billing_period"))
+          effective_from: options.fetch(:effective_from, paused? ? "immediately" : "next_billing_period")
         )
         update(
           status: response.status,

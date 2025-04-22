@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 10.0.2
+
+* Fix receipts for non-Stripe processors
+
 ### 10.0.1
 
 * Fix Stripe Invoice line item amount on receipts and invoices

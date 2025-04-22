@@ -31,7 +31,7 @@ module Pay
         ]
       ]
 
-      if stripe_invoice
+      if try(:stripe_invoice)
         stripe_invoice.lines.auto_paging_each do |line|
           items << [line.description, line.quantity, Pay::Currency.format(line.pricing.unit_amount_decimal, currency: line.currency), Pay::Currency.format(line.amount, currency: line.currency)]
 
@@ -45,21 +45,21 @@ module Pay
       end
 
       # If no subtotal, we will display the total
-      items << [nil, nil, I18n.t("pay.line_items.subtotal"), Pay::Currency.format(stripe_invoice&.subtotal || amount, currency: currency)]
+      items << [nil, nil, I18n.t("pay.line_items.subtotal"), Pay::Currency.format(try(:stripe_invoice)&.subtotal || amount, currency: currency)]
 
       # Discounts on the invoice
-      stripe_invoice&.discounts&.each do |discount_id|
+      try(:stripe_invoice)&.discounts&.each do |discount_id|
         discount = stripe_invoice.total_discount_amounts.find { |d| d.discount.id == discount_id }
         items << [nil, nil, discount_description(discount), Pay::Currency.format(-discount.amount, currency: currency)]
       end
 
       # Total excluding tax
-      if stripe_invoice
+      if try(:stripe_invoice)
         items << [nil, nil, I18n.t("pay.line_items.total"), Pay::Currency.format(stripe_invoice.total_excluding_tax, currency: currency)]
       end
 
       # Tax rates
-      stripe_invoice&.total_taxes&.each do |tax|
+      try(:stripe_invoice)&.total_taxes&.each do |tax|
         next if tax.amount.zero?
         # tax_rate = ::Stripe::TaxRate.retrieve(tax.tax_rate_details.tax_rate)
         items << [nil, nil, I18n.t("pay.line_items.tax"), Pay::Currency.format(tax.amount, currency: currency)]
