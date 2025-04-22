@@ -33,7 +33,7 @@ module Pay
 
       if stripe_invoice
         stripe_invoice.lines.auto_paging_each do |line|
-          items << [line.description, line.quantity, Pay::Currency.format(line.unit_amount_excluding_tax, currency: line.currency), Pay::Currency.format(line.amount, currency: line.currency)]
+          items << [line.description, line.quantity, Pay::Currency.format(line.pricing.unit_amount_decimal, currency: line.currency), Pay::Currency.format(line.amount, currency: line.currency)]
 
           line.discounts.each do |discount_id|
             discount = stripe_invoice.total_discount_amounts.find { |d| d.discount.id == discount_id }
