@@ -2,6 +2,12 @@
 
 ### Unreleased
 
+### 10.0.1
+
+* Fix Stripe Invoice line item amount on receipts and invoices
+
+### 10.0.0
+
 * [Breaking] Stripe version upgrade including breaking changes. See https://docs.stripe.com/changelog#2025-03-31.basil
   Requires `stripe` gem `~> 15`
 * [Breaking] Stripe `Pay::Customer#upcoming_invoice` has been renamed to `Pay::Customer#preview_invoice`
