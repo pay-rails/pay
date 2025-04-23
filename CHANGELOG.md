@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 10.0.4
+
+* Update Stripe `invoice.payment_failed` and `invoice.payment_action_required` events
+
 ### 10.0.3
 
 * Update `invoice.upcoming` Stripe webhook for new JSON format
