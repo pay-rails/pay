@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 10.0.3
+
+* Update `invoice.upcoming` Stripe webhook for new JSON format
+
 ### 10.0.2
 
 * Fix receipts for non-Stripe processors

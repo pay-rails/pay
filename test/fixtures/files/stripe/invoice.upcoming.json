@@ -1,120 +1,182 @@
 {
   "object": {
-    "id": "in_1DoPCn41RYaNOitnmAtgZ7CO",
     "object": "invoice",
-    "amount_due": 500,
+    "account_country": "US",
+    "account_name": "Example, LLC",
+    "account_tax_ids": null,
+    "amount_due": 1900,
+    "amount_overpaid": 0,
     "amount_paid": 0,
-    "amount_remaining": 500,
-    "application_fee": null,
+    "amount_remaining": 1900,
+    "amount_shipping": 0,
+    "application": null,
     "attempt_count": 0,
     "attempted": false,
-    "auto_advance": true,
-    "billing": "charge_automatically",
-    "billing_reason": "subscription_cycle",
-    "charge": null,
+    "automatic_tax": {
+      "disabled_reason": null,
+      "enabled": true,
+      "liability": {
+        "type": "self"
+      },
+      "provider": "stripe",
+      "status": "complete"
+    },
+    "automatically_finalizes_at": null,
+    "billing_reason": "upcoming",
+    "collection_method": "charge_automatically",
+    "created": 1745689540,
     "currency": "usd",
-    "customer": "cus_EGxhkjisExwTh7",
-    "date": 1546495041,
+    "custom_fields": null,
+    "customer": "cus_L7lJPQIi3GxrTG",
+    "customer_address": {
+      "city": "Chicago",
+      "country": "US",
+      "line1": "1 Example Ave",
+      "line2": "",
+      "postal_code": "60076",
+      "state": "IL"
+    },
+    "customer_email": "customer@example.org",
+    "customer_name": "Example Customer",
+    "customer_phone": null,
+    "customer_shipping": null,
+    "customer_tax_exempt": "none",
+    "customer_tax_ids": [],
+    "default_payment_method": null,
     "default_source": null,
+    "default_tax_rates": [],
     "description": null,
-    "discount": null,
+    "discounts": [],
     "due_date": null,
-    "ending_balance": null,
-    "finalized_at": null,
-    "hosted_invoice_url": null,
-    "invoice_pdf": null,
+    "effective_at": null,
+    "ending_balance": 0,
+    "footer": null,
+    "from_invoice": null,
+    "issuer": {
+      "type": "self"
+    },
+    "last_finalization_error": null,
+    "latest_revision": null,
     "lines": {
+      "object": "list",
       "data": [
         {
-          "id": "sli_d26a19226a63d7",
+          "id": "il_tmp_0",
           "object": "line_item",
-          "amount": 300,
+          "amount": 1900,
           "currency": "usd",
-          "description": "1 × Beginner (at $3.00 / month)",
+          "description": "1 × Subscription (at $19.00 / month)",
+          "discount_amounts": [],
           "discountable": true,
-          "livemode": false,
+          "discounts": [],
+          "invoice": null,
+          "livemode": true,
           "metadata": {},
+          "parent": {
+            "invoice_item_details": null,
+            "subscription_item_details": {
+              "invoice_item": null,
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "subscription": "sub_0",
+              "subscription_item": "si_O"
+            },
+            "type": "subscription_item_details"
+          },
           "period": {
-            "end": 1491666324,
-            "start": 1488987924
+            "end": 1748281540,
+            "start": 1745689540
           },
-          "plan": {
-            "id": "default",
-            "object": "plan",
-            "active": false,
-            "aggregate_usage": null,
-            "amount": 1000,
-            "amount_decimal": "1000",
-            "billing_scheme": "per_unit",
-            "created": 1550536589,
-            "currency": "usd",
-            "interval": "month",
-            "interval_count": 1,
-            "livemode": false,
-            "metadata": {
+          "pretax_credit_amounts": [],
+          "pricing": {
+            "price_details": {
+              "price": "price_1234",
+              "product": "prod_1234"
             },
-            "nickname": "default",
-            "product": "prod_EYTX7RYhRjcwKD",
-            "tiers_mode": null,
-            "transform_usage": null,
-            "trial_period_days": null,
-            "usage_type": "licensed"
+            "type": "price_details",
+            "unit_amount_decimal": "1900"
           },
-          "price": {
-            "id": "default",
-            "object": "price",
-            "active": false,
-            "billing_scheme": "per_unit",
-            "created": 1550536589,
-            "currency": "usd",
-            "livemode": false,
-            "lookup_key": null,
-            "metadata": {
-            },
-            "nickname": "default",
-            "product": "prod_EYTX7RYhRjcwKD",
-            "recurring": {
-              "aggregate_usage": null,
-              "interval": "month",
-              "interval_count": 1,
-              "trial_period_days": null,
-              "usage_type": "licensed"
-            },
-            "tax_behavior": "unspecified",
-            "tiers_mode": null,
-            "transform_quantity": null,
-            "type": "recurring",
-            "unit_amount": 1000,
-            "unit_amount_decimal": "1000"
-          },
-          "proration": false,
           "quantity": 1,
-          "subscription": "sub_8hLB3Ht92UjsVa",
-          "subscription_item": "si_18PwUi41RYaNOitn11Z18bjy",
-          "type": "subscription"
+          "taxes": [
+            {
+              "amount": 0,
+              "tax_behavior": "exclusive",
+              "tax_rate_details": {
+                "tax_rate": "txr_0"
+              },
+              "taxability_reason": "not_collecting",
+              "taxable_amount": 0,
+              "type": "tax_rate_details"
+            }
+          ]
         }
       ],
       "has_more": false,
-      "object": "list",
-      "url": "/v1/invoices/in_1DoPCn41RYaNOitnmAtgZ7CO/lines"
+      "total_count": 1,
+      "url": "/v1/invoices/upcoming/lines?customer=cus_1234&subscription=sub_1234"
     },
-    "latest_invoice": "in_1000",
-    "livemode": false,
+    "livemode": true,
     "metadata": {},
-    "next_payment_attempt": 1546498641,
-    "number": "DDA7BAF-0007",
-    "paid": false,
-    "period_end": 1546494966,
-    "period_start": 1543816566,
+    "next_payment_attempt": 1745693140,
+    "number": null,
+    "on_behalf_of": null,
+    "parent": {
+      "quote_details": null,
+      "subscription_details": {
+        "metadata": {},
+        "subscription": "sub_1234"
+      },
+      "type": "subscription_details"
+    },
+    "payment_settings": {
+      "default_mandate": null,
+      "payment_method_options": null,
+      "payment_method_types": null
+    },
+    "period_end": 1745689540,
+    "period_start": 1743011140,
+    "post_payment_credit_notes_amount": 0,
+    "pre_payment_credit_notes_amount": 0,
     "receipt_number": null,
+    "rendering": {
+      "amount_tax_display": null,
+      "pdf": null,
+      "template": null,
+      "template_version": null
+    },
+    "shipping_cost": null,
+    "shipping_details": null,
     "starting_balance": 0,
     "statement_descriptor": null,
     "status": "draft",
-    "subscription": "sub_E5L5apALvTUyYW",
-    "subtotal": 500,
-    "tax": 0,
-    "tax_percent": null,
-    "total": 500,
-    "webhooks_delivered_at": 1546495041
-  }
+    "status_transitions": {
+      "finalized_at": null,
+      "marked_uncollectible_at": null,
+      "paid_at": null,
+      "voided_at": null
+    },
+    "subtotal": 1900,
+    "subtotal_excluding_tax": 1900,
+    "test_clock": null,
+    "total": 1900,
+    "total_discount_amounts": [],
+    "total_excluding_tax": 1900,
+    "total_pretax_credit_amounts": [],
+    "total_taxes": [
+      {
+        "amount": 0,
+        "tax_behavior": "exclusive",
+        "tax_rate_details": {
+          "tax_rate": "txr_0"
+        },
+        "taxability_reason": "not_collecting",
+        "taxable_amount": 0,
+        "type": "tax_rate_details"
+      }
+    ],
+    "webhooks_delivered_at": null
+  },
+  "previous_attributes": null
 }
