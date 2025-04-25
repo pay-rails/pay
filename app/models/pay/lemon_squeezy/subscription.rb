@@ -125,3 +125,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_lemon_squeezy_subscription, Pay::LemonSqueezy::Subscription

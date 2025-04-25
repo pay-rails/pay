@@ -243,3 +243,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_braintree_subscription, Pay::Braintree::Subscription

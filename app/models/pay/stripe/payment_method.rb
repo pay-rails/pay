@@ -84,3 +84,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_stripe_payment_method, Pay::Stripe::PaymentMethod

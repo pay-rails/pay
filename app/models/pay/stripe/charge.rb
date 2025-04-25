@@ -147,3 +147,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_stripe_charge, Pay::Stripe::Charge
