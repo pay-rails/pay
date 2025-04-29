@@ -48,3 +48,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_paddle_classic_payment_method, Pay::PaddleClassic::PaymentMethod

@@ -66,3 +66,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_paddle_billing_charge, Pay::PaddleBilling::Charge

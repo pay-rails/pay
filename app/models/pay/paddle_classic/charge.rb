@@ -28,3 +28,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_paddle_classic_charge, Pay::PaddleClassic::Charge

@@ -25,3 +25,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_lemon_squeezy_payment_method, Pay::LemonSqueezy::PaymentMethod

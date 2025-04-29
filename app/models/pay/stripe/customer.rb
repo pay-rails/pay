@@ -270,3 +270,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_stripe_customer, Pay::Stripe::Customer

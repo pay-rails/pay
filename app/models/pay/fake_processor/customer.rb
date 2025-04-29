@@ -80,3 +80,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_fake_processor_customer, Pay::FakeProcessor::Customer

@@ -92,3 +92,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_lemon_squeezy_charge, Pay::LemonSqueezy::Charge

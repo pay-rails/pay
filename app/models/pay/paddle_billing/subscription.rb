@@ -182,3 +182,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_paddle_billing_subscription, Pay::PaddleBilling::Subscription

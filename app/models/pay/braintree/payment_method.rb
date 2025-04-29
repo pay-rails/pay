@@ -32,3 +32,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_braintree_payment_method, Pay::Braintree::PaymentMethod

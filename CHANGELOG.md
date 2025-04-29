@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Expand `schedule` when retrieving Stripe subscriptions
+
 ### 10.0.4
 
 * Update Stripe `invoice.payment_failed` and `invoice.payment_action_required` events

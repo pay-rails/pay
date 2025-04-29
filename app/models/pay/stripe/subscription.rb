@@ -120,12 +120,13 @@ module Pay
       def self.expand_options
         {
           expand: [
-            "discounts",
             "default_payment_method",
-            "pending_setup_intent",
+            "discounts",
             "latest_invoice.confirmation_secret",
             "latest_invoice.payments",
-            "latest_invoice.total_discount_amounts.discount"
+            "latest_invoice.total_discount_amounts.discount",
+            "pending_setup_intent",
+            "schedule"
           ]
         }
       end
@@ -359,3 +360,5 @@ module Pay
     end
   end
 end
+
+ActiveSupport.run_load_hooks :pay_stripe_subscription, Pay::Stripe::Subscription
