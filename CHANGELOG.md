@@ -2,7 +2,10 @@
 
 ### Unreleased
 
-* Expand `schedule` when retrieving Stripe subscriptions
+### 10.1.0
+
+* Expand `payment_intent` and `refunds.data.balance_transaction` for `Stripe::Charge`
+* Expand `schedule` for `Stripe::Subscription`
 
 ### 10.0.4
 
