@@ -1,7 +1,7 @@
 module Pay
   module Stripe
     class Charge < Pay::Charge
-      EXPAND = ["balance_transaction", "refunds"]
+      EXPAND = ["balance_transaction", "payment_intent", "refunds.data.balance_transaction"]
 
       delegate :amount_captured, :payment_intent, to: :stripe_object
 
