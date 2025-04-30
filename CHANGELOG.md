@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Makes `Pay::FakeProcessor::Customer.subscribe` a bit more compatible with other payment processors by ignoring all attributes that aren't database columns. #1155
+
 ### 10.1.1
 
 * Replace `pay_customer.upcoming_invoice` with `pay_customer.preview_invoice`

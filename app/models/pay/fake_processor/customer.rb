@@ -49,7 +49,8 @@ module Pay
           attributes[:trial_ends_at] = trial_period_days.to_i.days.from_now
         end
 
-        attributes.delete(:promotion_code)
+        # Ignore any keys that aren't attribute names
+        attributes.deep_stringify_keys!.slice!(*subscriptions.attribute_names)
 
         subscriptions.create!(attributes)
       end
