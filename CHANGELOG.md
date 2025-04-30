@@ -2,6 +2,11 @@
 
 ### Unreleased
 
+### 10.1.1
+
+* Replace `pay_customer.upcoming_invoice` with `pay_customer.preview_invoice`
+* Support options to `pay_customer.preview_invoice()` to
+
 ### 10.1.0
 
 * Expand `payment_intent` and `refunds.data.balance_transaction` for `Stripe::Charge`

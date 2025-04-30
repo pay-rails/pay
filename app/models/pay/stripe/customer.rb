@@ -142,8 +142,8 @@ module Pay
         ::Stripe::Invoice.create(options.merge(customer: processor_id || api_record.id), stripe_options).pay
       end
 
-      def upcoming_invoice
-        ::Stripe::Invoice.upcoming({customer: processor_id || api_record.id}, stripe_options)
+      def preview_invoice(**options)
+        ::Stripe::Invoice.create_preview(options.merge(customer: processor_id || api_record.id), stripe_options)
       end
 
       # Syncs a customer's subscriptions from Stripe to the database.
