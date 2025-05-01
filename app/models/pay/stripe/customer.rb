@@ -50,7 +50,7 @@ module Pay
         Pay::Payment.new(payment_intent).validate
 
         charge = payment_intent.latest_charge
-        Pay::Stripe::Charge.sync(charge.id, object: charge)
+        Pay::Stripe::Charge.sync(charge.id)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end

@@ -7,6 +7,7 @@ module Pay
       autoload :AccountUpdated, "pay/stripe/webhooks/account_updated"
       autoload :ChargeRefunded, "pay/stripe/webhooks/charge_refunded"
       autoload :ChargeSucceeded, "pay/stripe/webhooks/charge_succeeded"
+      autoload :ChargeUpdated, "pay/stripe/webhooks/charge_updated"
       autoload :CheckoutSessionCompleted, "pay/stripe/webhooks/checkout_session_completed"
       autoload :CheckoutSessionAsyncPaymentSucceeded, "pay/stripe/webhooks/checkout_session_async_payment_succeeded"
       autoload :CustomerDeleted, "pay/stripe/webhooks/customer_deleted"
@@ -72,8 +73,9 @@ module Pay
         # Listen to the charge event to make sure we get non-subscription
         # purchases as well. Invoice is only for subscriptions and manual creation
         # so it does not include individual charges.
-        events.subscribe "stripe.charge.succeeded", Pay::Stripe::Webhooks::ChargeSucceeded.new
         events.subscribe "stripe.charge.refunded", Pay::Stripe::Webhooks::ChargeRefunded.new
+        events.subscribe "stripe.charge.succeeded", Pay::Stripe::Webhooks::ChargeSucceeded.new
+        events.subscribe "stripe.charge.updated", Pay::Stripe::Webhooks::ChargeUpdated.new
 
         events.subscribe "stripe.payment_intent.succeeded", Pay::Stripe::Webhooks::PaymentIntentSucceeded.new
 

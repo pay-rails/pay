@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+## 10.1.2
+
+* Add `charge.updated` webhook for Stripe Charges
+  When `charge.succeeded` fires, the associated `balance_transaction` isn't always present. Adding this webhooks allows us to be notified when the balance_transaction is set.
 * Makes `Pay::FakeProcessor::Customer.subscribe` a bit more compatible with other payment processors by ignoring all attributes that aren't database columns. #1155
 
 ### 10.1.1
