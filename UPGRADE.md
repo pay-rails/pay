@@ -2,6 +2,10 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Pay 10.1
+
+Pay now uses the Stripe `charge.updated` webhook to save Charge balance transactions. Make sure you're sending this webhook to keep these records up-to-date.
+
 ## Pay 9.0 to Pay 10.0
 
 Pay has introduced an `object` column on `pay_customers` `pay_charges` and `pay_subscriptions` to save a full copy of the Stripe objects to make future changes easier.
