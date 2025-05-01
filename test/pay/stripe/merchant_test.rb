@@ -19,13 +19,6 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
   end
 
   test "connect direct charge" do
-    fake_charge = ::Stripe::Charge.construct_from(json_fixture("stripe/charge.succeeded").dig("object").merge(
-      stripe_account: @stripe_account_id,
-      customer: @user.payment_processor.processor_id
-    ))
-    ::Stripe::Charge.expects(:retrieve).returns(fake_charge)
-    ::Stripe::InvoicePayment.expects(:list).returns([])
-
     pay_charge = @user.payment_processor.charge(10_00)
     assert_equal @stripe_account_id, pay_charge.stripe_account
   end
@@ -57,13 +50,6 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
   end
 
   test "connect transfer" do
-    fake_charge = ::Stripe::Charge.construct_from(json_fixture("stripe/charge.succeeded").dig("object").merge(
-      stripe_account: @stripe_account_id,
-      customer: @user.payment_processor.processor_id
-    ))
-    ::Stripe::Charge.expects(:retrieve).returns(fake_charge)
-    ::Stripe::InvoicePayment.expects(:list).returns([])
-
     @user.payment_processor.charge(10_00, transfer_group: "12345")
     account = Account.create
     account.set_merchant_processor(:stripe)

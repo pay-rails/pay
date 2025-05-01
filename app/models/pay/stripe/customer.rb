@@ -50,7 +50,7 @@ module Pay
         Pay::Payment.new(payment_intent).validate
 
         charge = payment_intent.latest_charge
-        Pay::Stripe::Charge.sync(charge.id)
+        Pay::Stripe::Charge.sync(charge.id, object: charge)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -122,7 +122,7 @@ module Pay
           amount: amount,
           currency: "usd",
           customer: processor_id || api_record.id,
-          expand: ["latest_charge.refunds"],
+          expand: Pay::Stripe::Charge::EXPAND.map { |option| "latest_charge.#{option}" },
           return_url: root_url
         }.merge(options)
 
