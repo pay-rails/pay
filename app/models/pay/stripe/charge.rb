@@ -117,8 +117,8 @@ module Pay
       # capture(amount_to_capture: 15_00)
       def capture(**options)
         raise Pay::Stripe::Error, "no payment_intent on charge" unless payment_intent.present?
-
-        ::Stripe::PaymentIntent.capture(payment_intent, options, stripe_options)
+        payment_intent_id = payment_intent.is_a?(::Stripe::PaymentIntent) ? payment_intent.id : payment_intent
+        ::Stripe::PaymentIntent.capture(payment_intent_id, options, stripe_options)
         self.class.sync(processor_id)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
