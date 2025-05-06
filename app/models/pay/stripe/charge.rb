@@ -3,7 +3,7 @@ module Pay
     class Charge < Pay::Charge
       EXPAND = ["balance_transaction", "payment_intent", "refunds.data.balance_transaction"]
 
-      delegate :amount_captured, :payment_intent, to: :stripe_object
+      delegate :amount_captured, :payment_intent, to: :stripe_object, allow_nil: true
 
       store_accessor :data, :stripe_invoice
       store_accessor :data, :stripe_receipt_url

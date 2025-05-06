@@ -2,6 +2,11 @@
 
 ### Unreleased
 
+### 10.1.3
+
+* Handle Stripe errors if invalid payment intent ID is used for /payments
+* Allow nil with delegate to Stripe Charge object
+
 ## 10.1.2
 
 * Add `charge.updated` webhook for Stripe Charges
