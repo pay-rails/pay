@@ -6,6 +6,8 @@ module Pay
 
     def show
       @payment = Payment.from_id(params[:id])
+    rescue Stripe::StripeError => e
+      redirect_to root_path, alert: e.message
     end
 
     private
