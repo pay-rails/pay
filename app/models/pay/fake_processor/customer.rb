@@ -55,6 +55,10 @@ module Pay
         subscriptions.create!(attributes)
       end
 
+      def sync_subscriptions(**options)
+        []
+      end
+
       def add_payment_method(payment_method_id, default: false)
         # Make to generate a processor_id
         api_record

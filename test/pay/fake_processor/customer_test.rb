@@ -60,6 +60,12 @@ class Pay::FakeProcessor::CustomerTest < ActiveSupport::TestCase
     assert_equal "Fake", payment_method.brand
   end
 
+  test "fake processor sync_subscriptions" do
+    assert_nothing_raised do
+      @pay_customer.sync_subscriptions
+    end
+  end
+
   test "generates fake processor_id" do
     user = users(:none)
     pay_customer = user.set_payment_processor :fake_processor, allow_fake: true
