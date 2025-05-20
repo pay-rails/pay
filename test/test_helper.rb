@@ -87,7 +87,7 @@ class ActiveSupport::TestCase
     subscriber = ActiveSupport::Notifications.subscribe "sql.active_record" do |name, started, finished, unique_id, data|
       if data[:sql].starts_with? "SELECT"
         result = data[:connection].explain(data[:sql], data[:binds]).downcase
-        assert result.include?("index"), "Query `#{data[:name]}` did not use an index!"
+        assert result.include?("index") || result.include?("primary key"), "Query `#{data[:name]}` did not use an index! plan: #{result}"
       end
     end
 
