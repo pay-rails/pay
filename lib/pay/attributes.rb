@@ -29,22 +29,20 @@ module Pay
       # - Removes the default flag from all other Pay::Customers
       # - Removes the default flag from all Pay::PaymentMethods
       def set_payment_processor(processor_name, allow_fake: false, **attributes)
+        raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
+
+        # Safety check to make sure this is a valid Pay processor
+        klass = "Pay::#{processor_name.to_s.classify}::Customer".constantize
+        raise ArgumentError, "not a valid payment processor" if klass.ancestors.exclude?(Pay::Customer)
+
         with_lock do
-          raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
-
-          # Safety check to make sure this is a valid Pay processor
-          klass = "Pay::#{processor_name.to_s.classify}::Customer".constantize
-          raise ArgumentError, "not a valid payment processor" if klass.ancestors.exclude?(Pay::Customer)
-
-          ActiveRecord::Base.transaction do
-            pay_customers.update_all(default: false)
-            pay_customer = pay_customers.active.where(processor: processor_name, type: klass.name).first_or_initialize
-            pay_customer.update!(attributes.merge(default: true))
-          end
-
-          # Return new payment processor
-          reload_payment_processor
+          pay_customers.update_all(default: false)
+          pay_customer = pay_customers.active.where(processor: processor_name, type: klass.name).first_or_initialize
+          pay_customer.update!(attributes.merge(default: true))
         end
+
+        # Return new payment processor
+        reload_payment_processor
       end
 
       def add_payment_processor(processor_name, allow_fake: false, **attributes)
