@@ -35,7 +35,7 @@ module Pay
         klass = "Pay::#{processor_name.to_s.classify}::Customer".constantize
         raise ArgumentError, "not a valid payment processor" if klass.ancestors.exclude?(Pay::Customer)
 
-        ActiveRecord::Base.transaction do
+        with_lock do
           pay_customers.update_all(default: false)
           pay_customer = pay_customers.active.where(processor: processor_name, type: klass.name).first_or_initialize
           pay_customer.update!(attributes.merge(default: true))
@@ -81,7 +81,7 @@ module Pay
       end
 
       def set_merchant_processor(processor_name, **attributes)
-        ActiveRecord::Base.transaction do
+        with_lock do
           pay_merchants.update_all(default: false)
           pay_merchant = pay_merchants.where(processor: processor_name, type: "Pay::#{processor_name.to_s.classify}::Merchant").first_or_initialize
           pay_merchant.update!(attributes.merge(default: true))
