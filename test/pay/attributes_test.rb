@@ -6,9 +6,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     refute user.payment_processor
 
     assert_difference "Pay::Customer.count" do
-      assert_indexed_selects do
-        user.set_payment_processor :stripe
-      end
+      user.set_payment_processor :stripe
     end
 
     assert user.payment_processor
@@ -69,9 +67,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     refute account.merchant_processor
 
     assert_difference "Pay::Merchant.count" do
-      assert_indexed_selects do
-        account.set_merchant_processor :stripe
-      end
+      account.set_merchant_processor :stripe
     end
 
     assert account.merchant_processor

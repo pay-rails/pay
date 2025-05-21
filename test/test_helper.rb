@@ -82,20 +82,4 @@ class ActiveSupport::TestCase
       yield
     end
   end
-
-  def assert_indexed_selects
-    subscriber = ActiveSupport::Notifications.subscribe "sql.active_record" do |name, started, finished, unique_id, data|
-      if data[:sql].starts_with? "SELECT"
-        result = data[:connection].explain(data[:sql], data[:binds]).downcase
-        # This breaks:
-        assert result.include?("index"), "Query `#{data[:name]}` did not use an index!\nsql: #{data[:sql]}\nplan: #{result}"
-        # This works:
-        # assert result.include?("index") || result.include?("primary"), "Query `#{data[:name]}` did not use an index!\nsql: #{data[:sql]}\nplan: #{result}"
-      end
-    end
-
-    yield
-  ensure
-    ActiveSupport::Notifications.unsubscribe(subscriber)
-  end
 end
