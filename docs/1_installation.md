@@ -7,10 +7,10 @@ Pay's installation is pretty straightforward. We'll add the gems, add some migra
 Add these lines to your application's Gemfile:
 
 ```ruby
-gem "pay", "~> 8.0"
+gem "pay", "~> 10.1"
 
 # To use Stripe, also include:
-gem "stripe", "~> 13.0"
+gem "stripe", "~> 15.1"
 
 # To use Braintree + PayPal, also include:
 gem "braintree", "~> 4.7"
