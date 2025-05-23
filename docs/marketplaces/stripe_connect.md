@@ -30,7 +30,7 @@ end
 @user.merchant_processor.create_account
 #=> Stripe::Account
 
-@user.merchant_processor.account_link
+@user.merchant_processor.account_link(refresh_url: your_url, return_url: your_url)
 @user.merchant_processor.login_link
 @user.merchant_processor.transfer(amount: 25_00)
 @user.merchant_processor.onboarding_complete? # Updates via webhook based on the Stripe::Account's #charges_enabled attribute
