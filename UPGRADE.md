@@ -219,7 +219,7 @@ The `update_email!` method has been replaced with `update_customer!`. When deali
 
 The `Stripe::Subscription#cancel_now!` method now accepts a hash of options such as `cancel_now!(prorate: true, invoice_now: true)` which will be handled automatically by Stripe.
 
-The `set_pay_payment_processor` method has a `make_default` optional argument that defaults to `true`.
+The `set_payment_processor` method has a `make_default` optional argument that defaults to `true`.
 
 Setting the `metadata["pay_name"]` option on a `Stripe::Subscription` object will now set the subscription name if present. Otherwise the `Pay.default_product_name` will be used to set the name.
 
@@ -552,7 +552,7 @@ Instead of adding fields to your models, Pay now manages everything in a `Pay::C
 
 ```ruby
 # Choose a payment provider
-user.set_pay_payment_processor :stripe
+user.set_payment_processor :stripe
 #=> Creates a Pay::Customer object with associated Stripe::Customer
 
 user.payment_processor
@@ -569,12 +569,12 @@ Instead of calling `@user.charge`, Pay 3 moves the `charge`, `subscribe`, and ot
 You can switch between payment processors at anytime and Pay will mark the most recent one as the default. It will also retain the previous Pay::Customers so they can be reused as needed.
 
 ```ruby
-user.set_pay_payment_processor :stripe
+user.set_payment_processor :stripe
 
 # Charge Stripe::Customer $10
 user.payment_processor.charge(10_00)
 
-user.set_pay_payment_processor :braintree
+user.set_payment_processor :braintree
 #=> Creates a Pay::Customer object with default: true and associated Braintree::Customer
 #=> Updates Pay::Customer for stripe with default: false
 
@@ -588,7 +588,7 @@ user.payment_processor.subscribe(plan: "whatever")
 Generic trials are now done using the fake payment processor
 
 ```ruby
-user.set_pay_payment_processor :fake_processor, allow_fake: true
+user.set_payment_processor :fake_processor, allow_fake: true
 user.payment_processor.subscribe(trial_ends_at: 14.days.from_now, ends_at: 14.days.from_now)
 user.payment_processor.on_trial? #=> true
 ```
