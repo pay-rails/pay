@@ -44,7 +44,7 @@ The `data-items` attribute requires an array of items for this checkout. It also
       "quantity": 1
     }
   ]'
-  data-customer-id="<%= @user.payment_processor.processor_id %>"
+  data-customer-id="<%= @user.pay_payment_processor.processor_id %>"
 >
   Sign up to <%= plan.name %>
 </a>

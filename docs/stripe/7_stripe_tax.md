@@ -24,7 +24,7 @@ end
 To update the customer address anytime it's changed, call the following method:
 
 ```ruby
-@user.payment_processor.update_api_record
+@user.pay_payment_processor.update_api_record
 ```
 
 This will make an API request to update the Stripe::Customer with the current `stripe_attributes`.
@@ -37,14 +37,14 @@ https://stripe.com/docs/api/customers/update#update_customer-tax-ip_address
 To enable tax for a subscription, you can pass in `automatic_tax`:
 
 ```ruby
-@user.payment_processor.subscribe(plan: "growth", automatic_tax: { enabled: true })
+@user.pay_payment_processor.subscribe(plan: "growth", automatic_tax: { enabled: true })
 ```
 
 For Stripe Checkout, you can do the same thing:
 
 ```ruby
-@user.payment_processor.checkout(mode: "payment", line_items: "price_1234", automatic_tax: { enabled: true })
-@user.payment_processor.checkout(mode: "subscription", line_items: "price_1234", automatic_tax: { enabled: true })
+@user.pay_payment_processor.checkout(mode: "payment", line_items: "price_1234", automatic_tax: { enabled: true })
+@user.pay_payment_processor.checkout(mode: "subscription", line_items: "price_1234", automatic_tax: { enabled: true })
 ```
 
 ### Pay::Charges

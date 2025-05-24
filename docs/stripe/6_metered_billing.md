@@ -3,13 +3,13 @@
 Metered billing are subscriptions where the price fluctuates monthly. For example, you may spin up servers on DigitalOcean, shut some down, and keep others running. Metered billing allows you to report usage of these servers and charge according to what was used.
 
 ```ruby
-@user.payment_processor.subscribe(plan: "price_metered_billing_id")
+@user.pay_payment_processor.subscribe(plan: "price_metered_billing_id")
 ```
 
 This will create a new metered billing subscription. You can then create meter events to bill for usage:
 
 ```ruby
-@user.payment_processor.create_meter_event(:api_request, payload: { value: 1 })
+@user.pay_payment_processor.create_meter_event(:api_request, payload: { value: 1 })
 ```
 
 ## Failed Payments

@@ -10,14 +10,14 @@ Stripe has multiple options for payments
 Stripe introduced Products & Prices to support more payment options. Previously, they had a concept called Plan that was for subscriptions. Pay supports both `Price IDs` and `Plan IDs` when subscribing.
 
 ```ruby
-@user.payment_processor.subscribe(plan: "price_1234")
-@user.payment_processor.subscribe(plan: "plan_1234")
+@user.pay_payment_processor.subscribe(plan: "price_1234")
+@user.pay_payment_processor.subscribe(plan: "plan_1234")
 ```
 
 Multiple subscription items in a single subscription can be passed in as `items`:
 
 ```ruby
-@user.payment_processor.subscribe(
+@user.pay_payment_processor.subscribe(
   items: [
     {price: "price_1234"},
     {price: "price_5678"}
@@ -34,17 +34,17 @@ Promotion codes are customer-facing coupon codes that can be applied in several 
 You can apply a promotion code on the Stripe::Customer to have it automatically apply to all Subscriptions.
 
 ```ruby
-@user.payment_processor.update_api_record(promotion_code: "promo_1234")
+@user.pay_payment_processor.update_api_record(promotion_code: "promo_1234")
 ```
 
 Promotion codes can also be applied directly to a subscription:
 ```ruby
-@user.payment_processor.subscribe(plan: "plan_1234", promotion_code: "promo_1234")
+@user.pay_payment_processor.subscribe(plan: "plan_1234", promotion_code: "promo_1234")
 ```
 
 Stripe Checkout can also accept promotion codes by enabling the flag:
 ```ruby
-@checkout_session = current_user.payment_processor.checkout(
+@checkout_session = current_user.pay_payment_processor.checkout(
   mode: "payment",
   line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG",
   allow_promotion_codes: true
@@ -68,7 +68,7 @@ For standard billing, the user pre-pays for a month. They can resume the `unpaid
 Collecting in-person payments with Stripe Terminal is also easy with Pay. You can use the `terminal_charge` method to create a charge with the `card_present` payment method type and manual capture to be used with Terminal.
 
 ```ruby
-payment_intent = current_user.payment_processor.terminal_charge(10_00)
+payment_intent = current_user.pay_payment_processor.terminal_charge(10_00)
 ```
 
 ## Next

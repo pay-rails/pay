@@ -47,10 +47,10 @@ class SubscriptionsController < ApplicationController
     current_user.set_payment_processor :stripe, stripe_account: "acct_1234"
 
     # One-time payments (https://stripe.com/docs/payments/accept-a-payment)
-    @checkout_session = current_user.payment_processor.checkout(mode: "payment", line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG")
+    @checkout_session = current_user.pay_payment_processor.checkout(mode: "payment", line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG")
 
     # Or Subscriptions (https://stripe.com/docs/billing/subscriptions/build-subscription)
-    @checkout_session = current_user.payment_processor.checkout(
+    @checkout_session = current_user.pay_payment_processor.checkout(
       mode: 'subscription',
       locale: I18n.locale,
       line_items: [{
@@ -68,7 +68,7 @@ class SubscriptionsController < ApplicationController
     )
 
     # Or Setup a new card for future use (https://stripe.com/docs/payments/save-and-reuse)
-    @checkout_session = current_user.payment_processor.checkout(mode: "setup")
+    @checkout_session = current_user.pay_payment_processor.checkout(mode: "setup")
 
     # If you want to redirect directly to checkout
     redirect_to @checkout_session.url, allow_other_host: true, status: :see_other

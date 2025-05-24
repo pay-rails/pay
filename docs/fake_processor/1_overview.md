@@ -50,12 +50,12 @@ To create a trial without a card, we can use the Fake Processor to create a subs
 ```ruby
 time = 14.days.from_now
 @user.set_payment_processor :fake_processor, allow_fake: true
-@user.payment_processor.subscribe(trial_ends_at: time, ends_at: time)
+@user.pay_payment_processor.subscribe(trial_ends_at: time, ends_at: time)
 ```
 
 This will create a fake subscription in our database that we can use. Once expired, the customer will need to subscribe using a real payment processor.
 
 ```ruby
-@user.payment_processor.on_generic_trial?
+@user.pay_payment_processor.on_generic_trial?
 #=> true
 ```

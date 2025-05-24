@@ -9,13 +9,13 @@ Pay stores subscriptions in the `Pay::Subscription` model. Each subscription has
 To subscribe a user, you can call the `subscribe` method.
 
 ```ruby
-@user.payment_processor.subscribe(name: "default", plan: "monthly")
+@user.pay_payment_processor.subscribe(name: "default", plan: "monthly")
 ```
 
 You can pass additional options to go directly to the payment processor's API. For example, the `quantity` option to subscribe to a plan with per-seat pricing.
 
 ```ruby
-@user.payment_processor.subscribe(name: "default", plan: "monthly", quantity: 3)
+@user.pay_payment_processor.subscribe(name: "default", plan: "monthly", quantity: 3)
 ```
 
 Subscribe takes several arguments and options:
@@ -75,7 +75,7 @@ during checkout to associate the subscription with the correct `Pay::Customer`.
 Firstly, retrieve/create a Paddle customer by calling `customer`.
 
 ```ruby
-@user.payment_processor.customer
+@user.pay_payment_processor.customer
 ```
 
 Then using either the Javascript `Paddle.Checkout.open` method or the Paddle Button Checkout, pass the `customer` object
@@ -84,7 +84,7 @@ and an array of items to subscribe to.
 ```javascript
 Paddle.Checkout.open({
   customer: {
-    id: "<%= @user.payment_processor.processor_id %>",
+    id: "<%= @user.pay_payment_processor.processor_id %>",
   },
   items: [
     {
@@ -109,7 +109,7 @@ Or with Paddle Button Checkout:
       "quantity": 1
     }
   ]'
-  data-customer-id="<%= @user.payment_processor.processor_id %>"
+  data-customer-id="<%= @user.pay_payment_processor.processor_id %>"
 >
   Subscribe
 </a>
@@ -160,7 +160,7 @@ can be found by clicking Share on the product in Lemon Squeezy's dashboard.
 ## Retrieving a Subscription from the Database
 
 ```ruby
-@user.payment_processor.subscription(name: "default")
+@user.pay_payment_processor.subscription(name: "default")
 ```
 
 ## Subscription Trials
@@ -176,13 +176,13 @@ To create a trial without a card, we can use the Fake Processor to create a subs
 ```ruby
 time = 14.days.from_now
 @user.set_payment_processor :fake_processor, allow_fake: true
-@user.payment_processor.subscribe(trial_ends_at: time, ends_at: time)
+@user.pay_payment_processor.subscribe(trial_ends_at: time, ends_at: time)
 ```
 
 This will create a fake subscription in our database that we can use. Once expired, the customer will need to subscribe using a real payment processor.
 
 ```ruby
-@user.payment_processor.on_generic_trial?
+@user.pay_payment_processor.on_generic_trial?
 #=> true
 ```
 
@@ -192,20 +192,20 @@ Braintree and Paddle require payment methods before creating a subscription.
 
 ```ruby
 @user.set_payment_processor :braintree
-@user.payment_processor.payment_method_token = params[:payment_method_token]
-@user.payment_processor.subscribe()
+@user.pay_payment_processor.payment_method_token = params[:payment_method_token]
+@user.pay_payment_processor.subscribe()
 ```
 
 ## Checking Customer Subscribed Status
 
 ```ruby
-@user.payment_processor.subscribed?
+@user.pay_payment_processor.subscribed?
 ```
 
 You can also check for a specific subscription or plan:
 
 ```ruby
-@user.payment_processor.subscribed?(name: "default", processor_plan: "monthly")
+@user.pay_payment_processor.subscribed?(name: "default", processor_plan: "monthly")
 ```
 
 ## Checking Customer Trial Status
@@ -213,14 +213,14 @@ You can also check for a specific subscription or plan:
 You can check if the user is on a trial by simply asking:
 
 ```ruby
-@user.payment_processor.on_trial?
+@user.pay_payment_processor.on_trial?
 #=> true or false
 ```
 
 You can also check if the user is on a trial for a specific subscription name or plan.
 
 ```ruby
-@user.payment_processor.on_trial?(name: 'default', plan: 'plan')
+@user.pay_payment_processor.on_trial?(name: 'default', plan: 'plan')
 #=> true or false
 ```
 
@@ -229,13 +229,13 @@ You can also check if the user is on a trial for a specific subscription name or
 For paid features of your app, you'll often want to check if the user is on trial OR subscribed. You can use this method to check both at once:
 
 ```ruby
-@user.payment_processor.on_trial_or_subscribed?
+@user.pay_payment_processor.on_trial_or_subscribed?
 ```
 
 You can also check for a specific subscription or plan:
 
 ```ruby
-@user.payment_processor.on_trial_or_subscribed?(name: "default", processor_plan: "annual")
+@user.pay_payment_processor.on_trial_or_subscribed?(name: "default", processor_plan: "annual")
 ```
 
 ## Subscription API
@@ -245,31 +245,31 @@ Individual subscriptions provide similar helper methods to check their state.
 #### Checking a Subscription's Trial Status
 
 ```ruby
-@user.payment_processor.subscription.on_trial? #=> true or false
+@user.pay_payment_processor.subscription.on_trial? #=> true or false
 ```
 
 #### Checking a Subscription's Cancellation Status
 
 ```ruby
-@user.payment_processor.subscription.cancelled? #=> true or false
+@user.pay_payment_processor.subscription.cancelled? #=> true or false
 ```
 
 #### Checking if a Subscription is on Grace Period
 
 ```ruby
-@user.payment_processor.subscription.on_grace_period? #=> true or false
+@user.pay_payment_processor.subscription.on_grace_period? #=> true or false
 ```
 
 #### Checking if a Subscription is Active
 
 ```ruby
-@user.payment_processor.subscription.active? #=> true or false
+@user.pay_payment_processor.subscription.active? #=> true or false
 ```
 
 #### Cancel a Subscription (At End of Billing Cycle)
 
 ```ruby
-@user.payment_processor.subscription.cancel
+@user.pay_payment_processor.subscription.cancel
 ```
 
 ##### Paddle
@@ -277,13 +277,13 @@ Individual subscriptions provide similar helper methods to check their state.
 In addition to the API, Paddle provides a subscription [Cancel URL](https://developer.paddle.com/guides/how-tos/subscriptions/cancel-and-pause) that you can redirect customers to cancel their subscription.
 
 ```ruby
-@user.payment_processor.subscription.paddle_cancel_url
+@user.pay_payment_processor.subscription.paddle_cancel_url
 ```
 
 #### Cancel a Subscription Immediately
 
 ```ruby
-@user.payment_processor.subscription.cancel_now!
+@user.pay_payment_processor.subscription.cancel_now!
 ```
 
 The subscription will be canceled immediately and you *cannot* resume the subscription.
@@ -295,7 +295,7 @@ If you wish to refund your customer for the remaining time, you will need to cal
 If a user wishes to change subscription plans, you can pass in the Plan or Price ID into the `swap` method:
 
 ```ruby
-@user.payment_processor.subscription.swap("yearly")
+@user.pay_payment_processor.subscription.swap("yearly")
 ```
 
 Braintree does not allow this via their API, so we cancel and create a new subscription for you (including proration discount).
@@ -305,7 +305,7 @@ Braintree does not allow this via their API, so we cancel and create a new subsc
 A user may wish to resume their canceled subscription during the grace period. You can resume a subscription with:
 
 ```ruby
-@user.payment_processor.subscription.resume
+@user.pay_payment_processor.subscription.resume
 ```
 
 #### Retrieving the raw Subscription object from the Processor
@@ -313,7 +313,7 @@ A user may wish to resume their canceled subscription during the grace period. Y
 This will make an API call to the processor to get the record.
 
 ```ruby
-@user.payment_processor.subscription.api_record
+@user.pay_payment_processor.subscription.api_record
 #=> #<Stripe::Subscription>
 ```
 
@@ -326,7 +326,7 @@ paused if you wish to limit any feature access within your application.
 #### Checking if a Subscription is Paused
 
 ```ruby
-@user.payment_processor.subscription.paused? #=> true or false
+@user.pay_payment_processor.subscription.paused? #=> true or false
 ```
 
 #### Pause a Subscription (Stripe and Paddle only)
@@ -341,15 +341,15 @@ Stripe subscriptions have several behaviors.
 Calling pause with no arguments will set `behavior: "mark_uncollectible"` by default.
 
 ```ruby
-@user.payment_processor.subscription.pause
+@user.pay_payment_processor.subscription.pause
 ```
 
 You can set this to another option as shown below.
 ```ruby
-@user.payment_processor.subscription.pause(behavior: "mark_uncollectible")
-@user.payment_processor.subscription.pause(behavior: "keep_as_draft")
-@user.payment_processor.subscription.pause(behavior: "void")
-@user.payment_processor.subscription.pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now)
+@user.pay_payment_processor.subscription.pause(behavior: "mark_uncollectible")
+@user.pay_payment_processor.subscription.pause(behavior: "keep_as_draft")
+@user.pay_payment_processor.subscription.pause(behavior: "void")
+@user.pay_payment_processor.subscription.pause(behavior: "mark_uncollectible", resumes_at: 1.month.from_now)
 ```
 
 ##### Pause a Paddle Classic Subscription
@@ -357,13 +357,13 @@ You can set this to another option as shown below.
 Paddle will pause payments at the end of the period. The status remains `active` until the period ends with a `paused_from` value to denote when the subscription pause will take effect. When the status becomes `paused` the subscription is no longer active.
 
 ```ruby
-@user.payment_processor.subscription.pause
+@user.pay_payment_processor.subscription.pause
 ```
 
 #### Resuming a Paused Subscription
 
 ```ruby
-@user.payment_processor.subscription.resume
+@user.pay_payment_processor.subscription.resume
 ```
 
 ## Manually syncing subscriptions
@@ -375,7 +375,7 @@ However, for instance, a user returning from Stripe Checkout / Stripe Billing Po
 ### Individual subscription
 
 ```rb
-@user.payment_processor.subscription.sync!
+@user.pay_payment_processor.subscription.sync!
 ```
 
 ### All at once
@@ -383,13 +383,13 @@ However, for instance, a user returning from Stripe Checkout / Stripe Billing Po
 There's a convenience method for syncing all subscriptions at once (currently Stripe only).
 
 ```rb
-@user.payment_processor.sync_subscriptions
+@user.pay_payment_processor.sync_subscriptions
 ```
 
 As per Stripe's docs [here](https://stripe.com/docs/api/subscriptions/list?lang=ruby), by default the list of subscriptions **will not included canceled ones**. You can, however, retrieve them like this:
 
 ```rb
-@user.payment_processor.sync_subscriptions(status: "all")
+@user.pay_payment_processor.sync_subscriptions(status: "all")
 ```
 
 Since subscriptions views are not frequently accessed by users, you might accept to trade off some latency for increased safety on these views, avoiding showing stale data. For instance, in your controller:
@@ -401,15 +401,15 @@ class SubscriptionsController < ApplicationController
     # This guarantees your user will always see up-to-date subscription info
     # when returning from Stripe Checkout / Billing Portal, regardless of
     # webhooks race conditions.
-    current_user.payment_processor.sync_subscriptions(status: "all")
+    current_user.pay_payment_processor.sync_subscriptions(status: "all")
   end
 
   def create
     # Let's say your business model doesn't allow multiple subscriptions per
     # user, and you want to make extra sure they are not already subscribed before showing the new subscription form.
-    current_user.payment_processor.sync_subscriptions(status: "all")
+    current_user.pay_payment_processor.sync_subscriptions(status: "all")
 
-    redirect_to subscription_path and return if current_user.payment_processor.subscription.active?
+    redirect_to subscription_path and return if current_user.pay_payment_processor.subscription.active?
   end
 ```
 

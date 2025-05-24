@@ -7,8 +7,8 @@ Pay allows you to make one-time charges to a customer.
 To charge a customer, you need to assign a payment method token before you can charge them.
 
 ```ruby
-@user.payment_processor.payment_method_token = params[:payment_method_token]
-@user.payment_processor.charge(15_00) # $15.00 USD
+@user.pay_payment_processor.payment_method_token = params[:payment_method_token]
+@user.pay_payment_processor.charge(15_00) # $15.00 USD
 ```
 
 The `charge` method takes the amount in cents as the primary argument.
@@ -16,7 +16,7 @@ The `charge` method takes the amount in cents as the primary argument.
 You may pass optional arguments that will be directly passed on to the payment processor. For example, you can use these options to charge different currencies:
 
 ```ruby
-@user.payment_processor.charge(15_00, currency: "cad")
+@user.pay_payment_processor.charge(15_00, currency: "cad")
 ```
 
 On failure, a `Pay::Error` will be raised with details about the payment failure.
@@ -31,7 +31,7 @@ To see the required fields, see the [Paddle API docs](https://developer.paddle.c
 The amount can be set to 0 as this will be set by the Price set on Paddle, so will be ignored.
 
 ```ruby
-@user.payment_processor.charge(0, {
+@user.pay_payment_processor.charge(0, {
   items: [
     {
       quantity: 1,
@@ -49,7 +49,7 @@ Then you can set the `transactionId` attribute for Paddle.js. For more info, see
 Paddle Classic requires an active subscription on the customer in order to create a one-time charge. It also requires a `charge_name` for the charge.
 
 ```ruby
-@user.payment_processor.charge(1500, {charge_name: "Test"}) # $15.00 USD
+@user.pay_payment_processor.charge(1500, {charge_name: "Test"}) # $15.00 USD
 ```
 
 ##### Lemon Squeezy Charges
@@ -61,7 +61,7 @@ Lemon Squeezy currently doesn't support one-time charges.
 To see a list of charges for a customer, you can access them with:
 
 ```ruby
-@user.payment_processor.charges
+@user.pay_payment_processor.pay_charges
 ```
 
 ## Refunding A Charge
@@ -69,7 +69,7 @@ To see a list of charges for a customer, you can access them with:
 You can refund a charge by calling `refund!` on the charge:
 
 ```ruby
-charge = @user.payment_processor.charges.last
+charge = @user.pay_payment_processor.pay_charges.last
 
 # Refund the full amount
 charge.refund!

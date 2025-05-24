@@ -8,7 +8,7 @@ The Stripe API can be used to list all existing Stripe customers. This allows th
 
 There are two methods available to associate existing Stripe customers with a `pay_customer` model.
 
-* `Model.set_payment_processor`: Finds or creates a `Pay::Customer` and marks it as the default for the model (the default `Pay::Customer` is the `Model.payment_processor`). It also removes the default flag from other `Pay::Customer`s and `Pay::PaymentMethod`s. Example: `User.set_payment_processor("stripe", processor_id: "cus_O1PngYajzbTEST")`
+* `Model.set_payment_processor`: Finds or creates a `Pay::Customer` and marks it as the default for the model (the default `Pay::Customer` is the `Model.pay_payment_processor`). It also removes the default flag from other `Pay::Customer`s and `Pay::PaymentMethod`s. Example: `User.set_payment_processor("stripe", processor_id: "cus_O1PngYajzbTEST")`
 * `Model.add_payment_processor`: Finds or creates a `Pay::Customer`, updating the `Pay::Customer` with the attributes provided. This method does not mutate default flags for existing `Pay::Customer`s that exist. Example: `User.add_payment_processor("stripe", processor_id: "cus_O1PngYajzbTEST")`. 
 
 ### Automated reconciliation
@@ -56,7 +56,7 @@ end
 ### Backfilling subscriptions and charges for reconciled customers
 When `Pay::Customer`s are created using `Model.set_payment_processor` or `Model.add_payment_processor`, existing Stripe subscriptions and charges are not automatically backfilled.
 
-To backfill active subscriptions and the charges associated with those subscriptions, the `@user.payment_processor.sync_subscriptions` method can be used. To backfill all subscriptions including canceled subscriptions, the `status: "all"` parameter can be provided (e.g. `@user.payment_processor.sync_subscriptions(status: "all")`).
+To backfill active subscriptions and the charges associated with those subscriptions, the `@user.pay_payment_processor.sync_subscriptions` method can be used. To backfill all subscriptions including canceled subscriptions, the `status: "all"` parameter can be provided (e.g. `@user.pay_payment_processor.sync_subscriptions(status: "all")`).
 
 An equivalent method to backfilling charges not associated with subscriptions is not currently implemented within Pay, however `Pay::Charge`s can be created manually by the application such as in the example below.
 

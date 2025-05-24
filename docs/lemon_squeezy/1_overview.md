@@ -17,13 +17,13 @@ First, you tell Pay which payment processor to use:
 Then you can create a [Checkout](https://docs.lemonsqueezy.com/api/checkouts/create-checkout) to let the user purchase a product.
 
 ```ruby
-@user.payment_processor.checkout(variant_id: "xyz")
+@user.pay_payment_processor.checkout(variant_id: "xyz")
 ```
 
 Customers are lazy created, so they won't be created until you create a Checkout or ask for the Lemon Squeezy customer object through Pay.
 
 ```ruby
-@user.payment_processor.api_record
+@user.pay_payment_processor.api_record
 ```
 
 ## Subscriptions
