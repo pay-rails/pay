@@ -7,12 +7,12 @@ Every payment processor has a Customer object that keeps track of your customers
 Before you can process payments, you need to assign a payment processor for the user.
 
 ```ruby
-@user.set_payment_processor :stripe
-@user.set_payment_processor :braintree
-@user.set_payment_processor :paddle_billing
-@user.set_payment_processor :paddle_classic
-@user.set_payment_processor :lemon_squeezy
-@user.set_payment_processor :fake_processor, allow_fake: true
+@user.set_pay_payment_processor :stripe
+@user.set_pay_payment_processor :braintree
+@user.set_pay_payment_processor :paddle_billing
+@user.set_pay_payment_processor :paddle_classic
+@user.set_pay_payment_processor :lemon_squeezy
+@user.set_pay_payment_processor :fake_processor, allow_fake: true
 ```
 
 This creates a `Pay::Customer` record in the database that keeps track of the payment processor's ID and allows you to interact with the API to charge and subscribe this customer.

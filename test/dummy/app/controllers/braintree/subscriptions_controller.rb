@@ -12,7 +12,7 @@ class Braintree::SubscriptionsController < ApplicationController
   end
 
   def create
-    current_user.set_payment_processor params[:processor]
+    current_user.set_pay_payment_processor params[:processor]
     current_user.pay_payment_processor.payment_method_token = params[:card_token]
     subscription = current_user.pay_payment_processor.subscribe(plan: params[:plan_id])
     redirect_to braintree_subscription_path(subscription)

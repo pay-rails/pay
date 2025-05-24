@@ -20,7 +20,7 @@ class Pay::CustomerTest < ActiveSupport::TestCase
 
   test "customer with invalid processor" do
     assert_raises NameError do
-      @user.set_payment_processor "pants"
+      @user.set_pay_payment_processor "pants"
     end
   end
 
@@ -136,10 +136,10 @@ class Pay::CustomerTest < ActiveSupport::TestCase
   end
 
   test "switching payment processor clears processor id" do
-    @user.set_payment_processor :stripe, processor_id: "1"
+    @user.set_pay_payment_processor :stripe, processor_id: "1"
     assert_equal "1", @user.pay_payment_processor.processor_id
 
-    @user.set_payment_processor :braintree
+    @user.set_pay_payment_processor :braintree
     assert_nil @user.pay_payment_processor.processor_id
   end
 
@@ -148,27 +148,27 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert_nil user.pay_payment_processor
 
     assert_difference "user.pay_customers.count" do
-      user.set_payment_processor :stripe
+      user.set_pay_payment_processor :stripe
       assert_equal "stripe", user.pay_payment_processor.processor
     end
 
     assert_difference "user.pay_customers.count" do
-      user.set_payment_processor :braintree
+      user.set_pay_payment_processor :braintree
       assert_equal "braintree", user.pay_payment_processor.processor
     end
 
     assert_difference "user.pay_customers.count" do
-      user.set_payment_processor :paddle_billing
+      user.set_pay_payment_processor :paddle_billing
       assert_equal "paddle_billing", user.pay_payment_processor.processor
     end
 
     assert_difference "user.pay_customers.count" do
-      user.set_payment_processor :paddle_classic
+      user.set_pay_payment_processor :paddle_classic
       assert_equal "paddle_classic", user.pay_payment_processor.processor
     end
 
     assert_difference "user.pay_customers.count" do
-      user.set_payment_processor :fake_processor, allow_fake: true
+      user.set_pay_payment_processor :fake_processor, allow_fake: true
       assert_equal "fake_processor", user.pay_payment_processor.processor
     end
   end

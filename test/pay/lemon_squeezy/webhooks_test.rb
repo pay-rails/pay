@@ -13,7 +13,7 @@ class Pay::LemonSqueezy::WebhooksTest < ActiveSupport::TestCase
     event = Pay::Webhook.new(processor: :lemon_squeezy, event: json).rehydrated_event
 
     user = users(:none)
-    user.set_payment_processor :lemon_squeezy, processor_id: event.customer_id
+    user.set_pay_payment_processor :lemon_squeezy, processor_id: event.customer_id
 
     ::LemonSqueezy::Subscription.expects(:list).returns(ActiveSupport::InheritableOptions.new({data: []}))
 
@@ -29,7 +29,7 @@ class Pay::LemonSqueezy::WebhooksTest < ActiveSupport::TestCase
     event = Pay::Webhook.new(processor: :lemon_squeezy, event: json).rehydrated_event
 
     user = users(:none)
-    user.set_payment_processor :lemon_squeezy, processor_id: event.customer_id
+    user.set_pay_payment_processor :lemon_squeezy, processor_id: event.customer_id
 
     assert_difference "Pay::Subscription.count" do
       Pay::LemonSqueezy::Webhooks::Subscription.new.call(event)
@@ -41,7 +41,7 @@ class Pay::LemonSqueezy::WebhooksTest < ActiveSupport::TestCase
     event = Pay::Webhook.new(processor: :lemon_squeezy, event: json).rehydrated_event
 
     user = users(:none)
-    user.set_payment_processor :lemon_squeezy, processor_id: event.customer_id
+    user.set_pay_payment_processor :lemon_squeezy, processor_id: event.customer_id
 
     assert_difference "Pay::Subscription.count" do
       Pay::LemonSqueezy::Webhooks::Subscription.new.call(event)
@@ -53,7 +53,7 @@ class Pay::LemonSqueezy::WebhooksTest < ActiveSupport::TestCase
     event = Pay::Webhook.new(processor: :lemon_squeezy, event: json).rehydrated_event
 
     user = users(:none)
-    user.set_payment_processor :lemon_squeezy, processor_id: event.customer_id
+    user.set_pay_payment_processor :lemon_squeezy, processor_id: event.customer_id
     user.pay_payment_processor.pay_subscriptions.create!(processor_id: event.subscription_id, name: Pay.default_product_name, processor_plan: "Default", status: :active)
 
     assert_difference "Pay::Charge.count" do
@@ -69,7 +69,7 @@ class Pay::LemonSqueezy::WebhooksTest < ActiveSupport::TestCase
     event = Pay::Webhook.new(processor: :lemon_squeezy, event: json).rehydrated_event
 
     user = users(:none)
-    user.set_payment_processor :lemon_squeezy, processor_id: event.customer_id
+    user.set_pay_payment_processor :lemon_squeezy, processor_id: event.customer_id
     user.pay_payment_processor.pay_subscriptions.create!(processor_id: event.subscription_id, name: Pay.default_product_name, processor_plan: "Default", status: :active)
 
     assert_difference "Pay::Charge.count" do

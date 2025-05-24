@@ -17,7 +17,7 @@ Choose the checkout button mode you need and pass any required arguments. Read t
 class SubscriptionsController < ApplicationController
   def checkout
     # Make sure the user's payment processor is Stripe
-    current_user.set_payment_processor :stripe
+    current_user.set_pay_payment_processor :stripe
 
     # One-time payments (https://stripe.com/docs/payments/accept-a-payment)
     @checkout_session = current_user.pay_payment_processor.checkout(mode: "payment", line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG")

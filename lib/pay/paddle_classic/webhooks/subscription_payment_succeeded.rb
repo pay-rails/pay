@@ -7,7 +7,7 @@ module Pay
 
           if pay_customer.nil?
             owner = Pay::PaddleClassic.owner_from_passthrough(event.passthrough)
-            pay_customer = owner&.set_payment_processor :paddle_classic, processor_id: event.user_id
+            pay_customer = owner&.set_pay_payment_processor :paddle_classic, processor_id: event.user_id
           end
 
           if pay_customer.nil?

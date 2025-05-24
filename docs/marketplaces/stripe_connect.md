@@ -38,13 +38,13 @@ end
 
 ## When Using Checkout Session
 
-You can add your stripe connect account by passing the connect id to the set_payment_processor
+You can add your stripe connect account by passing the connect id to the set_pay_payment_processor
 
 ```ruby
 class SubscriptionsController < ApplicationController
   def checkout
     # Make sure the user's payment processor is Stripe
-    current_user.set_payment_processor :stripe, stripe_account: "acct_1234"
+    current_user.set_pay_payment_processor :stripe, stripe_account: "acct_1234"
 
     # One-time payments (https://stripe.com/docs/payments/accept-a-payment)
     @checkout_session = current_user.pay_payment_processor.checkout(mode: "payment", line_items: "price_1ILVZaKXBGcbgpbZQ26kgXWG")

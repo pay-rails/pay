@@ -175,7 +175,7 @@ To create a trial without a card, we can use the Fake Processor to create a subs
 
 ```ruby
 time = 14.days.from_now
-@user.set_payment_processor :fake_processor, allow_fake: true
+@user.set_pay_payment_processor :fake_processor, allow_fake: true
 @user.pay_payment_processor.subscribe(trial_ends_at: time, ends_at: time)
 ```
 
@@ -191,7 +191,7 @@ This will create a fake subscription in our database that we can use. Once expir
 Braintree and Paddle require payment methods before creating a subscription.
 
 ```ruby
-@user.set_payment_processor :braintree
+@user.set_pay_payment_processor :braintree
 @user.pay_payment_processor.payment_method_token = params[:payment_method_token]
 @user.pay_payment_processor.subscribe()
 ```

@@ -6,7 +6,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     refute user.pay_payment_processor
 
     assert_difference "Pay::Customer.count" do
-      user.set_payment_processor :stripe
+      user.set_pay_payment_processor :stripe
     end
 
     assert user.pay_payment_processor
@@ -16,11 +16,11 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     user = users(:none)
     refute user.pay_payment_processor
 
-    assert_equal Pay::FakeProcessor::Customer, user.set_payment_processor(:fake_processor, allow_fake: true).class
-    assert_equal Pay::LemonSqueezy::Customer, user.set_payment_processor(:lemon_squeezy).class
-    assert_equal Pay::PaddleBilling::Customer, user.set_payment_processor(:paddle_billing).class
-    assert_equal Pay::PaddleClassic::Customer, user.set_payment_processor(:paddle_classic).class
-    assert_equal Pay::Stripe::Customer, user.set_payment_processor(:stripe).class
+    assert_equal Pay::FakeProcessor::Customer, user.set_pay_payment_processor(:fake_processor, allow_fake: true).class
+    assert_equal Pay::LemonSqueezy::Customer, user.set_pay_payment_processor(:lemon_squeezy).class
+    assert_equal Pay::PaddleBilling::Customer, user.set_pay_payment_processor(:paddle_billing).class
+    assert_equal Pay::PaddleClassic::Customer, user.set_pay_payment_processor(:paddle_classic).class
+    assert_equal Pay::Stripe::Customer, user.set_pay_payment_processor(:stripe).class
   end
 
   test "set payment processor with previously deleted processor" do
@@ -29,7 +29,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     refute user.pay_payment_processor
 
     assert_difference "Pay::Customer.where(processor: :stripe).count" do
-      user.set_payment_processor :stripe
+      user.set_pay_payment_processor :stripe
     end
 
     assert user.pay_payment_processor
@@ -100,7 +100,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     user = users(:stripe)
     assert_equal "stripe", user.pay_payment_processor.processor
 
-    result = user.add_payment_processor :fake_processor, allow_fake: true
+    result = user.add_pay_payment_processor :fake_processor, allow_fake: true
     assert_not_equal "stripe", result.processor
     assert_equal "stripe", user.pay_payment_processor.processor
   end

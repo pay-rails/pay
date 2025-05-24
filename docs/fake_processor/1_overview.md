@@ -49,7 +49,7 @@ To create a trial without a card, we can use the Fake Processor to create a subs
 
 ```ruby
 time = 14.days.from_now
-@user.set_payment_processor :fake_processor, allow_fake: true
+@user.set_pay_payment_processor :fake_processor, allow_fake: true
 @user.pay_payment_processor.subscribe(trial_ends_at: time, ends_at: time)
 ```
 

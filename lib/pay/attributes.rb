@@ -28,7 +28,7 @@ module Pay
       # - Finds or creates a Pay::Customer for the process and marks it as default
       # - Removes the default flag from all other Pay::Customers
       # - Removes the default flag from all Pay::PaymentMethods
-      def set_payment_processor(processor_name, allow_fake: false, **attributes)
+      def set_pay_payment_processor(processor_name, allow_fake: false, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
         # Safety check to make sure this is a valid Pay processor
@@ -45,7 +45,7 @@ module Pay
         reload_pay_payment_processor
       end
 
-      def add_payment_processor(processor_name, allow_fake: false, **attributes)
+      def add_pay_payment_processor(processor_name, allow_fake: false, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
         # Safety check to make sure this is a valid Pay processor
@@ -61,7 +61,7 @@ module Pay
         current_processor = super
 
         if current_processor.blank? && self.class.pay_default_payment_processor.present?
-          set_payment_processor(self.class.pay_default_payment_processor, allow_fake: true)
+          set_pay_payment_processor(self.class.pay_default_payment_processor, allow_fake: true)
         else
           current_processor
         end

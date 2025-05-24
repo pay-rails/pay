@@ -4,7 +4,7 @@ Follow this guide to upgrade older Pay versions. These may require database migr
 
 ## Pay 11.0
 
-Pay 11.0 introduces a major breaking change to association names to prevent naming conflicts and provide clearer namespacing. The associations `charges`, `subscriptions`, and `payment_processor` have been renamed to `pay_charges`, `pay_subscriptions`, and `pay_payment_processor` respectively.
+Pay 11.0 introduces a major breaking change to association names and method names to prevent naming conflicts and provide clearer namespacing. The associations `charges`, `subscriptions`, and `payment_processor` have been renamed to `pay_charges`, `pay_subscriptions`, and `pay_payment_processor` respectively. Additionally, the methods `set_payment_processor` and `add_payment_processor` have been renamed to `set_pay_payment_processor` and `add_pay_payment_processor`.
 
 ### Association Name Changes
 
@@ -36,6 +36,30 @@ user.pay_payment_processor
 @user.pay_payment_processor.charge(1000)
 ```
 
+### Method Name Changes
+
+The methods for setting and adding payment processors have also been renamed:
+
+**Before (Pay 10.x and earlier):**
+```ruby
+# Setting the default payment processor
+user.set_payment_processor :stripe
+user.set_payment_processor :braintree, processor_id: "existing_id"
+
+# Adding a payment processor without making it default
+user.add_payment_processor :stripe, processor_id: "cus_123"
+```
+
+**After (Pay 11.0+):**
+```ruby
+# Setting the default payment processor
+user.set_pay_payment_processor :stripe
+user.set_pay_payment_processor :braintree, processor_id: "existing_id"
+
+# Adding a payment processor without making it default
+user.add_pay_payment_processor :stripe, processor_id: "cus_123"
+```
+
 ### Migration Steps
 
 1. **Update your Gemfile** to Pay 11.0+
@@ -44,19 +68,21 @@ user.pay_payment_processor
    rails pay:install:migrations
    rails db:migrate
    ```
-3. **Update your application code** to use the new association names
+3. **Update your application code** to use the new association and method names
 4. **Search and replace** throughout your codebase:
    - `.charges` → `.pay_charges` 
    - `.subscriptions` → `.pay_subscriptions`
    - `.payment_processor` → `.pay_payment_processor`
+   - `.set_payment_processor` → `.set_pay_payment_processor`
+   - `.add_payment_processor` → `.add_pay_payment_processor`
 
 ### Database Schema
 
-No database migrations are required for this change. The underlying database tables and structure remain unchanged. Only the association names in your Ruby code need to be updated.
+No database migrations are required for this change. The underlying database tables and structure remain unchanged. Only the association names and method names in your Ruby code need to be updated.
 
 ### Why This Change?
 
-This change prevents naming conflicts with other gems and your own application models that might define `charges` or `subscriptions` associations. The `pay_` prefix makes it clear these associations are provided by the Pay gem.
+This change prevents naming conflicts with other gems and your own application models that might define `charges`, `subscriptions`, or `payment_processor` associations, or `set_payment_processor` and `add_payment_processor` methods. The `pay_` prefix makes it clear these associations and methods are provided by the Pay gem.
 
 ## Pay 10.1
 
@@ -193,7 +219,7 @@ The `update_email!` method has been replaced with `update_customer!`. When deali
 
 The `Stripe::Subscription#cancel_now!` method now accepts a hash of options such as `cancel_now!(prorate: true, invoice_now: true)` which will be handled automatically by Stripe.
 
-The `set_payment_processor` method has a `make_default` optional argument that defaults to `true`.
+The `set_pay_payment_processor` method has a `make_default` optional argument that defaults to `true`.
 
 Setting the `metadata["pay_name"]` option on a `Stripe::Subscription` object will now set the subscription name if present. Otherwise the `Pay.default_product_name` will be used to set the name.
 
@@ -526,7 +552,7 @@ Instead of adding fields to your models, Pay now manages everything in a `Pay::C
 
 ```ruby
 # Choose a payment provider
-user.set_payment_processor :stripe
+user.set_pay_payment_processor :stripe
 #=> Creates a Pay::Customer object with associated Stripe::Customer
 
 user.payment_processor
@@ -543,12 +569,12 @@ Instead of calling `@user.charge`, Pay 3 moves the `charge`, `subscribe`, and ot
 You can switch between payment processors at anytime and Pay will mark the most recent one as the default. It will also retain the previous Pay::Customers so they can be reused as needed.
 
 ```ruby
-user.set_payment_processor :stripe
+user.set_pay_payment_processor :stripe
 
 # Charge Stripe::Customer $10
 user.payment_processor.charge(10_00)
 
-user.set_payment_processor :braintree
+user.set_pay_payment_processor :braintree
 #=> Creates a Pay::Customer object with default: true and associated Braintree::Customer
 #=> Updates Pay::Customer for stripe with default: false
 
@@ -562,7 +588,7 @@ user.payment_processor.subscribe(plan: "whatever")
 Generic trials are now done using the fake payment processor
 
 ```ruby
-user.set_payment_processor :fake_processor, allow_fake: true
+user.set_pay_payment_processor :fake_processor, allow_fake: true
 user.payment_processor.subscribe(trial_ends_at: 14.days.from_now, ends_at: 14.days.from_now)
 user.payment_processor.on_trial? #=> true
 ```

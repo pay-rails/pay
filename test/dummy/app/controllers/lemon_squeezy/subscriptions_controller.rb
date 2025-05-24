@@ -11,7 +11,7 @@ module LemonSqueezy
     end
 
     def new
-      current_user.add_payment_processor(:lemon_squeezy)
+      current_user.add_pay_payment_processor(:lemon_squeezy)
       #@checkout = ::LemonSqueezy::Checkout.create(store_id: Pay::LemonSqueezy.store_id, variant_id: 479603)
       @checkout = ::LemonSqueezy::Checkout.create(store_id: Pay::LemonSqueezy.store_id, variant_id: 482626, product_options: {redirect_url: sync_lemon_squeezy_charges_url + "?lemon_squeezy_order_id=[order_id]"})
       redirect_to @checkout.url, allow_other_host: true

@@ -11,7 +11,7 @@ First, you tell Pay which payment processor to use:
 
 ```ruby
 # Set the payment processor
-@user.set_payment_processor :lemon_squeezy
+@user.set_pay_payment_processor :lemon_squeezy
 ```
 
 Then you can create a [Checkout](https://docs.lemonsqueezy.com/api/checkouts/create-checkout) to let the user purchase a product.

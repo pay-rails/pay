@@ -12,7 +12,7 @@ class PaddleClassic::ChargesController < ApplicationController
   end
 
   def create
-    current_user.set_payment_processor params[:processor]
+    current_user.set_pay_payment_processor params[:processor]
     current_user.pay_payment_processor.payment_method_token = params[:card_token]
     charge = current_user.pay_payment_processor.charge(params[:amount])
     redirect_to paddle_classic_charge_path(charge)

@@ -4,7 +4,7 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
   setup do
     @stripe_account_id = "acct_1ISuLNQK2ZHS99Rk"
     @user = User.create!(email: "gob@bluth.com")
-    @pay_customer = @user.set_payment_processor :stripe, stripe_account: @stripe_account_id
+    @pay_customer = @user.set_pay_payment_processor :stripe, stripe_account: @stripe_account_id
     @pay_customer.update_payment_method "pm_card_visa"
   end
 
@@ -25,7 +25,7 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
 
   test "connect destination charge" do
     @user = User.create!(email: "gob@bluth.com")
-    @user.set_payment_processor :stripe
+    @user.set_pay_payment_processor :stripe
     @user.pay_payment_processor.update_payment_method "pm_card_visa"
 
     pay_charge = @user.pay_payment_processor.charge(

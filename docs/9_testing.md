@@ -7,7 +7,7 @@ Pay comes with a fake payment processor to make testing easy. It can also be use
 To protect from abuse, the `allow_fake` option must be set to `true` in order to use the Fake Processor.
 
 ```ruby
-@user.set_payment_processor :fake_processor, allow_fake: true
+@user.set_pay_payment_processor :fake_processor, allow_fake: true
 ```
 
 You can then make charges and subscriptions like normal. These will be generated with random unique IDs just like a real payment processor.
