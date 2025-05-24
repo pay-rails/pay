@@ -84,6 +84,28 @@ No database migrations are required for this change. The underlying database tab
 
 This change prevents naming conflicts with other gems and your own application models that might define `charges`, `subscriptions`, or `payment_processor` associations, or `set_payment_processor` and `add_payment_processor` methods. The `pay_` prefix makes it clear these associations and methods are provided by the Pay gem.
 
+### Automated Migration Scripts
+
+To help with the bulk replacement of association names throughout your codebase, you can use these automated scripts:
+
+#### sed Scripts (Unix/macOS/Linux)
+
+```bash
+# Replace .payment_processor with .pay_payment_processor 
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.payment_processor\([^_a-zA-Z]\)/\.pay_payment_processor\1/g' {} \;
+
+# Replace .charges with .pay_charges
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.charges\([^_a-zA-Z]\)/\.pay_charges\1/g' {} \;
+
+# Replace .subscriptions with .pay_subscriptions  
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.subscriptions\([^_a-zA-Z]\)/\.pay_subscriptions\1/g' {} \;
+
+# Replace method names
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.set_payment_processor\([^_a-zA-Z]\)/\.set_pay_payment_processor\1/g' {} \;
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.add_payment_processor\([^_a-zA-Z]\)/\.add_pay_payment_processor\1/g' {} \;
+```
+
+
 ## Pay 10.1
 
 Pay now uses the Stripe `charge.updated` webhook to save Charge balance transactions. Make sure you're sending this webhook to keep these records up-to-date.
