@@ -8,7 +8,7 @@ class Pay::Billable::SyncCustomer::Test < ActiveSupport::TestCase
       User.create(email: "test@example.com")
     end
 
-    assert_enqueued_with(job: Pay::CustomerSyncJob, args: [users(:stripe).payment_processor.id]) do
+    assert_enqueued_with(job: Pay::CustomerSyncJob, args: [users(:stripe).pay_payment_processor.id]) do
       users(:stripe).update(email: "test@test.com")
     end
   end
@@ -18,7 +18,7 @@ class Pay::Billable::SyncCustomer::Test < ActiveSupport::TestCase
       User.create(email: "test@example.com")
     end
 
-    assert_enqueued_with(job: Pay::CustomerSyncJob, args: [users(:stripe).payment_processor.id]) do
+    assert_enqueued_with(job: Pay::CustomerSyncJob, args: [users(:stripe).pay_payment_processor.id]) do
       user = users(:stripe)
       def user.pay_should_sync_customer?
         true

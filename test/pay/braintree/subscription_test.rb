@@ -56,7 +56,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
       refute pay_subscription.active?
       assert pay_subscription.on_trial?
       assert pay_subscription.ended?
-      assert_not_includes @pay_customer.subscriptions.active, pay_subscription
+      assert_not_includes @pay_customer.pay_subscriptions.active, pay_subscription
     end
   end
 
@@ -87,7 +87,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
     processor_id = pay_subscription.processor_id
 
     # Remove charges and delete record without canceling / callbacks
-    pay_subscription.charges.destroy_all
+    pay_subscription.pay_charges.destroy_all
     pay_subscription.delete
 
     pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
@@ -100,7 +100,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
       processor_id = pay_subscription.processor_id
 
       # Remove charges and delete record without canceling / callbacks
-      pay_subscription.charges.destroy_all
+      pay_subscription.pay_charges.destroy_all
       pay_subscription.delete
 
       pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
@@ -114,7 +114,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
     processor_id = pay_subscription.processor_id
 
     # Remove charges and delete record without canceling / callbacks
-    pay_subscription.charges.destroy_all
+    pay_subscription.pay_charges.destroy_all
     pay_subscription.cancel_now!
     pay_subscription.delete
 
@@ -140,7 +140,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
       refute pay_subscription.active?
       assert pay_subscription.on_trial?
       assert pay_subscription.ended?
-      assert_not_includes @pay_customer.subscriptions.active, pay_subscription
+      assert_not_includes @pay_customer.pay_subscriptions.active, pay_subscription
     end
   end
 end

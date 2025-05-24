@@ -7,13 +7,13 @@ class Pay::FakeProcessor::CustomerTest < ActiveSupport::TestCase
 
   test "doesn't allow fake processor by default" do
     assert_raises Pay::Error do
-      users(:none).set_payment_processor :fake_processor
+      users(:none).set_pay_payment_processor :fake_processor
     end
   end
 
   test "allows fake processor if enabled" do
     assert_nothing_raised do
-      users(:none).set_payment_processor :fake_processor, allow_fake: true
+      users(:none).set_pay_payment_processor :fake_processor, allow_fake: true
     end
   end
 
@@ -68,7 +68,7 @@ class Pay::FakeProcessor::CustomerTest < ActiveSupport::TestCase
 
   test "generates fake processor_id" do
     user = users(:none)
-    pay_customer = user.set_payment_processor :fake_processor, allow_fake: true
+    pay_customer = user.set_pay_payment_processor :fake_processor, allow_fake: true
     assert_nil pay_customer.processor_id
     pay_customer.api_record
     assert_not_nil pay_customer.processor_id
@@ -76,7 +76,7 @@ class Pay::FakeProcessor::CustomerTest < ActiveSupport::TestCase
 
   test "generic trial" do
     user = users(:none)
-    pay_customer = user.set_payment_processor :fake_processor, allow_fake: true
+    pay_customer = user.set_pay_payment_processor :fake_processor, allow_fake: true
 
     refute pay_customer.on_generic_trial?
 

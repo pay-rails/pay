@@ -20,8 +20,8 @@ class Pay::PaddleClassic::Webhooks::SubscriptionCreatedTest < ActiveSupport::Tes
 
     @user.reload
 
-    assert_equal "paddle_classic", @user.payment_processor.processor
-    assert_equal @data.user_id, @user.payment_processor.processor_id
+    assert_equal "paddle_classic", @user.pay_payment_processor.processor
+    assert_equal @data.user_id, @user.pay_payment_processor.processor_id
 
     subscription = Pay::Subscription.last
     assert_equal @data.quantity.to_i, subscription.quantity

@@ -27,9 +27,9 @@ class Pay::Charge::Test < ActiveSupport::TestCase
 
   test "validates charge uniqueness by Pay::Customer and processor ID" do
     user = users(:stripe)
-    user.payment_processor.charges.create!(amount: 1, processor_id: "1")
+    user.pay_payment_processor.pay_charges.create!(amount: 1, processor_id: "1")
     assert_raises ActiveRecord::RecordInvalid do
-      user.payment_processor.charges.create!(amount: 1, processor_id: "1")
+      user.pay_payment_processor.pay_charges.create!(amount: 1, processor_id: "1")
     end
   end
 

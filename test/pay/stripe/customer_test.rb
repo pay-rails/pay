@@ -3,7 +3,7 @@ require "test_helper"
 class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
   setup do
     @user = users(:stripe)
-    @pay_customer = @user.payment_processor
+    @pay_customer = @user.pay_payment_processor
     @pay_customer.update(processor_id: nil)
   end
 
@@ -48,7 +48,7 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
   test "stripe can create a subscription" do
     travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
       # We select the subscription by newest created_at, so we want to make sure existing subscriptions are in the past
-      @pay_customer.subscriptions.update_all(created_at: 1.hour.ago)
+      @pay_customer.pay_subscriptions.update_all(created_at: 1.hour.ago)
 
       @pay_customer.update_payment_method payment_method
       pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
@@ -59,13 +59,13 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
   end
 
   test "stripe subscribe also saves initial charge" do
-    assert_difference "@pay_customer.charges.count" do
+    assert_difference "@pay_customer.pay_charges.count" do
       @pay_customer.update_payment_method payment_method
       @pay_customer.subscribe(name: "default", plan: "small-monthly")
     end
 
     assert @pay_customer.subscribed?
-    assert_equal "Visa", @pay_customer.charges.last.brand
+    assert_equal "Visa", @pay_customer.pay_charges.last.brand
   end
 
   test "stripe can swap a subscription" do
@@ -460,11 +460,11 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
   test "stripe can issue credit note for a refund for Stripe tax" do
     @pay_customer.update_payment_method payment_method
     pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
-    pay_subscription.charges.last.refund!(5_00)
+    pay_subscription.pay_charges.last.refund!(5_00)
     pay_subscription.api_record = nil
     invoice = pay_subscription.api_record.latest_invoice
     assert_equal 5_00, invoice.post_payment_credit_notes_amount
-    assert_equal 5_00, pay_subscription.charges.last.amount_refunded
+    assert_equal 5_00, pay_subscription.pay_charges.last.amount_refunded
   end
 
   test "stripe sync_subscriptions" do

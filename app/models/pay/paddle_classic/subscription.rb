@@ -13,7 +13,7 @@ module Pay
         # If passthrough exists (only on webhooks) we can use it to create the Pay::Customer
         if pay_customer.nil? && object.passthrough
           owner = Pay::PaddleClassic.owner_from_passthrough(object.passthrough)
-          pay_customer = owner&.set_payment_processor(:paddle_classic, processor_id: object.user_id)
+          pay_customer = owner&.set_pay_payment_processor(:paddle_classic, processor_id: object.user_id)
         end
 
         return unless pay_customer
@@ -40,13 +40,13 @@ module Pay
         end
 
         # Update or create the subscription
-        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.subscription_id))
+        if (pay_subscription = pay_customer.pay_subscriptions.find_by(processor_id: object.subscription_id))
           pay_subscription.with_lock do
             pay_subscription.update!(attributes)
           end
           pay_subscription
         else
-          pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.subscription_id))
+          pay_customer.pay_subscriptions.create!(attributes.merge(name: name, processor_id: object.subscription_id))
         end
       end
 

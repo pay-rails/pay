@@ -23,7 +23,7 @@ module Pay
         end
       end
 
-      assert_difference -> { pay_customers(:paddle_billing).subscriptions.count } do
+      assert_difference -> { pay_customers(:paddle_billing).pay_subscriptions.count } do
         perform_enqueued_jobs
       end
     end

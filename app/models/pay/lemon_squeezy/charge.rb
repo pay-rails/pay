@@ -58,13 +58,13 @@ module Pay
         Pay::LemonSqueezy::PaymentMethod.sync(pay_customer: pay_customer, attributes: object)
 
         # Update or create the charge
-        if (pay_charge = pay_customer.charges.find_by(processor_id: processor_id))
+        if (pay_charge = pay_customer.pay_charges.find_by(processor_id: processor_id))
           pay_charge.with_lock do
             pay_charge.update!(attributes)
           end
           pay_charge
         else
-          pay_customer.charges.create!(attributes.merge(processor_id: processor_id))
+          pay_customer.pay_charges.create!(attributes.merge(processor_id: processor_id))
         end
       end
 

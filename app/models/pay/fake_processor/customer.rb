@@ -1,8 +1,8 @@
 module Pay
   module FakeProcessor
     class Customer < Pay::Customer
-      has_many :charges, dependent: :destroy, class_name: "Pay::FakeProcessor::Charge"
-      has_many :subscriptions, dependent: :destroy, class_name: "Pay::FakeProcessor::Subscription"
+      has_many :pay_charges, dependent: :destroy, class_name: "Pay::FakeProcessor::Charge"
+      has_many :pay_subscriptions, dependent: :destroy, class_name: "Pay::FakeProcessor::Subscription"
       has_many :payment_methods, dependent: :destroy, class_name: "Pay::FakeProcessor::PaymentMethod"
       has_one :default_payment_method, -> { where(default: true) }, class_name: "Pay::FakeProcessor::PaymentMethod"
 
@@ -31,7 +31,7 @@ module Pay
             exp_year: Date.today.year
           }
         }.deep_merge(valid_attributes)
-        charges.create!(attributes)
+        pay_charges.create!(attributes)
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
@@ -50,9 +50,9 @@ module Pay
         end
 
         # Ignore any keys that aren't attribute names
-        attributes.deep_stringify_keys!.slice!(*subscriptions.attribute_names)
+        attributes.deep_stringify_keys!.slice!(*pay_subscriptions.attribute_names)
 
-        subscriptions.create!(attributes)
+        pay_subscriptions.create!(attributes)
       end
 
       def sync_subscriptions(**options)

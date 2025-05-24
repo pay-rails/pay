@@ -2,6 +2,110 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Pay 11.0
+
+Pay 11.0 introduces a major breaking change to association names and method names to prevent naming conflicts and provide clearer namespacing. The associations `charges`, `subscriptions`, and `payment_processor` have been renamed to `pay_charges`, `pay_subscriptions`, and `pay_payment_processor` respectively. Additionally, the methods `set_payment_processor` and `add_payment_processor` have been renamed to `set_pay_payment_processor` and `add_pay_payment_processor`.
+
+### Association Name Changes
+
+You'll need to update all references in your application code:
+
+**Before (Pay 10.x and earlier):**
+```ruby
+# Accessing charges, subscriptions, and payment processor
+user.charges
+user.subscriptions  
+user.payment_processor
+
+# In views and controllers
+@user.charges.recent
+@user.subscriptions.active
+@user.payment_processor.charge(1000)
+```
+
+**After (Pay 11.0+):**
+```ruby
+# New prefixed association names
+user.pay_charges
+user.pay_subscriptions
+user.pay_payment_processor
+
+# In views and controllers  
+@user.pay_charges.recent
+@user.pay_subscriptions.active
+@user.pay_payment_processor.charge(1000)
+```
+
+### Method Name Changes
+
+The methods for setting and adding payment processors have also been renamed:
+
+**Before (Pay 10.x and earlier):**
+```ruby
+# Setting the default payment processor
+user.set_payment_processor :stripe
+user.set_payment_processor :braintree, processor_id: "existing_id"
+
+# Adding a payment processor without making it default
+user.add_payment_processor :stripe, processor_id: "cus_123"
+```
+
+**After (Pay 11.0+):**
+```ruby
+# Setting the default payment processor
+user.set_pay_payment_processor :stripe
+user.set_pay_payment_processor :braintree, processor_id: "existing_id"
+
+# Adding a payment processor without making it default
+user.add_pay_payment_processor :stripe, processor_id: "cus_123"
+```
+
+### Migration Steps
+
+1. **Update your Gemfile** to Pay 11.0+
+2. **Run the migration installer** to get updated migration files:
+   ```bash
+   rails pay:install:migrations
+   rails db:migrate
+   ```
+3. **Update your application code** to use the new association and method names
+4. **Search and replace** throughout your codebase:
+   - `.charges` → `.pay_charges` 
+   - `.subscriptions` → `.pay_subscriptions`
+   - `.payment_processor` → `.pay_payment_processor`
+   - `.set_payment_processor` → `.set_pay_payment_processor`
+   - `.add_payment_processor` → `.add_pay_payment_processor`
+
+### Database Schema
+
+No database migrations are required for this change. The underlying database tables and structure remain unchanged. Only the association names and method names in your Ruby code need to be updated.
+
+### Why This Change?
+
+This change prevents naming conflicts with other gems and your own application models that might define `charges`, `subscriptions`, or `payment_processor` associations, or `set_payment_processor` and `add_payment_processor` methods. The `pay_` prefix makes it clear these associations and methods are provided by the Pay gem.
+
+### Automated Migration Scripts
+
+To help with the bulk replacement of association names throughout your codebase, you can use these automated scripts:
+
+#### sed Scripts (Unix/macOS/Linux)
+
+```bash
+# Replace .payment_processor with .pay_payment_processor 
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.payment_processor\([^_a-zA-Z]\)/\.pay_payment_processor\1/g' {} \;
+
+# Replace .charges with .pay_charges
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.charges\([^_a-zA-Z]\)/\.pay_charges\1/g' {} \;
+
+# Replace .subscriptions with .pay_subscriptions  
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.subscriptions\([^_a-zA-Z]\)/\.pay_subscriptions\1/g' {} \;
+
+# Replace method names
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.set_payment_processor\([^_a-zA-Z]\)/\.set_pay_payment_processor\1/g' {} \;
+find . -name "*.rb" -not -path "./vendor/*" -exec sed -i '' 's/\.add_payment_processor\([^_a-zA-Z]\)/\.add_pay_payment_processor\1/g' {} \;
+```
+
+
 ## Pay 10.1
 
 Pay now uses the Stripe `charge.updated` webhook to save Charge balance transactions. Make sure you're sending this webhook to keep these records up-to-date.

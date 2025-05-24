@@ -15,7 +15,7 @@ You can use  `data-payment-intent` or `data-setup-intent` depending on if you're
 
 def new
   ...
-  @setup_intent = current_user.payment_processor.create_setup_intent
+  @setup_intent = current_user.pay_payment_processor.create_setup_intent
   ...
 end
 ```

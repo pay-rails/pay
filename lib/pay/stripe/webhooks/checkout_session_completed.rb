@@ -22,7 +22,7 @@ module Pay
           return if object.client_reference_id.nil?
 
           owner = Pay::Stripe.find_by_client_reference_id(object.client_reference_id)
-          owner&.add_payment_processor(:stripe, processor_id: object.customer)
+          owner&.add_pay_payment_processor(:stripe, processor_id: object.customer)
         end
       end
     end

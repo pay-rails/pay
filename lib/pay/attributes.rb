@@ -13,9 +13,9 @@ module Pay
         cattr_accessor :pay_braintree_customer_attributes
 
         has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
-        has_many :charges, through: :pay_customers, class_name: "Pay::Charge"
-        has_many :subscriptions, through: :pay_customers, class_name: "Pay::Subscription"
-        has_one :payment_processor, -> { where(default: true, deleted_at: nil) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
+        has_many :pay_charges, through: :pay_customers, class_name: "Pay::Charge"
+        has_many :pay_subscriptions, through: :pay_customers, class_name: "Pay::Subscription"
+        has_one :pay_payment_processor, -> { where(default: true, deleted_at: nil) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
 
         after_commit :cancel_active_pay_subscriptions!, on: [:destroy]
 
@@ -28,7 +28,7 @@ module Pay
       # - Finds or creates a Pay::Customer for the process and marks it as default
       # - Removes the default flag from all other Pay::Customers
       # - Removes the default flag from all Pay::PaymentMethods
-      def set_payment_processor(processor_name, allow_fake: false, **attributes)
+      def set_pay_payment_processor(processor_name, allow_fake: false, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
         # Safety check to make sure this is a valid Pay processor
@@ -42,10 +42,10 @@ module Pay
         end
 
         # Return new payment processor
-        reload_payment_processor
+        reload_pay_payment_processor
       end
 
-      def add_payment_processor(processor_name, allow_fake: false, **attributes)
+      def add_pay_payment_processor(processor_name, allow_fake: false, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
         # Safety check to make sure this is a valid Pay processor
@@ -57,18 +57,18 @@ module Pay
         pay_customer
       end
 
-      def payment_processor
+      def pay_payment_processor
         current_processor = super
 
         if current_processor.blank? && self.class.pay_default_payment_processor.present?
-          set_payment_processor(self.class.pay_default_payment_processor, allow_fake: true)
+          set_pay_payment_processor(self.class.pay_default_payment_processor, allow_fake: true)
         else
           current_processor
         end
       end
 
       def cancel_active_pay_subscriptions!
-        subscriptions.active.each(&:cancel_now!)
+        pay_subscriptions.active.each(&:cancel_now!)
       end
     end
 

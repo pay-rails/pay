@@ -68,7 +68,7 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
   private
 
   def create_subscription(processor_id:, trial_ends_at:)
-    @pay_customer.subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active", trial_ends_at: trial_ends_at)
+    @pay_customer.pay_subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active", trial_ends_at: trial_ends_at)
   end
 
   def trial_start_date

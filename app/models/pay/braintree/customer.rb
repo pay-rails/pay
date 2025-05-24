@@ -1,8 +1,8 @@
 module Pay
   module Braintree
     class Customer < Pay::Customer
-      has_many :charges, dependent: :destroy, class_name: "Pay::Braintree::Charge"
-      has_many :subscriptions, dependent: :destroy, class_name: "Pay::Braintree::Subscription"
+      has_many :pay_charges, dependent: :destroy, class_name: "Pay::Braintree::Charge"
+      has_many :pay_subscriptions, dependent: :destroy, class_name: "Pay::Braintree::Subscription"
       has_many :payment_methods, dependent: :destroy, class_name: "Pay::Braintree::PaymentMethod"
       has_one :default_payment_method, -> { where(default: true) }, class_name: "Pay::Braintree::PaymentMethod"
 
@@ -80,7 +80,7 @@ module Pay
         # Braintree returns dates without time zones, so we'll assume they're UTC
         trial_end_date = result.subscription.trial_period.present? ? result.subscription.first_billing_date.end_of_day : nil
 
-        subscription = subscriptions.create!(
+        subscription = pay_subscriptions.create!(
           name: name,
           processor_id: result.subscription.id,
           processor_plan: plan,
@@ -115,7 +115,7 @@ module Pay
         pay_payment_method = save_payment_method(result.payment_method, default: default)
 
         # Update existing subscriptions to the new payment method
-        subscriptions.each do |subscription|
+        pay_subscriptions.each do |subscription|
           if subscription.active?
             gateway.subscription.update(subscription.processor_id, {payment_method_token: token})
           end
@@ -138,7 +138,7 @@ module Pay
 
         # Associate charge with subscription if we can
         if transaction.subscription_id
-          pay_subscription = subscriptions.find_by(processor_id: transaction.subscription_id)
+          pay_subscription = pay_subscriptions.find_by(processor_id: transaction.subscription_id)
           pay_subscription ||= Pay::Braintree::Subscription.sync(transaction.subscription_id)
 
           if pay_subscription
@@ -147,9 +147,9 @@ module Pay
           end
         end
 
-        charge = Pay::Braintree::Charge.find_or_initialize_by(customer: self, processor_id: transaction.id)
-        charge.update!(attrs)
-        charge
+        pay_charge = Pay::Braintree::Charge.find_or_initialize_by(customer: self, processor_id: transaction.id)
+        pay_charge.update!(attrs)
+        pay_charge
       end
 
       def gateway

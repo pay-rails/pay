@@ -7,14 +7,14 @@ Pay comes with a fake payment processor to make testing easy. It can also be use
 To protect from abuse, the `allow_fake` option must be set to `true` in order to use the Fake Processor.
 
 ```ruby
-@user.set_payment_processor :fake_processor, allow_fake: true
+@user.set_pay_payment_processor :fake_processor, allow_fake: true
 ```
 
 You can then make charges and subscriptions like normal. These will be generated with random unique IDs just like a real payment processor.
 
 ```ruby
-pay_charge = @user.payment_processor.charge(19_00)
-pay_subscription = @user.payment_processor.subscribe(plan: "fake")
+pay_charge = @user.pay_payment_processor.charge(19_00)
+pay_subscription = @user.pay_payment_processor.subscribe(plan: "fake")
 ```
 
 ### Test Examples
@@ -25,11 +25,11 @@ Fake processor charges and subscriptions will automatically assign these fields 
 
 ```ruby
 # Canceled subscription
-@user.payment_processor.subscribe(plan: "fake", ends_at: 1.week.ago)
+@user.pay_payment_processor.subscribe(plan: "fake", ends_at: 1.week.ago)
 
 # On Trial
-@user.payment_processor.subscribe(plan: "fake", trial_ends_at: 1.week.from_now)
+@user.pay_payment_processor.subscribe(plan: "fake", trial_ends_at: 1.week.from_now)
 
 # Expired Trial
-@user.payment_processor.subscribe(plan: "fake", trial_ends_at: 1.week.ago)
+@user.pay_payment_processor.subscribe(plan: "fake", trial_ends_at: 1.week.ago)
 ```

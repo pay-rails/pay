@@ -7,12 +7,12 @@ Every payment processor has a Customer object that keeps track of your customers
 Before you can process payments, you need to assign a payment processor for the user.
 
 ```ruby
-@user.set_payment_processor :stripe
-@user.set_payment_processor :braintree
-@user.set_payment_processor :paddle_billing
-@user.set_payment_processor :paddle_classic
-@user.set_payment_processor :lemon_squeezy
-@user.set_payment_processor :fake_processor, allow_fake: true
+@user.set_pay_payment_processor :stripe
+@user.set_pay_payment_processor :braintree
+@user.set_pay_payment_processor :paddle_billing
+@user.set_pay_payment_processor :paddle_classic
+@user.set_pay_payment_processor :lemon_squeezy
+@user.set_pay_payment_processor :fake_processor, allow_fake: true
 ```
 
 This creates a `Pay::Customer` record in the database that keeps track of the payment processor's ID and allows you to interact with the API to charge and subscribe this customer.
@@ -29,10 +29,10 @@ end
 
 ## Payment Processor Associations
 
-After setting the payment processor, your model will have a `payment_processor` they can use to create charges, subscriptions, etc.
+After setting the payment processor, your model will have a `pay_payment_processor` they can use to create charges, subscriptions, etc.
 
 ```ruby
-@user.payment_processor
+@user.pay_payment_processor
 #=> #<Pay::Customer processor: "stripe", processor_id: "cus_1000">
 ```
 
@@ -47,7 +47,7 @@ Pay keeps track of these with a `has_many :pay_customers` association.
 #=> [#<Pay::Customer>, #<Pay::Customer>]
 ```
 
-Only one `Pay::Customer` can be the default which is used for `payment_processor`.
+Only one `Pay::Customer` can be the default which is used for `pay_payment_processor`.
 
 ## Retrieving a Customer object from the Payment Processor
 
@@ -57,7 +57,7 @@ If the `processor_id` is already set, it will retrieve the customer from the pay
 directly from the API. Like so:
 
 ```ruby
-@user.payment_processor.api_record
+@user.pay_payment_processor.api_record
 #=> #<Stripe::Customer>
 #=> #<Paddle::Customer>
 #=> #<LemonSqueezy::Customer>

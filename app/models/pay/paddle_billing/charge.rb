@@ -28,7 +28,7 @@ module Pay
           created_at: object.created_at,
           currency: object.currency_code,
           metadata: object.details.line_items&.first&.id,
-          subscription: pay_customer.subscriptions.find_by(processor_id: object.subscription_id)
+          subscription: pay_customer.pay_subscriptions.find_by(processor_id: object.subscription_id)
         }
 
         if (details = Array.wrap(object.payments).first&.method_details)

@@ -14,10 +14,10 @@ Paddle now works similar to Stripe. You create a customer, which subscriptions b
 
 ```ruby
 # Set the payment processor
-@user.set_payment_processor :paddle_billing
+@user.set_pay_payment_processor :paddle_billing
 
 # Create the customer on Paddle
-@user.payment_processor.api_record
+@user.pay_payment_processor.api_record
 ```
 
 ## Prices & Plans

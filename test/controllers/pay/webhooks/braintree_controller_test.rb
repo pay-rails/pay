@@ -18,7 +18,7 @@ module Pay
 
       pay_customer = pay_customers(:braintree)
       pay_customer.update(processor_id: "108696401")
-      pay_customer.subscriptions.create!(
+      pay_customer.pay_subscriptions.create!(
         processor_id: "f6rnpm",
         processor_plan: "default",
         name: "default",
@@ -32,7 +32,7 @@ module Pay
         end
       end
 
-      assert_difference("pay_customer.charges.count") do
+      assert_difference("pay_customer.pay_charges.count") do
         perform_enqueued_jobs
       end
     end

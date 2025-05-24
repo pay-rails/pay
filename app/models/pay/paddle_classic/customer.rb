@@ -1,8 +1,8 @@
 module Pay
   module PaddleClassic
     class Customer < Pay::Customer
-      has_many :charges, dependent: :destroy, class_name: "Pay::PaddleClassic::Charge"
-      has_many :subscriptions, dependent: :destroy, class_name: "Pay::PaddleClassic::Subscription"
+      has_many :pay_charges, dependent: :destroy, class_name: "Pay::PaddleClassic::Charge"
+      has_many :pay_subscriptions, dependent: :destroy, class_name: "Pay::PaddleClassic::Subscription"
       has_many :payment_methods, dependent: :destroy, class_name: "Pay::PaddleClassic::PaymentMethod"
       has_one :default_payment_method, -> { where(default: true) }, class_name: "Pay::PaddleClassic::PaymentMethod"
 
@@ -27,7 +27,7 @@ module Pay
         # Lookup subscription payment method details
         attributes.merge! Pay::PaddleClassic::PaymentMethod.payment_method_details_for(subscription_id: subscription.processor_id)
 
-        charge = charges.find_or_initialize_by(processor_id: response[:invoice_id])
+        charge = pay_charges.find_or_initialize_by(processor_id: response[:invoice_id])
         charge.update(attributes)
         charge
       rescue ::Paddle::Error => e
