@@ -2,6 +2,62 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Pay 11.0
+
+Pay 11.0 introduces a major breaking change to association names to prevent naming conflicts and provide clearer namespacing. The associations `charges`, `subscriptions`, and `payment_processor` have been renamed to `pay_charges`, `pay_subscriptions`, and `pay_payment_processor` respectively.
+
+### Association Name Changes
+
+You'll need to update all references in your application code:
+
+**Before (Pay 10.x and earlier):**
+```ruby
+# Accessing charges, subscriptions, and payment processor
+user.charges
+user.subscriptions  
+user.payment_processor
+
+# In views and controllers
+@user.charges.recent
+@user.subscriptions.active
+@user.payment_processor.charge(1000)
+```
+
+**After (Pay 11.0+):**
+```ruby
+# New prefixed association names
+user.pay_charges
+user.pay_subscriptions
+user.pay_payment_processor
+
+# In views and controllers  
+@user.pay_charges.recent
+@user.pay_subscriptions.active
+@user.pay_payment_processor.charge(1000)
+```
+
+### Migration Steps
+
+1. **Update your Gemfile** to Pay 11.0+
+2. **Run the migration installer** to get updated migration files:
+   ```bash
+   rails pay:install:migrations
+   rails db:migrate
+   ```
+3. **Update your application code** to use the new association names
+4. **Search and replace** throughout your codebase:
+   - `.charges` → `.pay_charges` 
+   - `.subscriptions` → `.pay_subscriptions`
+   - `.payment_processor` → `.pay_payment_processor`
+
+### Database Schema
+
+No database migrations are required for this change. The underlying database tables and structure remain unchanged. Only the association names in your Ruby code need to be updated.
+
+### Why This Change?
+
+This change prevents naming conflicts with other gems and your own application models that might define `charges` or `subscriptions` associations. The `pay_` prefix makes it clear these associations are provided by the Pay gem.
+
 ## Pay 10.1
 
 Pay now uses the Stripe `charge.updated` webhook to save Charge balance transactions. Make sure you're sending this webhook to keep these records up-to-date.
