@@ -12,8 +12,8 @@ class AddPayStiColumns < ActiveRecord::Migration[6.0]
     Pay::Customer.find_each do |pay_customer|
       pay_customer.update(type: "Pay::#{pay_customer.processor.classify}::Customer")
 
-      pay_customer.charges.update_all(type: "Pay::#{pay_customer.processor.classify}::Charge")
-      pay_customer.subscriptions.update_all(type: "Pay::#{pay_customer.processor.classify}::Subscription")
+      pay_customer.pay_charges.update_all(type: "Pay::#{pay_customer.processor.classify}::Charge")
+      pay_customer.pay_subscriptions.update_all(type: "Pay::#{pay_customer.processor.classify}::Subscription")
       pay_customer.payment_methods.update_all(type: "Pay::#{pay_customer.processor.classify}::PaymentMethod")
     end
 

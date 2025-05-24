@@ -3,8 +3,8 @@ require "test_helper"
 class Pay::Subscription::Test < ActiveSupport::TestCase
   setup do
     @owner = users(:fake)
-    @pay_customer = @owner.payment_processor
-    @subscription = @pay_customer.subscriptions.first
+    @pay_customer = @owner.pay_payment_processor
+    @subscription = @pay_customer.pay_subscriptions.first
   end
 
   test "validates subscription uniqueness by processor and processor ID" do
@@ -22,7 +22,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "subscription has many charges" do
-    assert_equal pay_charges(:stripe), pay_subscriptions(:stripe).charges.first
+    assert_equal pay_charges(:stripe), pay_subscriptions(:stripe).pay_charges.first
   end
 
   test "braintree?" do
@@ -314,19 +314,19 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   test "past_due" do
     @subscription.update!(status: :past_due)
     refute @subscription.active?
-    assert_not_includes @pay_customer.subscriptions.active, @subscription
+    assert_not_includes @pay_customer.pay_subscriptions.active, @subscription
   end
 
   test "unpaid" do
     @subscription.update!(status: :unpaid)
     refute @subscription.active?
-    assert_not_includes @pay_customer.subscriptions.active, @subscription
+    assert_not_includes @pay_customer.pay_subscriptions.active, @subscription
   end
 
   test "canceled subscriptions with a future ends_at are inactive" do
     @subscription.update(status: :canceled, ends_at: 1.hour.from_now)
     refute @subscription.active?
-    assert_not_includes @pay_customer.subscriptions.active, @subscription
+    assert_not_includes @pay_customer.pay_subscriptions.active, @subscription
   end
 
   test "cancel" do
@@ -429,9 +429,9 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     subscription_1.update_columns(status: "canceled")
 
     @pay_customer.reload
-    assert_not @pay_customer.subscriptions.loaded?
+    assert_not @pay_customer.pay_subscriptions.loaded?
 
-    @pay_customer.subscriptions.load
+    @pay_customer.pay_subscriptions.load
     assert_equal subscription_2, @pay_customer.subscription
   end
 
@@ -454,7 +454,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       status: :active
     }
 
-    @pay_customer.subscriptions.create! defaults.merge(options)
+    @pay_customer.pay_subscriptions.create! defaults.merge(options)
   end
 
   def create_stripe_subscription(options = {})
@@ -466,7 +466,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       status: :active
     }
 
-    pay_customers(:stripe).subscriptions.create! defaults.merge(options)
+    pay_customers(:stripe).pay_subscriptions.create! defaults.merge(options)
   end
 
   def create_paddle_subscription(options = {})
@@ -478,6 +478,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
       status: :active
     }
 
-    pay_customers(:paddle_classic).subscriptions.create! defaults.merge(options)
+    pay_customers(:paddle_classic).pay_subscriptions.create! defaults.merge(options)
   end
 end

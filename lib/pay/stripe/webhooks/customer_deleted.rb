@@ -10,7 +10,7 @@ module Pay
           return unless pay_customer
 
           # Mark all subscriptions as canceled
-          pay_customer.subscriptions.active.update_all(ends_at: Time.current, status: "canceled")
+          pay_customer.pay_subscriptions.active.update_all(ends_at: Time.current, status: "canceled")
 
           # Remove all payment methods
           pay_customer.payment_methods.destroy_all

@@ -53,7 +53,7 @@ module Pay
           attrs[:subtotal] = invoice.subtotal
           attrs[:tax] = invoice.total - invoice.total_excluding_tax.to_i
           if (subscription = invoice.parent.try(:subscription_details).try(:subscription))
-            attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: subscription)
+            attrs[:subscription] = pay_customer.pay_subscriptions.find_by(processor_id: subscription)
           end
         end
 

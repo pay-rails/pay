@@ -1,8 +1,8 @@
 module Pay
   class Customer < Pay::ApplicationRecord
     belongs_to :owner, polymorphic: true
-    has_many :charges, dependent: :destroy
-    has_many :subscriptions, dependent: :destroy
+    has_many :pay_charges, dependent: :destroy
+    has_many :pay_subscriptions, dependent: :destroy
     has_many :payment_methods, dependent: :destroy
     has_one :default_payment_method, -> { where(default: true) }, class_name: "Pay::PaymentMethod"
 
@@ -35,11 +35,11 @@ module Pay
     end
 
     def subscription(name: Pay.default_product_name)
-      subscriptions.order(created_at: :desc).for_name(name).first
+      pay_subscriptions.order(created_at: :desc).for_name(name).first
     end
 
     def subscribed?(name: Pay.default_product_name, processor_plan: nil)
-      subscriptions.active.where({name: name, processor_plan: processor_plan}.compact).exists?
+      pay_subscriptions.active.where({name: name, processor_plan: processor_plan}.compact).exists?
     end
 
     def on_trial?(name: Pay.default_product_name, plan: nil)
@@ -55,7 +55,7 @@ module Pay
     end
 
     def has_incomplete_payment?
-      subscriptions.active.incomplete.any?
+      pay_subscriptions.active.incomplete.any?
     end
 
     def customer_name
@@ -74,7 +74,7 @@ module Pay
     def on_generic_trial?
       return false unless fake_processor?
 
-      subscription = subscriptions.active.last
+      subscription = pay_subscriptions.active.last
       return false unless subscription
 
       # If these match, consider it a generic trial
@@ -84,7 +84,7 @@ module Pay
     # Attempts to pay all past_due subscription invoices to bring them back to active state
     # Pass in `statuses: []` if you would like to only include specific subscription statuses
     def retry_past_due_subscriptions!(status: [:past_due])
-      subscriptions.where(status: Array.wrap(status)).each(&:pay_open_invoices)
+      pay_subscriptions.where(status: Array.wrap(status)).each(&:pay_open_invoices)
     end
   end
 end

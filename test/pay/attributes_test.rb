@@ -3,18 +3,18 @@ require "test_helper"
 class Pay::AttributesTest < ActiveSupport::TestCase
   test "set payment processor" do
     user = users(:none)
-    refute user.payment_processor
+    refute user.pay_payment_processor
 
     assert_difference "Pay::Customer.count" do
       user.set_payment_processor :stripe
     end
 
-    assert user.payment_processor
+    assert user.pay_payment_processor
   end
 
   test "set payment processor types" do
     user = users(:none)
-    refute user.payment_processor
+    refute user.pay_payment_processor
 
     assert_equal Pay::FakeProcessor::Customer, user.set_payment_processor(:fake_processor, allow_fake: true).class
     assert_equal Pay::LemonSqueezy::Customer, user.set_payment_processor(:lemon_squeezy).class
@@ -26,18 +26,18 @@ class Pay::AttributesTest < ActiveSupport::TestCase
   test "set payment processor with previously deleted processor" do
     user = users(:deleted_customer)
     assert user.pay_customers.last.deleted_at?
-    refute user.payment_processor
+    refute user.pay_payment_processor
 
     assert_difference "Pay::Customer.where(processor: :stripe).count" do
       user.set_payment_processor :stripe
     end
 
-    assert user.payment_processor
+    assert user.pay_payment_processor
   end
 
   test "deleting user doesn't remove pay customers" do
     user = users(:stripe)
-    ::Stripe::Subscription.stub(:cancel, user.payment_processor.subscription) do
+    ::Stripe::Subscription.stub(:cancel, user.pay_payment_processor.subscription) do
       assert_no_difference "Pay::Customer.count" do
         user.destroy
       end
@@ -46,18 +46,18 @@ class Pay::AttributesTest < ActiveSupport::TestCase
 
   test "deleting user cancels subscriptions" do
     user = users(:stripe)
-    ::Stripe::Subscription.stub(:cancel, user.payment_processor.subscription) do
-      assert user.payment_processor.subscription.active?
+    ::Stripe::Subscription.stub(:cancel, user.pay_payment_processor.subscription) do
+      assert user.pay_payment_processor.subscription.active?
       user.destroy
-      refute user.payment_processor.subscription.active?
+      refute user.pay_payment_processor.subscription.active?
     end
   end
 
   test "deleting user ignores canceled subscriptions" do
     user = users(:stripe)
-    ::Stripe::Subscription.stub(:cancel, user.payment_processor.subscription) do
-      user.payment_processor.subscription.cancel_now!
-      refute user.payment_processor.subscription.active?
+    ::Stripe::Subscription.stub(:cancel, user.pay_payment_processor.subscription) do
+      user.pay_payment_processor.subscription.cancel_now!
+      refute user.pay_payment_processor.subscription.active?
       user.destroy
     end
   end
@@ -90,7 +90,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
   test "default_payment_processor option" do
     original_value = User.pay_default_payment_processor
     User.pay_default_payment_processor = :fake_processor
-    payment_processor = users(:none).payment_processor
+    payment_processor = users(:none).pay_payment_processor
     assert payment_processor
     assert_equal "fake_processor", payment_processor.processor
     User.pay_default_payment_processor = original_value
@@ -98,10 +98,10 @@ class Pay::AttributesTest < ActiveSupport::TestCase
 
   test "add payment processor without making it default" do
     user = users(:stripe)
-    assert_equal "stripe", user.payment_processor.processor
+    assert_equal "stripe", user.pay_payment_processor.processor
 
     result = user.add_payment_processor :fake_processor, allow_fake: true
     assert_not_equal "stripe", result.processor
-    assert_equal "stripe", user.payment_processor.processor
+    assert_equal "stripe", user.pay_payment_processor.processor
   end
 end

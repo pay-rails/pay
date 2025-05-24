@@ -78,7 +78,7 @@ class Pay::PaddleClassic::Webhooks::SubscriptionPaymentSucceededTest < ActiveSup
   end
 
   test "a charge isn't created if it already exists" do
-    @pay_customer.charges.create!(processor_id: @data.subscription_payment_id, amount: 1_00, payment_method_type: @data.payment_method)
+    @pay_customer.pay_charges.create!(processor_id: @data.subscription_payment_id, amount: 1_00, payment_method_type: @data.payment_method)
 
     assert_no_difference "Pay::Charge.count" do
       Pay::PaddleClassic::Webhooks::SubscriptionPaymentSucceeded.new.call(@data)

@@ -3,8 +3,8 @@ module Pay
     class Customer < Pay::Customer
       include Pay::Routing
 
-      has_many :charges, dependent: :destroy, class_name: "Pay::Stripe::Charge"
-      has_many :subscriptions, dependent: :destroy, class_name: "Pay::Stripe::Subscription"
+      has_many :pay_charges, dependent: :destroy, class_name: "Pay::Stripe::Charge"
+      has_many :pay_subscriptions, dependent: :destroy, class_name: "Pay::Stripe::Subscription"
       has_many :payment_methods, dependent: :destroy, class_name: "Pay::Stripe::PaymentMethod"
       has_one :default_payment_method, -> { where(default: true) }, class_name: "Pay::Stripe::PaymentMethod"
 

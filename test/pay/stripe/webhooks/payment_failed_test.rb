@@ -26,6 +26,6 @@ class Pay::Stripe::Webhooks::PaymentFailedTest < ActiveSupport::TestCase
   private
 
   def create_subscription(processor_id:)
-    @pay_customer.subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active")
+    @pay_customer.pay_subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active")
   end
 end

@@ -1,8 +1,8 @@
 module Pay
   module PaddleBilling
     class Customer < Pay::Customer
-      has_many :charges, dependent: :destroy, class_name: "Pay::PaddleBilling::Charge"
-      has_many :subscriptions, dependent: :destroy, class_name: "Pay::PaddleBilling::Subscription"
+      has_many :pay_charges, dependent: :destroy, class_name: "Pay::PaddleBilling::Charge"
+      has_many :pay_subscriptions, dependent: :destroy, class_name: "Pay::PaddleBilling::Subscription"
       has_many :payment_methods, dependent: :destroy, class_name: "Pay::PaddleBilling::PaymentMethod"
       has_one :default_payment_method, -> { where(default: true) }, class_name: "Pay::PaddleBilling::PaymentMethod"
 
@@ -52,7 +52,7 @@ module Pay
           metadata: transaction.details.line_items&.first&.id
         }
 
-        charge = charges.find_or_initialize_by(processor_id: transaction.id)
+        charge = pay_charges.find_or_initialize_by(processor_id: transaction.id)
         charge.update(attrs)
         charge
       rescue ::Paddle::Error => e

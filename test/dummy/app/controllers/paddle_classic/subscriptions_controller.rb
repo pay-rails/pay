@@ -13,8 +13,8 @@ class PaddleClassic::SubscriptionsController < ApplicationController
 
   def create
     current_user.set_payment_processor params[:processor]
-    current_user.payment_processor.payment_method_token = params[:card_token]
-    subscription = current_user.payment_processor.subscribe(plan: params[:plan_id])
+    current_user.pay_payment_processor.payment_method_token = params[:card_token]
+    subscription = current_user.pay_payment_processor.subscribe(plan: params[:plan_id])
     redirect_to paddle_classic_subscription_path(subscription)
   rescue Pay::Error => e
     flash[:alert] = e.message

@@ -15,7 +15,7 @@ module Pay
             return
           end
 
-          return if pay_customer.charges.where(processor_id: event.subscription_payment_id).any?
+          return if pay_customer.pay_charges.where(processor_id: event.subscription_payment_id).any?
 
           pay_charge = create_charge(pay_customer, event)
           notify_user(pay_charge)
@@ -29,11 +29,11 @@ module Pay
             created_at: Time.zone.parse(event.event_time),
             currency: event.currency,
             paddle_receipt_url: event.receipt_url,
-            subscription: pay_customer.subscriptions.find_by(processor_id: event.subscription_id),
+            subscription: pay_customer.pay_subscriptions.find_by(processor_id: event.subscription_id),
             metadata: Pay::PaddleClassic.parse_passthrough(event.passthrough).except("owner_sgid")
           }.merge(payment_method_details)
 
-          pay_charge = pay_customer.charges.find_or_initialize_by(processor_id: event.subscription_payment_id)
+          pay_charge = pay_customer.pay_charges.find_or_initialize_by(processor_id: event.subscription_payment_id)
           pay_charge.update!(attributes)
 
           # Update customer's payment method

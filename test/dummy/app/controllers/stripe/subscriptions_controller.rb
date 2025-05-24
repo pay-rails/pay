@@ -14,8 +14,8 @@ module Stripe
 
     def create
       current_user.set_payment_processor params[:processor]
-      current_user.payment_processor.payment_method_token = params[:card_token]
-      subscription = current_user.payment_processor.subscribe(plan: params[:price_id])
+      current_user.pay_payment_processor.payment_method_token = params[:card_token]
+      subscription = current_user.pay_payment_processor.subscribe(plan: params[:price_id])
       redirect_to stripe_subscription_path(subscription)
     rescue Pay::ActionRequired => e
       redirect_to pay.payment_path(e.payment.id)

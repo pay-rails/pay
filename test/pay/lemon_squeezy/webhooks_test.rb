@@ -54,7 +54,7 @@ class Pay::LemonSqueezy::WebhooksTest < ActiveSupport::TestCase
 
     user = users(:none)
     user.set_payment_processor :lemon_squeezy, processor_id: event.customer_id
-    user.payment_processor.subscriptions.create!(processor_id: event.subscription_id, name: Pay.default_product_name, processor_plan: "Default", status: :active)
+    user.pay_payment_processor.pay_subscriptions.create!(processor_id: event.subscription_id, name: Pay.default_product_name, processor_plan: "Default", status: :active)
 
     assert_difference "Pay::Charge.count" do
       Pay::LemonSqueezy::Webhooks::SubscriptionPayment.new.call(event)
@@ -70,7 +70,7 @@ class Pay::LemonSqueezy::WebhooksTest < ActiveSupport::TestCase
 
     user = users(:none)
     user.set_payment_processor :lemon_squeezy, processor_id: event.customer_id
-    user.payment_processor.subscriptions.create!(processor_id: event.subscription_id, name: Pay.default_product_name, processor_plan: "Default", status: :active)
+    user.pay_payment_processor.pay_subscriptions.create!(processor_id: event.subscription_id, name: Pay.default_product_name, processor_plan: "Default", status: :active)
 
     assert_difference "Pay::Charge.count" do
       Pay::LemonSqueezy::Webhooks::SubscriptionPayment.new.call(event)

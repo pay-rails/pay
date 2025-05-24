@@ -9,26 +9,26 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
   end
 
   test "connect account customer" do
-    assert_equal ::Stripe::Customer, @user.payment_processor.api_record.class
+    assert_equal ::Stripe::Customer, @user.pay_payment_processor.api_record.class
   end
 
   test "connect customer is not on parent account" do
     assert_raises Stripe::InvalidRequestError do
-      ::Stripe::Customer.retrieve(@user.payment_processor.processor_id)
+      ::Stripe::Customer.retrieve(@user.pay_payment_processor.processor_id)
     end
   end
 
   test "connect direct charge" do
-    pay_charge = @user.payment_processor.charge(10_00)
+    pay_charge = @user.pay_payment_processor.charge(10_00)
     assert_equal @stripe_account_id, pay_charge.stripe_account
   end
 
   test "connect destination charge" do
     @user = User.create!(email: "gob@bluth.com")
     @user.set_payment_processor :stripe
-    @user.payment_processor.update_payment_method "pm_card_visa"
+    @user.pay_payment_processor.update_payment_method "pm_card_visa"
 
-    pay_charge = @user.payment_processor.charge(
+    pay_charge = @user.pay_payment_processor.charge(
       10_00,
       application_fee_amount: 1_23,
       transfer_data: {destination: @stripe_account_id}
@@ -38,7 +38,7 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
   end
 
   test "connect direct subscription" do
-    pay_subscription = @user.payment_processor.subscribe(plan: "price_1ISuPKQK2ZHS99Rkrxy6GwbM")
+    pay_subscription = @user.pay_payment_processor.subscribe(plan: "price_1ISuPKQK2ZHS99Rkrxy6GwbM")
     assert_equal @stripe_account_id, pay_subscription.stripe_account
   end
 
@@ -50,7 +50,7 @@ class Pay::Stripe::ConnectTest < ActiveSupport::TestCase
   end
 
   test "connect transfer" do
-    @user.payment_processor.charge(10_00, transfer_group: "12345")
+    @user.pay_payment_processor.charge(10_00, transfer_group: "12345")
     account = Account.create
     account.set_merchant_processor(:stripe)
     account.merchant_processor.update(processor_id: "acct_1IStbKQOsIOBQfn0")

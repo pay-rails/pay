@@ -6,7 +6,7 @@ class Pay::PaddleClassic::Charge::Test < ActiveSupport::TestCase
   end
 
   test "paddle classic can get paddle charge" do
-    charge = @pay_customer.charges.create!(
+    charge = @pay_customer.pay_charges.create!(
       processor_id: "11018517",
       amount: 119,
       payment_method_type: "card",
@@ -18,7 +18,7 @@ class Pay::PaddleClassic::Charge::Test < ActiveSupport::TestCase
   end
 
   test "paddle classic can fully refund a transaction" do
-    charge = @pay_customer.charges.create!(
+    charge = @pay_customer.pay_charges.create!(
       processor_id: "11018517",
       amount: 119,
       payment_method_type: "card",
@@ -31,7 +31,7 @@ class Pay::PaddleClassic::Charge::Test < ActiveSupport::TestCase
   end
 
   test "paddle classic cannot refund a transaction without payment" do
-    charge = @pay_customer.charges.create!(
+    charge = @pay_customer.pay_charges.create!(
       processor_id: "does-not-exist",
       amount: 119,
       payment_method_type: "card",

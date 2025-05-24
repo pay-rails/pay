@@ -5,9 +5,9 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:braintree)
     @pay_customer.update(processor_id: nil)
-    @pay_customer.charges.delete_all
+    @pay_customer.pay_charges.delete_all
     @pay_customer.payment_methods.delete_all
-    @pay_customer.subscriptions.delete_all
+    @pay_customer.pay_subscriptions.delete_all
   end
 
   test "can partially refund a transaction" do
@@ -31,17 +31,17 @@ class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
   end
 
   test "you can ask the charge for the type" do
-    assert pay_customers(:stripe).charges.new.stripe?
-    refute pay_customers(:braintree).charges.new.stripe?
+    assert pay_customers(:stripe).pay_charges.new.stripe?
+    refute pay_customers(:braintree).pay_charges.new.stripe?
 
-    assert pay_customers(:braintree).charges.new.braintree?
-    refute pay_customers(:braintree).charges.new.stripe?
+    assert pay_customers(:braintree).pay_charges.new.braintree?
+    refute pay_customers(:braintree).pay_charges.new.stripe?
 
-    assert pay_customers(:paddle_classic).charges.new.paddle_classic?
-    refute pay_customers(:paddle_classic).charges.new.stripe?
+    assert pay_customers(:paddle_classic).pay_charges.new.paddle_classic?
+    refute pay_customers(:paddle_classic).pay_charges.new.stripe?
 
-    assert pay_customers(:fake).charges.new.fake_processor?
-    refute pay_customers(:fake).charges.new.stripe?
+    assert pay_customers(:fake).pay_charges.new.fake_processor?
+    refute pay_customers(:fake).pay_charges.new.stripe?
   end
 
   test "braintree saves currency on charge" do

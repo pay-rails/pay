@@ -45,7 +45,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync associates charge with stripe subscription" do
     ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
-    pay_subscription = @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
+    pay_subscription = @pay_customer.pay_subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
     assert_equal pay_subscription, pay_charge.subscription
   end

@@ -9,7 +9,7 @@ class Pay::Stripe::Webhooks::CustomerDeletedTest < ActiveSupport::TestCase
     pay_customer = pay_customers(:stripe)
     pay_customer.update!(processor_id: @event.data.object.id)
     pay_customer.payment_methods.create!(processor_id: "pm_fake")
-    pay_subscription = pay_customer.subscriptions.create!(
+    pay_subscription = pay_customer.pay_subscriptions.create!(
       processor_id: "sub_someid",
       name: "default",
       processor_plan: "some-plan",

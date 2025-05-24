@@ -9,14 +9,14 @@ class Pay::Braintree::Webhooks::SubscriptionChargedSuccessfullyTest < ActiveSupp
     pay_customer = pay_customers(:braintree)
     pay_customer.update(processor_id: @event.subscription.transactions.first.customer_details.id)
 
-    pay_subscription = pay_customer.subscriptions.create!(
+    pay_subscription = pay_customer.pay_subscriptions.create!(
       processor_id: @event.subscription.id,
       name: "default",
       processor_plan: "some-plan",
       status: "active"
     )
 
-    assert_difference "pay_customer.charges.count" do
+    assert_difference "pay_customer.pay_charges.count" do
       Pay::Braintree::Webhooks::SubscriptionChargedSuccessfully.new.call(@event)
     end
 

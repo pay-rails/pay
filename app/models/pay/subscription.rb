@@ -5,7 +5,7 @@ module Pay
     # Associations
     belongs_to :customer
     belongs_to :payment_method, optional: true, primary_key: :processor_id
-    has_many :charges
+    has_many :pay_charges, class_name: "Pay::Charge"
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }

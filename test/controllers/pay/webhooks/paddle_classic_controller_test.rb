@@ -27,7 +27,7 @@ module Pay
         end
       end
 
-      assert_difference("user.payment_processor.subscriptions.count") do
+      assert_difference("user.pay_payment_processor.pay_subscriptions.count") do
         perform_enqueued_jobs
       end
     end
