@@ -14,6 +14,15 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert_equal "Pay Customer Name", @user.payment_processor.customer_name
   end
 
+  test "email" do
+    assert_equal "fake@example.org", @user.payment_processor.email
+  end
+
+  test "email after owner deleted" do
+    @user.destroy
+    assert_nil @user.payment_processor.reload.email
+  end
+
   test "customer with processor" do
     assert_equal @user.payment_processor, @user.payment_processor.api_record
   end
