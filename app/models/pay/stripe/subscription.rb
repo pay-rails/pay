@@ -297,7 +297,7 @@ module Pay
         )
 
         # Validate that swap was successful and handle SCA if needed
-        if (payment_intent_id = @api_record.latest_invoice.payments.first.payment.payment_intent)
+        if (payment_intent_id = @api_record.latest_invoice.payments.first&.payment&.payment_intent)
           Pay::Payment.from_id(payment_intent_id).validate
         end
 
