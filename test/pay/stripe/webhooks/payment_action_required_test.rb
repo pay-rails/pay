@@ -28,7 +28,7 @@ class Pay::Stripe::Webhooks::PaymentActionRequiredTest < ActiveSupport::TestCase
               payment_intent: "pi_1234",
               type: "payment_intent"
             },
-            status:"open",
+            status: "open",
             status_transitions: {
               canceled_at: nil,
               paid_at: nil
