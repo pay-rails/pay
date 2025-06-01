@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 10.1.5
+
+* Fix Stripe payment controller rescue
+
 ### 10.1.4
 
 * Stripe `payment_action_required` webhooks now have to retrieve the InvoicePayments to send the email
