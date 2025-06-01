@@ -54,10 +54,27 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
       subscription = @pay_customer.subscribe(name: "default", plan: "default", trial_period_days: 14)
       assert subscription.active?
       assert subscription.on_trial?
+      cancel_time = Time.now
       subscription.cancel_now!
       travel 1.minute
       refute subscription.active?
       refute subscription.on_trial?
+      assert_equal cancel_time, subscription.trial_ends_at
+    end
+  end
+
+  test "cancel_now when not on trial does not modify trial_ends_at" do
+    # XXX create a VCR cassette for this test
+    VCR.use_cassette("test_cancel_now_when_scheduled_for_cancellation") do
+      travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+        @pay_customer.update(processor_id: nil)
+        @pay_customer.update_payment_method "pm_card_visa"
+        subscription = @pay_customer.subscribe(name: "default", plan: "default")
+        refute subscription.trial_ends_at
+        subscription.cancel_now!
+        travel 1.minute
+        refute subscription.trial_ends_at
+      end
     end
   end
 
