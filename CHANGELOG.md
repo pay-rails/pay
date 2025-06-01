@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 10.1.4
+
+* Stripe `payment_action_required` webhooks now have to retrieve the InvoicePayments to send the email
+
 ### 10.1.3
 
 * Handle Stripe errors if invalid payment intent ID is used for /payments
