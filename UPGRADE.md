@@ -2,6 +2,22 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Pay 11
+
+Associations on Pay models have been renamed to use the `pay_` prefix.
+
+```ruby
+# old
+@user.charges
+# new
+@user.pay_charges
+
+# old
+@user.subscriptions
+# new
+@user.pay_subscriptions
+```
+
 ## Pay 10.1
 
 Pay now uses the Stripe `charge.updated` webhook to save Charge balance transactions. Make sure you're sending this webhook to keep these records up-to-date.
