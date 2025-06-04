@@ -183,7 +183,7 @@ module Pay
         update(
           trial_ends_at: (@api_record.trial_end ? Time.at(@api_record.trial_end) : nil),
           ends_at: Time.at(@api_record.ended_at),
-          status: :canceled
+          status: @api_record.status
         )
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
