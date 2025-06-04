@@ -66,10 +66,12 @@ module Pay
 
     # Does not include the last second of the trial
     def on_trial?
+      return false if ended?
       trial_ends_at? && trial_ends_at > Time.current
     end
 
     def trial_ended?
+      return true if ended?
       trial_ends_at? && trial_ends_at <= Time.current
     end
 
