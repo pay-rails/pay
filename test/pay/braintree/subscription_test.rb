@@ -51,10 +51,9 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
       # Account for time hitting the API because we've frozen time and ends_at is ahead
       travel 2.seconds
 
-      # Canceling during a trial ends the subscription, but continues to give access during the trial period
       assert_equal "canceled", pay_subscription.status
       refute pay_subscription.active?
-      assert pay_subscription.on_trial?
+      refute pay_subscription.on_trial?
       assert pay_subscription.ended?
       assert_not_includes @pay_customer.subscriptions.active, pay_subscription
     end
@@ -135,10 +134,9 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
 
       pay_subscription = Pay::Braintree::Subscription.sync(processor_id)
 
-      # Canceling during a trial ends the subscription, but continues to give acess during the trial period
       assert_equal "canceled", pay_subscription.status
       refute pay_subscription.active?
-      assert pay_subscription.on_trial?
+      refute pay_subscription.on_trial?
       assert pay_subscription.ended?
       assert_not_includes @pay_customer.subscriptions.active, pay_subscription
     end

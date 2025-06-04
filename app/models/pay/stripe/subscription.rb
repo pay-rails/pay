@@ -47,6 +47,8 @@ module Pay
         if object.trial_end
           trial_ended_at = [object.ended_at, object.trial_end].compact.min
           attributes[:trial_ends_at] = Time.at(trial_ended_at)
+        else
+          attributes[:trial_ends_at] = nil
         end
 
         object.items.auto_paging_each do |subscription_item|
@@ -164,7 +166,7 @@ module Pay
           cancel_now!
         else
           @api_record = ::Stripe::Subscription.update(processor_id, {cancel_at_period_end: true}.merge(expand_options), stripe_options)
-          update(ends_at: (on_trial? ? trial_ends_at : Time.at(@api_record.items.first.current_period_end)))
+          update(ends_at: Time.at(@api_record.cancel_at))
         end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -178,7 +180,11 @@ module Pay
         return if canceled? && ends_at.past?
 
         @api_record = ::Stripe::Subscription.cancel(processor_id, options.merge(expand_options), stripe_options)
-        update(trial_ends_at: Time.current, ends_at: Time.current, status: :canceled)
+        update(
+          trial_ends_at: (@api_record.trial_end ? Time.at(@api_record.trial_end) : nil),
+          ends_at: Time.at(@api_record.ended_at),
+          status: @api_record.status
+        )
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
