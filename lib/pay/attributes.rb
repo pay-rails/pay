@@ -13,8 +13,8 @@ module Pay
         cattr_accessor :pay_braintree_customer_attributes
 
         has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
-        has_many :charges, through: :pay_customers, class_name: "Pay::Charge"
-        has_many :subscriptions, through: :pay_customers, class_name: "Pay::Subscription"
+        has_many :pay_charges, through: :pay_customers, class_name: "Pay::Charge", source: :charges
+        has_many :pay_subscriptions, through: :pay_customers, class_name: "Pay::Subscription", source: :subscriptions
         has_one :payment_processor, -> { where(default: true, deleted_at: nil) }, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
 
         after_commit :cancel_active_pay_subscriptions!, on: [:destroy]
@@ -68,7 +68,7 @@ module Pay
       end
 
       def cancel_active_pay_subscriptions!
-        subscriptions.active.each(&:cancel_now!)
+        pay_subscriptions.active.each(&:cancel_now!)
       end
     end
 
