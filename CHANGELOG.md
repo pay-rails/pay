@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.0.1
+
+* Fix release
+
 ### 11.0.0
 
 * [Breaking] Renames `pay_customer` associations for `charges` and `subscriptions` to prevent conflicts
