@@ -2,6 +2,23 @@
 
 ### Unreleased
 
+### 11.0.0
+
+* [Breaking] Renames `pay_customer` associations for `charges` and `subscriptions` to prevent conflicts
+  To upgrade, add the `pay_` prefix when referencing associations.
+
+  ```ruby
+  @user.pay_subscriptions
+  @user.pay_charges
+  ```
+
+* `on_trial?` and `trial_ended?` now consider if a `Pay::Subscription` was canceled. #1172
+* Stripe `cancel_now!` no longer sets `trial_ends_at` when there was no trial #1172
+* Stripe `cancel` and `cancel_now!` set values from the API response to match the values when syncing via webhooks. #1172
+* Stripe `Subscription#sync` now sets `trial_ends_at` to `nil` if the API response is also nil. #1172
+  Previously, it would leave the value unmodified in the database but this ensures the value is always in sync with the Stripe API.
+* Braintree subscriptions that `cancel_now!` now consider their trial ended immediately to match.
+
 ### 10.1.5
 
 * Fix Stripe payment controller rescue
