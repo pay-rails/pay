@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.1.0
+
+* Add text parts to emails
+
 ### 11.0.1
 
 * Fix release
