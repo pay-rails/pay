@@ -1,0 +1,20 @@
+We received payment for your <%= Pay.application_name %> subscription. Thanks for your business!
+
+Questions? Please reply to this email.
+
+------------------------------------
+RECEIPT - SUBSCRIPTION
+
+<%= Pay.application_name %>
+Amount: <%= params[:pay_charge].amount_with_currency %>
+
+Charged to: <%= params[:pay_charge].charged_to %>
+Transaction ID: <%= params[:pay_charge].id %>
+Date: <%= l params[:pay_charge].created_at %>
+<% if params[:pay_charge].customer.owner.try(:extra_billing_info?) %>
+<%= params[:pay_charge].customer.owner.extra_billing_info %>
+<% end %>
+
+<%= Pay.business_name %>
+<%= Pay.business_address %>
+------------------------------------
