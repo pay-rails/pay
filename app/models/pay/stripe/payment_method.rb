@@ -41,12 +41,12 @@ module Pay
         pay_payment_method.update!(attributes)
         pay_payment_method
       rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-        try += 1
-        if try <= retries
-          sleep 0.1
-          retry
-        else
+        if try > retries
           raise
+        else
+          try += 1
+          sleep 0.15**try
+          retry
         end
       end
 

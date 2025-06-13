@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+* Add `retry` to `Pay::Stripe.sync_checkout_session`
+  Subscriptions aren't instantly attached to a Checkout Session, so this retry gives a chance for completion.
+  This helps build a more seamless experience when redirecting after a successful checkout so the next page knows the user has subscribed successfully.
+
 ### 11.1.0
 
 * Add text parts to emails

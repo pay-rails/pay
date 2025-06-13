@@ -65,11 +65,13 @@ module Pay
           create!(attrs.merge(customer: pay_customer, processor_id: object.id))
         end
       rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-        try += 1
-        raise unless try <= retries
-
-        sleep 0.1
-        retry
+        if try > retries
+          raise
+        else
+          try += 1
+          sleep 0.15**try
+          retry
+        end
       end
 
       def api_record

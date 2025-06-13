@@ -142,15 +142,24 @@ module Pay
       nil
     end
 
-    def self.sync_checkout_session(session_id, stripe_account: nil)
+    # Subscriptions aren't always immediately associated, so we want to retry by default
+    def self.sync_checkout_session(session_id, stripe_account: nil, try: 0, retries: 5)
       checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id, expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)
       case checkout_session.mode
       when "payment"
         if (id = checkout_session.payment_intent.try(:latest_charge)&.id)
-          Pay::Stripe::Charge.sync(id, stripe_account: stripe_account)
+          Pay::Stripe::Charge.sync(id, stripe_account: stripe_account, retries: 5)
         end
       when "subscription"
         Pay::Stripe::Subscription.sync(checkout_session.subscription, stripe_account: stripe_account)
+      end
+    rescue ::Stripe::InvalidRequestError
+      if try > retries
+        raise
+      else
+        try += 1
+        sleep 0.15**try
+        retry
       end
     end
   end
