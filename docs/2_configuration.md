@@ -143,6 +143,10 @@ Pay.setup do |config|
   # To disable all emails, set the following configuration option to false:
   config.send_emails = true
 
+  # By default emails are sent via Pay::UserMailer which inherits from Pay::ApplicationMailer. Instead, you may wish to inherit from ApplicationMailer, or use a different mailer entirely.
+  config.parent_mailer = "ApplicationMailer"
+  config.mailer = "MyCustomPayMailer"
+
   # All emails can be configured independently as to whether to be sent or not. The values can be set to true, false or a custom lambda to set up more involved logic. The Pay defaults are show below and can be modified as needed.
   config.emails.payment_action_required = true
   config.emails.payment_failed = true
