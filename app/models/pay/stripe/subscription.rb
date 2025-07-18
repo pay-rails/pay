@@ -103,7 +103,13 @@ module Pay
         if (invoice = object.try(:latest_invoice))
           Array(invoice.try(:payments)).each do |invoice_payment|
             next unless invoice_payment.status == "paid"
-            Pay::Stripe::Charge.sync_payment_intent(invoice_payment.payment.payment_intent, stripe_account: pay_subscription.stripe_account)
+
+            case invoice_payment.payment.type
+            when "payment_intent"
+              Pay::Stripe::Charge.sync_payment_intent(invoice_payment.payment.payment_intent, stripe_account: pay_subscription.stripe_account)
+            when "charge"
+              Pay::Stripe::Charge.sync(invoice_payment.payment.charge, stripe_account: pay_subscription.stripe_account)
+            end
           end
         end
 
