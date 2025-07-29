@@ -47,13 +47,15 @@ module Pay
         }
 
         # Associate charge with subscription if we can
-        invoice_payments = ::Stripe::InvoicePayment.list({payment: {type: :payment_intent, payment_intent: object.payment_intent}, status: :paid, expand: ["data.invoice.total_discount_amounts.discount"]}, {stripe_account: stripe_account}.compact)
-        if invoice_payments.any? && (invoice = invoice_payments.first.invoice)
-          attrs[:stripe_invoice] = invoice.to_hash
-          attrs[:subtotal] = invoice.subtotal
-          attrs[:tax] = invoice.total - invoice.total_excluding_tax.to_i
-          if (subscription = invoice.parent.try(:subscription_details).try(:subscription))
-            attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: subscription)
+        if object.payment_intent.present?
+          invoice_payments = ::Stripe::InvoicePayment.list({payment: {type: :payment_intent, payment_intent: object.payment_intent}, status: :paid, expand: ["data.invoice.total_discount_amounts.discount"]}, {stripe_account: stripe_account}.compact)
+          if invoice_payments.any? && (invoice = invoice_payments.first.invoice)
+            attrs[:stripe_invoice] = invoice.to_hash
+            attrs[:subtotal] = invoice.subtotal
+            attrs[:tax] = invoice.total - invoice.total_excluding_tax.to_i
+            if (subscription = invoice.parent.try(:subscription_details).try(:subscription))
+              attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: subscription)
+            end
           end
         end
 
