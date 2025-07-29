@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.1.2
+
+* Fix Stripe InvoicePayment syncing for old Charges without `payment_intent` attribute #1183
+
 ### 11.1.1
 
 * Add `retry` to `Pay::Stripe.sync_checkout_session`
