@@ -91,7 +91,7 @@ module Pay
       # refund!
       # refund!(5_00)
       # refund!(5_00, refund_application_fee: true)
-      def refund!(amount_to_refund, **options)
+      def refund!(amount_to_refund = nil, **options)
         amount_to_refund ||= amount
 
         if stripe_invoice.present?
