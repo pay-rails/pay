@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.1.3
+
+* Fix Stripe `Charge#refund!` to allow no arguments and default to refunding the full amount.
+
 ### 11.1.2
 
 * Fix Stripe InvoicePayment syncing for old Charges without `payment_intent` attribute #1183
