@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.2.0
+
+* Add `has_one :owner, through: :customer` assocation to `Pay::Charge`, `Pay::Subscription` and `Pay::PaymentMethod` for convenience.
+
 ### 11.1.3
 
 * Fix Stripe `Charge#refund!` to allow no arguments and default to refunding the full amount.
