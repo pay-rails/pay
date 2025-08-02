@@ -3,6 +3,7 @@ module Pay
     # Associations
     belongs_to :customer
     belongs_to :subscription, optional: true
+    has_one :owner, through: :customer
 
     # Scopes
     scope :sorted, -> { order(created_at: :desc) }

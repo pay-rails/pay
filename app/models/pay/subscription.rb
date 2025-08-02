@@ -6,6 +6,7 @@ module Pay
     belongs_to :customer
     belongs_to :payment_method, optional: true, primary_key: :processor_id
     has_many :charges
+    has_one :owner, through: :customer
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }

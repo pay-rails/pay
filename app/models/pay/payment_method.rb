@@ -1,6 +1,7 @@
 module Pay
   class PaymentMethod < Pay::ApplicationRecord
     belongs_to :customer
+    has_one :owner, through: :customer
 
     store_accessor :data, :brand # Visa, Mastercard, Discover, PayPal
     store_accessor :data, :last4
