@@ -5,6 +5,11 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert_equal Pay::Stripe::Customer, pay_charges(:stripe).customer.class
   end
 
+  test "owner" do
+    assert_equal users(:stripe), pay_charges(:stripe).owner
+  end
+
+
   test "braintree scope" do
     assert Pay::Charge.braintree.is_a?(ActiveRecord::Relation)
   end

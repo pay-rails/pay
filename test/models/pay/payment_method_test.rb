@@ -1,7 +1,7 @@
 require "test_helper"
 
 class Pay::PaymentMethodTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "owner" do
+    assert_equal users(:stripe), pay_payment_methods(:one).owner
+  end
 end

@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.2.1
+
+* Replace `owner` association with `delegate` since `has_one :through` doesn't work with polymorphic belongs_to without a `source_type`
+
 ### 11.2.0
 
 * Add `has_one :owner, through: :customer` assocation to `Pay::Charge`, `Pay::Subscription` and `Pay::PaymentMethod` for convenience.

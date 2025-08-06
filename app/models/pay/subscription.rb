@@ -6,7 +6,6 @@ module Pay
     belongs_to :customer
     belongs_to :payment_method, optional: true, primary_key: :processor_id
     has_many :charges
-    has_one :owner, through: :customer
 
     # Scopes
     scope :for_name, ->(name) { where(name: name) }
@@ -43,6 +42,8 @@ module Pay
 
       scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
     end
+
+    delegate :owner, to: :customer
 
     def self.find_by_processor_and_id(processor, processor_id)
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})

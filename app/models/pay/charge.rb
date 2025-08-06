@@ -3,7 +3,6 @@ module Pay
     # Associations
     belongs_to :customer
     belongs_to :subscription, optional: true
-    has_one :owner, through: :customer
 
     # Scopes
     scope :sorted, -> { order(created_at: :desc) }
@@ -13,6 +12,8 @@ module Pay
     # Validations
     validates :amount, presence: true
     validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
+
+    delegate :owner, to: :customer
 
     # Payment method attributes
     store_accessor :data, :payment_method_type # card, paypal, sepa, etc
