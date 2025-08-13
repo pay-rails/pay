@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.2.2
+
+* Fix Stripe `subscriptions.renewing` webhook to use the correct account when retrieving the price
+
 ### 11.2.1
 
 * Replace `owner` association with `delegate` since `has_one :through` doesn't work with polymorphic belongs_to without a `source_type`
