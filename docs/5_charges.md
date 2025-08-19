@@ -7,7 +7,7 @@ Pay allows you to make one-time charges to a customer.
 To charge a customer, you need to assign a payment method token before you can charge them.
 
 ```ruby
-@user.payment_processor.payment_method_token = params[:payment_method_token]
+@user.payment_processor.update_payment_method(params[:payment_method_token])
 @user.payment_processor.charge(15_00) # $15.00 USD
 ```
 
