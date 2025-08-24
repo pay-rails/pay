@@ -184,11 +184,11 @@ class Pay::Test < ActiveSupport::TestCase
   test "can configure mail_arguments with arity 0 (instance_exec)" do
     old_mail_arguments = Pay.mail_arguments
     Pay.mail_arguments = -> { {to: "test@example.com", cc: "cc@example.com"} }
-    
+
     # Create a mock mailer context for instance_exec
     mailer_context = Object.new
     mailer_context.define_singleton_method(:params) { {pay_customer: Object.new} }
-    
+
     result = mailer_context.instance_exec(&Pay.mail_arguments)
     assert_equal({to: "test@example.com", cc: "cc@example.com"}, result)
   ensure
@@ -206,11 +206,11 @@ class Pay::Test < ActiveSupport::TestCase
   test "can configure mail_to with arity 0 (instance_exec)" do
     old_mail_to = Pay.mail_to
     Pay.mail_to = -> { "user@example.org" }
-    
+
     # Create a mock mailer context for instance_exec
     mailer_context = Object.new
     mailer_context.define_singleton_method(:params) { {pay_customer: Object.new} }
-    
+
     result = mailer_context.instance_exec(&Pay.mail_to)
     assert_equal "user@example.org", result
   ensure

@@ -97,7 +97,7 @@ module Pay
     else
       Pay.mail_to.call(self, params)
     end
-    
+
     {
       to: to_value,
       subject: default_i18n_subject(application: Pay.application_name)
