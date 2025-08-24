@@ -159,13 +159,27 @@ Pay.setup do |config|
   config.emails.subscription_trial_will_end = true
   config.emails.subscription_trial_ended = true
 
-  # Customize who receives emails. Useful when adding additional recipients other than the Pay::Customer. This defaults to the pay customer's email address.
+  # Customize who receives emails. Useful when adding additional recipients other than the Pay::Customer. 
+  # This defaults to the pay customer's email address.
+  # The lambda is executed with instance_exec in the mailer context, so you have access to params and mailer methods.
+  # config.mail_to = -> { "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>" }
+  
+  # For backward compatibility, you can also use the old syntax with arguments:
   # config.mail_to = ->(mailer, params) { "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>" }
 
   # Customize mail() arguments. By default, only includes { to: }. Useful when you want to add cc, bcc, customize the mail subject, etc.
+  # The lambda is executed with instance_exec in the mailer context, so you have access to params and mailer methods.
+  # config.mail_arguments = -> {
+  #   {
+  #     to: params[:pay_customer].email,
+  #     cc: "admin@example.com"
+  #   }
+  # }
+  
+  # For backward compatibility, you can also use the old syntax with arguments:
   # config.mail_arguments = ->(mailer, params) {
   #   {
-  #     to: Pay.mail_recipients.call(mailer, params)
+  #     to: params[:pay_customer].email
   #   }
   # }
 end

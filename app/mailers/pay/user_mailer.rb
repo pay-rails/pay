@@ -35,7 +35,12 @@ module Pay
     private
 
     def mail_arguments
-      instance_exec(&Pay.mail_arguments)
+      # Support both instance_exec (arity 0) and explicit arguments (arity 2) for backward compatibility
+      if Pay.mail_arguments.arity == 0
+        instance_exec(&Pay.mail_arguments)
+      else
+        Pay.mail_arguments.call(self, params)
+      end
     end
   end
 end

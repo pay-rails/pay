@@ -92,8 +92,14 @@ module Pay
   # Should return a hash of arguments for the `mail` call in UserMailer
   mattr_accessor :mail_arguments
   @@mail_arguments = -> {
+    to_value = if Pay.mail_to.arity == 0
+      instance_exec(&Pay.mail_to)
+    else
+      Pay.mail_to.call(self, params)
+    end
+    
     {
-      to: instance_exec(&Pay.mail_to),
+      to: to_value,
       subject: default_i18n_subject(application: Pay.application_name)
     }
   }

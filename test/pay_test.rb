@@ -181,7 +181,21 @@ class Pay::Test < ActiveSupport::TestCase
     Pay.mailer = "Pay::UserMailer" # clean up for other tests
   end
 
-  test "can configure mail_arguments" do
+  test "can configure mail_arguments with arity 0 (instance_exec)" do
+    old_mail_arguments = Pay.mail_arguments
+    Pay.mail_arguments = -> { {to: "test@example.com", cc: "cc@example.com"} }
+    
+    # Create a mock mailer context for instance_exec
+    mailer_context = Object.new
+    mailer_context.define_singleton_method(:params) { {pay_customer: Object.new} }
+    
+    result = mailer_context.instance_exec(&Pay.mail_arguments)
+    assert_equal({to: "test@example.com", cc: "cc@example.com"}, result)
+  ensure
+    Pay.mail_arguments = old_mail_arguments
+  end
+
+  test "can configure mail_arguments with arity 2 (backward compatibility)" do
     old_mail_arguments = Pay.mail_arguments
     Pay.mail_arguments = ->(mailer, params) { {to: "to", cc: "cc"} }
     assert_equal({to: "to", cc: "cc"}, Pay.mail_arguments.call("pay/receipt", {}))
@@ -189,7 +203,21 @@ class Pay::Test < ActiveSupport::TestCase
     Pay.mail_arguments = old_mail_arguments
   end
 
-  test "can configure mail_to" do
+  test "can configure mail_to with arity 0 (instance_exec)" do
+    old_mail_to = Pay.mail_to
+    Pay.mail_to = -> { "user@example.org" }
+    
+    # Create a mock mailer context for instance_exec
+    mailer_context = Object.new
+    mailer_context.define_singleton_method(:params) { {pay_customer: Object.new} }
+    
+    result = mailer_context.instance_exec(&Pay.mail_to)
+    assert_equal "user@example.org", result
+  ensure
+    Pay.mail_to = old_mail_to
+  end
+
+  test "can configure mail_to with arity 2 (backward compatibility)" do
     old_mail_to = Pay.mail_to
     Pay.mail_to = ->(mailer, params) { "user@example.org" }
     assert_equal "user@example.org", Pay.mail_to.call("pay/receipt", {})
