@@ -160,7 +160,7 @@ Pay.setup do |config|
   config.emails.subscription_trial_ended = true
 
   # Customize who receives emails. Useful when adding additional recipients other than the Pay::Customer. This defaults to the pay customer's email address.
-  # config.mail_to = ->(mailer, params) { "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>" }
+  # config.mail_to = -> { "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>" }
 
   # Customize mail() arguments. By default, only includes { to: }. Useful when you want to add cc, bcc, customize the mail subject, etc.
   # config.mail_arguments = ->(mailer, params) {
