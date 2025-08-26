@@ -184,7 +184,7 @@ class Pay::Test < ActiveSupport::TestCase
   test "can configure mail_arguments" do
     old_mail_arguments = Pay.mail_arguments
     Pay.mail_arguments = -> { {to: "to", cc: "cc"} }
-    assert_equal {to: "to", cc: "cc"}, Pay.mail_arguments.call()
+    assert_equal({to: "to", cc: "cc"}, Pay.mail_arguments.call)
   ensure
     Pay.mail_arguments = old_mail_arguments
   end
@@ -192,7 +192,7 @@ class Pay::Test < ActiveSupport::TestCase
   test "can configure mail_to" do
     old_mail_to = Pay.mail_to
     Pay.mail_to = -> { "user@example.org" }
-    assert_equal "user@example.org", Pay.mail_to.call()
+    assert_equal "user@example.org", Pay.mail_to.call
   ensure
     Pay.mail_to = old_mail_to
   end
