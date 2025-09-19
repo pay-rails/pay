@@ -63,6 +63,10 @@ module Pay
       status == "incomplete"
     end
 
+    def unpaid?
+      status == "unpaid"
+    end
+
     def has_incomplete_payment?
       past_due? || incomplete?
     end

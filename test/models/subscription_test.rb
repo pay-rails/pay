@@ -172,6 +172,14 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_nil @subscription.ends_at
   end
 
+  test "unpaid?" do
+    @subscription.status = "unpaid"
+    assert @subscription.unpaid?
+
+    @subscription.status = "active"
+    refute @subscription.unpaid?
+  end
+
   test "resume off grace period" do
     @subscription.stubs(:on_grace_period?).returns(false)
 
