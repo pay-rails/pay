@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Include `stripe_account` in `set_payment_processor` and `add_payment_processor` queries #1198
+
 ### 11.2.2
 
 * Fix Stripe `subscriptions.renewing` webhook to use the correct account when retrieving the price
