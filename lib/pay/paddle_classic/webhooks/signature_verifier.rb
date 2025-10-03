@@ -38,9 +38,24 @@ module Pay
           data_serialized = serialize(data_sorted, true)
 
           # verify the data
-          digest = OpenSSL::Digest.new("SHA1")
           pub_key = OpenSSL::PKey::RSA.new(public_key)
-          pub_key.verify(digest, signature, data_serialized)
+
+          begin
+            # Try the old verification method first (works on older OpenSSL versions)
+            digest = OpenSSL::Digest.new("SHA1")
+            pub_key.verify(digest, signature, data_serialized)
+          rescue OpenSSL::PKey::PKeyError
+            # If that fails due to newer OpenSSL, use manual verification
+            # This handles PKCS#1 v1.5 padding which includes the digest at the end
+            begin
+              digest = OpenSSL::Digest::SHA1.digest(data_serialized)
+              decrypted = pub_key.public_decrypt(signature)
+              # Check if decrypted signature ends with our computed digest
+              decrypted.end_with?(digest)
+            rescue OpenSSL::PKey::RSAError
+              false
+            end
+          end
         end
 
         private
@@ -99,17 +114,16 @@ module Pay
           when FalseClass, TrueClass
             s << "b:#{var ? 1 : 0};"
           else
-            if var.respond_to?(:to_assoc)
-              v = var.to_assoc
-              # encode as Object with same name
-              s << "O:#{var.class.to_s.bytesize}:\"#{var.class.to_s.downcase}\":#{v.length}:{"
-              v.each do |k, v|
-                s << "#{serialize(k.to_s, assoc)}#{serialize(v, assoc)}"
-              end
-              s << "}"
-            else
-              raise TypeError, "Unable to serialize type #{var.class}"
+            raise TypeError, "Unable to serialize type #{var.class}" unless var.respond_to?(:to_assoc)
+
+            v = var.to_assoc
+            # encode as Object with same name
+            s << "O:#{var.class.to_s.bytesize}:\"#{var.class.to_s.downcase}\":#{v.length}:{"
+            v.each do |k, v|
+              s << "#{serialize(k.to_s, assoc)}#{serialize(v, assoc)}"
             end
+            s << "}"
+
           end
           s
         end
