@@ -2,262 +2,6 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.stripe.com/v<VENDOR_ID>/customers
-    body:
-      encoding: UTF-8
-      string: email=stripe%40e<VENDOR_AUTH_CODE>ample.org&name=Stripe+User&e<VENDOR_AUTH_CODE>pand[0]=ta<VENDOR_AUTH_CODE>&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=invoice_credit_balance
-    headers:
-      User-Agent:
-      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>5.0.0 PayRails/9.0.<VENDOR_ID>
-        (https://github.com/pay-rails/pay)
-      Authorization:
-      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
-      Idempotency-Key:
-      - dab8c022-8c2d-47ce-b7c3-5557eeef3595
-      Stripe-Version:
-      - 2025-03-3<VENDOR_ID>.basil
-      X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"9.0.<VENDOR_ID>"},"bindings_version":"<VENDOR_ID>5.0.0","lang":"ruby","lang_version":"3.4.3
-        p32 (2025-04-<VENDOR_ID>4)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Mac-Studio.localdomain 24.4.0 Darwin Kernel Version 24.4.0: Wed Mar <VENDOR_ID>9
-        2<VENDOR_ID>:<VENDOR_ID>7:37 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID><VENDOR_ID>4<VENDOR_ID>7.<VENDOR_ID>0<VENDOR_ID>.<VENDOR_ID>5~<VENDOR_ID>/RELEASE_ARM64_T603<VENDOR_ID>
-        arm64","hostname":"Mac-Studio.localdomain"}'
-      Content-Type:
-      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
-      Accept-Encoding:
-      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - ngin<VENDOR_AUTH_CODE>
-      Date:
-      - Thu, <VENDOR_ID>7 Apr 2025 <VENDOR_ID>8:56:00 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '778'
-      Connection:
-      - keep-alive
-      Access-Control-Allow-Credentials:
-      - 'true'
-      Access-Control-Allow-Methods:
-      - GET, HEAD, PUT, PATCH, POST, DELETE
-      Access-Control-Allow-Origin:
-      - "*"
-      Cache-Control:
-      - no-cache, no-store
-      Content-Security-Policy:
-      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
-        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
-        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=ntXYwkPJofew7-bWYr0wWJm<VENDOR_AUTH_CODE>L8y7FqwbMdMqOqlEMCwcXnSebHnydr_jEzHLAGE_3Ef4RiLXJJsVyoES
-      Idempotency-Key:
-      - dab8c022-8c2d-47ce-b7c3-5557eeef3595
-      Original-Request:
-      - req_m54GiZRe8U<VENDOR_ID>cNz
-      Request-Id:
-      - req_m54GiZRe8U<VENDOR_ID>cNz
-      Stripe-Should-Retry:
-      - 'false'
-      Stripe-Version:
-      - 2025-03-3<VENDOR_ID>.basil
-      Vary:
-      - Origin
-      X-Stripe-Priority-Routing-Enabled:
-      - 'true'
-      X-Wc:
-      - ABGHI
-      Strict-Transport-Security:
-      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
-      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
-      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
-        X-Stripe-Privileged-Session-Required
-      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
-      - '300'
-      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
-      - api-testmode
-    body:
-      encoding: UTF-8
-      string: |-
-        {
-          "id": "cus_S9G70rTV7l5N5O",
-          "object": "customer",
-          "address": null,
-          "balance": 0,
-          "created": <VENDOR_ID>7449<VENDOR_ID>6<VENDOR_ID>59,
-          "currency": null,
-          "default_source": null,
-          "delinquent": false,
-          "description": null,
-          "discount": null,
-          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
-          "invoice_credit_balance": {},
-          "invoice_prefi<VENDOR_AUTH_CODE>": "9346C995",
-          "invoice_settings": {
-            "custom_fields": null,
-            "default_payment_method": null,
-            "footer": null,
-            "rendering_options": null
-          },
-          "livemode": false,
-          "metadata": {},
-          "name": "Stripe User",
-          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
-          "phone": null,
-          "preferred_locales": [],
-          "shipping": null,
-          "ta<VENDOR_AUTH_CODE>": {
-            "automatic_ta<VENDOR_AUTH_CODE>": "unrecognized_location",
-            "ip_address": null,
-            "location": null
-          },
-          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
-          "test_clock": null
-        }
-  recorded_at: Thu, 17 Apr 2025 18:56:00 GMT
-- request:
-    method: post
-    uri: https://api.stripe.com/v<VENDOR_ID>/payment_methods/pm_card_authenticationRequired/attach
-    body:
-      encoding: UTF-8
-      string: customer=cus_S9G70rTV7l5N5O
-    headers:
-      User-Agent:
-      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>5.0.0 PayRails/9.0.<VENDOR_ID>
-        (https://github.com/pay-rails/pay)
-      Authorization:
-      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
-      X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_m54GiZRe8U<VENDOR_ID>cNz","request_duration_ms":296}}'
-      Idempotency-Key:
-      - e6<VENDOR_ID>be430-6339-4a<VENDOR_ID><VENDOR_ID>-b7c9-d9c<VENDOR_ID>82ebb3de
-      Stripe-Version:
-      - 2025-03-3<VENDOR_ID>.basil
-      X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"9.0.<VENDOR_ID>"},"bindings_version":"<VENDOR_ID>5.0.0","lang":"ruby","lang_version":"3.4.3
-        p32 (2025-04-<VENDOR_ID>4)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Mac-Studio.localdomain 24.4.0 Darwin Kernel Version 24.4.0: Wed Mar <VENDOR_ID>9
-        2<VENDOR_ID>:<VENDOR_ID>7:37 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID><VENDOR_ID>4<VENDOR_ID>7.<VENDOR_ID>0<VENDOR_ID>.<VENDOR_ID>5~<VENDOR_ID>/RELEASE_ARM64_T603<VENDOR_ID>
-        arm64","hostname":"Mac-Studio.localdomain"}'
-      Content-Type:
-      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
-      Accept-Encoding:
-      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - ngin<VENDOR_AUTH_CODE>
-      Date:
-      - Thu, <VENDOR_ID>7 Apr 2025 <VENDOR_ID>8:56:00 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - "<VENDOR_ID>065"
-      Connection:
-      - keep-alive
-      Access-Control-Allow-Credentials:
-      - 'true'
-      Access-Control-Allow-Methods:
-      - GET, HEAD, PUT, PATCH, POST, DELETE
-      Access-Control-Allow-Origin:
-      - "*"
-      Cache-Control:
-      - no-cache, no-store
-      Content-Security-Policy:
-      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
-        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
-        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=9nl9DHwpmzIjhE7vt6snyIh6NHttBWv0ySsR7e3KmtBGuOmLa_SmN6hQC<VENDOR_ID>hUSHipoyM2rhNOad2ZWENF
-      Idempotency-Key:
-      - e6<VENDOR_ID>be430-6339-4a<VENDOR_ID><VENDOR_ID>-b7c9-d9c<VENDOR_ID>82ebb3de
-      Original-Request:
-      - req_njNkXaDmHdtDXf
-      Request-Id:
-      - req_njNkXaDmHdtDXf
-      Stripe-Should-Retry:
-      - 'false'
-      Stripe-Version:
-      - 2025-03-3<VENDOR_ID>.basil
-      Vary:
-      - Origin
-      X-Stripe-Priority-Routing-Enabled:
-      - 'true'
-      X-Wc:
-      - ABGHI
-      Strict-Transport-Security:
-      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
-      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
-      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
-        X-Stripe-Privileged-Session-Required
-      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
-      - '300'
-      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
-      - api-testmode
-    body:
-      encoding: UTF-8
-      string: |-
-        {
-          "id": "pm_<VENDOR_ID>RE<VENDOR_AUTH_CODE>bQKXBGcbgpbZFFEfyK9i",
-          "object": "payment_method",
-          "allow_redisplay": "unspecified",
-          "billing_details": {
-            "address": {
-              "city": null,
-              "country": null,
-              "line<VENDOR_ID>": null,
-              "line2": null,
-              "postal_code": null,
-              "state": null
-            },
-            "email": null,
-            "name": null,
-            "phone": null,
-            "ta<VENDOR_AUTH_CODE>_id": null
-          },
-          "card": {
-            "brand": "visa",
-            "checks": {
-              "address_line<VENDOR_ID>_check": null,
-              "address_postal_code_check": null,
-              "cvc_check": "pass"
-            },
-            "country": "DE",
-            "display_brand": "visa",
-            "e<VENDOR_AUTH_CODE>p_month": 4,
-            "e<VENDOR_AUTH_CODE>p_year": 2026,
-            "fingerprint": "qu2J<VENDOR_AUTH_CODE>Qg97yWGBVrd",
-            "funding": "credit",
-            "generated_from": null,
-            "last4": "3<VENDOR_ID>84",
-            "networks": {
-              "available": [
-                "visa"
-              ],
-              "preferred": null
-            },
-            "regulated_status": "unregulated",
-            "three_d_secure_usage": {
-              "supported": true
-            },
-            "wallet": null
-          },
-          "created": <VENDOR_ID>7449<VENDOR_ID>6<VENDOR_ID>60,
-          "customer": "cus_S9G70rTV7l5N5O",
-          "livemode": false,
-          "metadata": {},
-          "type": "card"
-        }
-  recorded_at: Thu, 17 Apr 2025 18:56:00 GMT
-- request:
-    method: post
     uri: https://api.stripe.com/v<VENDOR_ID>/customers/cus_S9G70rTV7l5N5O
     body:
       encoding: UTF-8
@@ -371,93 +115,6 @@ http_interactions:
           "test_clock": null
         }
   recorded_at: Thu, 17 Apr 2025 18:56:00 GMT
-- request:
-    method: post
-    uri: https://api.stripe.com/v<VENDOR_ID>/subscriptions
-    body:
-      encoding: UTF-8
-      string: items[0][price]=small-monthly&customer=cus_S9G70rTV7l5N5O&e<VENDOR_AUTH_CODE>pand[0]=discounts&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=default_payment_method&e<VENDOR_AUTH_CODE>pand[2]=pending_setup_intent&e<VENDOR_AUTH_CODE>pand[3]=latest_invoice.confirmation_<PADDLE_API_KEY>&e<VENDOR_AUTH_CODE>pand[4]=latest_invoice.payments&e<VENDOR_AUTH_CODE>pand[5]=latest_invoice.total_discount_amounts.discount
-    headers:
-      User-Agent:
-      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>5.0.0 PayRails/9.0.<VENDOR_ID>
-        (https://github.com/pay-rails/pay)
-      Authorization:
-      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
-      X-Stripe-Client-Telemetry:
-      - '{"last_request_metrics":{"request_id":"req_updzaNOKYmNqHN","request_duration_ms":<VENDOR_ID>93}}'
-      Idempotency-Key:
-      - "<VENDOR_ID>bb4e66d-9e06-4287-ae98-222233f<VENDOR_ID>f454"
-      Stripe-Version:
-      - 2025-03-3<VENDOR_ID>.basil
-      X-Stripe-Client-User-Agent:
-      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"9.0.<VENDOR_ID>"},"bindings_version":"<VENDOR_ID>5.0.0","lang":"ruby","lang_version":"3.4.3
-        p32 (2025-04-<VENDOR_ID>4)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
-        Mac-Studio.localdomain 24.4.0 Darwin Kernel Version 24.4.0: Wed Mar <VENDOR_ID>9
-        2<VENDOR_ID>:<VENDOR_ID>7:37 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID><VENDOR_ID>4<VENDOR_ID>7.<VENDOR_ID>0<VENDOR_ID>.<VENDOR_ID>5~<VENDOR_ID>/RELEASE_ARM64_T603<VENDOR_ID>
-        arm64","hostname":"Mac-Studio.localdomain"}'
-      Content-Type:
-      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
-      Accept-Encoding:
-      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - ngin<VENDOR_AUTH_CODE>
-      Date:
-      - Thu, <VENDOR_ID>7 Apr 2025 <VENDOR_ID>8:56:03 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - 95<VENDOR_ID><VENDOR_ID>
-      Connection:
-      - keep-alive
-      Access-Control-Allow-Credentials:
-      - 'true'
-      Access-Control-Allow-Methods:
-      - GET, HEAD, PUT, PATCH, POST, DELETE
-      Access-Control-Allow-Origin:
-      - "*"
-      Cache-Control:
-      - no-cache, no-store
-      Content-Security-Policy:
-      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
-        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
-        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=9nl9DHwpmzIjhE7vt6snyIh6NHttBWv0ySsR7e3KmtBGuOmLa_SmN6hQC<VENDOR_ID>hUSHipoyM2rhNOad2ZWENF
-      Idempotency-Key:
-      - "<VENDOR_ID>bb4e66d-9e06-4287-ae98-222233f<VENDOR_ID>f454"
-      Original-Request:
-      - req_tVThmjh6qRRenV
-      Request-Id:
-      - req_tVThmjh6qRRenV
-      Stripe-Should-Retry:
-      - 'false'
-      Stripe-Version:
-      - 2025-03-3<VENDOR_ID>.basil
-      Vary:
-      - Origin
-      X-Stripe-Priority-Routing-Enabled:
-      - 'true'
-      X-Wc:
-      - ABGHI
-      Strict-Transport-Security:
-      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
-      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
-      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
-        X-Stripe-Privileged-Session-Required
-      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
-      - '300'
-      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
-      - api-testmode
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        ewogICJpZCI6ICJzdWJfPFZFTkRPUl9JRD5SRTxWRU5ET1JfQVVUSF9DT0RFPmJSS1hCR2NiZ3BiWlAzZ0NlbndsIiwKICAib2JqZWN0IjogInN1YnNjcmlwdGlvbiIsCiAgImFwcGxpY2F0aW9uIjogbnVsbCwKICAiYXBwbGljYXRpb25fZmVlX3BlcmNlbnQiOiBudWxsLAogICJhdXRvbWF0aWNfdGE8VkVORE9SX0FVVEhfQ09ERT4iOiB7CiAgICAiZGlzYWJsZWRfcmVhc29uIjogbnVsbCwKICAgICJlbmFibGVkIjogZmFsc2UsCiAgICAibGlhYmlsaXR5IjogbnVsbAogIH0sCiAgImJpbGxpbmdfY3ljbGVfYW5jaG9yIjogPFZFTkRPUl9JRD43NDQ5PFZFTkRPUl9JRD42PFZFTkRPUl9JRD42PFZFTkRPUl9JRD4sCiAgImJpbGxpbmdfY3ljbGVfYW5jaG9yX2NvbmZpZyI6IG51bGwsCiAgImNhbmNlbF9hdCI6IG51bGwsCiAgImNhbmNlbF9hdF9wZXJpb2RfZW5kIjogZmFsc2UsCiAgImNhbmNlbGVkX2F0IjogbnVsbCwKICAiY2FuY2VsbGF0aW9uX2RldGFpbHMiOiB7CiAgICAiY29tbWVudCI6IG51bGwsCiAgICAiZmVlZGJhY2siOiBudWxsLAogICAgInJlYXNvbiI6IG51bGwKICB9LAogICJjb2xsZWN0aW9uX21ldGhvZCI6ICJjaGFyZ2VfYXV0b21hdGljYWxseSIsCiAgImNyZWF0ZWQiOiA8VkVORE9SX0lEPjc0NDk8VkVORE9SX0lEPjY8VkVORE9SX0lEPjY8VkVORE9SX0lEPiwKICAiY3VycmVuY3kiOiAidXNkIiwKICAiY3VzdG9tZXIiOiAiY3VzX1M5RzcwclRWN2w1TjVPIiwKICAiZGF5c191bnRpbF9kdWUiOiBudWxsLAogICJkZWZhdWx0X3BheW1lbnRfbWV0aG9kIjogbnVsbCwKICAiZGVmYXVsdF9zb3VyY2UiOiBudWxsLAogICJkZWZhdWx0X3RhPFZFTkRPUl9BVVRIX0NPREU+X3JhdGVzIjogW10sCiAgImRlc2NyaXB0aW9uIjogbnVsbCwKICAiZGlzY291bnRzIjogW10sCiAgImVuZGVkX2F0IjogbnVsbCwKICAiaW52b2ljZV9zZXR0aW5ncyI6IHsKICAgICJhY2NvdW50X3RhPFZFTkRPUl9BVVRIX0NPREU+X2lkcyI6IG51bGwsCiAgICAiaXNzdWVyIjogewogICAgICAidHlwZSI6ICJzZWxmIgogICAgfQogIH0sCiAgIml0ZW1zIjogewogICAgIm9iamVjdCI6ICJsaXN0IiwKICAgICJkYXRhIjogWwogICAgICB7CiAgICAgICAgImlkIjogInNpX1M5RzdwdWZOZWtKYzY4IiwKICAgICAgICAib2JqZWN0IjogInN1YnNjcmlwdGlvbl9pdGVtIiwKICAgICAgICAiY3JlYXRlZCI6IDxWRU5ET1JfSUQ+NzQ0OTxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICAgICAgICJjdXJyZW50X3BlcmlvZF9lbmQiOiA8VkVORE9SX0lEPjc0NzUwODxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICAgICAgICJjdXJyZW50X3BlcmlvZF9zdGFydCI6IDxWRU5ET1JfSUQ+NzQ0OTxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICAgICAgICJkaXNjb3VudHMiOiBbXSwKICAgICAgICAibWV0YWRhdGEiOiB7fSwKICAgICAgICAicGxhbiI6IHsKICAgICAgICAgICJpZCI6ICJzbWFsbC1tb250aGx5IiwKICAgICAgICAgICJvYmplY3QiOiAicGxhbiIsCiAgICAgICAgICAiYWN0aXZlIjogdHJ1ZSwKICAgICAgICAgICJhbW91bnQiOiAyNTAwLAogICAgICAgICAgImFtb3VudF9kZWNpbWFsIjogIjI1MDAiLAogICAgICAgICAgImJpbGxpbmdfc2NoZW1lIjogInBlcl91bml0IiwKICAgICAgICAgICJjcmVhdGVkIjogPFZFTkRPUl9JRD41NzxWRU5ET1JfSUQ+NDI1NTcwLAogICAgICAgICAgImN1cnJlbmN5IjogInVzZCIsCiAgICAgICAgICAiaW50ZXJ2YWwiOiAibW9udGgiLAogICAgICAgICAgImludGVydmFsX2NvdW50IjogPFZFTkRPUl9JRD4sCiAgICAgICAgICAibGl2ZW1vZGUiOiBmYWxzZSwKICAgICAgICAgICJtZXRhZGF0YSI6IHt9LAogICAgICAgICAgIm1ldGVyIjogbnVsbCwKICAgICAgICAgICJuaWNrbmFtZSI6ICJTbWFsbCBNb250aGx5IiwKICAgICAgICAgICJwcm9kdWN0IjogInByb2RfRVlUWDdSWWhSamN3S0QiLAogICAgICAgICAgInRpZXJzX21vZGUiOiBudWxsLAogICAgICAgICAgInRyYW5zZm9ybV91c2FnZSI6IG51bGwsCiAgICAgICAgICAidHJpYWxfcGVyaW9kX2RheXMiOiBudWxsLAogICAgICAgICAgInVzYWdlX3R5cGUiOiAibGljZW5zZWQiCiAgICAgICAgfSwKICAgICAgICAicHJpY2UiOiB7CiAgICAgICAgICAiaWQiOiAic21hbGwtbW9udGhseSIsCiAgICAgICAgICAib2JqZWN0IjogInByaWNlIiwKICAgICAgICAgICJhY3RpdmUiOiB0cnVlLAogICAgICAgICAgImJpbGxpbmdfc2NoZW1lIjogInBlcl91bml0IiwKICAgICAgICAgICJjcmVhdGVkIjogPFZFTkRPUl9JRD41NzxWRU5ET1JfSUQ+NDI1NTcwLAogICAgICAgICAgImN1cnJlbmN5IjogInVzZCIsCiAgICAgICAgICAiY3VzdG9tX3VuaXRfYW1vdW50IjogbnVsbCwKICAgICAgICAgICJsaXZlbW9kZSI6IGZhbHNlLAogICAgICAgICAgImxvb2t1cF9rZXkiOiBudWxsLAogICAgICAgICAgIm1ldGFkYXRhIjoge30sCiAgICAgICAgICAibmlja25hbWUiOiAiU21hbGwgTW9udGhseSIsCiAgICAgICAgICAicHJvZHVjdCI6ICJwcm9kX0VZVFg3UlloUmpjd0tEIiwKICAgICAgICAgICJyZWN1cnJpbmciOiB7CiAgICAgICAgICAgICJpbnRlcnZhbCI6ICJtb250aCIsCiAgICAgICAgICAgICJpbnRlcnZhbF9jb3VudCI6IDxWRU5ET1JfSUQ+LAogICAgICAgICAgICAibWV0ZXIiOiBudWxsLAogICAgICAgICAgICAidHJpYWxfcGVyaW9kX2RheXMiOiBudWxsLAogICAgICAgICAgICAidXNhZ2VfdHlwZSI6ICJsaWNlbnNlZCIKICAgICAgICAgIH0sCiAgICAgICAgICAidGE8VkVORE9SX0FVVEhfQ09ERT5fYmVoYXZpb3IiOiAiZTxWRU5ET1JfQVVUSF9DT0RFPmNsdXNpdmUiLAogICAgICAgICAgInRpZXJzX21vZGUiOiBudWxsLAogICAgICAgICAgInRyYW5zZm9ybV9xdWFudGl0eSI6IG51bGwsCiAgICAgICAgICAidHlwZSI6ICJyZWN1cnJpbmciLAogICAgICAgICAgInVuaXRfYW1vdW50IjogMjUwMCwKICAgICAgICAgICJ1bml0X2Ftb3VudF9kZWNpbWFsIjogIjI1MDAiCiAgICAgICAgfSwKICAgICAgICAicXVhbnRpdHkiOiA8VkVORE9SX0lEPiwKICAgICAgICAic3Vic2NyaXB0aW9uIjogInN1Yl88VkVORE9SX0lEPlJFPFZFTkRPUl9BVVRIX0NPREU+YlJLWEJHY2JncGJaUDNnQ2Vud2wiLAogICAgICAgICJ0YTxWRU5ET1JfQVVUSF9DT0RFPl9yYXRlcyI6IFtdCiAgICAgIH0KICAgIF0sCiAgICAiaGFzX21vcmUiOiBmYWxzZSwKICAgICJ0b3RhbF9jb3VudCI6IDxWRU5ET1JfSUQ+LAogICAgInVybCI6ICIvdjxWRU5ET1JfSUQ+L3N1YnNjcmlwdGlvbl9pdGVtcz9zdWJzY3JpcHRpb249c3ViXzxWRU5ET1JfSUQ+UkU8VkVORE9SX0FVVEhfQ09ERT5iUktYQkdjYmdwYlpQM2dDZW53bCIKICB9LAogICJsYXRlc3RfaW52b2ljZSI6IHsKICAgICJpZCI6ICJpbl88VkVORE9SX0lEPlJFPFZFTkRPUl9BVVRIX0NPREU+YlJLWEJHY2JncGJaPFZFTkRPUl9BVVRIX0NPREU+VTV2YkhDOCIsCiAgICAib2JqZWN0IjogImludm9pY2UiLAogICAgImFjY291bnRfY291bnRyeSI6ICJVUyIsCiAgICAiYWNjb3VudF9uYW1lIjogIlBheSIsCiAgICAiYWNjb3VudF90YTxWRU5ET1JfQVVUSF9DT0RFPl9pZHMiOiBudWxsLAogICAgImFtb3VudF9kdWUiOiAyNTAwLAogICAgImFtb3VudF9vdmVycGFpZCI6IDAsCiAgICAiYW1vdW50X3BhaWQiOiAwLAogICAgImFtb3VudF9yZW1haW5pbmciOiAyNTAwLAogICAgImFtb3VudF9zaGlwcGluZyI6IDAsCiAgICAiYXBwbGljYXRpb24iOiBudWxsLAogICAgImF0dGVtcHRfY291bnQiOiAwLAogICAgImF0dGVtcHRlZCI6IHRydWUsCiAgICAiYXV0b19hZHZhbmNlIjogdHJ1ZSwKICAgICJhdXRvbWF0aWNfdGE8VkVORE9SX0FVVEhfQ09ERT4iOiB7CiAgICAgICJkaXNhYmxlZF9yZWFzb24iOiBudWxsLAogICAgICAiZW5hYmxlZCI6IGZhbHNlLAogICAgICAibGlhYmlsaXR5IjogbnVsbCwKICAgICAgInN0YXR1cyI6IG51bGwKICAgIH0sCiAgICAiYXV0b21hdGljYWxseV9maW5hbGl6ZXNfYXQiOiBudWxsLAogICAgImJpbGxpbmdfcmVhc29uIjogInN1YnNjcmlwdGlvbl9jcmVhdGUiLAogICAgImNvbGxlY3Rpb25fbWV0aG9kIjogImNoYXJnZV9hdXRvbWF0aWNhbGx5IiwKICAgICJjb25maXJtYXRpb25fPFBBRERMRV9BUElfS0VZPiI6IHsKICAgICAgImNsaWVudF88UEFERExFX0FQSV9LRVk+IjogInBpXzNSRTxWRU5ET1JfQVVUSF9DT0RFPmJSS1hCR2NiZ3BiWjxWRU5ET1JfSUQ+QjZxYTNWbF88UEFERExFX0FQSV9LRVk+X2NwblREbUVEPFZFTkRPUl9JRD5odWVRUTVjZWhqWFJEUmcwIiwKICAgICAgInR5cGUiOiAicGF5bWVudF9pbnRlbnQiCiAgICB9LAogICAgImNyZWF0ZWQiOiA8VkVORE9SX0lEPjc0NDk8VkVORE9SX0lEPjY8VkVORE9SX0lEPjY8VkVORE9SX0lEPiwKICAgICJjdXJyZW5jeSI6ICJ1c2QiLAogICAgImN1c3RvbV9maWVsZHMiOiBudWxsLAogICAgImN1c3RvbWVyIjogImN1c19TOUc3MHJUVjdsNU41TyIsCiAgICAiY3VzdG9tZXJfYWRkcmVzcyI6IG51bGwsCiAgICAiY3VzdG9tZXJfZW1haWwiOiAic3RyaXBlQGU8VkVORE9SX0FVVEhfQ09ERT5hbXBsZS5vcmciLAogICAgImN1c3RvbWVyX25hbWUiOiAiU3RyaXBlIFVzZXIiLAogICAgImN1c3RvbWVyX3Bob25lIjogbnVsbCwKICAgICJjdXN0b21lcl9zaGlwcGluZyI6IG51bGwsCiAgICAiY3VzdG9tZXJfdGE8VkVORE9SX0FVVEhfQ09ERT5fZTxWRU5ET1JfQVVUSF9DT0RFPmVtcHQiOiAibm9uZSIsCiAgICAiY3VzdG9tZXJfdGE8VkVORE9SX0FVVEhfQ09ERT5faWRzIjogW10sCiAgICAiZGVmYXVsdF9wYXltZW50X21ldGhvZCI6IG51bGwsCiAgICAiZGVmYXVsdF9zb3VyY2UiOiBudWxsLAogICAgImRlZmF1bHRfdGE8VkVORE9SX0FVVEhfQ09ERT5fcmF0ZXMiOiBbXSwKICAgICJkZXNjcmlwdGlvbiI6IG51bGwsCiAgICAiZGlzY291bnRzIjogW10sCiAgICAiZHVlX2RhdGUiOiBudWxsLAogICAgImVmZmVjdGl2ZV9hdCI6IDxWRU5ET1JfSUQ+NzQ0OTxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICAgImVuZGluZ19iYWxhbmNlIjogMCwKICAgICJmb290ZXIiOiBudWxsLAogICAgImZyb21faW52b2ljZSI6IG51bGwsCiAgICAiaG9zdGVkX2ludm9pY2VfdXJsIjogImh0dHBzOi8vaW52b2ljZS5zdHJpcGUuY29tL2kvYWNjdF88VkVORE9SX0lEPkU0YmZuS1hCR2NiZ3BiWi90ZXN0X1lXTmpkRjg8VkVORE9SX0FVVEhfQ09ERT5SVFJpWm01TFdFSkhZMkpuY0dKYUxGOVRPVWMzTTJKTGVFZGhVazk8VkVORE9SX0FVVEhfQ09ERT5Za2hMV0RBd2FtWmFhV040TjBOTVQzVjxWRU5ET1JfQVVUSF9DT0RFPkxERXpOVFE8VkVORE9SX0lEPk5qazJNdzAyMDBmS21XWllJSz9zPWFwIiwKICAgICJpbnZvaWNlX3BkZiI6ICJodHRwczovL3BheS5zdHJpcGUuY29tL2ludm9pY2UvYWNjdF88VkVORE9SX0lEPkU0YmZuS1hCR2NiZ3BiWi90ZXN0X1lXTmpkRjg8VkVORE9SX0FVVEhfQ09ERT5SVFJpWm01TFdFSkhZMkpuY0dKYUxGOVRPVWMzTTJKTGVFZGhVazk8VkVORE9SX0FVVEhfQ09ERT5Za2hMV0RBd2FtWmFhV040TjBOTVQzVjxWRU5ET1JfQVVUSF9DT0RFPkxERXpOVFE8VkVORE9SX0lEPk5qazJNdzAyMDBmS21XWllJSy9wZGY/cz1hcCIsCiAgICAiaXNzdWVyIjogewogICAgICAidHlwZSI6ICJzZWxmIgogICAgfSwKICAgICJsYXN0X2ZpbmFsaXphdGlvbl9lcnJvciI6IG51bGwsCiAgICAibGF0ZXN0X3JldmlzaW9uIjogbnVsbCwKICAgICJsaW5lcyI6IHsKICAgICAgIm9iamVjdCI6ICJsaXN0IiwKICAgICAgImRhdGEiOiBbCiAgICAgICAgewogICAgICAgICAgImlkIjogImlsXzxWRU5ET1JfSUQ+UkU8VkVORE9SX0FVVEhfQ09ERT5iUktYQkdjYmdwYlpKUG43NnJFNyIsCiAgICAgICAgICAib2JqZWN0IjogImxpbmVfaXRlbSIsCiAgICAgICAgICAiYW1vdW50IjogMjUwMCwKICAgICAgICAgICJjdXJyZW5jeSI6ICJ1c2QiLAogICAgICAgICAgImRlc2NyaXB0aW9uIjogIjxWRU5ET1JfSUQ+IHVzZXIgw5cgVGVzdCBTdWJzY3JpcHRpb24gKGF0ICQyNS4wMCAvIG1vbnRoKSIsCiAgICAgICAgICAiZGlzY291bnRfYW1vdW50cyI6IFtdLAogICAgICAgICAgImRpc2NvdW50YWJsZSI6IHRydWUsCiAgICAgICAgICAiZGlzY291bnRzIjogW10sCiAgICAgICAgICAiaW52b2ljZSI6ICJpbl88VkVORE9SX0lEPlJFPFZFTkRPUl9BVVRIX0NPREU+YlJLWEJHY2JncGJaPFZFTkRPUl9BVVRIX0NPREU+VTV2YkhDOCIsCiAgICAgICAgICAibGl2ZW1vZGUiOiBmYWxzZSwKICAgICAgICAgICJtZXRhZGF0YSI6IHt9LAogICAgICAgICAgInBhcmVudCI6IHsKICAgICAgICAgICAgImludm9pY2VfaXRlbV9kZXRhaWxzIjogbnVsbCwKICAgICAgICAgICAgInN1YnNjcmlwdGlvbl9pdGVtX2RldGFpbHMiOiB7CiAgICAgICAgICAgICAgImludm9pY2VfaXRlbSI6IG51bGwsCiAgICAgICAgICAgICAgInByb3JhdGlvbiI6IGZhbHNlLAogICAgICAgICAgICAgICJwcm9yYXRpb25fZGV0YWlscyI6IHsKICAgICAgICAgICAgICAgICJjcmVkaXRlZF9pdGVtcyI6IG51bGwKICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICJzdWJzY3JpcHRpb24iOiAic3ViXzxWRU5ET1JfSUQ+UkU8VkVORE9SX0FVVEhfQ09ERT5iUktYQkdjYmdwYlpQM2dDZW53bCIsCiAgICAgICAgICAgICAgInN1YnNjcmlwdGlvbl9pdGVtIjogInNpX1M5RzdwdWZOZWtKYzY4IgogICAgICAgICAgICB9LAogICAgICAgICAgICAidHlwZSI6ICJzdWJzY3JpcHRpb25faXRlbV9kZXRhaWxzIgogICAgICAgICAgfSwKICAgICAgICAgICJwZXJpb2QiOiB7CiAgICAgICAgICAgICJlbmQiOiA8VkVORE9SX0lEPjc0NzUwODxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICAgICAgICAgICAic3RhcnQiOiA8VkVORE9SX0lEPjc0NDk8VkVORE9SX0lEPjY8VkVORE9SX0lEPjY8VkVORE9SX0lEPgogICAgICAgICAgfSwKICAgICAgICAgICJwcmV0YTxWRU5ET1JfQVVUSF9DT0RFPl9jcmVkaXRfYW1vdW50cyI6IFtdLAogICAgICAgICAgInByaWNpbmciOiB7CiAgICAgICAgICAgICJwcmljZV9kZXRhaWxzIjogewogICAgICAgICAgICAgICJwcmljZSI6ICJzbWFsbC1tb250aGx5IiwKICAgICAgICAgICAgICAicHJvZHVjdCI6ICJwcm9kX0VZVFg3UlloUmpjd0tEIgogICAgICAgICAgICB9LAogICAgICAgICAgICAidHlwZSI6ICJwcmljZV9kZXRhaWxzIiwKICAgICAgICAgICAgInVuaXRfYW1vdW50X2RlY2ltYWwiOiAiMjUwMCIKICAgICAgICAgIH0sCiAgICAgICAgICAicXVhbnRpdHkiOiA8VkVORE9SX0lEPiwKICAgICAgICAgICJ0YTxWRU5ET1JfQVVUSF9DT0RFPmVzIjogW10KICAgICAgICB9CiAgICAgIF0sCiAgICAgICJoYXNfbW9yZSI6IGZhbHNlLAogICAgICAidG90YWxfY291bnQiOiA8VkVORE9SX0lEPiwKICAgICAgInVybCI6ICIvdjxWRU5ET1JfSUQ+L2ludm9pY2VzL2luXzxWRU5ET1JfSUQ+UkU8VkVORE9SX0FVVEhfQ09ERT5iUktYQkdjYmdwYlo8VkVORE9SX0FVVEhfQ09ERT5VNXZiSEM4L2xpbmVzIgogICAgfSwKICAgICJsaXZlbW9kZSI6IGZhbHNlLAogICAgIm1ldGFkYXRhIjoge30sCiAgICAibmU8VkVORE9SX0FVVEhfQ09ERT50X3BheW1lbnRfYXR0ZW1wdCI6IG51bGwsCiAgICAibnVtYmVyIjogIjkzNDZDOTk1LTAwMDxWRU5ET1JfSUQ+IiwKICAgICJvbl9iZWhhbGZfb2YiOiBudWxsLAogICAgInBhcmVudCI6IHsKICAgICAgInF1b3RlX2RldGFpbHMiOiBudWxsLAogICAgICAic3Vic2NyaXB0aW9uX2RldGFpbHMiOiB7CiAgICAgICAgIm1ldGFkYXRhIjoge30sCiAgICAgICAgInN1YnNjcmlwdGlvbiI6ICJzdWJfPFZFTkRPUl9JRD5SRTxWRU5ET1JfQVVUSF9DT0RFPmJSS1hCR2NiZ3BiWlAzZ0NlbndsIgogICAgICB9LAogICAgICAidHlwZSI6ICJzdWJzY3JpcHRpb25fZGV0YWlscyIKICAgIH0sCiAgICAicGF5bWVudF9zZXR0aW5ncyI6IHsKICAgICAgImRlZmF1bHRfbWFuZGF0ZSI6IG51bGwsCiAgICAgICJwYXltZW50X21ldGhvZF9vcHRpb25zIjogbnVsbCwKICAgICAgInBheW1lbnRfbWV0aG9kX3R5cGVzIjogbnVsbAogICAgfSwKICAgICJwYXltZW50cyI6IHsKICAgICAgIm9iamVjdCI6ICJsaXN0IiwKICAgICAgImRhdGEiOiBbCiAgICAgICAgewogICAgICAgICAgImlkIjogImlucGF5XzxWRU5ET1JfSUQ+UkU8VkVORE9SX0FVVEhfQ09ERT5iUktYQkdjYmdwYlplUTxWRU5ET1JfQVVUSF9DT0RFPklmdEZNIiwKICAgICAgICAgICJvYmplY3QiOiAiaW52b2ljZV9wYXltZW50IiwKICAgICAgICAgICJhbW91bnRfcGFpZCI6IG51bGwsCiAgICAgICAgICAiYW1vdW50X3JlcXVlc3RlZCI6IDI1MDAsCiAgICAgICAgICAiY3JlYXRlZCI6IDxWRU5ET1JfSUQ+NzQ0OTxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICAgICAgICAgImN1cnJlbmN5IjogInVzZCIsCiAgICAgICAgICAiaW52b2ljZSI6ICJpbl88VkVORE9SX0lEPlJFPFZFTkRPUl9BVVRIX0NPREU+YlJLWEJHY2JncGJaPFZFTkRPUl9BVVRIX0NPREU+VTV2YkhDOCIsCiAgICAgICAgICAiaXNfZGVmYXVsdCI6IHRydWUsCiAgICAgICAgICAibGl2ZW1vZGUiOiBmYWxzZSwKICAgICAgICAgICJwYXltZW50IjogewogICAgICAgICAgICAicGF5bWVudF9pbnRlbnQiOiAicGlfM1JFPFZFTkRPUl9BVVRIX0NPREU+YlJLWEJHY2JncGJaPFZFTkRPUl9JRD5CNnFhM1ZsIiwKICAgICAgICAgICAgInR5cGUiOiAicGF5bWVudF9pbnRlbnQiCiAgICAgICAgICB9LAogICAgICAgICAgInN0YXR1cyI6ICJvcGVuIiwKICAgICAgICAgICJzdGF0dXNfdHJhbnNpdGlvbnMiOiB7CiAgICAgICAgICAgICJjYW5jZWxlZF9hdCI6IG51bGwsCiAgICAgICAgICAgICJwYWlkX2F0IjogbnVsbAogICAgICAgICAgfQogICAgICAgIH0KICAgICAgXSwKICAgICAgImhhc19tb3JlIjogZmFsc2UsCiAgICAgICJ1cmwiOiAiL3Y8VkVORE9SX0lEPi9pbnZvaWNlcy9wYXltZW50cyIKICAgIH0sCiAgICAicGVyaW9kX2VuZCI6IDxWRU5ET1JfSUQ+NzQ0OTxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICAgInBlcmlvZF9zdGFydCI6IDxWRU5ET1JfSUQ+NzQ0OTxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICAgInBvc3RfcGF5bWVudF9jcmVkaXRfbm90ZXNfYW1vdW50IjogMCwKICAgICJwcmVfcGF5bWVudF9jcmVkaXRfbm90ZXNfYW1vdW50IjogMCwKICAgICJyZWNlaXB0X251bWJlciI6IG51bGwsCiAgICAicmVuZGVyaW5nIjogbnVsbCwKICAgICJzaGlwcGluZ19jb3N0IjogbnVsbCwKICAgICJzaGlwcGluZ19kZXRhaWxzIjogbnVsbCwKICAgICJzdGFydGluZ19iYWxhbmNlIjogMCwKICAgICJzdGF0ZW1lbnRfZGVzY3JpcHRvciI6IG51bGwsCiAgICAic3RhdHVzIjogIm9wZW4iLAogICAgInN0YXR1c190cmFuc2l0aW9ucyI6IHsKICAgICAgImZpbmFsaXplZF9hdCI6IDxWRU5ET1JfSUQ+NzQ0OTxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICAgICAibWFya2VkX3VuY29sbGVjdGlibGVfYXQiOiBudWxsLAogICAgICAicGFpZF9hdCI6IG51bGwsCiAgICAgICJ2b2lkZWRfYXQiOiBudWxsCiAgICB9LAogICAgInN1YnRvdGFsIjogMjUwMCwKICAgICJzdWJ0b3RhbF9lPFZFTkRPUl9BVVRIX0NPREU+Y2x1ZGluZ190YTxWRU5ET1JfQVVUSF9DT0RFPiI6IDI1MDAsCiAgICAidGVzdF9jbG9jayI6IG51bGwsCiAgICAidG90YWwiOiAyNTAwLAogICAgInRvdGFsX2Rpc2NvdW50X2Ftb3VudHMiOiBbXSwKICAgICJ0b3RhbF9lPFZFTkRPUl9BVVRIX0NPREU+Y2x1ZGluZ190YTxWRU5ET1JfQVVUSF9DT0RFPiI6IDI1MDAsCiAgICAidG90YWxfcHJldGE8VkVORE9SX0FVVEhfQ09ERT5fY3JlZGl0X2Ftb3VudHMiOiBbXSwKICAgICJ0b3RhbF90YTxWRU5ET1JfQVVUSF9DT0RFPmVzIjogW10sCiAgICAid2ViaG9va3NfZGVsaXZlcmVkX2F0IjogPFZFTkRPUl9JRD43NDQ5PFZFTkRPUl9JRD42PFZFTkRPUl9JRD42PFZFTkRPUl9JRD4KICB9LAogICJsaXZlbW9kZSI6IGZhbHNlLAogICJtZXRhZGF0YSI6IHt9LAogICJuZTxWRU5ET1JfQVVUSF9DT0RFPnRfcGVuZGluZ19pbnZvaWNlX2l0ZW1faW52b2ljZSI6IG51bGwsCiAgIm9uX2JlaGFsZl9vZiI6IG51bGwsCiAgInBhdXNlX2NvbGxlY3Rpb24iOiBudWxsLAogICJwYXltZW50X3NldHRpbmdzIjogewogICAgInBheW1lbnRfbWV0aG9kX29wdGlvbnMiOiBudWxsLAogICAgInBheW1lbnRfbWV0aG9kX3R5cGVzIjogbnVsbCwKICAgICJzYXZlX2RlZmF1bHRfcGF5bWVudF9tZXRob2QiOiAib2ZmIgogIH0sCiAgInBlbmRpbmdfaW52b2ljZV9pdGVtX2ludGVydmFsIjogbnVsbCwKICAicGVuZGluZ19zZXR1cF9pbnRlbnQiOiBudWxsLAogICJwZW5kaW5nX3VwZGF0ZSI6IG51bGwsCiAgInBsYW4iOiB7CiAgICAiaWQiOiAic21hbGwtbW9udGhseSIsCiAgICAib2JqZWN0IjogInBsYW4iLAogICAgImFjdGl2ZSI6IHRydWUsCiAgICAiYW1vdW50IjogMjUwMCwKICAgICJhbW91bnRfZGVjaW1hbCI6ICIyNTAwIiwKICAgICJiaWxsaW5nX3NjaGVtZSI6ICJwZXJfdW5pdCIsCiAgICAiY3JlYXRlZCI6IDxWRU5ET1JfSUQ+NTc8VkVORE9SX0lEPjQyNTU3MCwKICAgICJjdXJyZW5jeSI6ICJ1c2QiLAogICAgImludGVydmFsIjogIm1vbnRoIiwKICAgICJpbnRlcnZhbF9jb3VudCI6IDxWRU5ET1JfSUQ+LAogICAgImxpdmVtb2RlIjogZmFsc2UsCiAgICAibWV0YWRhdGEiOiB7fSwKICAgICJtZXRlciI6IG51bGwsCiAgICAibmlja25hbWUiOiAiU21hbGwgTW9udGhseSIsCiAgICAicHJvZHVjdCI6ICJwcm9kX0VZVFg3UlloUmpjd0tEIiwKICAgICJ0aWVyc19tb2RlIjogbnVsbCwKICAgICJ0cmFuc2Zvcm1fdXNhZ2UiOiBudWxsLAogICAgInRyaWFsX3BlcmlvZF9kYXlzIjogbnVsbCwKICAgICJ1c2FnZV90eXBlIjogImxpY2Vuc2VkIgogIH0sCiAgInF1YW50aXR5IjogPFZFTkRPUl9JRD4sCiAgInNjaGVkdWxlIjogbnVsbCwKICAic3RhcnRfZGF0ZSI6IDxWRU5ET1JfSUQ+NzQ0OTxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+NjxWRU5ET1JfSUQ+LAogICJzdGF0dXMiOiAiaW5jb21wbGV0ZSIsCiAgInRlc3RfY2xvY2siOiBudWxsLAogICJ0cmFuc2Zlcl9kYXRhIjogbnVsbCwKICAidHJpYWxfZW5kIjogbnVsbCwKICAidHJpYWxfc2V0dGluZ3MiOiB7CiAgICAiZW5kX2JlaGF2aW9yIjogewogICAgICAibWlzc2luZ19wYXltZW50X21ldGhvZCI6ICJjcmVhdGVfaW52b2ljZSIKICAgIH0KICB9LAogICJ0cmlhbF9zdGFydCI6IG51bGwKfQ==
-  recorded_at: Thu, 17 Apr 2025 18:56:03 GMT
 - request:
     method: get
     uri: https://api.stripe.com/v<VENDOR_ID>/payment_intents/pi_3RE<VENDOR_AUTH_CODE>bRKXBGcbgpbZ<VENDOR_ID>B6qa3Vl
@@ -626,4 +283,1506 @@ http_interactions:
           "transfer_group": null
         }
   recorded_at: Thu, 17 Apr 2025 18:56:03 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers/cus_TL2hSyYyURUQnS
+    body:
+      encoding: UTF-8
+      string: invoice_settings[default_payment_method]=pm_<VENDOR_ID>SOMc8KXBGcbgpbZ<VENDOR_ID>qyuUS<VENDOR_AUTH_CODE>U
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_Ubeq6djfdB76d<VENDOR_ID>","request_duration_ms":506}}'
+      Idempotency-Key:
+      - e85a<VENDOR_ID>efa-c9<VENDOR_ID>0-446f-a9d3-9fd5dab34602
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>7:59:53 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '664'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=G_KQS8qDksuoKI6w-wAw0ODYZjzG6<VENDOR_AUTH_CODE>fqZErpdEG_pvSNwcG7EGQpOzJ<VENDOR_ID>femSRWqcHdgGejwZJfT-bjg6
+      Idempotency-Key:
+      - e85a<VENDOR_ID>efa-c9<VENDOR_ID>0-446f-a9d3-9fd5dab34602
+      Original-Request:
+      - req_Qa2aYRdWXrIkFJ
+      Request-Id:
+      - req_Qa2aYRdWXrIkFJ
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_TL2hSyYyURUQnS",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": <VENDOR_ID>76<VENDOR_ID>933592,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+          "invoice_prefi<VENDOR_AUTH_CODE>": "L<VENDOR_ID>QPERV6",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": "pm_<VENDOR_ID>SOMc8KXBGcbgpbZ<VENDOR_ID>qyuUS<VENDOR_AUTH_CODE>U",
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+          "test_clock": null
+        }
+  recorded_at: Fri, 31 Oct 2025 17:59:53 GMT
+- request:
+    method: get
+    uri: https://api.stripe.com/v<VENDOR_ID>/payment_intents/pi_3SOMcAKXBGcbgpbZ0Z<VENDOR_ID>6rhBm
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_JbLu<VENDOR_AUTH_CODE>5VKy6f83n","request_duration_ms":2668}}'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>7:59:56 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '6892'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=G_KQS8qDksuoKI6w-wAw0ODYZjzG6<VENDOR_AUTH_CODE>fqZErpdEG_pvSNwcG7EGQpOzJ<VENDOR_ID>femSRWqcHdgGejwZJfT-bjg6
+      Request-Id:
+      - req_EZYTEGfc<VENDOR_AUTH_CODE>EcMLF
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "pi_3SOMcAKXBGcbgpbZ0Z<VENDOR_ID>6rhBm",
+          "object": "payment_intent",
+          "amount": 2500,
+          "amount_capturable": 0,
+          "amount_details": {
+            "tip": {}
+          },
+          "amount_received": 0,
+          "application": null,
+          "application_fee_amount": null,
+          "automatic_payment_methods": null,
+          "canceled_at": null,
+          "cancellation_reason": null,
+          "capture_method": "automatic",
+          "client_<PADDLE_API_KEY>": "pi_3SOMcAKXBGcbgpbZ0Z<VENDOR_ID>6rhBm_<PADDLE_API_KEY>_rwQket3l4UFlz8IDhVlbfyMs6",
+          "confirmation_method": "automatic",
+          "created": <VENDOR_ID>76<VENDOR_ID>933594,
+          "currency": "usd",
+          "customer": "cus_TL2hSyYyURUQnS",
+          "description": "Subscription creation",
+          "e<VENDOR_AUTH_CODE>cluded_payment_method_types": null,
+          "last_payment_error": null,
+          "latest_charge": null,
+          "livemode": false,
+          "metadata": {},
+          "ne<VENDOR_AUTH_CODE>t_action": {
+            "type": "use_stripe_sdk",
+            "use_stripe_sdk": {
+              "directory_server_encryption": {
+                "algorithm": "RSA",
+                "certificate": "-----BEGIN CERTIFICATE-----\nMIIGAzCCA+ugAwIBAgIQNyg9v/wemJMz4m<VENDOR_ID>8kdvt6zANBgkqhkiG9w0BAQsFADB2\nMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlzYSBJbnRl\ncm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>JzAlBgNVBAMMHlZpc2EgZUNv\nbW<VENDOR_ID>lcmNlIElzc3VpbmcgQ0EgLSBHMjAeFw0yNDAyMjcyMjQ0MDNaFw0yNzAyMjYy\nMjQ0MDJaMIGhMRgwFgYDVQQHDA9IaWdobGFuZHMgUmFuY2g<VENDOR_AUTH_CODE>ETAPBgNVBAgMCENv\nbG9yYWRvMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlz\nYSBJbnRlcm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>JTAjBgNVBAMMHDNk\nczIucnNhLmVuY3J5cHRpb24udmlzYS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IB\nDwAwggEKAoIBAQCSABLI5aAnf8Cypn/sKETE+U3e3YruYzUkqNpEMH0sPMpCAW<VENDOR_ID>V\n33<VENDOR_AUTH_CODE>iklm5R0S3ZFOEzzlmL22tRyjXaB6/WJUa66ajRz2DiY8+7<VENDOR_AUTH_CODE>5CcMJNVlwqS6OG\nTlmvXGO<VENDOR_AUTH_CODE>PXIVz6h<VENDOR_AUTH_CODE>CsAb7mKS7cnpGpkjVD/Oe4u8ZmeUrcPWKdeH+e5BfeWp2Iel\nh89pU4tpJ84PlPTlLjZ3TLa2OutFLsMBE<VENDOR_AUTH_CODE>cr4ipWnEcbpkzvAPBRABBVZbkWTA9i\nVM9v5MXIJGzXDsQVJEOg<VENDOR_AUTH_CODE>m/kyQXeO3JtNytYOaQ6sQi+z9gF32plP3hsrUQ2jJ3H\nCnZmOyrHl8tQW<VENDOR_AUTH_CODE>hAIMZ/WHogpvEGufi<VENDOR_ID>4eyBAgMBAAGjggFfMIIBWzAMBgNVHRMB\nAf8EAjAAMB8GA<VENDOR_ID>UdIwQYMBaAFL0nYyikrlS3yCO3wTVCF+nGeF+FMGcGCCsGAQUF\nBwEBBFswWTAwBggrBgEFBQcwAoYkaHR0cDovL2Vucm9sbC52aXNhY2EuY29tL2VD\nb2<VENDOR_ID>tRzIuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC52aXNhLmNvbS9vY3Nw\nMEYGA<VENDOR_ID>UdIAQ/MD0wMQYIKwYBBQUHAgEwJTAjBggrBgEFBQcCARYXaHR0cDovL3d3\ndy52aXNhLmNvbS9wa2kwCAYGZ4EDAQEBMBMGA<VENDOR_ID>UdJQQMMAoGCCsGAQUFBwMCMDUG\nA<VENDOR_ID>UdHwQuMCwwKqAooCaGJGh0dHA6Ly9lbnJvbGwudmlzYWNhLmNvbS9lQ29tbUcy\nLmNybDAdBgNVHQ4EFgQU6gD/Z5m2gw4n676qt4jXOWr8ynowDgYDVR0PAQH/BAQD\nAgSwMA0GCSqGSIb3DQEBCwUAA4ICAQBumWXGS/uaaajte2gI3<VENDOR_AUTH_CODE>CpsuewmihQKvKq\nOhaOc+wgdfwIkEAXdJIc33n2j/iaT5Lusi09ezZpBB80C6KQVr5Fs<VENDOR_ID>0SX0hlBCvT\n9MGYFwFtYUgi5OenqYsXc8BdmiE0bFiSXZ7Xf<VENDOR_AUTH_CODE>WuvYjis4LOubMr48yVyyEynWWb\nSGr7rTJztraOFjsykK<VENDOR_ID>6<VENDOR_AUTH_CODE>946YXi/LswEP9RtDiOBNJ9cBVcOP+u8Q+dEzA5A63Ay\nA2Z/5m/pyCIWMSYGMtM0RANUp9gp7cEXaMpwKWfrW6ZanF60IoGlmRHilGU4rvm7\ntd4yJTfw<VENDOR_AUTH_CODE>tkmh4w/IPiqI/OaXj5iG8hCo8a9FTnGahIcij8c<VENDOR_ID>UWzQ3/A7o99AUwy\n<VENDOR_ID>Xi9JnNiXYVM<VENDOR_ID>bfQalK0DKsLqRiS6rzPfwMU<VENDOR_AUTH_CODE>j2+ALnhcrnSdPnZgV<VENDOR_AUTH_CODE>iQB7kvfi3\nHFXHoGhmMHHj8tlURqUQzpJcCz<VENDOR_ID>QOy5c9SCc/M8Xu+eRsCnJrtvvD<VENDOR_AUTH_CODE>riLWfDDM9M\n8/8JsiBP+DF6omCb6J4ryEulcVPnVAAZNlNtaUadPYnCJfB0p67jWkHa5NvQdZGW\naT<VENDOR_ID>tvo9DqjI7zLf9Km0qqkK5<VENDOR_ID>gwYDnsy<VENDOR_ID>4pYvfeEwL9O9aepFa7<VENDOR_AUTH_CODE>08bM3272<VENDOR_AUTH_CODE>qNK\neGHXFK/zUV<VENDOR_AUTH_CODE>YY5u<VENDOR_AUTH_CODE>ukcqYAdhAv<VENDOR_AUTH_CODE>7f6d0J6Nr8jP<VENDOR_AUTH_CODE>o6UNXKiFH9leGPPz<VENDOR_AUTH_CODE>9oNugts\nz6qck4YdAQ==\n-----END CERTIFICATE-----\n",
+                "directory_server_id": "A000000003",
+                "root_certificate_authorities": [
+                  "-----BEGIN CERTIFICATE-----\nMIIFqTCCA5GgAwIBAgIPUT6WAAAA20Qn7qzgvuFIMA0GCSqGSIb3DQEBCwUAMG8<VENDOR_AUTH_CODE>\nCzAJBgNVBAYTAlVTMQ0wCwYDVQQKDARWSVNBMS8wLQYDVQQLDCZWaXNhIEludGVy\nbmF0aW9uYWwgU2VydmljZSBBc3NvY2lhdGlvbjEgMB4GA<VENDOR_ID>UEAwwXVmlzYSBQdWJs\naWMgUlNBIFJvb3QgQ0EwHhcNMjEwMzE2MDAwMDAwWhcNNDEwMzE<VENDOR_ID>MDAwMDAwWjBv\nMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlzYSBJbnRl\ncm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>IDAeBgNVBAMMF<VENDOR_ID>Zpc2EgUHVi\nbGljIFJTQSBSb290IENBMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA\n2WEbXLS3gI6LOY93bP7Kz6EO9L<VENDOR_ID>QXlr8l+fTkJWZldJ6QuwZ<VENDOR_ID>cv4369tfjeJ8O5w\nSJiDcVw7eNdOP73LfAtwHlTnUnb0e9ILTTipc5bkNnAevocrJACsrpiQ8jBI9ttp\ncqKUeJgzW4Ie25ypirKroVD42b4E0iICK2cZ5QfD4BSzUnftp4Bqh8AfpGvG<VENDOR_ID>lre\nCaD53qrsy5SUadY/NaeUGOkqdPvDSNoDIdrbE<VENDOR_AUTH_CODE>wnZaSFUmjQT<VENDOR_ID>svKwMqGo2GFrgJ\n4cULEp4NNj5rga8YTTZ7Xo5MblHrLpSPOmJev30KWi/BcbvtCNYNWBTg7UMzP3cK\nMQ<VENDOR_ID>pGLvG2PgvFTZSRvH3QzngJRgrDYYOJ6kj9ave+6yOOFqj80ZCuH0Nugt2mMS3\nc3+Nksaw+6H3cQPsE/Gv5zjfsKleRhEFtE<VENDOR_ID>gyrdUg<VENDOR_ID>DMgu8o/YhKM7FAqkXUn74z\nwoRFg<VENDOR_AUTH_CODE>3Mi5OaGTQbg+NlwJgR4sVHXCV4s9b8PjneLhzWMn353SFARF9dnO7LDBqq\ntT6WltJu<VENDOR_ID>z9<VENDOR_AUTH_CODE>2Ze0UVNZv<VENDOR_AUTH_CODE>KGcyCkLody29O8j9/MGZ8SOSUu4U6NHrebKuuf9Fht\nn6PqQ4ppkhy6sReXeV5NVGfVpDYY5ZAKEWqTYgMULWpQ2Py4BGpFzBe07jXkyulR\npoKvz<VENDOR_ID>4iXeA0oq<VENDOR_ID>6c94DrFYX0jmrWLeU4a/TCZQLFIsCAwEAAaNCMEAwHQYDVR0O\nBBYEFEtNpg77oBHorQvi8PMKAC+si<VENDOR_AUTH_CODE>b7MA8GA<VENDOR_ID>UdEwEB/wQFMAMBAf8wDgYDVR0P\nAQH/BAQDAgEGMA0GCSqGSIb3DQEBCwUAA4ICAQC5BU9qQSZYPcgCp2<VENDOR_AUTH_CODE>0Juq59kMm\nXuBly094DaEnPqvtCgwwAirkv8<VENDOR_AUTH_CODE>8/QSO<VENDOR_AUTH_CODE>iWWiu+nveyuR+j6Gz/fJaV4u+J5QEDy\ncfk605Mw3HIcJOeZvDgk<VENDOR_ID>eyOmQwUP6Z/BdQTNJmZ92Z8dcG5yWC<VENDOR_AUTH_CODE>LBrqPH7ro3Ss\njhYq9duIJU7jfizCJCN4W8tp0D2pWBe<VENDOR_ID>/CYNswP4GMs5jQ5+ZQKN/L5JFdwVTu7X\nPt8b5zfgbmmQpVmUn0oFwm3OI++Z6gEpNmW5bd/2oUIZoG96Qff2fauVMAYiWQvN\nnL3y<VENDOR_ID>gkRguTOSMVUCCiGfdvwu5ygowillvV2nHb7+YibQ9N5Z2spP0o9Zlfzoat2\n7WFpyK47TiUdu/4toarLKGZP+hbA/F4<VENDOR_AUTH_CODE>lnM/8EfZkE<VENDOR_ID>DeTTI0lhN3O8yEsHrtRl<VENDOR_ID>\nOuQZ/Ie<VENDOR_AUTH_CODE>HO8UGU6jvn4TWo<VENDOR_ID>0HYeXzrGckL7oIXfGTrjPzfY62T5HDW/BAEZS+9Tk\nijz25YM0fPPz7IdlEG+k4q4YwZ82j73Y9kDEM5423mrWorq/Bq7I5Y8v0LTY9GWH\nYrpElYf0WdOXAbsfwQiT6qnRio+p82VyqlY8Jt6VVA6CDy/iHKwcj<VENDOR_ID>ELEnDQfVv9\nhedo<VENDOR_AUTH_CODE>mnQ6<VENDOR_AUTH_CODE>e/nK8czclu9hQJRv5Lh9gk9Q8DKK2nmgzZ8SSQ+lr3mSSeY8JOMRlE\n+RKdOQIChWthTJKh7w==\n-----END CERTIFICATE-----\n"
+                ]
+              },
+              "directory_server_name": "visa",
+              "merchant": "acct_<VENDOR_ID>E4bfnKXBGcbgpbZ",
+              "one_click_authn": null,
+              "server_transaction_id": "979fa67e-eb3f-4e04-8<VENDOR_ID>e5-7d42562c947f",
+              "three_d_secure_2_source": "payatt_3SOMcAKXBGcbgpbZ0TO7DapJ",
+              "three_ds_frontend_optimizations": null,
+              "three_ds_method_url": "",
+              "three_ds_optimizations": "kf",
+              "type": "stripe_3ds2_fingerprint"
+            }
+          },
+          "on_behalf_of": null,
+          "payment_details": {
+            "customer_reference": null,
+            "order_reference": "in_<VENDOR_ID>SOMc9KXBGcbgpbZku3Ti8"
+          },
+          "payment_method": "pm_<VENDOR_ID>SOMc8KXBGcbgpbZ<VENDOR_ID>qyuUS<VENDOR_AUTH_CODE>U",
+          "payment_method_configuration_details": null,
+          "payment_method_options": {
+            "acss_debit": {
+              "mandate_options": {
+                "interval_description": null,
+                "payment_schedule": null,
+                "transaction_type": null
+              },
+              "verification_method": "automatic"
+            },
+            "card": {
+              "installments": null,
+              "mandate_options": null,
+              "network": null,
+              "request_three_d_secure": "automatic"
+            },
+            "cashapp": {},
+            "link": {
+              "persistent_token": null
+            },
+            "us_bank_account": {
+              "mandate_options": {},
+              "verification_method": "automatic"
+            }
+          },
+          "payment_method_types": [
+            "acss_debit",
+            "card",
+            "cashapp",
+            "link",
+            "us_bank_account"
+          ],
+          "processing": null,
+          "receipt_email": null,
+          "review": null,
+          "setup_future_usage": "off_session",
+          "shipping": null,
+          "source": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffi<VENDOR_AUTH_CODE>": null,
+          "status": "requires_action",
+          "transfer_data": null,
+          "transfer_group": null
+        }
+  recorded_at: Fri, 31 Oct 2025 17:59:56 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers/cus_TL2oHontrkNu6S
+    body:
+      encoding: UTF-8
+      string: invoice_settings[default_payment_method]=pm_<VENDOR_ID>SOMihKXBGcbgpbZmXzsggIv
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_AKg2WD<VENDOR_AUTH_CODE>zggqzyL","request_duration_ms":5<VENDOR_ID>9}}'
+      Idempotency-Key:
+      - 07ff9672-5772-4<VENDOR_ID>89-92<VENDOR_ID>b-b0a<VENDOR_ID>fcafaa76
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>8:06:40 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '664'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=AzKRTuTfhY70nAsbEMRO-LlML9pb65rcwi0lLXlY5VYl5hTChslCk77ORbGVti_yMokr4Ai2HGdJOkPe
+      Idempotency-Key:
+      - 07ff9672-5772-4<VENDOR_ID>89-92<VENDOR_ID>b-b0a<VENDOR_ID>fcafaa76
+      Original-Request:
+      - req_VPvS<VENDOR_AUTH_CODE>DscOZaLHJ
+      Request-Id:
+      - req_VPvS<VENDOR_AUTH_CODE>DscOZaLHJ
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_TL2oHontrkNu6S",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": <VENDOR_ID>76<VENDOR_ID>933999,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+          "invoice_prefi<VENDOR_AUTH_CODE>": "WDGBTEBM",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": "pm_<VENDOR_ID>SOMihKXBGcbgpbZmXzsggIv",
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+          "test_clock": null
+        }
+  recorded_at: Fri, 31 Oct 2025 18:06:40 GMT
+- request:
+    method: get
+    uri: https://api.stripe.com/v<VENDOR_ID>/payment_intents/pi_3SOMiiKXBGcbgpbZ0Dutf0y8
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_H5LJZfvWqhOfgI","request_duration_ms":2425}}'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>8:06:42 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '6892'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=AzKRTuTfhY70nAsbEMRO-LlML9pb65rcwi0lLXlY5VYl5hTChslCk77ORbGVti_yMokr4Ai2HGdJOkPe
+      Request-Id:
+      - req_j5Ph6cYLyUHF5K
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "pi_3SOMiiKXBGcbgpbZ0Dutf0y8",
+          "object": "payment_intent",
+          "amount": 2500,
+          "amount_capturable": 0,
+          "amount_details": {
+            "tip": {}
+          },
+          "amount_received": 0,
+          "application": null,
+          "application_fee_amount": null,
+          "automatic_payment_methods": null,
+          "canceled_at": null,
+          "cancellation_reason": null,
+          "capture_method": "automatic",
+          "client_<PADDLE_API_KEY>": "pi_3SOMiiKXBGcbgpbZ0Dutf0y8_<PADDLE_API_KEY>_NhcNZKZuE9SFPVPMUaHDbii0<VENDOR_ID>",
+          "confirmation_method": "automatic",
+          "created": <VENDOR_ID>76<VENDOR_ID>934000,
+          "currency": "usd",
+          "customer": "cus_TL2oHontrkNu6S",
+          "description": "Subscription creation",
+          "e<VENDOR_AUTH_CODE>cluded_payment_method_types": null,
+          "last_payment_error": null,
+          "latest_charge": null,
+          "livemode": false,
+          "metadata": {},
+          "ne<VENDOR_AUTH_CODE>t_action": {
+            "type": "use_stripe_sdk",
+            "use_stripe_sdk": {
+              "directory_server_encryption": {
+                "algorithm": "RSA",
+                "certificate": "-----BEGIN CERTIFICATE-----\nMIIGAzCCA+ugAwIBAgIQNyg9v/wemJMz4m<VENDOR_ID>8kdvt6zANBgkqhkiG9w0BAQsFADB2\nMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlzYSBJbnRl\ncm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>JzAlBgNVBAMMHlZpc2EgZUNv\nbW<VENDOR_ID>lcmNlIElzc3VpbmcgQ0EgLSBHMjAeFw0yNDAyMjcyMjQ0MDNaFw0yNzAyMjYy\nMjQ0MDJaMIGhMRgwFgYDVQQHDA9IaWdobGFuZHMgUmFuY2g<VENDOR_AUTH_CODE>ETAPBgNVBAgMCENv\nbG9yYWRvMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlz\nYSBJbnRlcm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>JTAjBgNVBAMMHDNk\nczIucnNhLmVuY3J5cHRpb24udmlzYS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IB\nDwAwggEKAoIBAQCSABLI5aAnf8Cypn/sKETE+U3e3YruYzUkqNpEMH0sPMpCAW<VENDOR_ID>V\n33<VENDOR_AUTH_CODE>iklm5R0S3ZFOEzzlmL22tRyjXaB6/WJUa66ajRz2DiY8+7<VENDOR_AUTH_CODE>5CcMJNVlwqS6OG\nTlmvXGO<VENDOR_AUTH_CODE>PXIVz6h<VENDOR_AUTH_CODE>CsAb7mKS7cnpGpkjVD/Oe4u8ZmeUrcPWKdeH+e5BfeWp2Iel\nh89pU4tpJ84PlPTlLjZ3TLa2OutFLsMBE<VENDOR_AUTH_CODE>cr4ipWnEcbpkzvAPBRABBVZbkWTA9i\nVM9v5MXIJGzXDsQVJEOg<VENDOR_AUTH_CODE>m/kyQXeO3JtNytYOaQ6sQi+z9gF32plP3hsrUQ2jJ3H\nCnZmOyrHl8tQW<VENDOR_AUTH_CODE>hAIMZ/WHogpvEGufi<VENDOR_ID>4eyBAgMBAAGjggFfMIIBWzAMBgNVHRMB\nAf8EAjAAMB8GA<VENDOR_ID>UdIwQYMBaAFL0nYyikrlS3yCO3wTVCF+nGeF+FMGcGCCsGAQUF\nBwEBBFswWTAwBggrBgEFBQcwAoYkaHR0cDovL2Vucm9sbC52aXNhY2EuY29tL2VD\nb2<VENDOR_ID>tRzIuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC52aXNhLmNvbS9vY3Nw\nMEYGA<VENDOR_ID>UdIAQ/MD0wMQYIKwYBBQUHAgEwJTAjBggrBgEFBQcCARYXaHR0cDovL3d3\ndy52aXNhLmNvbS9wa2kwCAYGZ4EDAQEBMBMGA<VENDOR_ID>UdJQQMMAoGCCsGAQUFBwMCMDUG\nA<VENDOR_ID>UdHwQuMCwwKqAooCaGJGh0dHA6Ly9lbnJvbGwudmlzYWNhLmNvbS9lQ29tbUcy\nLmNybDAdBgNVHQ4EFgQU6gD/Z5m2gw4n676qt4jXOWr8ynowDgYDVR0PAQH/BAQD\nAgSwMA0GCSqGSIb3DQEBCwUAA4ICAQBumWXGS/uaaajte2gI3<VENDOR_AUTH_CODE>CpsuewmihQKvKq\nOhaOc+wgdfwIkEAXdJIc33n2j/iaT5Lusi09ezZpBB80C6KQVr5Fs<VENDOR_ID>0SX0hlBCvT\n9MGYFwFtYUgi5OenqYsXc8BdmiE0bFiSXZ7Xf<VENDOR_AUTH_CODE>WuvYjis4LOubMr48yVyyEynWWb\nSGr7rTJztraOFjsykK<VENDOR_ID>6<VENDOR_AUTH_CODE>946YXi/LswEP9RtDiOBNJ9cBVcOP+u8Q+dEzA5A63Ay\nA2Z/5m/pyCIWMSYGMtM0RANUp9gp7cEXaMpwKWfrW6ZanF60IoGlmRHilGU4rvm7\ntd4yJTfw<VENDOR_AUTH_CODE>tkmh4w/IPiqI/OaXj5iG8hCo8a9FTnGahIcij8c<VENDOR_ID>UWzQ3/A7o99AUwy\n<VENDOR_ID>Xi9JnNiXYVM<VENDOR_ID>bfQalK0DKsLqRiS6rzPfwMU<VENDOR_AUTH_CODE>j2+ALnhcrnSdPnZgV<VENDOR_AUTH_CODE>iQB7kvfi3\nHFXHoGhmMHHj8tlURqUQzpJcCz<VENDOR_ID>QOy5c9SCc/M8Xu+eRsCnJrtvvD<VENDOR_AUTH_CODE>riLWfDDM9M\n8/8JsiBP+DF6omCb6J4ryEulcVPnVAAZNlNtaUadPYnCJfB0p67jWkHa5NvQdZGW\naT<VENDOR_ID>tvo9DqjI7zLf9Km0qqkK5<VENDOR_ID>gwYDnsy<VENDOR_ID>4pYvfeEwL9O9aepFa7<VENDOR_AUTH_CODE>08bM3272<VENDOR_AUTH_CODE>qNK\neGHXFK/zUV<VENDOR_AUTH_CODE>YY5u<VENDOR_AUTH_CODE>ukcqYAdhAv<VENDOR_AUTH_CODE>7f6d0J6Nr8jP<VENDOR_AUTH_CODE>o6UNXKiFH9leGPPz<VENDOR_AUTH_CODE>9oNugts\nz6qck4YdAQ==\n-----END CERTIFICATE-----\n",
+                "directory_server_id": "A000000003",
+                "root_certificate_authorities": [
+                  "-----BEGIN CERTIFICATE-----\nMIIFqTCCA5GgAwIBAgIPUT6WAAAA20Qn7qzgvuFIMA0GCSqGSIb3DQEBCwUAMG8<VENDOR_AUTH_CODE>\nCzAJBgNVBAYTAlVTMQ0wCwYDVQQKDARWSVNBMS8wLQYDVQQLDCZWaXNhIEludGVy\nbmF0aW9uYWwgU2VydmljZSBBc3NvY2lhdGlvbjEgMB4GA<VENDOR_ID>UEAwwXVmlzYSBQdWJs\naWMgUlNBIFJvb3QgQ0EwHhcNMjEwMzE2MDAwMDAwWhcNNDEwMzE<VENDOR_ID>MDAwMDAwWjBv\nMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlzYSBJbnRl\ncm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>IDAeBgNVBAMMF<VENDOR_ID>Zpc2EgUHVi\nbGljIFJTQSBSb290IENBMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA\n2WEbXLS3gI6LOY93bP7Kz6EO9L<VENDOR_ID>QXlr8l+fTkJWZldJ6QuwZ<VENDOR_ID>cv4369tfjeJ8O5w\nSJiDcVw7eNdOP73LfAtwHlTnUnb0e9ILTTipc5bkNnAevocrJACsrpiQ8jBI9ttp\ncqKUeJgzW4Ie25ypirKroVD42b4E0iICK2cZ5QfD4BSzUnftp4Bqh8AfpGvG<VENDOR_ID>lre\nCaD53qrsy5SUadY/NaeUGOkqdPvDSNoDIdrbE<VENDOR_AUTH_CODE>wnZaSFUmjQT<VENDOR_ID>svKwMqGo2GFrgJ\n4cULEp4NNj5rga8YTTZ7Xo5MblHrLpSPOmJev30KWi/BcbvtCNYNWBTg7UMzP3cK\nMQ<VENDOR_ID>pGLvG2PgvFTZSRvH3QzngJRgrDYYOJ6kj9ave+6yOOFqj80ZCuH0Nugt2mMS3\nc3+Nksaw+6H3cQPsE/Gv5zjfsKleRhEFtE<VENDOR_ID>gyrdUg<VENDOR_ID>DMgu8o/YhKM7FAqkXUn74z\nwoRFg<VENDOR_AUTH_CODE>3Mi5OaGTQbg+NlwJgR4sVHXCV4s9b8PjneLhzWMn353SFARF9dnO7LDBqq\ntT6WltJu<VENDOR_ID>z9<VENDOR_AUTH_CODE>2Ze0UVNZv<VENDOR_AUTH_CODE>KGcyCkLody29O8j9/MGZ8SOSUu4U6NHrebKuuf9Fht\nn6PqQ4ppkhy6sReXeV5NVGfVpDYY5ZAKEWqTYgMULWpQ2Py4BGpFzBe07jXkyulR\npoKvz<VENDOR_ID>4iXeA0oq<VENDOR_ID>6c94DrFYX0jmrWLeU4a/TCZQLFIsCAwEAAaNCMEAwHQYDVR0O\nBBYEFEtNpg77oBHorQvi8PMKAC+si<VENDOR_AUTH_CODE>b7MA8GA<VENDOR_ID>UdEwEB/wQFMAMBAf8wDgYDVR0P\nAQH/BAQDAgEGMA0GCSqGSIb3DQEBCwUAA4ICAQC5BU9qQSZYPcgCp2<VENDOR_AUTH_CODE>0Juq59kMm\nXuBly094DaEnPqvtCgwwAirkv8<VENDOR_AUTH_CODE>8/QSO<VENDOR_AUTH_CODE>iWWiu+nveyuR+j6Gz/fJaV4u+J5QEDy\ncfk605Mw3HIcJOeZvDgk<VENDOR_ID>eyOmQwUP6Z/BdQTNJmZ92Z8dcG5yWC<VENDOR_AUTH_CODE>LBrqPH7ro3Ss\njhYq9duIJU7jfizCJCN4W8tp0D2pWBe<VENDOR_ID>/CYNswP4GMs5jQ5+ZQKN/L5JFdwVTu7X\nPt8b5zfgbmmQpVmUn0oFwm3OI++Z6gEpNmW5bd/2oUIZoG96Qff2fauVMAYiWQvN\nnL3y<VENDOR_ID>gkRguTOSMVUCCiGfdvwu5ygowillvV2nHb7+YibQ9N5Z2spP0o9Zlfzoat2\n7WFpyK47TiUdu/4toarLKGZP+hbA/F4<VENDOR_AUTH_CODE>lnM/8EfZkE<VENDOR_ID>DeTTI0lhN3O8yEsHrtRl<VENDOR_ID>\nOuQZ/Ie<VENDOR_AUTH_CODE>HO8UGU6jvn4TWo<VENDOR_ID>0HYeXzrGckL7oIXfGTrjPzfY62T5HDW/BAEZS+9Tk\nijz25YM0fPPz7IdlEG+k4q4YwZ82j73Y9kDEM5423mrWorq/Bq7I5Y8v0LTY9GWH\nYrpElYf0WdOXAbsfwQiT6qnRio+p82VyqlY8Jt6VVA6CDy/iHKwcj<VENDOR_ID>ELEnDQfVv9\nhedo<VENDOR_AUTH_CODE>mnQ6<VENDOR_AUTH_CODE>e/nK8czclu9hQJRv5Lh9gk9Q8DKK2nmgzZ8SSQ+lr3mSSeY8JOMRlE\n+RKdOQIChWthTJKh7w==\n-----END CERTIFICATE-----\n"
+                ]
+              },
+              "directory_server_name": "visa",
+              "merchant": "acct_<VENDOR_ID>E4bfnKXBGcbgpbZ",
+              "one_click_authn": null,
+              "server_transaction_id": "<VENDOR_ID>7f680e2-3ca<VENDOR_ID>-425a-94e3-5ff705b3ed5<VENDOR_ID>",
+              "three_d_secure_2_source": "payatt_3SOMiiKXBGcbgpbZ0SZYWkau",
+              "three_ds_frontend_optimizations": null,
+              "three_ds_method_url": "",
+              "three_ds_optimizations": "kf",
+              "type": "stripe_3ds2_fingerprint"
+            }
+          },
+          "on_behalf_of": null,
+          "payment_details": {
+            "customer_reference": null,
+            "order_reference": "in_<VENDOR_ID>SOMiiKXBGcbgpbZqZr9<VENDOR_ID>D"
+          },
+          "payment_method": "pm_<VENDOR_ID>SOMihKXBGcbgpbZmXzsggIv",
+          "payment_method_configuration_details": null,
+          "payment_method_options": {
+            "acss_debit": {
+              "mandate_options": {
+                "interval_description": null,
+                "payment_schedule": null,
+                "transaction_type": null
+              },
+              "verification_method": "automatic"
+            },
+            "card": {
+              "installments": null,
+              "mandate_options": null,
+              "network": null,
+              "request_three_d_secure": "automatic"
+            },
+            "cashapp": {},
+            "link": {
+              "persistent_token": null
+            },
+            "us_bank_account": {
+              "mandate_options": {},
+              "verification_method": "automatic"
+            }
+          },
+          "payment_method_types": [
+            "acss_debit",
+            "card",
+            "cashapp",
+            "link",
+            "us_bank_account"
+          ],
+          "processing": null,
+          "receipt_email": null,
+          "review": null,
+          "setup_future_usage": "off_session",
+          "shipping": null,
+          "source": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffi<VENDOR_AUTH_CODE>": null,
+          "status": "requires_action",
+          "transfer_data": null,
+          "transfer_group": null
+        }
+  recorded_at: Fri, 31 Oct 2025 18:06:42 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers/cus_TL2z606Sjg2Tby
+    body:
+      encoding: UTF-8
+      string: invoice_settings[default_payment_method]=pm_<VENDOR_ID>SOMtWKXBGcbgpbZI2fd8Qwo
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_OTq<VENDOR_AUTH_CODE>oEvwg5aznk","request_duration_ms":49<VENDOR_ID>}}'
+      Idempotency-Key:
+      - b<VENDOR_ID>546d8e-0828-49d8-b8b8-d<VENDOR_ID>7a3be69242
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>8:<VENDOR_ID>7:50 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '664'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=CLmKb<VENDOR_AUTH_CODE>Pki<VENDOR_AUTH_CODE>rCtoQOcPevkbkVw<VENDOR_AUTH_CODE>Ok5wCBWJzVmjZHev-iY8ThloMAYTe<VENDOR_ID>dkbRgg2YQP-RuOJDBnZSMFsl
+      Idempotency-Key:
+      - b<VENDOR_ID>546d8e-0828-49d8-b8b8-d<VENDOR_ID>7a3be69242
+      Original-Request:
+      - req_7FBt<VENDOR_ID>d4TWrFjX4
+      Request-Id:
+      - req_7FBt<VENDOR_ID>d4TWrFjX4
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_TL2z606Sjg2Tby",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": <VENDOR_ID>76<VENDOR_ID>934670,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+          "invoice_prefi<VENDOR_AUTH_CODE>": "LCSJEQJG",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": "pm_<VENDOR_ID>SOMtWKXBGcbgpbZI2fd8Qwo",
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+          "test_clock": null
+        }
+  recorded_at: Fri, 31 Oct 2025 18:17:50 GMT
+- request:
+    method: get
+    uri: https://api.stripe.com/v<VENDOR_ID>/payment_intents/pi_3SOMtXKXBGcbgpbZ0XZhu9dO
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_2EjL2iraIFYwGa","request_duration_ms":2540}}'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>8:<VENDOR_ID>7:53 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '6892'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=CLmKb<VENDOR_AUTH_CODE>Pki<VENDOR_AUTH_CODE>rCtoQOcPevkbkVw<VENDOR_AUTH_CODE>Ok5wCBWJzVmjZHev-iY8ThloMAYTe<VENDOR_ID>dkbRgg2YQP-RuOJDBnZSMFsl
+      Request-Id:
+      - req_Y3HG0B5ob5DlCT
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "pi_3SOMtXKXBGcbgpbZ0XZhu9dO",
+          "object": "payment_intent",
+          "amount": 2500,
+          "amount_capturable": 0,
+          "amount_details": {
+            "tip": {}
+          },
+          "amount_received": 0,
+          "application": null,
+          "application_fee_amount": null,
+          "automatic_payment_methods": null,
+          "canceled_at": null,
+          "cancellation_reason": null,
+          "capture_method": "automatic",
+          "client_<PADDLE_API_KEY>": "pi_3SOMtXKXBGcbgpbZ0XZhu9dO_<PADDLE_API_KEY>_ZebCYTXcIVolAYyHNCXYVwynn",
+          "confirmation_method": "automatic",
+          "created": <VENDOR_ID>76<VENDOR_ID>93467<VENDOR_ID>,
+          "currency": "usd",
+          "customer": "cus_TL2z606Sjg2Tby",
+          "description": "Subscription creation",
+          "e<VENDOR_AUTH_CODE>cluded_payment_method_types": null,
+          "last_payment_error": null,
+          "latest_charge": null,
+          "livemode": false,
+          "metadata": {},
+          "ne<VENDOR_AUTH_CODE>t_action": {
+            "type": "use_stripe_sdk",
+            "use_stripe_sdk": {
+              "directory_server_encryption": {
+                "algorithm": "RSA",
+                "certificate": "-----BEGIN CERTIFICATE-----\nMIIGAzCCA+ugAwIBAgIQNyg9v/wemJMz4m<VENDOR_ID>8kdvt6zANBgkqhkiG9w0BAQsFADB2\nMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlzYSBJbnRl\ncm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>JzAlBgNVBAMMHlZpc2EgZUNv\nbW<VENDOR_ID>lcmNlIElzc3VpbmcgQ0EgLSBHMjAeFw0yNDAyMjcyMjQ0MDNaFw0yNzAyMjYy\nMjQ0MDJaMIGhMRgwFgYDVQQHDA9IaWdobGFuZHMgUmFuY2g<VENDOR_AUTH_CODE>ETAPBgNVBAgMCENv\nbG9yYWRvMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlz\nYSBJbnRlcm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>JTAjBgNVBAMMHDNk\nczIucnNhLmVuY3J5cHRpb24udmlzYS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IB\nDwAwggEKAoIBAQCSABLI5aAnf8Cypn/sKETE+U3e3YruYzUkqNpEMH0sPMpCAW<VENDOR_ID>V\n33<VENDOR_AUTH_CODE>iklm5R0S3ZFOEzzlmL22tRyjXaB6/WJUa66ajRz2DiY8+7<VENDOR_AUTH_CODE>5CcMJNVlwqS6OG\nTlmvXGO<VENDOR_AUTH_CODE>PXIVz6h<VENDOR_AUTH_CODE>CsAb7mKS7cnpGpkjVD/Oe4u8ZmeUrcPWKdeH+e5BfeWp2Iel\nh89pU4tpJ84PlPTlLjZ3TLa2OutFLsMBE<VENDOR_AUTH_CODE>cr4ipWnEcbpkzvAPBRABBVZbkWTA9i\nVM9v5MXIJGzXDsQVJEOg<VENDOR_AUTH_CODE>m/kyQXeO3JtNytYOaQ6sQi+z9gF32plP3hsrUQ2jJ3H\nCnZmOyrHl8tQW<VENDOR_AUTH_CODE>hAIMZ/WHogpvEGufi<VENDOR_ID>4eyBAgMBAAGjggFfMIIBWzAMBgNVHRMB\nAf8EAjAAMB8GA<VENDOR_ID>UdIwQYMBaAFL0nYyikrlS3yCO3wTVCF+nGeF+FMGcGCCsGAQUF\nBwEBBFswWTAwBggrBgEFBQcwAoYkaHR0cDovL2Vucm9sbC52aXNhY2EuY29tL2VD\nb2<VENDOR_ID>tRzIuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC52aXNhLmNvbS9vY3Nw\nMEYGA<VENDOR_ID>UdIAQ/MD0wMQYIKwYBBQUHAgEwJTAjBggrBgEFBQcCARYXaHR0cDovL3d3\ndy52aXNhLmNvbS9wa2kwCAYGZ4EDAQEBMBMGA<VENDOR_ID>UdJQQMMAoGCCsGAQUFBwMCMDUG\nA<VENDOR_ID>UdHwQuMCwwKqAooCaGJGh0dHA6Ly9lbnJvbGwudmlzYWNhLmNvbS9lQ29tbUcy\nLmNybDAdBgNVHQ4EFgQU6gD/Z5m2gw4n676qt4jXOWr8ynowDgYDVR0PAQH/BAQD\nAgSwMA0GCSqGSIb3DQEBCwUAA4ICAQBumWXGS/uaaajte2gI3<VENDOR_AUTH_CODE>CpsuewmihQKvKq\nOhaOc+wgdfwIkEAXdJIc33n2j/iaT5Lusi09ezZpBB80C6KQVr5Fs<VENDOR_ID>0SX0hlBCvT\n9MGYFwFtYUgi5OenqYsXc8BdmiE0bFiSXZ7Xf<VENDOR_AUTH_CODE>WuvYjis4LOubMr48yVyyEynWWb\nSGr7rTJztraOFjsykK<VENDOR_ID>6<VENDOR_AUTH_CODE>946YXi/LswEP9RtDiOBNJ9cBVcOP+u8Q+dEzA5A63Ay\nA2Z/5m/pyCIWMSYGMtM0RANUp9gp7cEXaMpwKWfrW6ZanF60IoGlmRHilGU4rvm7\ntd4yJTfw<VENDOR_AUTH_CODE>tkmh4w/IPiqI/OaXj5iG8hCo8a9FTnGahIcij8c<VENDOR_ID>UWzQ3/A7o99AUwy\n<VENDOR_ID>Xi9JnNiXYVM<VENDOR_ID>bfQalK0DKsLqRiS6rzPfwMU<VENDOR_AUTH_CODE>j2+ALnhcrnSdPnZgV<VENDOR_AUTH_CODE>iQB7kvfi3\nHFXHoGhmMHHj8tlURqUQzpJcCz<VENDOR_ID>QOy5c9SCc/M8Xu+eRsCnJrtvvD<VENDOR_AUTH_CODE>riLWfDDM9M\n8/8JsiBP+DF6omCb6J4ryEulcVPnVAAZNlNtaUadPYnCJfB0p67jWkHa5NvQdZGW\naT<VENDOR_ID>tvo9DqjI7zLf9Km0qqkK5<VENDOR_ID>gwYDnsy<VENDOR_ID>4pYvfeEwL9O9aepFa7<VENDOR_AUTH_CODE>08bM3272<VENDOR_AUTH_CODE>qNK\neGHXFK/zUV<VENDOR_AUTH_CODE>YY5u<VENDOR_AUTH_CODE>ukcqYAdhAv<VENDOR_AUTH_CODE>7f6d0J6Nr8jP<VENDOR_AUTH_CODE>o6UNXKiFH9leGPPz<VENDOR_AUTH_CODE>9oNugts\nz6qck4YdAQ==\n-----END CERTIFICATE-----\n",
+                "directory_server_id": "A000000003",
+                "root_certificate_authorities": [
+                  "-----BEGIN CERTIFICATE-----\nMIIFqTCCA5GgAwIBAgIPUT6WAAAA20Qn7qzgvuFIMA0GCSqGSIb3DQEBCwUAMG8<VENDOR_AUTH_CODE>\nCzAJBgNVBAYTAlVTMQ0wCwYDVQQKDARWSVNBMS8wLQYDVQQLDCZWaXNhIEludGVy\nbmF0aW9uYWwgU2VydmljZSBBc3NvY2lhdGlvbjEgMB4GA<VENDOR_ID>UEAwwXVmlzYSBQdWJs\naWMgUlNBIFJvb3QgQ0EwHhcNMjEwMzE2MDAwMDAwWhcNNDEwMzE<VENDOR_ID>MDAwMDAwWjBv\nMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlzYSBJbnRl\ncm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>IDAeBgNVBAMMF<VENDOR_ID>Zpc2EgUHVi\nbGljIFJTQSBSb290IENBMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA\n2WEbXLS3gI6LOY93bP7Kz6EO9L<VENDOR_ID>QXlr8l+fTkJWZldJ6QuwZ<VENDOR_ID>cv4369tfjeJ8O5w\nSJiDcVw7eNdOP73LfAtwHlTnUnb0e9ILTTipc5bkNnAevocrJACsrpiQ8jBI9ttp\ncqKUeJgzW4Ie25ypirKroVD42b4E0iICK2cZ5QfD4BSzUnftp4Bqh8AfpGvG<VENDOR_ID>lre\nCaD53qrsy5SUadY/NaeUGOkqdPvDSNoDIdrbE<VENDOR_AUTH_CODE>wnZaSFUmjQT<VENDOR_ID>svKwMqGo2GFrgJ\n4cULEp4NNj5rga8YTTZ7Xo5MblHrLpSPOmJev30KWi/BcbvtCNYNWBTg7UMzP3cK\nMQ<VENDOR_ID>pGLvG2PgvFTZSRvH3QzngJRgrDYYOJ6kj9ave+6yOOFqj80ZCuH0Nugt2mMS3\nc3+Nksaw+6H3cQPsE/Gv5zjfsKleRhEFtE<VENDOR_ID>gyrdUg<VENDOR_ID>DMgu8o/YhKM7FAqkXUn74z\nwoRFg<VENDOR_AUTH_CODE>3Mi5OaGTQbg+NlwJgR4sVHXCV4s9b8PjneLhzWMn353SFARF9dnO7LDBqq\ntT6WltJu<VENDOR_ID>z9<VENDOR_AUTH_CODE>2Ze0UVNZv<VENDOR_AUTH_CODE>KGcyCkLody29O8j9/MGZ8SOSUu4U6NHrebKuuf9Fht\nn6PqQ4ppkhy6sReXeV5NVGfVpDYY5ZAKEWqTYgMULWpQ2Py4BGpFzBe07jXkyulR\npoKvz<VENDOR_ID>4iXeA0oq<VENDOR_ID>6c94DrFYX0jmrWLeU4a/TCZQLFIsCAwEAAaNCMEAwHQYDVR0O\nBBYEFEtNpg77oBHorQvi8PMKAC+si<VENDOR_AUTH_CODE>b7MA8GA<VENDOR_ID>UdEwEB/wQFMAMBAf8wDgYDVR0P\nAQH/BAQDAgEGMA0GCSqGSIb3DQEBCwUAA4ICAQC5BU9qQSZYPcgCp2<VENDOR_AUTH_CODE>0Juq59kMm\nXuBly094DaEnPqvtCgwwAirkv8<VENDOR_AUTH_CODE>8/QSO<VENDOR_AUTH_CODE>iWWiu+nveyuR+j6Gz/fJaV4u+J5QEDy\ncfk605Mw3HIcJOeZvDgk<VENDOR_ID>eyOmQwUP6Z/BdQTNJmZ92Z8dcG5yWC<VENDOR_AUTH_CODE>LBrqPH7ro3Ss\njhYq9duIJU7jfizCJCN4W8tp0D2pWBe<VENDOR_ID>/CYNswP4GMs5jQ5+ZQKN/L5JFdwVTu7X\nPt8b5zfgbmmQpVmUn0oFwm3OI++Z6gEpNmW5bd/2oUIZoG96Qff2fauVMAYiWQvN\nnL3y<VENDOR_ID>gkRguTOSMVUCCiGfdvwu5ygowillvV2nHb7+YibQ9N5Z2spP0o9Zlfzoat2\n7WFpyK47TiUdu/4toarLKGZP+hbA/F4<VENDOR_AUTH_CODE>lnM/8EfZkE<VENDOR_ID>DeTTI0lhN3O8yEsHrtRl<VENDOR_ID>\nOuQZ/Ie<VENDOR_AUTH_CODE>HO8UGU6jvn4TWo<VENDOR_ID>0HYeXzrGckL7oIXfGTrjPzfY62T5HDW/BAEZS+9Tk\nijz25YM0fPPz7IdlEG+k4q4YwZ82j73Y9kDEM5423mrWorq/Bq7I5Y8v0LTY9GWH\nYrpElYf0WdOXAbsfwQiT6qnRio+p82VyqlY8Jt6VVA6CDy/iHKwcj<VENDOR_ID>ELEnDQfVv9\nhedo<VENDOR_AUTH_CODE>mnQ6<VENDOR_AUTH_CODE>e/nK8czclu9hQJRv5Lh9gk9Q8DKK2nmgzZ8SSQ+lr3mSSeY8JOMRlE\n+RKdOQIChWthTJKh7w==\n-----END CERTIFICATE-----\n"
+                ]
+              },
+              "directory_server_name": "visa",
+              "merchant": "acct_<VENDOR_ID>E4bfnKXBGcbgpbZ",
+              "one_click_authn": null,
+              "server_transaction_id": "2<VENDOR_ID>762<VENDOR_ID>2c-0a07-459d-af45-f7<VENDOR_ID>33d<VENDOR_ID>582ff",
+              "three_d_secure_2_source": "payatt_3SOMtXKXBGcbgpbZ0MWrGM8i",
+              "three_ds_frontend_optimizations": null,
+              "three_ds_method_url": "",
+              "three_ds_optimizations": "kf",
+              "type": "stripe_3ds2_fingerprint"
+            }
+          },
+          "on_behalf_of": null,
+          "payment_details": {
+            "customer_reference": null,
+            "order_reference": "in_<VENDOR_ID>SOMtXKXBGcbgpbZqbTb4o"
+          },
+          "payment_method": "pm_<VENDOR_ID>SOMtWKXBGcbgpbZI2fd8Qwo",
+          "payment_method_configuration_details": null,
+          "payment_method_options": {
+            "acss_debit": {
+              "mandate_options": {
+                "interval_description": null,
+                "payment_schedule": null,
+                "transaction_type": null
+              },
+              "verification_method": "automatic"
+            },
+            "card": {
+              "installments": null,
+              "mandate_options": null,
+              "network": null,
+              "request_three_d_secure": "automatic"
+            },
+            "cashapp": {},
+            "link": {
+              "persistent_token": null
+            },
+            "us_bank_account": {
+              "mandate_options": {},
+              "verification_method": "automatic"
+            }
+          },
+          "payment_method_types": [
+            "acss_debit",
+            "card",
+            "cashapp",
+            "link",
+            "us_bank_account"
+          ],
+          "processing": null,
+          "receipt_email": null,
+          "review": null,
+          "setup_future_usage": "off_session",
+          "shipping": null,
+          "source": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffi<VENDOR_AUTH_CODE>": null,
+          "status": "requires_action",
+          "transfer_data": null,
+          "transfer_group": null
+        }
+  recorded_at: Fri, 31 Oct 2025 18:17:53 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers
+    body:
+      encoding: UTF-8
+      string: email=stripe%40e<VENDOR_AUTH_CODE>ample.org&name=Stripe+User&e<VENDOR_AUTH_CODE>pand[0]=ta<VENDOR_AUTH_CODE>&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=invoice_credit_balance
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_vfMLhvCHZ7QVB9","request_duration_ms":240}}'
+      Idempotency-Key:
+      - c70c97dd-a38<VENDOR_ID>-4b0e-bce6-d090aa408db9
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>8:30:23 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '804'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=dUuegfzyHKATRpOog-4G<VENDOR_AUTH_CODE>SV2u<VENDOR_AUTH_CODE>5jMpr_<VENDOR_AUTH_CODE>Io6MC9T6DThW37vj7fP8MadA-Oe7L8JmpsTETU8EycC-E_W
+      Idempotency-Key:
+      - c70c97dd-a38<VENDOR_ID>-4b0e-bce6-d090aa408db9
+      Original-Request:
+      - req_09dT0FZnH5g2Wa
+      Request-Id:
+      - req_09dT0FZnH5g2Wa
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_TL3CDQTM5kqv2j",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": <VENDOR_ID>76<VENDOR_ID>935423,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+          "invoice_credit_balance": {},
+          "invoice_prefi<VENDOR_AUTH_CODE>": "XVSP9WZ7",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": null,
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "ta<VENDOR_AUTH_CODE>": {
+            "automatic_ta<VENDOR_AUTH_CODE>": "unrecognized_location",
+            "ip_address": null,
+            "location": null,
+            "provider": "stripe"
+          },
+          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+          "test_clock": null
+        }
+  recorded_at: Fri, 31 Oct 2025 18:30:23 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/payment_methods/pm_card_authenticationRequired/attach
+    body:
+      encoding: UTF-8
+      string: customer=cus_TL3CDQTM5kqv2j
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_09dT0FZnH5g2Wa","request_duration_ms":2<VENDOR_ID>7}}'
+      Idempotency-Key:
+      - d0949bbf-4<VENDOR_ID>b6-462b-98cd-ac5e07c3bbca
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>8:30:23 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - "<VENDOR_ID>066"
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=dUuegfzyHKATRpOog-4G<VENDOR_AUTH_CODE>SV2u<VENDOR_AUTH_CODE>5jMpr_<VENDOR_AUTH_CODE>Io6MC9T6DThW37vj7fP8MadA-Oe7L8JmpsTETU8EycC-E_W
+      Idempotency-Key:
+      - d0949bbf-4<VENDOR_ID>b6-462b-98cd-ac5e07c3bbca
+      Original-Request:
+      - req_4WUQppBvgurWHY
+      Request-Id:
+      - req_4WUQppBvgurWHY
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "pm_<VENDOR_ID>SON5fKXBGcbgpbZOH5FGOyV",
+          "object": "payment_method",
+          "allow_redisplay": "unspecified",
+          "billing_details": {
+            "address": {
+              "city": null,
+              "country": null,
+              "line<VENDOR_ID>": null,
+              "line2": null,
+              "postal_code": null,
+              "state": null
+            },
+            "email": null,
+            "name": null,
+            "phone": null,
+            "ta<VENDOR_AUTH_CODE>_id": null
+          },
+          "card": {
+            "brand": "visa",
+            "checks": {
+              "address_line<VENDOR_ID>_check": null,
+              "address_postal_code_check": null,
+              "cvc_check": "pass"
+            },
+            "country": "DE",
+            "display_brand": "visa",
+            "e<VENDOR_AUTH_CODE>p_month": <VENDOR_ID>0,
+            "e<VENDOR_AUTH_CODE>p_year": 2026,
+            "fingerprint": "qu2J<VENDOR_AUTH_CODE>Qg97yWGBVrd",
+            "funding": "credit",
+            "generated_from": null,
+            "last4": "3<VENDOR_ID>84",
+            "networks": {
+              "available": [
+                "visa"
+              ],
+              "preferred": null
+            },
+            "regulated_status": "unregulated",
+            "three_d_secure_usage": {
+              "supported": true
+            },
+            "wallet": null
+          },
+          "created": <VENDOR_ID>76<VENDOR_ID>935423,
+          "customer": "cus_TL3CDQTM5kqv2j",
+          "livemode": false,
+          "metadata": {},
+          "type": "card"
+        }
+  recorded_at: Fri, 31 Oct 2025 18:30:23 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/customers/cus_TL3CDQTM5kqv2j
+    body:
+      encoding: UTF-8
+      string: invoice_settings[default_payment_method]=pm_<VENDOR_ID>SON5fKXBGcbgpbZOH5FGOyV
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_4WUQppBvgurWHY","request_duration_ms":520}}'
+      Idempotency-Key:
+      - fc2664f8-0e39-4c<VENDOR_ID>b-8949-32328<VENDOR_ID>7bf7e5
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>8:30:24 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '664'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=dUuegfzyHKATRpOog-4G<VENDOR_AUTH_CODE>SV2u<VENDOR_AUTH_CODE>5jMpr_<VENDOR_AUTH_CODE>Io6MC9T6DThW37vj7fP8MadA-Oe7L8JmpsTETU8EycC-E_W
+      Idempotency-Key:
+      - fc2664f8-0e39-4c<VENDOR_ID>b-8949-32328<VENDOR_ID>7bf7e5
+      Original-Request:
+      - req_zKdMPk7Wh8fuvS
+      Request-Id:
+      - req_zKdMPk7Wh8fuvS
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_TL3CDQTM5kqv2j",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": <VENDOR_ID>76<VENDOR_ID>935423,
+          "currency": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@e<VENDOR_AUTH_CODE>ample.org",
+          "invoice_prefi<VENDOR_AUTH_CODE>": "XVSP9WZ7",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": "pm_<VENDOR_ID>SON5fKXBGcbgpbZOH5FGOyV",
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "ne<VENDOR_AUTH_CODE>t_invoice_sequence": <VENDOR_ID>,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "ta<VENDOR_AUTH_CODE>_e<VENDOR_AUTH_CODE>empt": "none",
+          "test_clock": null
+        }
+  recorded_at: Fri, 31 Oct 2025 18:30:24 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v<VENDOR_ID>/subscriptions
+    body:
+      encoding: UTF-8
+      string: items[0][price]=small-monthly&customer=cus_TL3CDQTM5kqv2j&e<VENDOR_AUTH_CODE>pand[0]=default_payment_method&e<VENDOR_AUTH_CODE>pand[<VENDOR_ID>]=discounts&e<VENDOR_AUTH_CODE>pand[2]=latest_invoice.confirmation_<PADDLE_API_KEY>&e<VENDOR_AUTH_CODE>pand[3]=latest_invoice.payments&e<VENDOR_AUTH_CODE>pand[4]=latest_invoice.total_discount_amounts.discount&e<VENDOR_AUTH_CODE>pand[5]=pending_setup_intent&e<VENDOR_AUTH_CODE>pand[6]=schedule
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_zKdMPk7Wh8fuvS","request_duration_ms":249}}'
+      Idempotency-Key:
+      - "<VENDOR_ID>2d4fc6b-e<VENDOR_ID>5b-47dc-8028-784e5<VENDOR_ID>d06763"
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Content-Type:
+      - application/<VENDOR_AUTH_CODE>-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>8:30:26 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '9744'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=dUuegfzyHKATRpOog-4G<VENDOR_AUTH_CODE>SV2u<VENDOR_AUTH_CODE>5jMpr_<VENDOR_AUTH_CODE>Io6MC9T6DThW37vj7fP8MadA-Oe7L8JmpsTETU8EycC-E_W
+      Idempotency-Key:
+      - "<VENDOR_ID>2d4fc6b-e<VENDOR_ID>5b-47dc-8028-784e5<VENDOR_ID>d06763"
+      Original-Request:
+      - req_4rtcWQ9BEtqJbE
+      Request-Id:
+      - req_4rtcWQ9BEtqJbE
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJzdWJfPFZFTkRPUl9JRD5TT041Z0tYQkdjYmdwYlpqZmE8VkVORE9SX0FVVEhfQ09ERT5LbHZ5IiwKICAib2JqZWN0IjogInN1YnNjcmlwdGlvbiIsCiAgImFwcGxpY2F0aW9uIjogbnVsbCwKICAiYXBwbGljYXRpb25fZmVlX3BlcmNlbnQiOiBudWxsLAogICJhdXRvbWF0aWNfdGE8VkVORE9SX0FVVEhfQ09ERT4iOiB7CiAgICAiZGlzYWJsZWRfcmVhc29uIjogbnVsbCwKICAgICJlbmFibGVkIjogZmFsc2UsCiAgICAibGlhYmlsaXR5IjogbnVsbAogIH0sCiAgImJpbGxpbmdfY3ljbGVfYW5jaG9yIjogPFZFTkRPUl9JRD43NjxWRU5ET1JfSUQ+OTM1NDI0LAogICJiaWxsaW5nX2N5Y2xlX2FuY2hvcl9jb25maWciOiBudWxsLAogICJiaWxsaW5nX21vZGUiOiB7CiAgICAiZmxlPFZFTkRPUl9BVVRIX0NPREU+aWJsZSI6IHsKICAgICAgInByb3JhdGlvbl9kaXNjb3VudHMiOiAiaW5jbHVkZWQiCiAgICB9LAogICAgInR5cGUiOiAiZmxlPFZFTkRPUl9BVVRIX0NPREU+aWJsZSIsCiAgICAidXBkYXRlZF9hdCI6IDxWRU5ET1JfSUQ+NzY8VkVORE9SX0lEPjkzNTQyNAogIH0sCiAgImJpbGxpbmdfdGhyZXNob2xkcyI6IG51bGwsCiAgImNhbmNlbF9hdCI6IG51bGwsCiAgImNhbmNlbF9hdF9wZXJpb2RfZW5kIjogZmFsc2UsCiAgImNhbmNlbGVkX2F0IjogbnVsbCwKICAiY2FuY2VsbGF0aW9uX2RldGFpbHMiOiB7CiAgICAiY29tbWVudCI6IG51bGwsCiAgICAiZmVlZGJhY2siOiBudWxsLAogICAgInJlYXNvbiI6IG51bGwKICB9LAogICJjb2xsZWN0aW9uX21ldGhvZCI6ICJjaGFyZ2VfYXV0b21hdGljYWxseSIsCiAgImNyZWF0ZWQiOiA8VkVORE9SX0lEPjc2PFZFTkRPUl9JRD45MzU0MjQsCiAgImN1cnJlbmN5IjogInVzZCIsCiAgImN1c3RvbWVyIjogImN1c19UTDNDRFFUTTVrcXYyaiIsCiAgImRheXNfdW50aWxfZHVlIjogbnVsbCwKICAiZGVmYXVsdF9wYXltZW50X21ldGhvZCI6IG51bGwsCiAgImRlZmF1bHRfc291cmNlIjogbnVsbCwKICAiZGVmYXVsdF90YTxWRU5ET1JfQVVUSF9DT0RFPl9yYXRlcyI6IFtdLAogICJkZXNjcmlwdGlvbiI6IG51bGwsCiAgImRpc2NvdW50cyI6IFtdLAogICJlbmRlZF9hdCI6IG51bGwsCiAgImludm9pY2Vfc2V0dGluZ3MiOiB7CiAgICAiYWNjb3VudF90YTxWRU5ET1JfQVVUSF9DT0RFPl9pZHMiOiBudWxsLAogICAgImlzc3VlciI6IHsKICAgICAgInR5cGUiOiAic2VsZiIKICAgIH0KICB9LAogICJpdGVtcyI6IHsKICAgICJvYmplY3QiOiAibGlzdCIsCiAgICAiZGF0YSI6IFsKICAgICAgewogICAgICAgICJpZCI6ICJzaV9UTDNDT3I0UGlQREpMNSIsCiAgICAgICAgIm9iamVjdCI6ICJzdWJzY3JpcHRpb25faXRlbSIsCiAgICAgICAgImJpbGxpbmdfdGhyZXNob2xkcyI6IG51bGwsCiAgICAgICAgImNyZWF0ZWQiOiA8VkVORE9SX0lEPjc2PFZFTkRPUl9JRD45MzU0MjQsCiAgICAgICAgImN1cnJlbnRfcGVyaW9kX2VuZCI6IDxWRU5ET1JfSUQ+NzY0NTI3NDI0LAogICAgICAgICJjdXJyZW50X3BlcmlvZF9zdGFydCI6IDxWRU5ET1JfSUQ+NzY8VkVORE9SX0lEPjkzNTQyNCwKICAgICAgICAiZGlzY291bnRzIjogW10sCiAgICAgICAgIm1ldGFkYXRhIjoge30sCiAgICAgICAgInBsYW4iOiB7CiAgICAgICAgICAiaWQiOiAic21hbGwtbW9udGhseSIsCiAgICAgICAgICAib2JqZWN0IjogInBsYW4iLAogICAgICAgICAgImFjdGl2ZSI6IHRydWUsCiAgICAgICAgICAiYW1vdW50IjogMjUwMCwKICAgICAgICAgICJhbW91bnRfZGVjaW1hbCI6ICIyNTAwIiwKICAgICAgICAgICJiaWxsaW5nX3NjaGVtZSI6ICJwZXJfdW5pdCIsCiAgICAgICAgICAiY3JlYXRlZCI6IDxWRU5ET1JfSUQ+NTc8VkVORE9SX0lEPjQyNTU3MCwKICAgICAgICAgICJjdXJyZW5jeSI6ICJ1c2QiLAogICAgICAgICAgImludGVydmFsIjogIm1vbnRoIiwKICAgICAgICAgICJpbnRlcnZhbF9jb3VudCI6IDxWRU5ET1JfSUQ+LAogICAgICAgICAgImxpdmVtb2RlIjogZmFsc2UsCiAgICAgICAgICAibWV0YWRhdGEiOiB7fSwKICAgICAgICAgICJtZXRlciI6IG51bGwsCiAgICAgICAgICAibmlja25hbWUiOiAiU21hbGwgTW9udGhseSIsCiAgICAgICAgICAicHJvZHVjdCI6ICJwcm9kX0VZVFg3UlloUmpjd0tEIiwKICAgICAgICAgICJ0aWVyc19tb2RlIjogbnVsbCwKICAgICAgICAgICJ0cmFuc2Zvcm1fdXNhZ2UiOiBudWxsLAogICAgICAgICAgInRyaWFsX3BlcmlvZF9kYXlzIjogbnVsbCwKICAgICAgICAgICJ1c2FnZV90eXBlIjogImxpY2Vuc2VkIgogICAgICAgIH0sCiAgICAgICAgInByaWNlIjogewogICAgICAgICAgImlkIjogInNtYWxsLW1vbnRobHkiLAogICAgICAgICAgIm9iamVjdCI6ICJwcmljZSIsCiAgICAgICAgICAiYWN0aXZlIjogdHJ1ZSwKICAgICAgICAgICJiaWxsaW5nX3NjaGVtZSI6ICJwZXJfdW5pdCIsCiAgICAgICAgICAiY3JlYXRlZCI6IDxWRU5ET1JfSUQ+NTc8VkVORE9SX0lEPjQyNTU3MCwKICAgICAgICAgICJjdXJyZW5jeSI6ICJ1c2QiLAogICAgICAgICAgImN1c3RvbV91bml0X2Ftb3VudCI6IG51bGwsCiAgICAgICAgICAibGl2ZW1vZGUiOiBmYWxzZSwKICAgICAgICAgICJsb29rdXBfa2V5IjogbnVsbCwKICAgICAgICAgICJtZXRhZGF0YSI6IHt9LAogICAgICAgICAgIm5pY2tuYW1lIjogIlNtYWxsIE1vbnRobHkiLAogICAgICAgICAgInByb2R1Y3QiOiAicHJvZF9FWVRYN1JZaFJqY3dLRCIsCiAgICAgICAgICAicmVjdXJyaW5nIjogewogICAgICAgICAgICAiaW50ZXJ2YWwiOiAibW9udGgiLAogICAgICAgICAgICAiaW50ZXJ2YWxfY291bnQiOiA8VkVORE9SX0lEPiwKICAgICAgICAgICAgIm1ldGVyIjogbnVsbCwKICAgICAgICAgICAgInRyaWFsX3BlcmlvZF9kYXlzIjogbnVsbCwKICAgICAgICAgICAgInVzYWdlX3R5cGUiOiAibGljZW5zZWQiCiAgICAgICAgICB9LAogICAgICAgICAgInRhPFZFTkRPUl9BVVRIX0NPREU+X2JlaGF2aW9yIjogImU8VkVORE9SX0FVVEhfQ09ERT5jbHVzaXZlIiwKICAgICAgICAgICJ0aWVyc19tb2RlIjogbnVsbCwKICAgICAgICAgICJ0cmFuc2Zvcm1fcXVhbnRpdHkiOiBudWxsLAogICAgICAgICAgInR5cGUiOiAicmVjdXJyaW5nIiwKICAgICAgICAgICJ1bml0X2Ftb3VudCI6IDI1MDAsCiAgICAgICAgICAidW5pdF9hbW91bnRfZGVjaW1hbCI6ICIyNTAwIgogICAgICAgIH0sCiAgICAgICAgInF1YW50aXR5IjogPFZFTkRPUl9JRD4sCiAgICAgICAgInN1YnNjcmlwdGlvbiI6ICJzdWJfPFZFTkRPUl9JRD5TT041Z0tYQkdjYmdwYlpqZmE8VkVORE9SX0FVVEhfQ09ERT5LbHZ5IiwKICAgICAgICAidGE8VkVORE9SX0FVVEhfQ09ERT5fcmF0ZXMiOiBbXQogICAgICB9CiAgICBdLAogICAgImhhc19tb3JlIjogZmFsc2UsCiAgICAidG90YWxfY291bnQiOiA8VkVORE9SX0lEPiwKICAgICJ1cmwiOiAiL3Y8VkVORE9SX0lEPi9zdWJzY3JpcHRpb25faXRlbXM/c3Vic2NyaXB0aW9uPXN1Yl88VkVORE9SX0lEPlNPTjVnS1hCR2NiZ3BiWmpmYTxWRU5ET1JfQVVUSF9DT0RFPktsdnkiCiAgfSwKICAibGF0ZXN0X2ludm9pY2UiOiB7CiAgICAiaWQiOiAiaW5fPFZFTkRPUl9JRD5TT041Z0tYQkdjYmdwYlpVV3dsMzBURiIsCiAgICAib2JqZWN0IjogImludm9pY2UiLAogICAgImFjY291bnRfY291bnRyeSI6ICJVUyIsCiAgICAiYWNjb3VudF9uYW1lIjogIlBheSIsCiAgICAiYWNjb3VudF90YTxWRU5ET1JfQVVUSF9DT0RFPl9pZHMiOiBudWxsLAogICAgImFtb3VudF9kdWUiOiAyNTAwLAogICAgImFtb3VudF9vdmVycGFpZCI6IDAsCiAgICAiYW1vdW50X3BhaWQiOiAwLAogICAgImFtb3VudF9yZW1haW5pbmciOiAyNTAwLAogICAgImFtb3VudF9zaGlwcGluZyI6IDAsCiAgICAiYXBwbGljYXRpb24iOiBudWxsLAogICAgImF0dGVtcHRfY291bnQiOiAwLAogICAgImF0dGVtcHRlZCI6IHRydWUsCiAgICAiYXV0b19hZHZhbmNlIjogdHJ1ZSwKICAgICJhdXRvbWF0aWNfdGE8VkVORE9SX0FVVEhfQ09ERT4iOiB7CiAgICAgICJkaXNhYmxlZF9yZWFzb24iOiBudWxsLAogICAgICAiZW5hYmxlZCI6IGZhbHNlLAogICAgICAibGlhYmlsaXR5IjogbnVsbCwKICAgICAgInByb3ZpZGVyIjogbnVsbCwKICAgICAgInN0YXR1cyI6IG51bGwKICAgIH0sCiAgICAiYXV0b21hdGljYWxseV9maW5hbGl6ZXNfYXQiOiBudWxsLAogICAgImJpbGxpbmdfcmVhc29uIjogInN1YnNjcmlwdGlvbl9jcmVhdGUiLAogICAgImNvbGxlY3Rpb25fbWV0aG9kIjogImNoYXJnZV9hdXRvbWF0aWNhbGx5IiwKICAgICJjb25maXJtYXRpb25fPFBBRERMRV9BUElfS0VZPiI6IHsKICAgICAgImNsaWVudF88UEFERExFX0FQSV9LRVk+IjogInBpXzNTT041Z0tYQkdjYmdwYlowcDR3TnlVSV88UEFERExFX0FQSV9LRVk+X080YThPcEpHYnc4QW1salIwbTZyaWxSOE4iLAogICAgICAidHlwZSI6ICJwYXltZW50X2ludGVudCIKICAgIH0sCiAgICAiY3JlYXRlZCI6IDxWRU5ET1JfSUQ+NzY8VkVORE9SX0lEPjkzNTQyNCwKICAgICJjdXJyZW5jeSI6ICJ1c2QiLAogICAgImN1c3RvbV9maWVsZHMiOiBudWxsLAogICAgImN1c3RvbWVyIjogImN1c19UTDNDRFFUTTVrcXYyaiIsCiAgICAiY3VzdG9tZXJfYWRkcmVzcyI6IG51bGwsCiAgICAiY3VzdG9tZXJfZW1haWwiOiAic3RyaXBlQGU8VkVORE9SX0FVVEhfQ09ERT5hbXBsZS5vcmciLAogICAgImN1c3RvbWVyX25hbWUiOiAiU3RyaXBlIFVzZXIiLAogICAgImN1c3RvbWVyX3Bob25lIjogbnVsbCwKICAgICJjdXN0b21lcl9zaGlwcGluZyI6IG51bGwsCiAgICAiY3VzdG9tZXJfdGE8VkVORE9SX0FVVEhfQ09ERT5fZTxWRU5ET1JfQVVUSF9DT0RFPmVtcHQiOiAibm9uZSIsCiAgICAiY3VzdG9tZXJfdGE8VkVORE9SX0FVVEhfQ09ERT5faWRzIjogW10sCiAgICAiZGVmYXVsdF9wYXltZW50X21ldGhvZCI6IG51bGwsCiAgICAiZGVmYXVsdF9zb3VyY2UiOiBudWxsLAogICAgImRlZmF1bHRfdGE8VkVORE9SX0FVVEhfQ09ERT5fcmF0ZXMiOiBbXSwKICAgICJkZXNjcmlwdGlvbiI6IG51bGwsCiAgICAiZGlzY291bnRzIjogW10sCiAgICAiZHVlX2RhdGUiOiBudWxsLAogICAgImVmZmVjdGl2ZV9hdCI6IDxWRU5ET1JfSUQ+NzY8VkVORE9SX0lEPjkzNTQyNCwKICAgICJlbmRpbmdfYmFsYW5jZSI6IDAsCiAgICAiZm9vdGVyIjogbnVsbCwKICAgICJmcm9tX2ludm9pY2UiOiBudWxsLAogICAgImhvc3RlZF9pbnZvaWNlX3VybCI6ICJodHRwczovL2ludm9pY2Uuc3RyaXBlLmNvbS9pL2FjY3RfPFZFTkRPUl9JRD5FNGJmbktYQkdjYmdwYlovdGVzdF9ZV05qZEY4PFZFTkRPUl9BVVRIX0NPREU+UlRSaVptNUxXRUpIWTJKbmNHSmFMRjlVVERORGVsTnlhSEZKTVVsWWNFZGFibFZqUldoU2EyOXZOalpTWkZWNUxERTxWRU5ET1JfSUQ+TWpRM05qSXlOZzAyMDBFOFdKZ1FQaz9zPWFwIiwKICAgICJpbnZvaWNlX3BkZiI6ICJodHRwczovL3BheS5zdHJpcGUuY29tL2ludm9pY2UvYWNjdF88VkVORE9SX0lEPkU0YmZuS1hCR2NiZ3BiWi90ZXN0X1lXTmpkRjg8VkVORE9SX0FVVEhfQ09ERT5SVFJpWm01TFdFSkhZMkpuY0dKYUxGOVVURE5EZWxOeWFIRkpNVWxZY0VkYWJsVmpSV2hTYTI5dk5qWlNaRlY1TERFPFZFTkRPUl9JRD5NalEzTmpJeU5nMDIwMEU4V0pnUVBrL3BkZj9zPWFwIiwKICAgICJpc3N1ZXIiOiB7CiAgICAgICJ0eXBlIjogInNlbGYiCiAgICB9LAogICAgImxhc3RfZmluYWxpemF0aW9uX2Vycm9yIjogbnVsbCwKICAgICJsYXRlc3RfcmV2aXNpb24iOiBudWxsLAogICAgImxpbmVzIjogewogICAgICAib2JqZWN0IjogImxpc3QiLAogICAgICAiZGF0YSI6IFsKICAgICAgICB7CiAgICAgICAgICAiaWQiOiAiaWxfPFZFTkRPUl9JRD5TT041Z0tYQkdjYmdwYlpueW92ZVlVWCIsCiAgICAgICAgICAib2JqZWN0IjogImxpbmVfaXRlbSIsCiAgICAgICAgICAiYW1vdW50IjogMjUwMCwKICAgICAgICAgICJjdXJyZW5jeSI6ICJ1c2QiLAogICAgICAgICAgImRlc2NyaXB0aW9uIjogIjxWRU5ET1JfSUQ+IHVzZXIgw5cgVGVzdCBTdWJzY3JpcHRpb24gKGF0ICQyNS4wMCAvIG1vbnRoKSIsCiAgICAgICAgICAiZGlzY291bnRfYW1vdW50cyI6IFtdLAogICAgICAgICAgImRpc2NvdW50YWJsZSI6IHRydWUsCiAgICAgICAgICAiZGlzY291bnRzIjogW10sCiAgICAgICAgICAiaW52b2ljZSI6ICJpbl88VkVORE9SX0lEPlNPTjVnS1hCR2NiZ3BiWlVXd2wzMFRGIiwKICAgICAgICAgICJsaXZlbW9kZSI6IGZhbHNlLAogICAgICAgICAgIm1ldGFkYXRhIjoge30sCiAgICAgICAgICAicGFyZW50IjogewogICAgICAgICAgICAiaW52b2ljZV9pdGVtX2RldGFpbHMiOiBudWxsLAogICAgICAgICAgICAic3Vic2NyaXB0aW9uX2l0ZW1fZGV0YWlscyI6IHsKICAgICAgICAgICAgICAiaW52b2ljZV9pdGVtIjogbnVsbCwKICAgICAgICAgICAgICAicHJvcmF0aW9uIjogZmFsc2UsCiAgICAgICAgICAgICAgInByb3JhdGlvbl9kZXRhaWxzIjogewogICAgICAgICAgICAgICAgImNyZWRpdGVkX2l0ZW1zIjogbnVsbAogICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgInN1YnNjcmlwdGlvbiI6ICJzdWJfPFZFTkRPUl9JRD5TT041Z0tYQkdjYmdwYlpqZmE8VkVORE9SX0FVVEhfQ09ERT5LbHZ5IiwKICAgICAgICAgICAgICAic3Vic2NyaXB0aW9uX2l0ZW0iOiAic2lfVEwzQ09yNFBpUERKTDUiCiAgICAgICAgICAgIH0sCiAgICAgICAgICAgICJ0eXBlIjogInN1YnNjcmlwdGlvbl9pdGVtX2RldGFpbHMiCiAgICAgICAgICB9LAogICAgICAgICAgInBlcmlvZCI6IHsKICAgICAgICAgICAgImVuZCI6IDxWRU5ET1JfSUQ+NzY0NTI3NDI0LAogICAgICAgICAgICAic3RhcnQiOiA8VkVORE9SX0lEPjc2PFZFTkRPUl9JRD45MzU0MjQKICAgICAgICAgIH0sCiAgICAgICAgICAicHJldGE8VkVORE9SX0FVVEhfQ09ERT5fY3JlZGl0X2Ftb3VudHMiOiBbXSwKICAgICAgICAgICJwcmljaW5nIjogewogICAgICAgICAgICAicHJpY2VfZGV0YWlscyI6IHsKICAgICAgICAgICAgICAicHJpY2UiOiAic21hbGwtbW9udGhseSIsCiAgICAgICAgICAgICAgInByb2R1Y3QiOiAicHJvZF9FWVRYN1JZaFJqY3dLRCIKICAgICAgICAgICAgfSwKICAgICAgICAgICAgInR5cGUiOiAicHJpY2VfZGV0YWlscyIsCiAgICAgICAgICAgICJ1bml0X2Ftb3VudF9kZWNpbWFsIjogIjI1MDAiCiAgICAgICAgICB9LAogICAgICAgICAgInF1YW50aXR5IjogPFZFTkRPUl9JRD4sCiAgICAgICAgICAidGE8VkVORE9SX0FVVEhfQ09ERT5lcyI6IFtdCiAgICAgICAgfQogICAgICBdLAogICAgICAiaGFzX21vcmUiOiBmYWxzZSwKICAgICAgInRvdGFsX2NvdW50IjogPFZFTkRPUl9JRD4sCiAgICAgICJ1cmwiOiAiL3Y8VkVORE9SX0lEPi9pbnZvaWNlcy9pbl88VkVORE9SX0lEPlNPTjVnS1hCR2NiZ3BiWlVXd2wzMFRGL2xpbmVzIgogICAgfSwKICAgICJsaXZlbW9kZSI6IGZhbHNlLAogICAgIm1ldGFkYXRhIjoge30sCiAgICAibmU8VkVORE9SX0FVVEhfQ09ERT50X3BheW1lbnRfYXR0ZW1wdCI6IG51bGwsCiAgICAibnVtYmVyIjogIlhWU1A5V1o3LTAwMDxWRU5ET1JfSUQ+IiwKICAgICJvbl9iZWhhbGZfb2YiOiBudWxsLAogICAgInBhcmVudCI6IHsKICAgICAgInF1b3RlX2RldGFpbHMiOiBudWxsLAogICAgICAic3Vic2NyaXB0aW9uX2RldGFpbHMiOiB7CiAgICAgICAgIm1ldGFkYXRhIjoge30sCiAgICAgICAgInN1YnNjcmlwdGlvbiI6ICJzdWJfPFZFTkRPUl9JRD5TT041Z0tYQkdjYmdwYlpqZmE8VkVORE9SX0FVVEhfQ09ERT5LbHZ5IgogICAgICB9LAogICAgICAidHlwZSI6ICJzdWJzY3JpcHRpb25fZGV0YWlscyIKICAgIH0sCiAgICAicGF5bWVudF9zZXR0aW5ncyI6IHsKICAgICAgImRlZmF1bHRfbWFuZGF0ZSI6IG51bGwsCiAgICAgICJwYXltZW50X21ldGhvZF9vcHRpb25zIjogbnVsbCwKICAgICAgInBheW1lbnRfbWV0aG9kX3R5cGVzIjogbnVsbAogICAgfSwKICAgICJwYXltZW50cyI6IHsKICAgICAgIm9iamVjdCI6ICJsaXN0IiwKICAgICAgImRhdGEiOiBbCiAgICAgICAgewogICAgICAgICAgImlkIjogImlucGF5XzxWRU5ET1JfSUQ+U09ONWhLWEJHY2JncGJaZHpnVHF2Z0giLAogICAgICAgICAgIm9iamVjdCI6ICJpbnZvaWNlX3BheW1lbnQiLAogICAgICAgICAgImFtb3VudF9wYWlkIjogbnVsbCwKICAgICAgICAgICJhbW91bnRfcmVxdWVzdGVkIjogMjUwMCwKICAgICAgICAgICJjcmVhdGVkIjogPFZFTkRPUl9JRD43NjxWRU5ET1JfSUQ+OTM1NDI1LAogICAgICAgICAgImN1cnJlbmN5IjogInVzZCIsCiAgICAgICAgICAiaW52b2ljZSI6ICJpbl88VkVORE9SX0lEPlNPTjVnS1hCR2NiZ3BiWlVXd2wzMFRGIiwKICAgICAgICAgICJpc19kZWZhdWx0IjogdHJ1ZSwKICAgICAgICAgICJsaXZlbW9kZSI6IGZhbHNlLAogICAgICAgICAgInBheW1lbnQiOiB7CiAgICAgICAgICAgICJwYXltZW50X2ludGVudCI6ICJwaV8zU09ONWdLWEJHY2JncGJaMHA0d055VUkiLAogICAgICAgICAgICAidHlwZSI6ICJwYXltZW50X2ludGVudCIKICAgICAgICAgIH0sCiAgICAgICAgICAic3RhdHVzIjogIm9wZW4iLAogICAgICAgICAgInN0YXR1c190cmFuc2l0aW9ucyI6IHsKICAgICAgICAgICAgImNhbmNlbGVkX2F0IjogbnVsbCwKICAgICAgICAgICAgInBhaWRfYXQiOiBudWxsCiAgICAgICAgICB9CiAgICAgICAgfQogICAgICBdLAogICAgICAiaGFzX21vcmUiOiBmYWxzZSwKICAgICAgInVybCI6ICIvdjxWRU5ET1JfSUQ+L2ludm9pY2VzL3BheW1lbnRzIgogICAgfSwKICAgICJwZXJpb2RfZW5kIjogPFZFTkRPUl9JRD43NjxWRU5ET1JfSUQ+OTM1NDI0LAogICAgInBlcmlvZF9zdGFydCI6IDxWRU5ET1JfSUQ+NzY8VkVORE9SX0lEPjkzNTQyNCwKICAgICJwb3N0X3BheW1lbnRfY3JlZGl0X25vdGVzX2Ftb3VudCI6IDAsCiAgICAicHJlX3BheW1lbnRfY3JlZGl0X25vdGVzX2Ftb3VudCI6IDAsCiAgICAicmVjZWlwdF9udW1iZXIiOiBudWxsLAogICAgInJlbmRlcmluZyI6IG51bGwsCiAgICAic2hpcHBpbmdfY29zdCI6IG51bGwsCiAgICAic2hpcHBpbmdfZGV0YWlscyI6IG51bGwsCiAgICAic3RhcnRpbmdfYmFsYW5jZSI6IDAsCiAgICAic3RhdGVtZW50X2Rlc2NyaXB0b3IiOiBudWxsLAogICAgInN0YXR1cyI6ICJvcGVuIiwKICAgICJzdGF0dXNfdHJhbnNpdGlvbnMiOiB7CiAgICAgICJmaW5hbGl6ZWRfYXQiOiA8VkVORE9SX0lEPjc2PFZFTkRPUl9JRD45MzU0MjQsCiAgICAgICJtYXJrZWRfdW5jb2xsZWN0aWJsZV9hdCI6IG51bGwsCiAgICAgICJwYWlkX2F0IjogbnVsbCwKICAgICAgInZvaWRlZF9hdCI6IG51bGwKICAgIH0sCiAgICAic3VidG90YWwiOiAyNTAwLAogICAgInN1YnRvdGFsX2U8VkVORE9SX0FVVEhfQ09ERT5jbHVkaW5nX3RhPFZFTkRPUl9BVVRIX0NPREU+IjogMjUwMCwKICAgICJ0ZXN0X2Nsb2NrIjogbnVsbCwKICAgICJ0b3RhbCI6IDI1MDAsCiAgICAidG90YWxfZGlzY291bnRfYW1vdW50cyI6IFtdLAogICAgInRvdGFsX2U8VkVORE9SX0FVVEhfQ09ERT5jbHVkaW5nX3RhPFZFTkRPUl9BVVRIX0NPREU+IjogMjUwMCwKICAgICJ0b3RhbF9wcmV0YTxWRU5ET1JfQVVUSF9DT0RFPl9jcmVkaXRfYW1vdW50cyI6IFtdLAogICAgInRvdGFsX3RhPFZFTkRPUl9BVVRIX0NPREU+ZXMiOiBbXSwKICAgICJ3ZWJob29rc19kZWxpdmVyZWRfYXQiOiA8VkVORE9SX0lEPjc2PFZFTkRPUl9JRD45MzU0MjQKICB9LAogICJsaXZlbW9kZSI6IGZhbHNlLAogICJtZXRhZGF0YSI6IHt9LAogICJuZTxWRU5ET1JfQVVUSF9DT0RFPnRfcGVuZGluZ19pbnZvaWNlX2l0ZW1faW52b2ljZSI6IG51bGwsCiAgIm9uX2JlaGFsZl9vZiI6IG51bGwsCiAgInBhdXNlX2NvbGxlY3Rpb24iOiBudWxsLAogICJwYXltZW50X3NldHRpbmdzIjogewogICAgInBheW1lbnRfbWV0aG9kX29wdGlvbnMiOiBudWxsLAogICAgInBheW1lbnRfbWV0aG9kX3R5cGVzIjogbnVsbCwKICAgICJzYXZlX2RlZmF1bHRfcGF5bWVudF9tZXRob2QiOiAib2ZmIgogIH0sCiAgInBlbmRpbmdfaW52b2ljZV9pdGVtX2ludGVydmFsIjogbnVsbCwKICAicGVuZGluZ19zZXR1cF9pbnRlbnQiOiBudWxsLAogICJwZW5kaW5nX3VwZGF0ZSI6IG51bGwsCiAgInBsYW4iOiB7CiAgICAiaWQiOiAic21hbGwtbW9udGhseSIsCiAgICAib2JqZWN0IjogInBsYW4iLAogICAgImFjdGl2ZSI6IHRydWUsCiAgICAiYW1vdW50IjogMjUwMCwKICAgICJhbW91bnRfZGVjaW1hbCI6ICIyNTAwIiwKICAgICJiaWxsaW5nX3NjaGVtZSI6ICJwZXJfdW5pdCIsCiAgICAiY3JlYXRlZCI6IDxWRU5ET1JfSUQ+NTc8VkVORE9SX0lEPjQyNTU3MCwKICAgICJjdXJyZW5jeSI6ICJ1c2QiLAogICAgImludGVydmFsIjogIm1vbnRoIiwKICAgICJpbnRlcnZhbF9jb3VudCI6IDxWRU5ET1JfSUQ+LAogICAgImxpdmVtb2RlIjogZmFsc2UsCiAgICAibWV0YWRhdGEiOiB7fSwKICAgICJtZXRlciI6IG51bGwsCiAgICAibmlja25hbWUiOiAiU21hbGwgTW9udGhseSIsCiAgICAicHJvZHVjdCI6ICJwcm9kX0VZVFg3UlloUmpjd0tEIiwKICAgICJ0aWVyc19tb2RlIjogbnVsbCwKICAgICJ0cmFuc2Zvcm1fdXNhZ2UiOiBudWxsLAogICAgInRyaWFsX3BlcmlvZF9kYXlzIjogbnVsbCwKICAgICJ1c2FnZV90eXBlIjogImxpY2Vuc2VkIgogIH0sCiAgInF1YW50aXR5IjogPFZFTkRPUl9JRD4sCiAgInNjaGVkdWxlIjogbnVsbCwKICAic3RhcnRfZGF0ZSI6IDxWRU5ET1JfSUQ+NzY8VkVORE9SX0lEPjkzNTQyNCwKICAic3RhdHVzIjogImluY29tcGxldGUiLAogICJ0ZXN0X2Nsb2NrIjogbnVsbCwKICAidHJhbnNmZXJfZGF0YSI6IG51bGwsCiAgInRyaWFsX2VuZCI6IG51bGwsCiAgInRyaWFsX3NldHRpbmdzIjogewogICAgImVuZF9iZWhhdmlvciI6IHsKICAgICAgIm1pc3NpbmdfcGF5bWVudF9tZXRob2QiOiAiY3JlYXRlX2ludm9pY2UiCiAgICB9CiAgfSwKICAidHJpYWxfc3RhcnQiOiBudWxsCn0=
+  recorded_at: Fri, 31 Oct 2025 18:30:26 GMT
+- request:
+    method: get
+    uri: https://api.stripe.com/v<VENDOR_ID>/payment_intents/pi_3SON5gKXBGcbgpbZ0p4wNyUI
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>7.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.2.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer sk_test_e<VENDOR_AUTH_CODE>0JDdQGDv6z2QmAIVQUOyE6
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_4rtcWQ9BEtqJbE","request_duration_ms":2879}}'
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.2.3"},"bindings_version":"<VENDOR_ID>7.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.5
+        p5<VENDOR_ID> (2025-07-<VENDOR_ID>6)","platform":"arm64-darwin24","engine":"ruby","publisher":"stripe","uname":"Darwin
+        MacBookPro.localdomain 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep <VENDOR_ID>7
+        2<VENDOR_ID>:4<VENDOR_ID>:45 PDT 2025; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>2377.<VENDOR_ID>.9~<VENDOR_ID>4<VENDOR_ID>/RELEASE_ARM64_T6000
+        arm64","hostname":"MacBookPro.localdomain"}'
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Fri, 3<VENDOR_ID> Oct 2025 <VENDOR_ID>8:30:27 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '6892'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=dUuegfzyHKATRpOog-4G<VENDOR_AUTH_CODE>SV2u<VENDOR_AUTH_CODE>5jMpr_<VENDOR_AUTH_CODE>Io6MC9T6DThW37vj7fP8MadA-Oe7L8JmpsTETU8EycC-E_W
+      Request-Id:
+      - req_WXsTzWfjsA<VENDOR_ID>R9X
+      Stripe-Version:
+      - 2025-<VENDOR_ID>0-29.clover
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - ABGHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+      X-Stripe-Routing-Conte<VENDOR_AUTH_CODE>t-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "pi_3SON5gKXBGcbgpbZ0p4wNyUI",
+          "object": "payment_intent",
+          "amount": 2500,
+          "amount_capturable": 0,
+          "amount_details": {
+            "tip": {}
+          },
+          "amount_received": 0,
+          "application": null,
+          "application_fee_amount": null,
+          "automatic_payment_methods": null,
+          "canceled_at": null,
+          "cancellation_reason": null,
+          "capture_method": "automatic",
+          "client_<PADDLE_API_KEY>": "pi_3SON5gKXBGcbgpbZ0p4wNyUI_<PADDLE_API_KEY>_O4a8OpJGbw8AmljR0m6rilR8N",
+          "confirmation_method": "automatic",
+          "created": <VENDOR_ID>76<VENDOR_ID>935424,
+          "currency": "usd",
+          "customer": "cus_TL3CDQTM5kqv2j",
+          "description": "Subscription creation",
+          "e<VENDOR_AUTH_CODE>cluded_payment_method_types": null,
+          "last_payment_error": null,
+          "latest_charge": null,
+          "livemode": false,
+          "metadata": {},
+          "ne<VENDOR_AUTH_CODE>t_action": {
+            "type": "use_stripe_sdk",
+            "use_stripe_sdk": {
+              "directory_server_encryption": {
+                "algorithm": "RSA",
+                "certificate": "-----BEGIN CERTIFICATE-----\nMIIGAzCCA+ugAwIBAgIQNyg9v/wemJMz4m<VENDOR_ID>8kdvt6zANBgkqhkiG9w0BAQsFADB2\nMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlzYSBJbnRl\ncm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>JzAlBgNVBAMMHlZpc2EgZUNv\nbW<VENDOR_ID>lcmNlIElzc3VpbmcgQ0EgLSBHMjAeFw0yNDAyMjcyMjQ0MDNaFw0yNzAyMjYy\nMjQ0MDJaMIGhMRgwFgYDVQQHDA9IaWdobGFuZHMgUmFuY2g<VENDOR_AUTH_CODE>ETAPBgNVBAgMCENv\nbG9yYWRvMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlz\nYSBJbnRlcm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>JTAjBgNVBAMMHDNk\nczIucnNhLmVuY3J5cHRpb24udmlzYS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IB\nDwAwggEKAoIBAQCSABLI5aAnf8Cypn/sKETE+U3e3YruYzUkqNpEMH0sPMpCAW<VENDOR_ID>V\n33<VENDOR_AUTH_CODE>iklm5R0S3ZFOEzzlmL22tRyjXaB6/WJUa66ajRz2DiY8+7<VENDOR_AUTH_CODE>5CcMJNVlwqS6OG\nTlmvXGO<VENDOR_AUTH_CODE>PXIVz6h<VENDOR_AUTH_CODE>CsAb7mKS7cnpGpkjVD/Oe4u8ZmeUrcPWKdeH+e5BfeWp2Iel\nh89pU4tpJ84PlPTlLjZ3TLa2OutFLsMBE<VENDOR_AUTH_CODE>cr4ipWnEcbpkzvAPBRABBVZbkWTA9i\nVM9v5MXIJGzXDsQVJEOg<VENDOR_AUTH_CODE>m/kyQXeO3JtNytYOaQ6sQi+z9gF32plP3hsrUQ2jJ3H\nCnZmOyrHl8tQW<VENDOR_AUTH_CODE>hAIMZ/WHogpvEGufi<VENDOR_ID>4eyBAgMBAAGjggFfMIIBWzAMBgNVHRMB\nAf8EAjAAMB8GA<VENDOR_ID>UdIwQYMBaAFL0nYyikrlS3yCO3wTVCF+nGeF+FMGcGCCsGAQUF\nBwEBBFswWTAwBggrBgEFBQcwAoYkaHR0cDovL2Vucm9sbC52aXNhY2EuY29tL2VD\nb2<VENDOR_ID>tRzIuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC52aXNhLmNvbS9vY3Nw\nMEYGA<VENDOR_ID>UdIAQ/MD0wMQYIKwYBBQUHAgEwJTAjBggrBgEFBQcCARYXaHR0cDovL3d3\ndy52aXNhLmNvbS9wa2kwCAYGZ4EDAQEBMBMGA<VENDOR_ID>UdJQQMMAoGCCsGAQUFBwMCMDUG\nA<VENDOR_ID>UdHwQuMCwwKqAooCaGJGh0dHA6Ly9lbnJvbGwudmlzYWNhLmNvbS9lQ29tbUcy\nLmNybDAdBgNVHQ4EFgQU6gD/Z5m2gw4n676qt4jXOWr8ynowDgYDVR0PAQH/BAQD\nAgSwMA0GCSqGSIb3DQEBCwUAA4ICAQBumWXGS/uaaajte2gI3<VENDOR_AUTH_CODE>CpsuewmihQKvKq\nOhaOc+wgdfwIkEAXdJIc33n2j/iaT5Lusi09ezZpBB80C6KQVr5Fs<VENDOR_ID>0SX0hlBCvT\n9MGYFwFtYUgi5OenqYsXc8BdmiE0bFiSXZ7Xf<VENDOR_AUTH_CODE>WuvYjis4LOubMr48yVyyEynWWb\nSGr7rTJztraOFjsykK<VENDOR_ID>6<VENDOR_AUTH_CODE>946YXi/LswEP9RtDiOBNJ9cBVcOP+u8Q+dEzA5A63Ay\nA2Z/5m/pyCIWMSYGMtM0RANUp9gp7cEXaMpwKWfrW6ZanF60IoGlmRHilGU4rvm7\ntd4yJTfw<VENDOR_AUTH_CODE>tkmh4w/IPiqI/OaXj5iG8hCo8a9FTnGahIcij8c<VENDOR_ID>UWzQ3/A7o99AUwy\n<VENDOR_ID>Xi9JnNiXYVM<VENDOR_ID>bfQalK0DKsLqRiS6rzPfwMU<VENDOR_AUTH_CODE>j2+ALnhcrnSdPnZgV<VENDOR_AUTH_CODE>iQB7kvfi3\nHFXHoGhmMHHj8tlURqUQzpJcCz<VENDOR_ID>QOy5c9SCc/M8Xu+eRsCnJrtvvD<VENDOR_AUTH_CODE>riLWfDDM9M\n8/8JsiBP+DF6omCb6J4ryEulcVPnVAAZNlNtaUadPYnCJfB0p67jWkHa5NvQdZGW\naT<VENDOR_ID>tvo9DqjI7zLf9Km0qqkK5<VENDOR_ID>gwYDnsy<VENDOR_ID>4pYvfeEwL9O9aepFa7<VENDOR_AUTH_CODE>08bM3272<VENDOR_AUTH_CODE>qNK\neGHXFK/zUV<VENDOR_AUTH_CODE>YY5u<VENDOR_AUTH_CODE>ukcqYAdhAv<VENDOR_AUTH_CODE>7f6d0J6Nr8jP<VENDOR_AUTH_CODE>o6UNXKiFH9leGPPz<VENDOR_AUTH_CODE>9oNugts\nz6qck4YdAQ==\n-----END CERTIFICATE-----\n",
+                "directory_server_id": "A000000003",
+                "root_certificate_authorities": [
+                  "-----BEGIN CERTIFICATE-----\nMIIFqTCCA5GgAwIBAgIPUT6WAAAA20Qn7qzgvuFIMA0GCSqGSIb3DQEBCwUAMG8<VENDOR_AUTH_CODE>\nCzAJBgNVBAYTAlVTMQ0wCwYDVQQKDARWSVNBMS8wLQYDVQQLDCZWaXNhIEludGVy\nbmF0aW9uYWwgU2VydmljZSBBc3NvY2lhdGlvbjEgMB4GA<VENDOR_ID>UEAwwXVmlzYSBQdWJs\naWMgUlNBIFJvb3QgQ0EwHhcNMjEwMzE2MDAwMDAwWhcNNDEwMzE<VENDOR_ID>MDAwMDAwWjBv\nMQswCQYDVQQGEwJVUzENMAsGA<VENDOR_ID>UECgwEVklTQTEvMC0GA<VENDOR_ID>UECwwmVmlzYSBJbnRl\ncm5hdGlvbmFsIFNlcnZpY2UgQXNzb2NpYXRpb24<VENDOR_AUTH_CODE>IDAeBgNVBAMMF<VENDOR_ID>Zpc2EgUHVi\nbGljIFJTQSBSb290IENBMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA\n2WEbXLS3gI6LOY93bP7Kz6EO9L<VENDOR_ID>QXlr8l+fTkJWZldJ6QuwZ<VENDOR_ID>cv4369tfjeJ8O5w\nSJiDcVw7eNdOP73LfAtwHlTnUnb0e9ILTTipc5bkNnAevocrJACsrpiQ8jBI9ttp\ncqKUeJgzW4Ie25ypirKroVD42b4E0iICK2cZ5QfD4BSzUnftp4Bqh8AfpGvG<VENDOR_ID>lre\nCaD53qrsy5SUadY/NaeUGOkqdPvDSNoDIdrbE<VENDOR_AUTH_CODE>wnZaSFUmjQT<VENDOR_ID>svKwMqGo2GFrgJ\n4cULEp4NNj5rga8YTTZ7Xo5MblHrLpSPOmJev30KWi/BcbvtCNYNWBTg7UMzP3cK\nMQ<VENDOR_ID>pGLvG2PgvFTZSRvH3QzngJRgrDYYOJ6kj9ave+6yOOFqj80ZCuH0Nugt2mMS3\nc3+Nksaw+6H3cQPsE/Gv5zjfsKleRhEFtE<VENDOR_ID>gyrdUg<VENDOR_ID>DMgu8o/YhKM7FAqkXUn74z\nwoRFg<VENDOR_AUTH_CODE>3Mi5OaGTQbg+NlwJgR4sVHXCV4s9b8PjneLhzWMn353SFARF9dnO7LDBqq\ntT6WltJu<VENDOR_ID>z9<VENDOR_AUTH_CODE>2Ze0UVNZv<VENDOR_AUTH_CODE>KGcyCkLody29O8j9/MGZ8SOSUu4U6NHrebKuuf9Fht\nn6PqQ4ppkhy6sReXeV5NVGfVpDYY5ZAKEWqTYgMULWpQ2Py4BGpFzBe07jXkyulR\npoKvz<VENDOR_ID>4iXeA0oq<VENDOR_ID>6c94DrFYX0jmrWLeU4a/TCZQLFIsCAwEAAaNCMEAwHQYDVR0O\nBBYEFEtNpg77oBHorQvi8PMKAC+si<VENDOR_AUTH_CODE>b7MA8GA<VENDOR_ID>UdEwEB/wQFMAMBAf8wDgYDVR0P\nAQH/BAQDAgEGMA0GCSqGSIb3DQEBCwUAA4ICAQC5BU9qQSZYPcgCp2<VENDOR_AUTH_CODE>0Juq59kMm\nXuBly094DaEnPqvtCgwwAirkv8<VENDOR_AUTH_CODE>8/QSO<VENDOR_AUTH_CODE>iWWiu+nveyuR+j6Gz/fJaV4u+J5QEDy\ncfk605Mw3HIcJOeZvDgk<VENDOR_ID>eyOmQwUP6Z/BdQTNJmZ92Z8dcG5yWC<VENDOR_AUTH_CODE>LBrqPH7ro3Ss\njhYq9duIJU7jfizCJCN4W8tp0D2pWBe<VENDOR_ID>/CYNswP4GMs5jQ5+ZQKN/L5JFdwVTu7X\nPt8b5zfgbmmQpVmUn0oFwm3OI++Z6gEpNmW5bd/2oUIZoG96Qff2fauVMAYiWQvN\nnL3y<VENDOR_ID>gkRguTOSMVUCCiGfdvwu5ygowillvV2nHb7+YibQ9N5Z2spP0o9Zlfzoat2\n7WFpyK47TiUdu/4toarLKGZP+hbA/F4<VENDOR_AUTH_CODE>lnM/8EfZkE<VENDOR_ID>DeTTI0lhN3O8yEsHrtRl<VENDOR_ID>\nOuQZ/Ie<VENDOR_AUTH_CODE>HO8UGU6jvn4TWo<VENDOR_ID>0HYeXzrGckL7oIXfGTrjPzfY62T5HDW/BAEZS+9Tk\nijz25YM0fPPz7IdlEG+k4q4YwZ82j73Y9kDEM5423mrWorq/Bq7I5Y8v0LTY9GWH\nYrpElYf0WdOXAbsfwQiT6qnRio+p82VyqlY8Jt6VVA6CDy/iHKwcj<VENDOR_ID>ELEnDQfVv9\nhedo<VENDOR_AUTH_CODE>mnQ6<VENDOR_AUTH_CODE>e/nK8czclu9hQJRv5Lh9gk9Q8DKK2nmgzZ8SSQ+lr3mSSeY8JOMRlE\n+RKdOQIChWthTJKh7w==\n-----END CERTIFICATE-----\n"
+                ]
+              },
+              "directory_server_name": "visa",
+              "merchant": "acct_<VENDOR_ID>E4bfnKXBGcbgpbZ",
+              "one_click_authn": null,
+              "server_transaction_id": "<VENDOR_ID>06cfec3-2f7e-46ac-bc5b-<VENDOR_ID>289a8689b3a",
+              "three_d_secure_2_source": "payatt_3SON5gKXBGcbgpbZ0S6EUCTf",
+              "three_ds_frontend_optimizations": null,
+              "three_ds_method_url": "",
+              "three_ds_optimizations": "kf",
+              "type": "stripe_3ds2_fingerprint"
+            }
+          },
+          "on_behalf_of": null,
+          "payment_details": {
+            "customer_reference": null,
+            "order_reference": "in_<VENDOR_ID>SON5gKXBGcbgpbZUWwl30"
+          },
+          "payment_method": "pm_<VENDOR_ID>SON5fKXBGcbgpbZOH5FGOyV",
+          "payment_method_configuration_details": null,
+          "payment_method_options": {
+            "acss_debit": {
+              "mandate_options": {
+                "interval_description": null,
+                "payment_schedule": null,
+                "transaction_type": null
+              },
+              "verification_method": "automatic"
+            },
+            "card": {
+              "installments": null,
+              "mandate_options": null,
+              "network": null,
+              "request_three_d_secure": "automatic"
+            },
+            "cashapp": {},
+            "link": {
+              "persistent_token": null
+            },
+            "us_bank_account": {
+              "mandate_options": {},
+              "verification_method": "automatic"
+            }
+          },
+          "payment_method_types": [
+            "acss_debit",
+            "card",
+            "cashapp",
+            "link",
+            "us_bank_account"
+          ],
+          "processing": null,
+          "receipt_email": null,
+          "review": null,
+          "setup_future_usage": "off_session",
+          "shipping": null,
+          "source": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffi<VENDOR_AUTH_CODE>": null,
+          "status": "requires_action",
+          "transfer_data": null,
+          "transfer_group": null
+        }
+  recorded_at: Fri, 31 Oct 2025 18:30:27 GMT
 recorded_with: VCR 6.3.1
