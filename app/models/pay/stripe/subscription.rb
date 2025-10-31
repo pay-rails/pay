@@ -279,7 +279,6 @@ module Pay
           unpause
         else
           @api_record = ::Stripe::Subscription.update(processor_id, {
-            plan: processor_plan,
             trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             cancel_at_period_end: false
           }.merge(expand_options),
@@ -300,10 +299,9 @@ module Pay
           processor_id,
           {
             cancel_at_period_end: false,
-            plan: plan,
+            items: [{id: subscription_items.first.id, plan: plan, quantity: quantity}],
             proration_behavior: proration_behavior,
             trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
-            quantity: quantity
           }.merge(expand_options).merge(options),
           stripe_options
         )
