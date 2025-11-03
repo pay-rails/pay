@@ -301,7 +301,7 @@ module Pay
             cancel_at_period_end: false,
             items: [{id: subscription_items.first.id, plan: plan, quantity: quantity}],
             proration_behavior: proration_behavior,
-            trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
+            trial_end: (on_trial? ? trial_ends_at.to_i : "now")
           }.merge(expand_options).merge(options),
           stripe_options
         )
