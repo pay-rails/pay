@@ -46,7 +46,7 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
   end
 
   test "stripe can create a subscription" do
-    travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       # We select the subscription by newest created_at, so we want to make sure existing subscriptions are in the past
       @pay_customer.subscriptions.update_all(created_at: 1.hour.ago)
 
@@ -181,11 +181,11 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
   test "stripe handles coupons" do
     @pay_customer.update_payment_method payment_method
     subscription = @pay_customer.subscribe(plan: "small-monthly", discounts: [{coupon: "10OFF"}])
-    assert_equal "10OFF", subscription.stripe_object.discounts.first.coupon.id
+    assert_equal "10OFF", subscription.stripe_object.discounts.first.source.coupon
   end
 
   test "stripe trial period options" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       @pay_customer.update_payment_method payment_method
       subscription = @pay_customer.subscribe(plan: "small-monthly", trial_period_days: 15)
       assert_equal "trialing", subscription.status
@@ -460,6 +460,9 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
   test "stripe can issue credit note for a refund for Stripe tax" do
     @pay_customer.update_payment_method payment_method
     pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
+    # InvoicePayments aren't created immediately, so we must wait until they're available to create a Credit Note
+    # Pay::Stripe::Error: (Status 400) (Request req_t6t14FGEokRygN) You can only create a refund if the invoice has a charge associated with it.
+    sleep 1
     pay_subscription.charges.last.refund!(5_00)
     pay_subscription.api_record = nil
     invoice = pay_subscription.api_record.latest_invoice

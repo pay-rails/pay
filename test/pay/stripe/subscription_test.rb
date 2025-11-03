@@ -32,7 +32,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "cancel_now when scheduled for cancellation" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       @pay_customer.update(processor_id: nil)
       @pay_customer.update_payment_method "pm_card_visa"
       subscription = @pay_customer.subscribe(name: "default", plan: "default")
@@ -48,7 +48,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "cancel_now when on trial" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       @pay_customer.update(processor_id: nil)
       @pay_customer.update_payment_method "pm_card_visa"
       subscription = @pay_customer.subscribe(name: "default", plan: "default", trial_period_days: 14)
@@ -165,7 +165,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe resume on grace period" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       @pay_customer.update(processor_id: nil)
       @pay_customer.update_payment_method "pm_card_visa"
       subscription = @pay_customer.subscribe(name: "default", plan: "default")
