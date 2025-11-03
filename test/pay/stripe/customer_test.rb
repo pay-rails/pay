@@ -460,6 +460,9 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
   test "stripe can issue credit note for a refund for Stripe tax" do
     @pay_customer.update_payment_method payment_method
     pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
+    # InvoicePayments aren't created immediately, so we must wait until they're available to create a Credit Note
+    # Pay::Stripe::Error: (Status 400) (Request req_t6t14FGEokRygN) You can only create a refund if the invoice has a charge associated with it.
+    sleep 1
     pay_subscription.charges.last.refund!(5_00)
     pay_subscription.api_record = nil
     invoice = pay_subscription.api_record.latest_invoice
