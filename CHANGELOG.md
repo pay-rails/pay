@@ -2,6 +2,11 @@
 
 ### Unreleased
 
+### 11.3.0
+
+* Stripe v17 #1202
+* Fix payment method syncing when customer is deleted #1201
+
 ### 11.2.3
 
 * Include `stripe_account` in `set_payment_processor` and `add_payment_processor` queries #1198
