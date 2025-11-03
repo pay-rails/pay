@@ -11,7 +11,7 @@ VCR.configure do |c|
   c.filter_sensitive_data("<PADDLE_PRIVATE_KEY>") { Pay::PaddleClassic.vendor_auth_code }
   c.filter_sensitive_data("<PADDLE_API_KEY>") { Pay::PaddleBilling.api_key }
   c.filter_sensitive_data("<LEMON_SQUEEZY_API_KEY>") { Pay::LemonSqueezy.api_key }
-#  c.default_cassette_options = {re_record_interval: 1.week} # Re-record every week
+  #  c.default_cassette_options = {re_record_interval: 1.week} # Re-record every week
 end
 
 class ActiveSupport::TestCase
