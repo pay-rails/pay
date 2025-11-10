@@ -70,8 +70,8 @@ module Pay
       items
     end
 
-    def discount_description(discount)
-      coupon = discount.discount.coupon
+    def discount_description(total_discount_amount)
+      coupon = total_discount_amount.discount.try(:source).try(:coupon) || total_discount_amount.discount.try(:coupon)
       name = coupon.name
 
       if (percent = coupon.percent_off)

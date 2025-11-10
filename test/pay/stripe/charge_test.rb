@@ -93,6 +93,20 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     assert_instance_of ::Stripe::BalanceTransaction, pay_charge.stripe_object.balance_transaction
   end
 
+  test "sync stripe invoice discounts and coupons" do
+    @pay_customer.update(processor_id: nil)
+    @pay_customer.update_payment_method payment_method
+    invoice = ::Stripe::Invoice.create(customer: @pay_customer.processor_id)
+    ::Stripe::InvoiceItem.create(customer: @pay_customer.processor_id, invoice: invoice.id, amount: 1900, discounts: [{ coupon: "sirmAxRi" }])
+    invoice.pay
+    invoice_payments = ::Stripe::InvoicePayment.list(invoice: invoice.id)
+    charge = Pay::Stripe::Charge.sync_payment_intent(invoice_payments.first.payment.payment_intent)
+    assert_equal "sirmAxRi", charge.stripe_invoice.total_discount_amounts.first.discount.source.coupon.id
+    assert_equal 50.0, charge.stripe_invoice.total_discount_amounts.first.discount.source.coupon.amount_off
+    # Ensure PDF renders with discounts
+    assert_nothing_raised { charge.pdf_line_items }
+  end
+
   private
 
   def fake_stripe_invoice_payment(**values)
