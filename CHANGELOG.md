@@ -2,6 +2,17 @@
 
 ### Unreleased
 
+### 11.3.1
+
+* Sync `Invoice` discount sources so they can be rendered in receipts without additional API calls
+  See: https://docs.stripe.com/changelog/clover/2025-09-30/add-discount-source-property?changelog-sdk=ruby#impact
+
+  You may need to re-sync Stripe charges to have the latest copy after this update.
+
+  ```ruby
+  Pay::Stripe::Charge.find_each { it.sync! }
+  ```
+
 ### 11.3.0
 
 * Stripe v17 #1202
