@@ -97,7 +97,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     @pay_customer.update(processor_id: nil)
     @pay_customer.update_payment_method payment_method
     invoice = ::Stripe::Invoice.create(customer: @pay_customer.processor_id)
-    ::Stripe::InvoiceItem.create(customer: @pay_customer.processor_id, invoice: invoice.id, amount: 1900, discounts: [{ coupon: "sirmAxRi" }])
+    ::Stripe::InvoiceItem.create(customer: @pay_customer.processor_id, invoice: invoice.id, amount: 1900, discounts: [{coupon: "sirmAxRi"}])
     invoice.pay
     invoice_payments = ::Stripe::InvoicePayment.list(invoice: invoice.id)
     charge = Pay::Stripe::Charge.sync_payment_intent(invoice_payments.first.payment.payment_intent)
