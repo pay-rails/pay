@@ -45,6 +45,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync associates charge with stripe subscription" do
     ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
+    ::Stripe::Invoice.stubs(:retrieve).returns(fake_stripe_invoice_payment.invoice)
     pay_subscription = @pay_customer.subscriptions.create!(processor_id: "sub_1234", name: "default", processor_plan: "some-plan", status: "active")
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
     assert_equal pay_subscription, pay_charge.subscription
@@ -52,6 +53,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync records stripe invoice" do
     ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
+    ::Stripe::Invoice.stubs(:retrieve).returns(fake_stripe_invoice_payment.invoice)
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(invoice: fake_stripe_invoice))
     assert_instance_of ::Stripe::Invoice, pay_charge.stripe_invoice
     assert_equal "in_1234", pay_charge.stripe_invoice.id
@@ -59,6 +61,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync records stripe receipt_url" do
     ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
+    ::Stripe::Invoice.stubs(:retrieve).returns(fake_stripe_invoice_payment.invoice)
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     assert_equal "https://pay.stripe.com/receipts/test_receipt", pay_charge.stripe_receipt_url
   end
@@ -74,6 +77,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync stripe charge with Link" do
     ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
+    ::Stripe::Invoice.stubs(:retrieve).returns(fake_stripe_invoice_payment.invoice)
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(
       payment_method: "pm_0Mt5J5NFr9vQLFLbmIyjBdIM",
       payment_method_details: {
@@ -89,6 +93,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync stripe charge balance_transaction" do
     ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: :list, data: [fake_stripe_invoice_payment]))
+    ::Stripe::Invoice.stubs(:retrieve).returns(fake_stripe_invoice_payment.invoice)
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     assert_instance_of ::Stripe::BalanceTransaction, pay_charge.stripe_object.balance_transaction
   end
@@ -102,7 +107,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     invoice_payments = ::Stripe::InvoicePayment.list(invoice: invoice.id)
     charge = Pay::Stripe::Charge.sync_payment_intent(invoice_payments.first.payment.payment_intent)
     assert_equal "sirmAxRi", charge.stripe_invoice.total_discount_amounts.first.discount.source.coupon.id
-    assert_equal 50.0, charge.stripe_invoice.total_discount_amounts.first.discount.source.coupon.amount_off
+    assert_equal 50.0, charge.stripe_invoice.total_discount_amounts.first.discount.source.coupon.percent_off
     # Ensure PDF renders with discounts
     assert_nothing_raised { charge.pdf_line_items }
   end
