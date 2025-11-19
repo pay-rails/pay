@@ -21,19 +21,6 @@ module Pay
     def self.pay_processor_for(name)
       "Pay::#{name.to_s.classify}::PaymentMethod".constantize
     end
-
-    def payment_processor
-      @payment_processor ||= self.class.pay_processor_for(customer.processor).new(self)
-    end
-
-    def make_default!
-      return if default?
-
-      payment_processor.make_default!
-
-      customer.payment_methods.update_all(default: false)
-      update!(default: true)
-    end
   end
 end
 

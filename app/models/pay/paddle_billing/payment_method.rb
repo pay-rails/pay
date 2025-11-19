@@ -36,6 +36,10 @@ module Pay
       end
 
       def make_default!
+        return if default?
+
+        customer.payment_methods.update_all(default: false)
+        update!(default: true)
       end
 
       def detach
