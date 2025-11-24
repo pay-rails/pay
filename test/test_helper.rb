@@ -32,6 +32,7 @@ require "mocha/minitest"
 require_relative "support/braintree"
 require_relative "support/stripe"
 require_relative "support/vcr"
+require_relative "support/payment_method_tests"
 
 # Uncomment to view the stacktrace for debugging tests
 Rails.backtrace_cleaner.remove_silencers!

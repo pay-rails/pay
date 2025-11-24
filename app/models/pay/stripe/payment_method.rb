@@ -67,7 +67,12 @@ module Pay
 
       # Sets payment method as default
       def make_default!
+        return if default?
+
         ::Stripe::Customer.update(customer.processor_id, {invoice_settings: {default_payment_method: processor_id}}, stripe_options)
+
+        customer.payment_methods.update_all(default: false)
+        update!(default: true)
       end
 
       # Remove payment method
