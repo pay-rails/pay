@@ -29,7 +29,7 @@ class Pay::Braintree::PaymentMethodTest < ActiveSupport::TestCase
     mock_gateway.expects(:customer).returns(mock_customer_gateway)
     mock_customer_gateway.expects(:update).with(
       @pay_customer.processor_id,
-      {default_payment_method_token: "pm_new"}
+      default_payment_method_token: "pm_new"
     ).returns(result)
 
     # Make pm2 the default
