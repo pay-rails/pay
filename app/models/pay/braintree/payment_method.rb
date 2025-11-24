@@ -10,10 +10,16 @@ module Pay
         pay_customer.save_payment_method(object, default: object.default?)
       end
 
-      # Sets payment method as default on Stripe
+      # Sets payment method as default
       def make_default!
+        return if default?
+
         result = gateway.customer.update(customer.processor_id, default_payment_method_token: processor_id)
         raise Pay::Braintree::Error, result unless result.success?
+
+        customer.payment_methods.update_all(default: false)
+        update!(default: true)
+
         result.success?
       end
 
