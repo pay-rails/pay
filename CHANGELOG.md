@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Stripe v18
+
 ### 11.3.1
 
 * Sync `Invoice` discount sources so they can be rendered in receipts without additional API calls
