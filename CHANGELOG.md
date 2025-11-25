@@ -2,7 +2,10 @@
 
 ### Unreleased
 
-* Stripe v18
+### 11.4.0
+
+* Stripe v18 #1209
+* Fix `Pay::PaymentMethod.make_default! #1207
 
 ### 11.3.1
 
