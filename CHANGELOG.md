@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.4.1
+
+* Automatically sync Stripe charge if `object` is nil to ease upgrading.
+
 ### 11.4.0
 
 * Stripe v18 #1209
