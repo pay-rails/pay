@@ -140,7 +140,8 @@ module Pay
       end
 
       def stripe_object
-        ::Stripe::Charge.construct_from(object) if object?
+        sync! if object.nil?
+        ::Stripe::Charge.construct_from(object)
       end
 
       private
