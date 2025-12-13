@@ -1,6 +1,6 @@
 module LemonSqueezy
   class ChargesController < ApplicationController
-    skip_before_action :verify_authenticity_token, only: [:create] # For testing purposes only
+    skip_forgery_protection(only: [:create]) # For testing purposes only
 
     def index
       @charges = Pay::LemonSqueezy::Charge.order(created_at: :desc)
