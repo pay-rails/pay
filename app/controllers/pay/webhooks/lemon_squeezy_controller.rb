@@ -4,7 +4,7 @@ module Pay
       skip_forgery_protection if Rails.application.config.action_controller.default_protect_from_forgery
 
       def create
-        if valid_signature?(request.headers['X-Signature'])
+        if valid_signature?(request.headers["X-Signature"])
           queue_event(verify_params.as_json)
           head :ok
         else
@@ -29,7 +29,7 @@ module Pay
 
         key = Pay::LemonSqueezy.signing_secret
         data = request.raw_post
-        digest = OpenSSL::Digest.new('sha256')
+        digest = OpenSSL::Digest.new("sha256")
 
         hmac = OpenSSL::HMAC.hexdigest(digest, key, data)
         ActiveSupport::SecurityUtils.secure_compare(hmac, signature)

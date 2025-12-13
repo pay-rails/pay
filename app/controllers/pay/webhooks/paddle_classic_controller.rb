@@ -23,8 +23,7 @@ module Pay
         event = verify_params.as_json
         verifier = Pay::PaddleClassic::Webhooks::SignatureVerifier.new(event)
         return event if verifier.verify
-
-        raise Pay::PaddleClassic::Error, 'Unable to verify Paddle webhook event'
+        raise Pay::PaddleClassic::Error, "Unable to verify Paddle webhook event"
       end
 
       def verify_params

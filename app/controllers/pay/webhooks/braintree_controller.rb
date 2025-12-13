@@ -18,7 +18,7 @@ module Pay
         record = Pay::Webhook.create!(
           processor: :braintree,
           event_type: event.kind,
-          event: { bt_signature: params[:bt_signature], bt_payload: params[:bt_payload] }
+          event: {bt_signature: params[:bt_signature], bt_payload: params[:bt_payload]}
         )
         Pay::Webhooks::ProcessJob.perform_later(record)
       end
