@@ -38,7 +38,7 @@ module Pay
   mattr_accessor :business_address
   mattr_accessor :business_name
   mattr_accessor :business_logo
-  mattr_accessor :support_email
+  mattr_reader :support_email
 
   def self.support_email=(value)
     @@support_email = value.is_a?(::Mail::Address) ? value : ::Mail::Address.new(value)
