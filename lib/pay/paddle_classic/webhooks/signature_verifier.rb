@@ -38,8 +38,8 @@ module Pay
           data_serialized = serialize(data_sorted, true)
 
           # verify the data
-          digest    = OpenSSL::Digest::SHA1.new
-          pub_key   = OpenSSL::PKey::RSA.new(public_key).public_key
+          digest = OpenSSL::Digest.new("SHA1")
+          pub_key = OpenSSL::PKey::RSA.new(public_key).public_key
           pub_key.verify(digest, signature, data_serialized)
         end
 
