@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.4.3
+
+* Remove forgery protection check for Stripe controller
+
 ### 11.4.2
 
 * Use `ActionController::API` as base for webhooks. This removes the need to skip forgery protection and improves performance.
