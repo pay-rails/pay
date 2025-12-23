@@ -38,3 +38,5 @@ gem "importmap-rails"
 gem "sprockets-rails"
 gem "stimulus-rails"
 gem "turbo-rails"
+
+gem "minitest", "< 6.0.0"
