@@ -1,8 +1,6 @@
 module Pay
   module Webhooks
     class StripeController < ActionController::API
-      skip_forgery_protection if Rails.application.config.action_controller.default_protect_from_forgery
-
       def create
         event = verified_event
         queue_event(event) if event.livemode || Pay::Stripe.webhook_receive_test_events
