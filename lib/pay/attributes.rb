@@ -37,7 +37,7 @@ module Pay
 
         with_lock do
           pay_customers.update_all(default: false)
-          pay_customer = pay_customers.active.where(processor: processor_name, stripe_account: stripe_account).where(Pay::Customer.inheritance_column => klass.name).first_or_initialize
+          pay_customer = pay_customers.active.where(Pay::Customer.inheritance_column => klass.name, processor: processor_name, stripe_account: stripe_account).first_or_initialize
           pay_customer.update!(attributes.merge(default: true))
         end
 
@@ -52,7 +52,7 @@ module Pay
         klass = "Pay::#{processor_name.to_s.classify}::Customer".constantize
         raise ArgumentError, "not a valid payment processor" if klass.ancestors.exclude?(Pay::Customer)
 
-        pay_customer = pay_customers.active.where(processor: processor_name, stripe_account: stripe_account).where(Pay::Customer.inheritance_column => klass.name).first_or_initialize
+        pay_customer = pay_customers.active.where(Pay::Customer.inheritance_column => klass.name, processor: processor_name, stripe_account: stripe_account).first_or_initialize
         pay_customer.update!(attributes)
         pay_customer
       end
@@ -83,7 +83,7 @@ module Pay
       def set_merchant_processor(processor_name, **attributes)
         with_lock do
           pay_merchants.update_all(default: false)
-          pay_merchant = pay_merchants.where(processor: processor_name).where(Pay::Merchant.inheritance_column => "Pay::#{processor_name.to_s.classify}::Merchant").first_or_initialize
+          pay_merchant = pay_merchants.where(Pay::Merchant.inheritance_column => "Pay::#{processor_name.to_s.classify}::Merchant", processor: processor_name).first_or_initialize
           pay_merchant.update!(attributes.merge(default: true))
         end
 
