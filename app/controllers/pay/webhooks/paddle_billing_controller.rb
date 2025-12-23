@@ -1,8 +1,6 @@
 module Pay
   module Webhooks
-    class PaddleBillingController < Pay::ApplicationController
-      skip_forgery_protection if Rails.application.config.action_controller.default_protect_from_forgery
-
+    class PaddleBillingController < ActionController::API
       def create
         if valid_signature?(request.headers["Paddle-Signature"])
           queue_event(verify_params.as_json)

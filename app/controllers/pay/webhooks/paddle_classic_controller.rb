@@ -1,8 +1,6 @@
 module Pay
   module Webhooks
-    class PaddleClassicController < Pay::ApplicationController
-      skip_forgery_protection if Rails.application.config.action_controller.default_protect_from_forgery
-
+    class PaddleClassicController < ActionController::API
       def create
         queue_event(verified_event)
         head :ok

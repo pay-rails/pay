@@ -1,6 +1,6 @@
 module Pay
   module Webhooks
-    class StripeController < Pay::ApplicationController
+    class StripeController < ActionController::API
       skip_forgery_protection if Rails.application.config.action_controller.default_protect_from_forgery
 
       def create

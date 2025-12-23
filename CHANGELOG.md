@@ -4,6 +4,7 @@
 
 ### 11.4.2
 
+* Use `ActionController::API` as base for webhooks. This removes the need to skip forgery protection and improves performance.
 * Use `inheritance_column` instead of hardcoded `type` column in case users modify migrations
 * Use `attr_reader :support_email` since we define a customer setter
 * Use `skip_forgery_protection` to be more compatible with Rails 8.2+

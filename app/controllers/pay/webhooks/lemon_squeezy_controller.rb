@@ -1,8 +1,6 @@
 module Pay
   module Webhooks
-    class LemonSqueezyController < Pay::ApplicationController
-      skip_forgery_protection if Rails.application.config.action_controller.default_protect_from_forgery
-
+    class LemonSqueezyController < ActionController::API
       def create
         if valid_signature?(request.headers["X-Signature"])
           queue_event(verify_params.as_json)
