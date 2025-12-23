@@ -1,6 +1,6 @@
 module LemonSqueezy
   class SubscriptionsController < ApplicationController
-    skip_before_action :verify_authenticity_token, only: [:create] # For testing purposes only
+    skip_forgery_protection(only: [:create]) # For testing purposes only
 
     def index
       @subscriptions = Pay::LemonSqueezy::Subscription.joins(:customer).where(pay_customers: {processor: :lemon_squeezy}).order(created_at: :desc)
