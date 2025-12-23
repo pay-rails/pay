@@ -2,6 +2,12 @@
 
 ### Unreleased
 
+### 11.4.2
+
+* Use `inheritance_column` instead of hardcoded `type` column in case users modify migrations
+* Use `attr_reader :support_email` since we define a customer setter
+* Use `skip_forgery_protection` to be more compatible with Rails 8.2+
+
 ### 11.4.1
 
 * Automatically sync Stripe charge if `object` is nil to ease upgrading.

@@ -6,7 +6,7 @@ module Pay
       def self.sync_order(order_id, object: nil, try: 0, retries: 1)
         object ||= ::LemonSqueezy::Order.retrieve(id: order_id)
 
-        pay_customer = Pay::Customer.find_by(type: "Pay::LemonSqueezy::Customer", processor_id: object.customer_id)
+        pay_customer = Pay::LemonSqueezy::Customer.find_by(processor_id: object.customer_id)
         return unless pay_customer
 
         processor_id = "order:#{object.id}"
@@ -34,7 +34,7 @@ module Pay
         # Skip loading the latest subscription invoice details from the API if we already have it
         object ||= ::LemonSqueezy::SubscriptionInvoice.retrieve(id: subscription_invoice_id)
 
-        pay_customer = Pay::Customer.find_by(type: "Pay::LemonSqueezy::Customer", processor_id: object.customer_id)
+        pay_customer = Pay::LemonSqueezy::Customer.find_by(processor_id: object.customer_id)
         return unless pay_customer
 
         processor_id = "subscription_invoice:#{object.id}"
