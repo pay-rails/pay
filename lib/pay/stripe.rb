@@ -12,6 +12,7 @@ module Pay
       autoload :CheckoutSessionAsyncPaymentSucceeded, "pay/stripe/webhooks/checkout_session_async_payment_succeeded"
       autoload :CustomerDeleted, "pay/stripe/webhooks/customer_deleted"
       autoload :CustomerUpdated, "pay/stripe/webhooks/customer_updated"
+      autoload :InvoiceUpdated, "pay/stripe/webhooks/invoice_updated"
       autoload :PaymentActionRequired, "pay/stripe/webhooks/payment_action_required"
       autoload :PaymentFailed, "pay/stripe/webhooks/payment_failed"
       autoload :PaymentIntentSucceeded, "pay/stripe/webhooks/payment_intent_succeeded"
@@ -83,6 +84,9 @@ module Pay
         # notifying annual users their subscription will renew shortly.
         # This probably should be ignored for monthly subscriptions.
         events.subscribe "stripe.invoice.upcoming", Pay::Stripe::Webhooks::SubscriptionRenewing.new
+
+        # Ensures the local stripe_object is up-to-date anytime the API's record is updated.
+        events.subscribe "stripe.invoice.updated", Pay::Stripe::Webhooks::InvoiceUpdated.new
 
         # Payment action is required to process an invoice
         events.subscribe "stripe.invoice.payment_action_required", Pay::Stripe::Webhooks::PaymentActionRequired.new
