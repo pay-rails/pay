@@ -1,0 +1,7 @@
+# Patch for app/models/pay/webhook.rb
+# Add pay_the_fly to the rehydrated_event method
+#
+# In the `rehydrated_event` method's case statement, add:
+#
+#   when "pay_the_fly"
+#     event.is_a?(Hash) ? event.with_indifferent_access : event
