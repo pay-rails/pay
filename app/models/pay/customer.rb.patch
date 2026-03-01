@@ -1,0 +1,7 @@
+# Patch for app/models/pay/customer.rb
+# Add pay_the_fly to the processor helpers loop
+#
+# Change:
+#   %w[stripe braintree paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
+# To:
+#   %w[stripe braintree paddle_billing paddle_classic lemon_squeezy pay_the_fly fake_processor].each do |processor_name|
