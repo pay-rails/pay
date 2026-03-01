@@ -1,0 +1,36 @@
+# Patch for lib/pay.rb
+# Add PayTheFly autoload and enabled_processors entry
+#
+# After the line:
+#   autoload :Stripe, "pay/stripe"
+# Add:
+#   autoload :PayTheFly, "pay/pay_the_fly"
+#
+# In @@enabled_processors, add :pay_the_fly:
+#   @@enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic, :lemon_squeezy, :pay_the_fly]
+#
+# Add owner resolver accessor:
+#   mattr_accessor :pay_the_fly_owner_resolver
+#   @@pay_the_fly_owner_resolver = nil
+
+--- a/lib/pay.rb
++++ b/lib/pay.rb
+@@ -14,6 +14,7 @@
+   autoload :PaddleBilling, "pay/paddle_billing"
+   autoload :PaddleClassic, "pay/paddle_classic"
+   autoload :LemonSqueezy, "pay/lemon_squeezy"
++  autoload :PayTheFly, "pay/pay_the_fly"
+   autoload :Stripe, "pay/stripe"
+
+   autoload :Webhooks, "pay/webhooks"
+@@ -28,7 +29,7 @@
+   @@model_parent_class = "ApplicationRecord"
+
+   mattr_accessor :enabled_processors
+-  @@enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic, :lemon_squeezy]
++  @@enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic, :lemon_squeezy, :pay_the_fly]
++
++  # PayTheFly: optional callback to resolve an owner from a serial_no
++  # Set in your initializer: Pay.pay_the_fly_owner_resolver = ->(serial_no) { Order.find_by(serial_no: serial_no)&.user }
++  mattr_accessor :pay_the_fly_owner_resolver
++  @@pay_the_fly_owner_resolver = nil
