@@ -1,0 +1,28 @@
+
+===============================================================================
+
+  PayTheFly has been configured for your application!
+
+  Next steps:
+
+  1. Add to your Gemfile:
+     gem "digest-keccak"
+     gem "eth"
+
+  2. Set your environment variables:
+     PAY_THE_FLY_PROJECT_ID=your_project_id
+     PAY_THE_FLY_PROJECT_KEY=your_project_key
+     PAY_THE_FLY_PRIVATE_KEY=0x_your_private_key
+     PAY_THE_FLY_CONTRACT_ADDRESS=0x_contract_address
+     PAY_THE_FLY_DEFAULT_CHAIN_ID=56
+
+  3. Your webhook endpoint is:
+     POST /pay/webhooks/pay_the_fly
+
+  4. Generate payment links:
+     customer = user.set_payment_processor(:pay_the_fly)
+     url = customer.checkout(amount: "0.01", serial_no: "ORDER-001")
+
+  See docs: https://docs.paythefly.com
+
+===============================================================================
