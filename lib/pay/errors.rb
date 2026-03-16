@@ -3,7 +3,7 @@ module Pay
   class Error < StandardError
   end
 
-  class PaymentError < StandardError
+  class PaymentError < Error
     attr_reader :payment
 
     def initialize(payment)
