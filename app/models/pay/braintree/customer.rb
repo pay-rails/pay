@@ -158,7 +158,7 @@ module Pay
 
       def save_payment_method(payment_method, default:)
         attributes = case payment_method
-        when ::Braintree::CreditCard, ::Braintree::ApplePayCard, ::Braintree::GooglePayCard, ::Braintree::SamsungPayCard, ::Braintree::VisaCheckoutCard
+        when ::Braintree::CreditCard, ::Braintree::ApplePayCard, ::Braintree::GooglePayCard, ::Braintree::SamsungPayCard
           {
             payment_method_type: :card,
             brand: payment_method.card_type,

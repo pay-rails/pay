@@ -73,13 +73,6 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
     assert_equal "Visa", charge.brand
   end
 
-  test "braintree can charge card with Visa Checkout Card" do
-    @pay_customer.update_payment_method "fake-visa-checkout-amex-nonce"
-    charge = @pay_customer.charge(29_00)
-    assert_equal "card", charge.payment_method_type
-    assert_equal "American Express", charge.brand
-  end
-
   # test "braintree can charge card with PayPal Account" do
   #   @pay_customer.update_payment_method "fake-paypal-billing-agreement-nonce"
   #   charge = @pay_customer.charge(29_00)
