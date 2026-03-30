@@ -7,16 +7,16 @@ Pay's installation is pretty straightforward. We'll add the gems, add some migra
 Add these lines to your application's Gemfile:
 
 ```ruby
-gem "pay", "~> 11.4"
+gem "pay", "~> 11.5"
 
 # To use Stripe, also include:
-gem "stripe", "~> 18.0"
+gem "stripe", "~> 19.0"
 
 # To use Braintree + PayPal, also include:
-gem "braintree", "~> 4.29"
+gem "braintree", "~> 4.35"
 
 # To use Paddle Billing or Paddle Classic, also include:
-gem "paddle", "~> 2.7.1"
+gem "paddle", "~> 2.9"
 
 # To use Lemon Squeezy, also include:
 gem "lemonsqueezy", "~> 1.1"

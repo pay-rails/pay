@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.5.0
+
+* Stripe v19 #1222
+
 ### 11.4.3
 
 * Remove forgery protection check for Stripe controller
