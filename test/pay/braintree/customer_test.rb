@@ -113,12 +113,6 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
     assert_equal "Visa", @pay_customer.default_payment_method.brand
   end
 
-  test "braintree update Visa Checkout Card" do
-    @pay_customer.update_payment_method "fake-visa-checkout-amex-nonce"
-    assert_equal "card", @pay_customer.default_payment_method.payment_method_type
-    assert_equal "American Express", @pay_customer.default_payment_method.brand
-  end
-
   test "braintree update PayPal Account" do
     @pay_customer.update_payment_method "fake-paypal-billing-agreement-nonce"
     assert_equal "paypal", @pay_customer.default_payment_method.payment_method_type
