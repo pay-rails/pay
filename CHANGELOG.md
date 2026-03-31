@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 11.6.0
+
+* Add `invoice.updated` webhook listener for Stripe to keep latest subscription invoice in sync #1220
+
 ### 11.5.0
 
 * Stripe v19 #1222
