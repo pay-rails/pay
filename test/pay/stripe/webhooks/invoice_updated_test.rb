@@ -33,7 +33,7 @@ class Pay::Stripe::Webhooks::InvoiceUpdatedTest < ActiveSupport::TestCase
     # Mock a subscription with a different invoice id
     mock_stripe_sub = OpenStruct.new(latest_invoice: OpenStruct.new(id: "in_another_id"))
     @local_subscription.stubs(:stripe_object).returns(mock_stripe_sub)
-    
+
     # Use the local object to stub the request
     Pay::Subscription.stubs(:find_by_processor_and_id).returns(@local_subscription)
 
@@ -46,12 +46,12 @@ class Pay::Stripe::Webhooks::InvoiceUpdatedTest < ActiveSupport::TestCase
     # Mock the object with an id that matches the event invoice
     mock_stripe_sub = OpenStruct.new(latest_invoice: OpenStruct.new(id: @invoice.id))
     @local_subscription.stubs(:stripe_object).returns(mock_stripe_sub)
-    
+
     # Use the local object to stub the request
     Pay::Subscription.stubs(:find_by_processor_and_id).returns(@local_subscription)
-    
+
     Pay::Stripe::Subscription.expects(:sync).with(@subscription_id, stripe_account: nil).once
-    
+
     Pay::Stripe::Webhooks::InvoiceUpdated.new.call(@event)
   end
 

@@ -3,7 +3,7 @@ module Pay
     module Webhooks
       class InvoiceUpdated
         def call(event)
-          # Grab the invoice from the event 
+          # Grab the invoice from the event
           invoice = event.data.object
 
           # Find the corresponding subscription_id
@@ -25,7 +25,6 @@ module Pay
           if latest_invoice.id.to_s == invoice.id.to_s
             Pay::Stripe::Subscription.sync(subscription_id, stripe_account: event.try(:account))
           end
-
         rescue ::Stripe::StripeError => e
           Rails.logger.error "Stripe Webhook Error (InvoiceUpdated): #{e.message}"
         end
