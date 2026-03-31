@@ -1,0 +1,78 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.stripe.com/v<VENDOR_ID>/subscriptions/sub_<VENDOR_ID>234?e<VENDOR_AUTH_CODE>pand%5B%5D=default_payment_method&e<VENDOR_AUTH_CODE>pand%5B%5D=discounts&e<VENDOR_AUTH_CODE>pand%5B%5D=latest_invoice.confirmation_<PADDLE_API_KEY>&e<VENDOR_AUTH_CODE>pand%5B%5D=latest_invoice.payments&e<VENDOR_AUTH_CODE>pand%5B%5D=latest_invoice.total_discount_amounts.discount&e<VENDOR_AUTH_CODE>pand%5B%5D=pending_setup_intent&e<VENDOR_AUTH_CODE>pand%5B%5D=schedule
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Stripe/v<VENDOR_ID> RubyBindings/<VENDOR_ID>8.<VENDOR_ID>.0 PayRails/<VENDOR_ID><VENDOR_ID>.4.3
+        (https://github.com/pay-rails/pay)
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      Stripe-Version:
+      - 2025-<VENDOR_ID>2-<VENDOR_ID>5.clover
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UE<VENDOR_AUTH_CODE>nJYL<VENDOR_AUTH_CODE>g","url":"https://github.com/pay-rails/pay","version":"<VENDOR_ID><VENDOR_ID>.4.3"},"bindings_version":"<VENDOR_ID>8.<VENDOR_ID>.0","lang":"ruby","lang_version":"3.4.2
+        p28 (2025-02-<VENDOR_ID>5)","platform":"arm64-darwin23","engine":"ruby","publisher":"stripe","uname":"Darwin
+        Brandons-Laptop 23.0.0 Darwin Kernel Version 23.0.0: Fri Sep <VENDOR_ID>5
+        <VENDOR_ID>4:42:57 PDT 2023; root:<VENDOR_AUTH_CODE>nu-<VENDOR_ID>0002.<VENDOR_ID>.<VENDOR_ID>3~<VENDOR_ID>/RELEASE_ARM64_T8<VENDOR_ID><VENDOR_ID>2
+        arm64","hostname":"Brandons-Laptop"}'
+      Accept-Encoding:
+      - gzip;q=<VENDOR_ID>.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Server:
+      - ngin<VENDOR_AUTH_CODE>
+      Date:
+      - Tue, 24 Feb 2026 0<VENDOR_ID>:44:<VENDOR_ID>5 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - "<VENDOR_ID><VENDOR_ID>4"
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        upgrade-insecure-requests
+      Vary:
+      - Origin
+      Www-Authenticate:
+      - Bearer realm="Stripe"
+      X-Robots-Tag:
+      - none
+      X-Wc:
+      - ABHIJ
+      Strict-Transport-Security:
+      - ma<VENDOR_AUTH_CODE>-age=63072000; includeSubDomains; preload
+      Access-Control-E<VENDOR_AUTH_CODE>pose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-E<VENDOR_AUTH_CODE>ternal-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Ma<VENDOR_AUTH_CODE>-Age:
+      - '300'
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": {
+            "message": "Invalid API Key provided: <STRIPE_PRIVATE_KEY>",
+            "type": "invalid_request_error"
+          }
+        }
+  recorded_at: Tue, 24 Feb 2026 01:44:15 GMT
+recorded_with: VCR 6.4.0
