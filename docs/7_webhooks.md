@@ -12,6 +12,8 @@ See [Stripe SCA docs](stripe/4_sca.md)
 
 Pay comes with a bunch of different webhook handlers built-in. Each payment processor has different requirements for handling webhooks and we've implemented all the basic ones for you.
 
+Incoming webhooks are processed asynchronously via `Pay::Webhooks::ProcessJob`. If you use an external or database-backed queue adapter, ensure a worker is running so events are applied; see [Background jobs](2_configuration.md#background-jobs).
+
 ### Routes
 
 Webhooks are automatically mounted at `/pay/webhooks/:provider`

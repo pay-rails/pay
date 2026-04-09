@@ -173,9 +173,12 @@ end
 
 ## Background jobs
 
-If a user's email is updated, Pay will enqueue a background job (`CustomerSyncJob`) to sync the email with the payment processors they have setup.
+Pay enqueues ActiveJob work in two places you should be aware of:
 
-It is important you set a queue_adapter for this to happen. If you don't, the code will be executed immediately upon user update. [More information here](https://guides.rubyonrails.org/v6.1/active_job_basics.html#backends)
+1. **Webhooks** – When a payment provider posts a webhook, Pay records the payload and enqueues `Pay::Webhooks::ProcessJob` to run the handlers. If jobs are not processed, charges, subscriptions, and other provider events will not update your application data.
+2. **Customer sync** – If a user's email is updated, Pay enqueues `Pay::CustomerSyncJob` to sync the email with the payment processors they have set up.
+
+Configure `config.active_job.queue_adapter` for your app. With adapters such as Sidekiq or Solid Queue, you must run a worker process (for example the `sidekiq` executable, or `bin/jobs` for Solid Queue) anywhere you need that work to run. With the `:inline` adapter, jobs run immediately in the same process and no worker is required, which is convenient for tests but unusual for production webhooks under load. [Active Job basics](https://guides.rubyonrails.org/active_job_basics.html#backends)
 
 ```ruby
 # config/application.rb

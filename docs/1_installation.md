@@ -52,6 +52,12 @@ Make sure you've configured your ActionMailer `default_url_options` so Pay can g
 config.action_mailer.default_url_options = { host: "example.com" }
 ```
 
+## Background jobs
+
+Pay uses ActiveJob for webhook processing (`Pay::Webhooks::ProcessJob`) and for syncing customers to payment processors (`Pay::CustomerSyncJob`). If you use an asynchronous queue adapter (for example [Sidekiq](https://github.com/sidekiq/sidekiq) or [Solid Queue](https://github.com/rails/solid_queue)), you need a worker process running in each environment where you rely on that behavior. Without it, incoming webhooks may never be processed and charges or subscriptions may not appear on your records.
+
+See [Background jobs](2_configuration.md#background-jobs) in the configuration guide for setup details.
+
 ## Models
 
 To add Pay to a model in your Rails app, simply add `pay_customer` to the model:
