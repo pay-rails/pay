@@ -1,0 +1,24 @@
+# Patch for lib/pay/engine.rb
+# Add PayTheFly to webhook configuration and setup
+#
+# In config.before_initialize block, add:
+#   Pay::PayTheFly.configure_webhooks if Pay::PayTheFly.enabled?
+#
+# In config.to_prepare block, add:
+#   Pay::PayTheFly.setup if Pay::PayTheFly.enabled?
+
+--- a/lib/pay/engine.rb
++++ b/lib/pay/engine.rb
+@@ -18,6 +18,7 @@
+       Pay::PaddleBilling.configure_webhooks if Pay::PaddleBilling.enabled?
+       Pay::PaddleClassic.configure_webhooks if Pay::PaddleClassic.enabled?
+       Pay::LemonSqueezy.configure_webhooks if Pay::LemonSqueezy.enabled?
++      Pay::PayTheFly.configure_webhooks if Pay::PayTheFly.enabled?
+     end
+
+     config.to_prepare do
+@@ -25,6 +26,7 @@
+       Pay::Braintree.setup if Pay::Braintree.enabled?
+       Pay::PaddleBilling.setup if Pay::PaddleBilling.enabled?
+       Pay::LemonSqueezy.setup if Pay::LemonSqueezy.enabled?
++      Pay::PayTheFly.setup if Pay::PayTheFly.enabled?

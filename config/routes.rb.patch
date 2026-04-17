@@ -1,0 +1,16 @@
+# Patch for config/routes.rb
+# Add PayTheFly webhook route
+#
+# After the line:
+#   post "webhooks/lemon_squeezy", to: "pay/webhooks/lemon_squeezy#create" if Pay::LemonSqueezy.enabled?
+# Add:
+#   post "webhooks/pay_the_fly", to: "pay/webhooks/pay_the_fly#create" if Pay::PayTheFly.enabled?
+
+--- a/config/routes.rb
++++ b/config/routes.rb
+@@ -7,4 +7,5 @@
+   post "webhooks/paddle_billing", to: "pay/webhooks/paddle_billing#create" if Pay::PaddleBilling.enabled?
+   post "webhooks/paddle_classic", to: "pay/webhooks/paddle_classic#create" if Pay::PaddleClassic.enabled?
+   post "webhooks/lemon_squeezy", to: "pay/webhooks/lemon_squeezy#create" if Pay::LemonSqueezy.enabled?
++  post "webhooks/pay_the_fly", to: "pay/webhooks/pay_the_fly#create" if Pay::PayTheFly.enabled?
+ end
