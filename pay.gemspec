@@ -4,22 +4,23 @@ $:.push File.expand_path("../lib", __FILE__)
 require "pay/version"
 
 # Describe your gem and declare its dependencies:
-Gem::Specification.new do |s|
-  s.name = "pay"
-  s.version = Pay::VERSION
-  s.authors = ["Jason Charnes", "Chris Oliver", "Collin Jilbert"]
-  s.email = ["jason@thecharnes.com", "excid3@gmail.com", "cjilbert504@gmail.com"]
-  s.homepage = "https://github.com/pay-rails/pay"
-  s.summary = "Payments engine for Ruby on Rails"
-  s.description = "Stripe, Paddle, and Braintree payments for Ruby on Rails apps"
-  s.license = "MIT"
+Gem::Specification.new do |spec|
+  spec.name = "pay"
+  spec.version = Pay::VERSION
+  spec.authors = ["Jason Charnes", "Chris Oliver", "Collin Jilbert"]
+  spec.email = ["jason@thecharnes.com", "excid3@gmail.com", "cjilbert504@gmail.com"]
+  spec.homepage = "https://github.com/pay-rails/pay"
+  spec.summary = "Payments engine for Ruby on Rails"
+  spec.description = "Stripe, Paddle, and Braintree payments for Ruby on Rails apps"
+  spec.license = "MIT"
+  spec.metadata["rubygems_mfa_required"] = "true"
 
-  s.files = Dir[
+  spec.files = Dir[
     "{app,config,db,lib}/**/*",
     "MIT-LICENSE",
     "Rakefile",
     "README.md"
   ]
 
-  s.add_dependency "rails", ">= 7.0.0"
+  spec.add_dependency "rails", ">= 7.0.0"
 end
