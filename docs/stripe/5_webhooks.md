@@ -1,6 +1,6 @@
 # Stripe Webhooks
 
-Pay listens to Stripe's webhooks to keep the local payments data in sync. 
+Pay listens to Stripe's webhooks to keep the local payments data in sync. Processing uses ActiveJob (`Pay::Webhooks::ProcessJob`); with an asynchronous queue adapter, run a worker so events are applied. See [Background jobs](../2_configuration.md#background-jobs).
 
 For development, we use the Stripe CLI to forward webhooks to our local server. 
 In production, webhooks are sent directly to our app's domain.
