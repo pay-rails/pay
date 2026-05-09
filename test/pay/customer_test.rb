@@ -152,6 +152,12 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert_nil @user.payment_processor.processor_id
   end
 
+  test "updating customer touches owner cache key" do
+    assert_changes -> { @user.reload.cache_key_with_version } do
+      @user.payment_processor.update!(processor_id: "new_id")
+    end
+  end
+
   test "processor" do
     user = User.new
     assert_nil user.payment_processor

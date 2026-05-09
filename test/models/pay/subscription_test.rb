@@ -11,6 +11,12 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_equal @owner, @subscription.owner
   end
 
+  test "updating subscription touches customer and owner cache keys" do
+    assert_changes -> { [@pay_customer.reload.cache_key_with_version, @owner.reload.cache_key_with_version] } do
+      @subscription.update!(status: :canceled)
+    end
+  end
+
   test "validates subscription uniqueness by processor and processor ID" do
     create_subscription(name: "default", processor_id: 1)
     assert_raises ActiveRecord::RecordInvalid do

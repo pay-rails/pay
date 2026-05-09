@@ -1,6 +1,6 @@
 module Pay
   class Customer < Pay::ApplicationRecord
-    belongs_to :owner, polymorphic: true
+    belongs_to :owner, polymorphic: true, touch: true
     has_many :charges, dependent: :destroy
     has_many :subscriptions, dependent: :destroy
     has_many :payment_methods, dependent: :destroy
