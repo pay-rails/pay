@@ -3,7 +3,7 @@ module Pay
     STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid paused]
 
     # Associations
-    belongs_to :customer
+    belongs_to :customer, touch: true
     belongs_to :payment_method, optional: true, primary_key: :processor_id
     has_many :charges
 

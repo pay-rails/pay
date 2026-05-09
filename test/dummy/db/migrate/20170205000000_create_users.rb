@@ -5,6 +5,7 @@ class CreateUsers < ActiveRecord::Migration[6.0]
       t.string :first_name
       t.string :last_name
       t.text :extra_billing_info
+      t.timestamps
     end
 
     create_table :teams do |t|
