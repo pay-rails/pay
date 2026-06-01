@@ -36,7 +36,8 @@ module Pay
         digest = OpenSSL::Digest.new("sha256")
 
         hmac = OpenSSL::HMAC.hexdigest(digest, key, data)
-        hmac == h1
+        return false if h1.nil? || hmac.bytesize != h1.bytesize
+        ActiveSupport::SecurityUtils.secure_compare(hmac, h1)
       end
 
       def verify_params
