@@ -38,18 +38,15 @@ class UserMailerTest < ActionMailer::TestCase
   end
 
   test "attaches refunds to receipt" do
-    filename = "receipt.pdf"
-
     receipt = mock("receipt")
     receipt.stubs(:render).returns("render content")
     receipt.stubs(:length).returns(1024)
 
-    @charge.stubs(:filename).returns(filename)
     @charge.stubs(:receipt).returns(receipt)
 
     email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).receipt
 
-    assert_equal filename, email.attachments.first.filename
+    assert_equal @charge.receipt_filename, email.attachments.first.filename
   end
 
   test "refund" do
