@@ -115,6 +115,7 @@ module Pay
         # If a customer's payment source was deleted in Stripe, we should update as well
         events.subscribe "stripe.payment_method.attached", Pay::Stripe::Webhooks::PaymentMethodAttached.new
         events.subscribe "stripe.payment_method.updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
+        events.subscribe "stripe.payment_method.automatically_updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
         events.subscribe "stripe.payment_method.card_automatically_updated", Pay::Stripe::Webhooks::PaymentMethodUpdated.new
         events.subscribe "stripe.payment_method.detached", Pay::Stripe::Webhooks::PaymentMethodDetached.new
 
