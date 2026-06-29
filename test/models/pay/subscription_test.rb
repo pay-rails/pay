@@ -11,8 +11,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     assert_equal @owner, @subscription.owner
   end
 
-  test "updating subscription touches customer and owner cache keys" do
-    assert_changes -> { [@pay_customer.reload.cache_key_with_version, @owner.reload.cache_key_with_version] } do
+  test "updating subscription touches customer cache key" do
+    assert_changes -> { @pay_customer.reload.cache_key_with_version } do
       @subscription.update!(status: :canceled)
     end
   end

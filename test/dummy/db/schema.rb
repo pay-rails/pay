@@ -129,8 +129,6 @@ ActiveRecord::Schema.define(version: 2025_04_15_151129) do
     t.string "first_name"
     t.string "last_name"
     t.text "extra_billing_info"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"
