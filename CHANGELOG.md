@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Use constant-time comparison for Paddle Billing webhook signatures.
+
 ### 11.6.0
 
 * Add `invoice.updated` webhook listener for Stripe to keep latest subscription invoice in sync #1220

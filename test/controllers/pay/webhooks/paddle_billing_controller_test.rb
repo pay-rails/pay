@@ -27,5 +27,19 @@ module Pay
         perform_enqueued_jobs
       end
     end
+
+    test "uses constant-time comparison for paddle billing signatures" do
+      controller = Pay::Webhooks::PaddleBillingController.new
+      timestamp = "1730000000"
+      body = {event_type: "transaction.completed"}.to_json
+      secret = "paddle-signing-secret"
+      hmac = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, "#{timestamp}:#{body}")
+
+      controller.stubs(:request).returns(stub(raw_post: body))
+      Pay::PaddleBilling.stubs(:signing_secret).returns(secret)
+      ActiveSupport::SecurityUtils.expects(:secure_compare).with(hmac, hmac).returns(true)
+
+      assert controller.send(:valid_signature?, "ts=#{timestamp};h1=#{hmac}")
+    end
   end
 end
