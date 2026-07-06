@@ -2,6 +2,15 @@
 
 ### Unreleased
 
+### 11.6.2
+
+* Use secure compare for Paddle Billing webhook verification
+* Add Stripe `payment_method.automatically_updated` webhook
+
+### 11.6.1
+
+* Require MFA to publish
+
 ### 11.6.0
 
 * Add `invoice.updated` webhook listener for Stripe to keep latest subscription invoice in sync #1220
