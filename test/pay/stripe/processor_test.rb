@@ -18,6 +18,28 @@ class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
     ENV.update(old_env)
   end
 
+  test "setup leaves stripe_context unset with regular account keys" do
+    old_env = ENV.to_hash
+    ENV.delete("STRIPE_CONTEXT")
+    ::Stripe.config.stripe_context = nil
+
+    Pay::Stripe.setup
+    assert_nil ::Stripe.config.stripe_context
+  ensure
+    ENV.update(old_env)
+  end
+
+  test "setup applies the context credential for Stripe Organizations API keys" do
+    old_env = ENV.to_hash
+    ENV.update("STRIPE_CONTEXT" => "acct_123")
+
+    Pay::Stripe.setup
+    assert_equal "acct_123", ::Stripe.config.stripe_context.to_s
+  ensure
+    ENV.update(old_env)
+    ::Stripe.config.stripe_context = nil
+  end
+
   test "webhook_receive_test_events default to true" do
     old_env = ENV.to_hash
     ENV.update(
