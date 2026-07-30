@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Add support for Stripe Organization API keys: optional `context` credential (or `STRIPE_CONTEXT`) sets `Stripe-Context` so a single `sk_org_...` key can serve as `private_key`
+
 ### 11.6.2
 
 * Use secure compare for Paddle Billing webhook verification

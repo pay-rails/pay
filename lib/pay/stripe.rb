@@ -43,6 +43,15 @@ module Pay
     def self.setup
       ::Stripe.api_key = private_key
 
+      # When private_key is a Stripe Organizations API key (sk_org_...),
+      # every request must identify the target account with the
+      # Stripe-Context header. stripe-ruby applies this configuration to all
+      # requests automatically. Regular account keys set no context and are
+      # unaffected. https://docs.stripe.com/keys/organization-api-keys
+      # (Assigned through Stripe.config: the Stripe module delegates
+      # stripe_account but not stripe_context.)
+      ::Stripe.config.stripe_context = context if context
+
       # Used by Stripe to identify Pay for support
       ::Stripe.set_app_info("PayRails", partner_id: "pp_partner_IqhY0UExnJYLxg", version: Pay::VERSION, url: "https://github.com/pay-rails/pay")
 
@@ -58,6 +67,14 @@ module Pay
 
     def self.private_key
       find_value_by_name(:stripe, :private_key)
+    end
+
+    # Optional. The account (acct_...) that API requests should act on when
+    # using a Stripe Organizations API key. Resolved like every other Stripe
+    # credential: ENV["STRIPE_CONTEXT"], then env-scoped, then unscoped
+    # Rails credentials.
+    def self.context
+      find_value_by_name(:stripe, :context)
     end
 
     def self.signing_secret
