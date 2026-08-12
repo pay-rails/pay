@@ -17,6 +17,16 @@ module Pay
       end
     end
 
+    initializer "pay.receipts" do
+      if defined?(::Receipts::VERSION)
+        raise "[Pay] receipts gem must be version ~> 2" unless Pay::Engine.version_matches?(required: "~> 2", current: ::Receipts::VERSION)
+
+        ActiveSupport.on_load :pay_charge do
+          include Pay::Receipts
+        end
+      end
+    end
+
     config.after_initialize do
       ActiveSupport.run_load_hooks(:pay, Pay)
     end
@@ -29,16 +39,6 @@ module Pay
       Pay::PaddleBilling.configure_webhooks if Pay::PaddleBilling.enabled?
       Pay::PaddleClassic.configure_webhooks if Pay::PaddleClassic.enabled?
       Pay::LemonSqueezy.configure_webhooks if Pay::LemonSqueezy.enabled?
-    end
-
-    initializer "pay.receipts" do
-      if defined?(::Receipts::VERSION)
-        raise "[Pay] receipts gem must be version ~> 2" unless Pay::Engine.version_matches?(required: "~> 2", current: ::Receipts::VERSION)
-
-        Rails.autoloaders.main.on_load("Pay::Charge") do |klass, _abspath|
-          klass.include Pay::Receipts
-        end
-      end
     end
 
     config.to_prepare do
