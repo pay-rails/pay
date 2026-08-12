@@ -18,6 +18,30 @@ class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
     ENV.update(old_env)
   end
 
+  test "setup uses Pay's configured API key when Stripe is not configured" do
+    original_api_key = ::Stripe.api_key
+    ::Stripe.api_key = nil
+    Pay::Stripe.stubs(:private_key).returns("configured")
+
+    Pay::Stripe.setup
+
+    assert_equal "configured", ::Stripe.api_key
+  ensure
+    ::Stripe.api_key = original_api_key
+  end
+
+  test "setup preserves an existing Stripe API key" do
+    original_api_key = ::Stripe.api_key
+    ::Stripe.api_key = "existing"
+    Pay::Stripe.stubs(:private_key).returns("configured")
+
+    Pay::Stripe.setup
+
+    assert_equal "existing", ::Stripe.api_key
+  ensure
+    ::Stripe.api_key = original_api_key
+  end
+
   test "setup leaves stripe_context unset with regular account keys" do
     old_env = ENV.to_hash
     ENV.delete("STRIPE_CONTEXT")
