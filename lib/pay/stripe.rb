@@ -41,7 +41,7 @@ module Pay
     end
 
     def self.setup
-      ::Stripe.api_key = private_key
+      ::Stripe.api_key ||= private_key
 
       # When private_key is a Stripe Organizations API key (sk_org_...),
       # every request must identify the target account with the
