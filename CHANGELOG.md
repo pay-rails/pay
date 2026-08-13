@@ -2,6 +2,11 @@
 
 ### Unreleased
 
+### 11.7.1
+
+* Preserve existing Stripe api key if already set when Pay initializes #1248
+* Lazy load `Receipts` module for `Pay::Charge` #1247
+
 ### 11.7.0
 
 * Add support for Stripe Organization API keys: optional `context` credential (or `STRIPE_CONTEXT`) sets `Stripe-Context` so a single `sk_org_...` key can serve as `private_key`
