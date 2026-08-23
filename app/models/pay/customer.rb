@@ -34,8 +34,11 @@ module Pay
       add_payment_method(payment_method_id, default: true)
     end
 
+    # Returns the active or paused subscription for the given name, falling
+    # back to the most recently created subscription when none are active.
     def subscription(name: Pay.default_product_name)
-      subscriptions.order(created_at: :desc).for_name(name).first
+      scope = subscriptions.for_name(name).order(created_at: :desc)
+      scope.active_or_paused.first || scope.first
     end
 
     def subscribed?(name: Pay.default_product_name, processor_plan: nil)

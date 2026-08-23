@@ -433,13 +433,18 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
 
     subscription_2 = create_subscription(status: "canceled", processor_id: 2)
 
-    assert_equal subscription_2, @pay_customer.subscription
-    assert_equal subscription_2, @pay_customer.subscription
+    # The active subscription is preferred over a newer canceled one
+    assert_equal subscription_1, @pay_customer.subscription
+    assert_equal subscription_1, @pay_customer.subscription
 
     subscription_1.update_columns(status: "canceled")
+    pay_subscriptions(:stripe).update_columns(status: "canceled")
 
     @pay_customer.reload
     assert_not @pay_customer.subscriptions.loaded?
+
+    # With no active subscriptions, the most recently created one is returned
+    assert_equal subscription_2, @pay_customer.subscription
 
     @pay_customer.subscriptions.load
     assert_equal subscription_2, @pay_customer.subscription
