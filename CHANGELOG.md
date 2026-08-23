@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 11.7.2
+
 * `Pay::Customer#subscription` now prefers an active or paused subscription over a newer canceled one, falling back to the most recently created subscription when none are active
 
 ### 11.7.1
