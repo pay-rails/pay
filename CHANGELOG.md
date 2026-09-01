@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Add Square payment processor (card payments, card-on-file, refunds, webhooks) with per-merchant OAuth via a configurable `Pay::Square.access_token_provider`. Charges on a tenant's own connected Square account with optional `app_fee_money`. Adds a `square_account` column to scope customers per merchant.
+
 ### 11.7.2
 
 * `Pay::Customer#subscription` now prefers an active or paused subscription over a newer canceled one, falling back to the most recently created subscription when none are active

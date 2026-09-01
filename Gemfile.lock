@@ -83,6 +83,22 @@ GEM
       uri (>= 0.13.1)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
+    apimatic_core (0.3.21)
+      apimatic_core_interfaces (~> 0.2.0)
+      certifi (~> 2018.1, >= 2018.01.18)
+      faraday-multipart (~> 1.0)
+      nokogiri (~> 1.13, >= 1.13.10)
+    apimatic_core_interfaces (0.2.3)
+    apimatic_faraday_client_adapter (0.1.6)
+      apimatic_core_interfaces (~> 0.2.0)
+      certifi (~> 2018.1, >= 2018.01.18)
+      faraday (~> 2.0, >= 2.0.1)
+      faraday-follow_redirects (~> 0.2)
+      faraday-gzip (>= 1, < 4)
+      faraday-http-cache (~> 2.2)
+      faraday-multipart (~> 1.0)
+      faraday-net_http_persistent (~> 2.0)
+      faraday-retry (~> 2.0)
     appraisal (3.0.0.rc1)
       bundler
       rake
@@ -95,6 +111,7 @@ GEM
       builder (>= 3.2.4)
       rexml (>= 3.1.9)
     builder (3.3.0)
+    certifi (2018.01.18)
     cgi (0.5.2)
     concurrent-ruby (1.3.8)
     connection_pool (3.0.2)
@@ -110,8 +127,22 @@ GEM
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
+    faraday-follow_redirects (0.5.0)
+      faraday (>= 1, < 3)
+    faraday-gzip (3.1.0)
+      faraday (>= 2.0, < 3)
+      zlib (~> 3.0)
+    faraday-http-cache (2.7.0)
+      faraday (>= 0.8)
+    faraday-multipart (1.2.0)
+      multipart-post (~> 2.0)
     faraday-net_http (3.4.4)
       net-http (~> 0.5)
+    faraday-net_http_persistent (2.3.1)
+      faraday (~> 2.5)
+      net-http-persistent (>= 4.0.4, < 5)
+    faraday-retry (2.4.0)
+      faraday (~> 2.0)
     globalid (1.4.0)
       activesupport (>= 6.1)
     hashdiff (1.2.1)
@@ -145,14 +176,16 @@ GEM
     marcel (1.2.1)
     matrix (0.4.3)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.9)
     minitest (5.27.0)
     mocha (3.1.0)
       ruby2_keywords (>= 0.0.5)
+    multipart-post (2.4.1)
     mysql2 (0.5.7)
       bigdecimal
     net-http (0.9.1)
       uri (>= 0.11.1)
+    net-http-persistent (4.0.8)
+      connection_pool (>= 2.2.4, < 4)
     net-imap (0.6.6)
       date
       net-protocol
@@ -163,9 +196,6 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.5)
-    nokogiri (1.19.4)
-      mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
     nokogiri (1.19.4-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.19.4-x86_64-linux-gnu)
@@ -282,10 +312,12 @@ GEM
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
-    sqlite3 (2.9.6)
-      mini_portile2 (~> 2.8.0)
     sqlite3 (2.9.6-x86_64-darwin)
     sqlite3 (2.9.6-x86_64-linux-gnu)
+    square.rb (44.2.0.20251016)
+      apimatic_core (~> 0.3.11)
+      apimatic_core_interfaces (~> 0.2.1)
+      apimatic_faraday_client_adapter (~> 0.1.4)
     standard (1.56.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -332,10 +364,11 @@ GEM
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     zeitwerk (2.8.3)
+    zlib (3.2.3)
 
 PLATFORMS
-  ruby
   x86_64-darwin-22
+  x86_64-darwin-24
   x86_64-linux
 
 DEPENDENCIES
@@ -354,6 +387,7 @@ DEPENDENCIES
   receipts
   sprockets-rails
   sqlite3
+  square.rb (~> 44)
   standard
   stimulus-rails
   stripe (~> 19.0)

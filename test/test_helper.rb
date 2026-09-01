@@ -18,9 +18,16 @@ ENV["PADDLE_BILLING_ENVIRONMENT"] ||= "sandbox"
 ENV["PADDLE_BILLING_SELLER_ID"] ||= "111"
 ENV["PADDLE_BILLING_API_KEY"] ||= "secret"
 
+# Square configuration (per-merchant OAuth token is supplied via the resolver in
+# test/support/square.rb; these are app-level config values)
+ENV["SQUARE_ENVIRONMENT"] ||= "sandbox"
+ENV["SQUARE_SIGNING_SECRET"] ||= "test_square_signing_secret"
+ENV["SQUARE_WEBHOOK_NOTIFICATION_URL"] ||= "https://example.com/pay/webhooks/square"
+
 require "braintree"
 require "stripe"
 require "paddle"
+require "square"
 require "receipts"
 
 require File.expand_path("dummy/config/environment.rb", __dir__)
@@ -31,6 +38,7 @@ require "mocha/minitest"
 require_relative "support/braintree"
 require_relative "support/stripe"
 require_relative "support/vcr"
+require_relative "support/square"
 require_relative "support/payment_method_tests"
 
 # Uncomment to view the stacktrace for debugging tests

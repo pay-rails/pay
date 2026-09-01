@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_04_15_151129) do
+ActiveRecord::Schema.define(version: 2025_09_01_000001) do
   create_table "accounts", force: :cascade do |t|
     t.string "email"
     t.string "merchant_processor"
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 2025_04_15_151129) do
     t.json "metadata"
     t.json "data"
     t.string "stripe_account"
+    t.string "square_account"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "type"
@@ -44,6 +45,7 @@ ActiveRecord::Schema.define(version: 2025_04_15_151129) do
     t.boolean "default"
     t.json "data"
     t.string "stripe_account"
+    t.string "square_account"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -73,6 +75,7 @@ ActiveRecord::Schema.define(version: 2025_04_15_151129) do
     t.string "payment_method_type"
     t.json "data"
     t.string "stripe_account"
+    t.string "square_account"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "type"

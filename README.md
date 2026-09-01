@@ -25,6 +25,7 @@ Our supported payment processors are:
 - Paddle (SCA Compatible & supports PayPal)
 - Braintree (supports PayPal)
 - Lemon Squeezy (supports PayPal)
+- Square (card payments on a merchant's own connected account via per-merchant OAuth)
 - [Fake Processor](docs/fake_processor/1_overview.md) (used for generic trials without cards, free subscriptions, testing, etc)
 
 Want to add a new payment provider? Contributions are welcome.
@@ -48,6 +49,7 @@ Want to add a new payment provider? Contributions are welcome.
   * [Braintree](docs/braintree/1_overview.md)
   * [Paddle](docs/paddle_billing/1_overview.md)
   * [Lemon Squeezy](docs/lemon_squeezy/1_overview.md)
+  * [Square](docs/square/1_overview.md)
   * [Fake Processor](docs/fake_processor/1_overview.md)
   * [Asaas (Community)](https://github.com/PedroAugustoRamalhoDuarte/pay-asaas)
 * **Marketplaces**

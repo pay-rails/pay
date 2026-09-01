@@ -11,6 +11,7 @@ module Pay
         cattr_accessor :pay_default_payment_processor
         cattr_accessor :pay_stripe_customer_attributes
         cattr_accessor :pay_braintree_customer_attributes
+        cattr_accessor :pay_square_customer_attributes
 
         has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
         has_many :pay_charges, through: :pay_customers, class_name: "Pay::Charge", source: :charges
@@ -20,6 +21,7 @@ module Pay
         after_commit :cancel_active_pay_subscriptions!, on: [:destroy]
 
         Pay::Stripe.model_names << name if Pay::Stripe.enabled?
+        Pay::Square.model_names << name if Pay::Square.enabled?
       end
 
       # Changes a user's payment processor
@@ -28,7 +30,7 @@ module Pay
       # - Finds or creates a Pay::Customer for the process and marks it as default
       # - Removes the default flag from all other Pay::Customers
       # - Removes the default flag from all Pay::PaymentMethods
-      def set_payment_processor(processor_name, allow_fake: false, stripe_account: nil, **attributes)
+      def set_payment_processor(processor_name, allow_fake: false, stripe_account: nil, square_account: nil, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
         # Safety check to make sure this is a valid Pay processor
@@ -40,7 +42,8 @@ module Pay
           pay_customer = pay_customers.active.where(
             Pay::Customer.inheritance_column => klass.name,
             :processor => processor_name,
-            :stripe_account => stripe_account
+            :stripe_account => stripe_account,
+            :square_account => square_account
           ).first_or_initialize
           pay_customer.update!(attributes.merge(default: true))
         end
@@ -49,7 +52,7 @@ module Pay
         reload_payment_processor
       end
 
-      def add_payment_processor(processor_name, allow_fake: false, stripe_account: nil, **attributes)
+      def add_payment_processor(processor_name, allow_fake: false, stripe_account: nil, square_account: nil, **attributes)
         raise Pay::Error, "Processor `#{processor_name}` is not allowed" if processor_name.to_s == "fake_processor" && !allow_fake
 
         # Safety check to make sure this is a valid Pay processor
@@ -59,7 +62,8 @@ module Pay
         pay_customer = pay_customers.active.where(
           Pay::Customer.inheritance_column => klass.name,
           :processor => processor_name,
-          :stripe_account => stripe_account
+          :stripe_account => stripe_account,
+          :square_account => square_account
         ).first_or_initialize
         pay_customer.update!(attributes)
         pay_customer
@@ -111,6 +115,7 @@ module Pay
         self.pay_default_payment_processor = options[:default_payment_processor]
         self.pay_stripe_customer_attributes = options[:stripe_attributes]
         self.pay_braintree_customer_attributes = options[:braintree_attributes]
+        self.pay_square_customer_attributes = options[:square_attributes]
       end
 
       def pay_merchant(options = {})

@@ -21,6 +21,7 @@ gem "braintree", ">= 2.92.0"
 gem "lemonsqueezy", "~> 1.0"
 gem "paddle", "~> 2.6"
 gem "stripe", "~> 19.0"
+gem "square.rb", "~> 44"
 
 gem "prawn"
 gem "receipts"

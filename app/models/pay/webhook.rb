@@ -25,6 +25,8 @@ module Pay
         Pay::LemonSqueezy.construct_from_webhook_event(event)
       when "stripe"
         ::Stripe::Event.construct_from(event)
+      when "square"
+        Pay::Square.construct_from_webhook_event(event)
       else
         event
       end

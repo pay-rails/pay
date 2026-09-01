@@ -20,6 +20,7 @@ module Pay
   autoload :PaddleBilling, "pay/paddle_billing"
   autoload :PaddleClassic, "pay/paddle_classic"
   autoload :LemonSqueezy, "pay/lemon_squeezy"
+  autoload :Square, "pay/square"
   autoload :Stripe, "pay/stripe"
 
   autoload :Webhooks, "pay/webhooks"
@@ -57,7 +58,7 @@ module Pay
   @@routes_path = "/pay"
 
   mattr_accessor :enabled_processors
-  @@enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic, :lemon_squeezy]
+  @@enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic, :lemon_squeezy, :square]
 
   mattr_accessor :send_emails
   @@send_emails = true
