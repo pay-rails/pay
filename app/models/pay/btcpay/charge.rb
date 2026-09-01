@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Pay
   module Btcpay
     class Charge < Pay::Charge
