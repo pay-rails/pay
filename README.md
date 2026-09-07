@@ -50,6 +50,7 @@ Want to add a new payment provider? Contributions are welcome.
   * [Lemon Squeezy](docs/lemon_squeezy/1_overview.md)
   * [Fake Processor](docs/fake_processor/1_overview.md)
   * [Asaas (Community)](https://github.com/PedroAugustoRamalhoDuarte/pay-asaas)
+  * [Square (Community)](https://github.com/Willardgmoore/pay-square)
 * **Marketplaces**
   * [Stripe Connect](docs/marketplaces/stripe_connect.md)
 * **Contributing**
