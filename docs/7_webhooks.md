@@ -2,6 +2,8 @@
 
 Routes are automatically mounted to `/pay` by default.
 
+**Note**: For [Jumpstart](https://jumpstartrails.com/), the routes are mounted at `/`.
+
 ## Stripe SCA Confirm Page
 
 We provide a route for confirming Stripe SCA payments at `/pay/payments/:payment_intent_id`
