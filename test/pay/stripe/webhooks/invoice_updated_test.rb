@@ -55,6 +55,22 @@ class Pay::Stripe::Webhooks::InvoiceUpdatedTest < ActiveSupport::TestCase
     Pay::Stripe::Webhooks::InvoiceUpdated.new.call(@event)
   end
 
+  test "does NOT sync when the subscription has no latest_invoice" do
+    @local_subscription.stubs(:stripe_object).returns(OpenStruct.new(latest_invoice: nil))
+    Pay::Subscription.stubs(:find_by_processor_and_id).returns(@local_subscription)
+    Pay::Stripe::Subscription.expects(:sync).never
+
+    Pay::Stripe::Webhooks::InvoiceUpdated.new.call(@event)
+  end
+
+  test "syncs when the latest_invoice is stored as a bare ID that matches" do
+    @local_subscription.stubs(:stripe_object).returns(OpenStruct.new(latest_invoice: @invoice.id))
+    Pay::Subscription.stubs(:find_by_processor_and_id).returns(@local_subscription)
+    Pay::Stripe::Subscription.expects(:sync).with(@subscription_id, stripe_account: nil).once
+
+    Pay::Stripe::Webhooks::InvoiceUpdated.new.call(@event)
+  end
+
   private
 
   def create_subscription(processor_id:)

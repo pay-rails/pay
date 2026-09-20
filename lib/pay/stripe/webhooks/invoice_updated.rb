@@ -19,10 +19,13 @@ module Pay
           return unless subscription
 
           # Grab the local latest_invoice from the subscription stripe_object
+          # It may be an expanded object, a bare ID, or nil for a subscription that hasn't been invoiced yet
           latest_invoice = subscription.stripe_object.try(:latest_invoice)
+          latest_invoice_id = latest_invoice.try(:id) || latest_invoice
+          return if latest_invoice_id.blank?
 
           # Compare the local invoice id to the event invoice id and sync if they are the same
-          if latest_invoice.id.to_s == invoice.id.to_s
+          if latest_invoice_id.to_s == invoice.id.to_s
             Pay::Stripe::Subscription.sync(subscription_id, stripe_account: event.try(:account))
           end
         rescue ::Stripe::StripeError => e
