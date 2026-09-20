@@ -27,5 +27,13 @@ module Pay
         perform_enqueued_jobs
       end
     end
+
+    test "responds bad request to a malformed signature header" do
+      post webhooks_paddle_billing_path, params: json_fixture("paddle_billing/subscription.created"), headers: {"Paddle-Signature" => "garbage"}
+      assert_response :bad_request
+
+      post webhooks_paddle_billing_path, params: json_fixture("paddle_billing/subscription.created"), headers: {"Paddle-Signature" => "ts=1;h1="}
+      assert_response :bad_request
+    end
   end
 end

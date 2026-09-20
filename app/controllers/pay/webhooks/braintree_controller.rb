@@ -1,28 +1,21 @@
 module Pay
   module Webhooks
-    class BraintreeController < ActionController::API
-      def create
-        queue_event(verified_event)
-        head :ok
-      rescue ::Braintree::InvalidSignature
-        head :bad_request
-      end
-
+    class BraintreeController < BaseController
       private
-
-      def queue_event(event)
-        return unless Pay::Webhooks.delegator.listening?("braintree.#{event.kind}")
-
-        record = Pay::Webhook.create!(
-          processor: :braintree,
-          event_type: event.kind,
-          event: {bt_signature: params[:bt_signature], bt_payload: params[:bt_payload]}
-        )
-        Pay::Webhooks::ProcessJob.perform_later(record)
-      end
 
       def verified_event
         Pay.braintree_gateway.webhook_notification.parse(params[:bt_signature], params[:bt_payload])
+      rescue ::Braintree::InvalidSignature => e
+        raise Pay::Braintree::Error, e
+      end
+
+      def event_type(event)
+        event.kind
+      end
+
+      # The parsed notification can't be serialized, so store the signed payload and parse it again in the job
+      def event_payload(event)
+        {bt_signature: params[:bt_signature], bt_payload: params[:bt_payload]}
       end
     end
   end
