@@ -372,4 +372,51 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_nil subscription.payment_method_id
     assert_nil subscription.api_record.default_payment_method
   end
+
+  test "stripe pay_open_invoices pays the payment intent from each open invoice's payments" do
+    pay_subscription = pay_subscriptions(:stripe)
+    ::Stripe::Invoice.stubs(:list).returns(::Stripe::ListObject.construct_from(object: "list", has_more: false, data: [fake_stripe_open_invoice(payment_intent: "pi_1000")]))
+    ::Stripe::PaymentIntent.stubs(:retrieve).with({id: "pi_1000"}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "requires_confirmation"))
+    ::Stripe::PaymentIntent.expects(:confirm).with("pi_1000", {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded"))
+
+    pay_subscription.pay_open_invoices
+  end
+
+  test "stripe pay_open_invoices skips open invoices without a payment" do
+    pay_subscription = pay_subscriptions(:stripe)
+    ::Stripe::Invoice.stubs(:list).returns(::Stripe::ListObject.construct_from(object: "list", has_more: false, data: [fake_stripe_open_invoice(payment_intent: nil)]))
+    ::Stripe::PaymentIntent.expects(:retrieve).never
+    ::Stripe::PaymentIntent.expects(:confirm).never
+
+    pay_subscription.pay_open_invoices
+  end
+
+  test "stripe latest_payment returns the payment intent of the latest invoice" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.api_record = fake_stripe_subscription(latest_invoice: fake_stripe_open_invoice(payment_intent: "pi_1000"))
+    payment_intent = ::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded")
+    ::Stripe::PaymentIntent.expects(:retrieve).with({id: "pi_1000"}, {}).returns(payment_intent)
+
+    assert_equal payment_intent, pay_subscription.latest_payment
+  end
+
+  test "stripe latest_payment is nil when the latest invoice has no payment" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.api_record = fake_stripe_subscription(latest_invoice: fake_stripe_open_invoice(payment_intent: nil))
+    ::Stripe::PaymentIntent.expects(:retrieve).never
+
+    assert_nil pay_subscription.latest_payment
+  end
+
+  private
+
+  def fake_stripe_open_invoice(payment_intent:)
+    payments = if payment_intent
+      [{id: "inpay_1", object: "invoice_payment", status: "open", payment: {type: "payment_intent", payment_intent: payment_intent}}]
+    else
+      []
+    end
+
+    ::Stripe::Invoice.construct_from(id: "in_1000", object: "invoice", status: "open", payments: {object: "list", has_more: false, data: payments})
+  end
 end

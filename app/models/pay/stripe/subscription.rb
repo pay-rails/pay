@@ -348,14 +348,21 @@ module Pay
       end
 
       # Looks up open invoices for a subscription and attempts to pay them
+      #
+      # Invoices no longer expose a `payment_intent` directly, so the PaymentIntent is looked up through the invoice's payments
       def pay_open_invoices
-        ::Stripe::Invoice.list({subscription: processor_id, status: :open}, stripe_options).auto_paging_each do |invoice|
-          retry_failed_payment(payment_intent_id: invoice.payment_intent)
+        ::Stripe::Invoice.list({subscription: processor_id, status: :open, expand: ["data.payments"]}, stripe_options).auto_paging_each do |invoice|
+          payment_intent_id = invoice.payments.first&.payment&.payment_intent
+          retry_failed_payment(payment_intent_id: payment_intent_id) if payment_intent_id
         end
       end
 
+      # Returns the Stripe::PaymentIntent for the latest invoice, if there is one
       def latest_payment
-        api_record(expand: ["latest_invoice.payment_intent"]).latest_invoice.payment_intent
+        payment_intent_id = api_record.latest_invoice&.payments&.first&.payment&.payment_intent
+        ::Stripe::PaymentIntent.retrieve({id: payment_intent_id}, stripe_options) if payment_intent_id
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       private
