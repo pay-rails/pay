@@ -11,7 +11,7 @@ module Pay
 
     # Validations
     validates :amount, presence: true
-    validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
+    validates :processor_id, presence: true
 
     delegate :owner, to: :customer
 

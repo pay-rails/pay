@@ -11,7 +11,6 @@ module Pay
     scope :not_fake_processor, -> { where.not(processor: :fake_processor) }
 
     validates :processor, presence: true
-    validates :processor_id, allow_blank: true, uniqueness: {scope: :processor, case_sensitive: true}
 
     # Account(s) for marketplace payments
     store_accessor :data, :braintree_account

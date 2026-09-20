@@ -460,7 +460,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe sync re-reads from the API when retrying after a stale read" do
-    # Simulate the race: the first lookup misses a row another process just created, so create! hits the uniqueness validation
+    # Simulate the race: the first lookup misses a row another process just created, so create! hits the unique index
     existing = @pay_customer.subscriptions.create!(processor_id: "123", name: "default", processor_plan: "default", status: "active")
     Pay::Stripe::Subscription.stubs(:find_by).returns(nil).then.returns(existing)
     ::Stripe::Subscription.expects(:retrieve).twice.returns(fake_stripe_subscription)

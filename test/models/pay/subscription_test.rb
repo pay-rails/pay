@@ -17,9 +17,9 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     end
   end
 
-  test "validates subscription uniqueness by processor and processor ID" do
+  test "subscription processor ID is unique per Pay::Customer" do
     create_subscription(name: "default", processor_id: 1)
-    assert_raises ActiveRecord::RecordInvalid do
+    assert_raises ActiveRecord::RecordNotUnique do
       create_subscription(name: "default", processor_id: 1)
     end
   end

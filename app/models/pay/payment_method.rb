@@ -12,7 +12,7 @@ module Pay
     store_accessor :data, :username
     store_accessor :data, :bank
 
-    validates :processor_id, presence: true, uniqueness: {scope: :customer_id, case_sensitive: true}
+    validates :processor_id, presence: true
 
     def self.find_by_processor_and_id(processor, processor_id)
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})
