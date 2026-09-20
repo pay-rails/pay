@@ -1,7 +1,5 @@
 module Pay
   class Subscription < Pay::ApplicationRecord
-    STATUSES = %w[incomplete incomplete_expired trialing active past_due canceled unpaid paused]
-
     # Associations
     belongs_to :customer, touch: true
     belongs_to :payment_method, optional: true, primary_key: :processor_id
@@ -11,7 +9,6 @@ module Pay
     scope :for_name, ->(name) { where(name: name) }
     scope :on_trial, -> { where(status: ["trialing", "active"]).where("trial_ends_at > ?", Time.current) }
     scope :canceled, -> { where.not(ends_at: nil) }
-    scope :cancelled, -> { canceled }
     scope :on_grace_period, -> { where("#{table_name}.ends_at IS NOT NULL AND #{table_name}.ends_at > ?", Time.current) }
     scope :active, -> { where(status: "active").pause_not_started.where("#{table_name}.ends_at IS NULL OR #{table_name}.ends_at > ?", Time.current).or(on_trial) }
     scope :paused, -> { where(status: "paused").or(where("pause_starts_at <= ?", Time.current)) }
@@ -54,16 +51,8 @@ module Pay
       reload
     end
 
-    def skip_trial
-      self.trial_ends_at = nil
-    end
-
     def generic_trial?
       fake_processor? && trial_ends_at?
-    end
-
-    def has_trial?
-      trial_ends_at?
     end
 
     # Does not include the last second of the trial

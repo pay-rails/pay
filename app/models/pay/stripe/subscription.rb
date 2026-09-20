@@ -5,11 +5,6 @@ module Pay
 
       attr_writer :api_record
 
-      def self.sync_from_checkout_session(session_id, stripe_account: nil)
-        checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id}, {stripe_account: stripe_account}.compact)
-        sync(checkout_session.subscription, stripe_account: stripe_account)
-      end
-
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
           subscription = object || ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)

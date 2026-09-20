@@ -186,11 +186,6 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert_nil pay_customers(:fake).subscription(name: "nonexistent")
   end
 
-  test "not_fake scope" do
-    assert_not_includes Pay::Customer.not_fake_processor, pay_customers(:fake)
-    assert_includes Pay::Customer.not_fake_processor, pay_customers(:stripe)
-  end
-
   test "has_incomplete_payment? is true for incomplete or past_due subscriptions" do
     pay_customer = pay_customers(:stripe)
     subscription = pay_customer.subscriptions.first

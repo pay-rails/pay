@@ -3,7 +3,6 @@ module Pay
     def receipt_filename
       "receipt-#{created_at.strftime("%Y-%m-%d")}.pdf"
     end
-    alias_method :filename, :receipt_filename
 
     def receipt
       receipt_pdf.render

@@ -29,20 +29,8 @@ module Pay
       status == "canceled"
     end
 
-    def cancelled?
-      canceled?
-    end
-
     def succeeded?
       status == "succeeded"
-    end
-
-    def payment_intent?
-      intent.is_a?(::Stripe::PaymentIntent)
-    end
-
-    def setup_intent?
-      intent.is_a?(::Stripe::SetupIntent)
     end
 
     def amount_with_currency

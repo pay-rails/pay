@@ -125,3 +125,32 @@ end
 ```
 
 That's it!
+
+## One-off charges through Checkout
+
+`checkout_charge` builds a payment-mode Checkout Session for an ad-hoc amount without creating a Price first:
+
+```ruby
+@checkout_session = current_user.payment_processor.checkout_charge(amount: 15_00, name: "T-shirt", quantity: 2)
+```
+
+It accepts the same options as `checkout`, plus `currency:` (defaults to `usd`).
+
+## Customer Sessions
+
+Stripe's [Customer Sessions](https://docs.stripe.com/api/customer_sessions) let Elements on your page act on behalf of the customer, for example to show saved payment methods:
+
+```ruby
+@customer_session = current_user.payment_processor.customer_session(components: {payment_element: {enabled: true}})
+# @customer_session.client_secret goes to Stripe.js
+```
+
+## Previewing invoices
+
+To show what a customer would be charged before changing anything, `preview_invoice` wraps Stripe's invoice preview API. The customer version takes any invoice preview options; the subscription version scopes the preview to that subscription:
+
+```ruby
+current_user.payment_processor.preview_invoice(subscription_details: {items: [{price: "price_123"}]})
+current_user.payment_processor.subscription.preview_invoice(subscription_details: {items: [{price: "price_123"}]})
+```
+

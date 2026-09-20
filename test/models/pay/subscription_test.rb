@@ -76,18 +76,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription3
   end
 
-  test "cancelled scope" do
-    subscription1 = create_subscription(ends_at: 7.days.ago)
-    subscription2 = create_subscription(ends_at: 7.days.from_now)
-    subscription3 = create_subscription(ends_at: nil)
-
-    subscriptions = Pay::Subscription.cancelled
-
-    assert_includes subscriptions, subscription1
-    assert_includes subscriptions, subscription2
-    refute_includes subscriptions, subscription3
-  end
-
   test "on grace period scope" do
     subscription1 = create_subscription(ends_at: 7.days.from_now)
     subscription2 = create_subscription(ends_at: nil)
@@ -253,19 +241,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   test "#trial_ended? where a subscriptions trial_ends_at is in the future should return false" do
     @subscription.trial_ends_at = 5.days.from_now
     refute @subscription.trial_ended?
-  end
-
-  test "#has_trial? should return true if a subscriptions trial_ends_at is truthy" do
-    @subscription.trial_ends_at = 5.days.from_now
-    assert @subscription.has_trial?
-
-    @subscription.trial_ends_at = 5.days.ago
-    assert @subscription.has_trial?
-  end
-
-  test "#has_trial? should return false if a subscriptions trial_ends_at is nil" do
-    @subscription.trial_ends_at = nil
-    refute @subscription.has_trial?
   end
 
   test "cancelled" do

@@ -41,12 +41,6 @@ module Pay
       owner.to_sgid.to_s
     end
 
-    def self.owner_from_passthrough(passthrough)
-      GlobalID::Locator.locate_signed passthrough
-    rescue JSON::ParserError
-      nil
-    end
-
     def self.configure_webhooks
       Pay::Webhooks.configure do |events|
         events.subscribe "lemon_squeezy.order_created", Pay::LemonSqueezy::Webhooks::Order.new

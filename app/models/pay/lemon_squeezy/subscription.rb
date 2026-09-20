@@ -67,7 +67,7 @@ module Pay
       end
 
       def cancel_now!(**options)
-        raise Pay::Error, "Lemon Squeezy does not support cancelling immediately through the API."
+        raise NotImplementedError, "Lemon Squeezy does not support cancelling immediately through the API"
       end
 
       def change_quantity(quantity, **options)
