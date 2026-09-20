@@ -36,13 +36,20 @@ module Pay
       assert_select "a[href=?]", "/billing?tab=invoices"
     end
 
-    test "back link falls back to root for external or malformed URLs" do
+    # One request per test: on Rails 7.0 the engine routes don't survive a second request in the same test
+    test "back link falls back to root for an external URL" do
       ::Stripe::PaymentIntent.stubs(:retrieve).returns(fake_payment_intent)
 
       get payment_path("pi_123", back: "https://evil.example.com/phish")
+
       assert_select "a[href=?]", "/"
+    end
+
+    test "back link falls back to root for a malformed URL" do
+      ::Stripe::PaymentIntent.stubs(:retrieve).returns(fake_payment_intent)
 
       get payment_path("pi_123", back: "http://[bad")
+
       assert_response :success
       assert_select "a[href=?]", "/"
     end
