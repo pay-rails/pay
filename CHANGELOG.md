@@ -2,18 +2,20 @@
 
 ### Unreleased
 
-* `Pay::Stripe::Subscription#change_quantity` always updates the SubscriptionItem. The fallback that sent a top-level `quantity` to the subscription was unreachable and is no longer accepted by the Stripe API
+### 11.8.0
 
+* Fix `Pay::Stripe::Subscription#pay_open_invoices` and `#latest_payment`, which relied on the removed `Invoice#payment_intent` attribute. They now look up the PaymentIntent through the invoice's `payments`.
+* Fix retry delay in `Pay::Stripe.sync_checkout_session`, `Pay::Stripe::Charge.sync`, and `Pay::Stripe::PaymentMethod.sync`. The delay was `0.15**try`, which shrinks on every attempt, so the checkout session retries waited well under a second in total. It now grows with each attempt.
+* Fix `checkout.session.completed` webhook clearing an owner's `processor_id` when the session has no Stripe customer, and pass the Connect account from the event when associating the owner
 * `invoice.updated` webhook no longer raises when the subscription has no `latest_invoice`, and handles a bare invoice ID
 * `Pay::Stripe::Subscription#resume` stores the status Stripe returns instead of always `active`
 * `Pay::Stripe::Subscription#retry_failed_payment` raises a `Pay::Stripe::Error` when there is no default payment method to retry with
+* `Pay::Stripe::Subscription#change_quantity` always updates the SubscriptionItem. The fallback that sent a top-level `quantity` to the subscription was unreachable and is no longer accepted by the Stripe API
 * `Pay::Stripe::Merchant#login_link` passes its options through to Stripe
+* Pass the Stripe Connect `stripe_account` through every Stripe request. `Pay::Stripe::Charge.sync`, `Pay::Stripe::Subscription.sync`, and `Pay::Stripe::PaymentMethod.sync` default it from the `Pay::Customer`, `Pay::Payment.from_id` accepts a `stripe_account:` keyword, and `Customer#charge`, `#subscribe`, `#sync_subscriptions`, `#create_meter_event`, `Subscription#swap`, `Charge#capture`, and the `invoice.payment_action_required` webhook no longer fall back to the platform account
 * SCA confirmation page supports Stripe Connect: `/pay/payments/:id?stripe_account=acct_123` looks up the PaymentIntent on the connected account and initializes Stripe.js with `stripeAccount`. `Pay::Payment#stripe_account` exposes the account for building the link, and the `payment_action_required` email includes it
 
-* Fix `checkout.session.completed` webhook clearing an owner's `processor_id` when the session has no Stripe customer, and pass the Connect account from the event when associating the owner
-* Pass the Stripe Connect `stripe_account` through every Stripe request. `Pay::Stripe::Charge.sync`, `Pay::Stripe::Subscription.sync`, and `Pay::Stripe::PaymentMethod.sync` default it from the `Pay::Customer`, `Pay::Payment.from_id` accepts a `stripe_account:` keyword, and `Customer#charge`, `#subscribe`, `#sync_subscriptions`, `#create_meter_event`, `Subscription#swap`, `Charge#capture`, and the `invoice.payment_action_required` webhook no longer fall back to the platform account
-* Fix `Pay::Stripe::Subscription#pay_open_invoices` and `#latest_payment`, which relied on the removed `Invoice#payment_intent` attribute. They now look up the PaymentIntent through the invoice's `payments`.
-* Fix retry delay in `Pay::Stripe.sync_checkout_session`, `Pay::Stripe::Charge.sync`, and `Pay::Stripe::PaymentMethod.sync`. The delay was `0.15**try`, which shrinks on every attempt, so the checkout session retries waited well under a second in total. It now grows with each attempt.
+See the [UPGRADE guide](./UPGRADE.md#pay-118) if you use Stripe Connect and have copied the payment confirmation view into your app.
 
 ### 11.7.2
 

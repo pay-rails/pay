@@ -2,6 +2,28 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Pay 11.8
+
+The Stripe SCA confirmation page now supports Stripe Connect. The page is linked with the connected account as a query parameter, `/pay/payments/:id?stripe_account=acct_123`, and initializes Stripe.js with that account.
+
+If you use Stripe Connect and copied the payment views into your app with `rails g pay:views`, update the Stripe.js initialization in `app/views/pay/payments/show.html.erb`:
+
+```erb
+<%# old %>
+window.stripe = Stripe('<%= Pay::Stripe.public_key %>')
+
+<%# new %>
+window.stripe = Stripe('<%= Pay::Stripe.public_key %>', <%= {stripeAccount: @payment.stripe_account}.compact.to_json.html_safe %>)
+```
+
+When redirecting to the page after rescuing `Pay::ActionRequired`, include the account so it is passed through:
+
+```ruby
+redirect_to pay.payment_path(e.payment.id, stripe_account: e.payment.stripe_account)
+```
+
+Apps that do not use Stripe Connect need no changes.
+
 ## Pay 11
 
 Associations on Pay models have been renamed to use the `pay_` prefix.
