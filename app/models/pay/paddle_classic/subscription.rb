@@ -1,52 +1,54 @@
 module Pay
   module PaddleClassic
     class Subscription < Pay::Subscription
+      extend Pay::Sync
+
       store_accessor :data, :paddle_update_url
       store_accessor :data, :paddle_cancel_url
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
-        # Passthrough is not return from this API, so we can't use that
-        object ||= PaddleClassic.client.users.list(subscription_id: subscription_id).data.try(:first)
+        sync_with_retries do
+          subscription = object || PaddleClassic.client.users.list(subscription_id: subscription_id).data.first
+          pay_customer = find_pay_customer(subscription.user_id)
 
-        pay_customer = Pay::Customer.find_by(processor: :paddle_classic, processor_id: object.user_id)
-
-        # If passthrough exists (only on webhooks) we can use it to create the Pay::Customer
-        if pay_customer.nil? && object.passthrough
-          owner = Pay::PaddleClassic.owner_from_passthrough(object.passthrough)
-          pay_customer = owner&.set_payment_processor(:paddle_classic, processor_id: object.user_id)
-        end
-
-        return unless pay_customer
-
-        attributes = {
-          paddle_cancel_url: object.cancel_url,
-          paddle_update_url: object.update_url,
-          processor_plan: object.plan_id || object.subscription_plan_id,
-          quantity: object.quantity || 1,
-          status: object.state || object.status
-        }
-
-        case attributes[:status]
-        when "trialing"
-          attributes[:trial_ends_at] = Time.zone.parse(object.next_bill_date)
-          attributes[:ends_at] = nil
-        when "active", "past_due"
-          attributes[:trial_ends_at] = nil
-          attributes[:ends_at] = nil
-        when "paused", "deleted"
-          # If paused or delete while on trial, set ends_at to match
-          attributes[:trial_ends_at] = nil
-          attributes[:ends_at] = Time.zone.parse(object.next_bill_date)
-        end
-
-        # Update or create the subscription
-        if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: object.subscription_id))
-          pay_subscription.with_lock do
-            pay_subscription.update!(attributes)
+          # If passthrough exists (only on webhooks) we can use it to create the Pay::Customer
+          if pay_customer.nil? && subscription.passthrough
+            owner = Pay::PaddleClassic.owner_from_passthrough(subscription.passthrough)
+            pay_customer = owner&.set_payment_processor(:paddle_classic, processor_id: subscription.user_id)
           end
-          pay_subscription
-        else
-          pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: object.subscription_id))
+
+          return unless pay_customer
+
+          attributes = {
+            paddle_cancel_url: subscription.cancel_url,
+            paddle_update_url: subscription.update_url,
+            processor_plan: subscription.plan_id || subscription.subscription_plan_id,
+            quantity: subscription.quantity || 1,
+            status: subscription.state || subscription.status
+          }
+
+          case attributes[:status]
+          when "trialing"
+            attributes[:trial_ends_at] = Time.zone.parse(subscription.next_bill_date)
+            attributes[:ends_at] = nil
+          when "active", "past_due"
+            attributes[:trial_ends_at] = nil
+            attributes[:ends_at] = nil
+          when "paused", "deleted"
+            # If paused or delete while on trial, set ends_at to match
+            attributes[:trial_ends_at] = nil
+            attributes[:ends_at] = Time.zone.parse(subscription.next_bill_date)
+          end
+
+          # Update or create the subscription
+          if (pay_subscription = pay_customer.subscriptions.find_by(processor_id: subscription.subscription_id))
+            pay_subscription.with_lock do
+              pay_subscription.update!(attributes)
+            end
+            pay_subscription
+          else
+            pay_customer.subscriptions.create!(attributes.merge(name: name, processor_id: subscription.subscription_id))
+          end
         end
       end
 

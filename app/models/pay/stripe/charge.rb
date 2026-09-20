@@ -1,7 +1,7 @@
 module Pay
   module Stripe
     class Charge < Pay::Charge
-      extend Pay::Stripe::Sync
+      extend Pay::Sync
 
       EXPAND = ["balance_transaction", "payment_intent", "refunds.data.balance_transaction"]
 
@@ -18,7 +18,7 @@ module Pay
       def self.sync(charge_id, object: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
           charge = object || ::Stripe::Charge.retrieve({id: charge_id, expand: EXPAND}, {stripe_account: stripe_account}.compact)
-          return unless (pay_customer = find_pay_customer(charge))
+          return unless (pay_customer = find_pay_customer(charge.customer))
           stripe_account ||= pay_customer.stripe_account
 
           payment_method = charge.payment_method_details.try(charge.payment_method_details.type)

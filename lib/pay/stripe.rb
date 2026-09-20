@@ -3,8 +3,6 @@ module Pay
     class Error < Pay::Error
     end
 
-    autoload :Sync, "pay/stripe/sync"
-
     module Webhooks
       autoload :AccountUpdated, "pay/stripe/webhooks/account_updated"
       autoload :ChargeRefunded, "pay/stripe/webhooks/charge_refunded"

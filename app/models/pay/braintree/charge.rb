@@ -1,20 +1,14 @@
 module Pay
   module Braintree
     class Charge < Pay::Charge
-      def self.sync(charge_id, object: nil, try: 0, retries: 1)
-        object ||= Pay.braintree_gateway.transaction.find(charge_id)
+      extend Pay::Sync
 
-        pay_customer = Pay::Customer.find_by(processor: :braintree, processor_id: object.customer_details.id)
-        return unless pay_customer
+      def self.sync(charge_id, object: nil)
+        sync_with_retries do
+          transaction = object || Pay.braintree_gateway.transaction.find(charge_id)
+          return unless (pay_customer = find_pay_customer(transaction.customer_details.id))
 
-        pay_customer.save_transaction(object)
-      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-        try += 1
-        if try <= retries
-          sleep 0.1
-          retry
-        else
-          raise
+          pay_customer.save_transaction(transaction)
         end
       end
 

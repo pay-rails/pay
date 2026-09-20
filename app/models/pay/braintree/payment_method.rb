@@ -1,13 +1,15 @@
 module Pay
   module Braintree
     class PaymentMethod < Pay::PaymentMethod
-      def self.sync(id, object: nil, try: 0, retries: 1)
-        object ||= Pay.braintree_gateway.payment_method.find(id)
+      extend Pay::Sync
 
-        pay_customer = Pay::Braintree::Customer.find_by(processor_id: object.customer_id)
-        return unless pay_customer
+      def self.sync(id, object: nil)
+        sync_with_retries do
+          payment_method = object || Pay.braintree_gateway.payment_method.find(id)
+          return unless (pay_customer = find_pay_customer(payment_method.customer_id))
 
-        pay_customer.save_payment_method(object, default: object.default?)
+          pay_customer.save_payment_method(payment_method, default: payment_method.default?)
+        end
       end
 
       # Sets payment method as default
