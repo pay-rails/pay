@@ -76,15 +76,12 @@ module Pay
   @@emails.subscription_trial_will_end = true
   @@emails.subscription_trial_ended = true
 
+  mattr_writer :mailer
   @@mailer = "Pay::UserMailer"
 
-  def self.mailer=(value)
-    @@mailer = value
-    @@mailer_ref = nil
-  end
-
+  # Resolved on every call rather than memoized, so code reloading in development returns the current class
   def self.mailer
-    @@mailer_ref ||= @@mailer&.constantize
+    @@mailer.constantize
   end
 
   mattr_accessor :parent_mailer

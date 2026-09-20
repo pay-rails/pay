@@ -21,6 +21,14 @@ class Pay::Test < ActiveSupport::TestCase
     assert_equal Pay::UserMailer, Pay.mailer
   end
 
+  test "mailer is resolved on every call so a reloaded class is picked up" do
+    original = Pay.mailer
+    reloaded = Class.new(original)
+    String.any_instance.stubs(:constantize).returns(reloaded)
+
+    assert_equal reloaded, Pay.mailer
+  end
+
   {stripe: Pay::Stripe, braintree: Pay::Braintree, paddle_billing: Pay::PaddleBilling, paddle_classic: Pay::PaddleClassic, lemon_squeezy: Pay::LemonSqueezy}.each do |name, processor|
     test "can enable and disable the #{name} processor" do
       original = Pay.enabled_processors

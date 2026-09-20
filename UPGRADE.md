@@ -2,7 +2,54 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
-## Pay 11.9
+## Pay 12.0
+
+### Removed methods
+
+These had no callers in Pay and were never documented. Each has a replacement or was already covered by another method.
+
+| Removed | Use instead |
+|---|---|
+| `Pay::Subscription#has_trial?` | `trial_ends_at?` |
+| `Pay::Subscription#skip_trial` | `subscription.trial_ends_at = nil` |
+| `Pay::Subscription.cancelled` scope | `Pay::Subscription.canceled` (`cancelled?` on an instance still works) |
+| `Pay::Subscription::STATUSES` | Not needed; statuses are validated by the processors |
+| `Pay::Charge.sorted` | `order(created_at: :desc)` |
+| `Pay::Customer.not_fake_processor` | `where.not(processor: :fake_processor)` |
+| `Pay::PaymentMethod.pay_processor_for` | `"Pay::#{name.classify}::PaymentMethod".constantize` |
+| `Pay::Currency#subunit?` | `subunit.present?` (the removed method returned the opposite) |
+| `Pay::Receipts#filename` | `receipt_filename` |
+| `Pay::Payment#payment_intent?`, `#setup_intent?` | `intent.is_a?(::Stripe::PaymentIntent)` / `::Stripe::SetupIntent` |
+| `Pay::Payment#cancelled?` | `canceled?` |
+| `Pay::Stripe::Subscription.sync_from_checkout_session` | `Pay::Stripe.sync_checkout_session(session_id)` |
+| `Pay::PaddleBilling::Subscription.sync_from_transaction` | `Pay::PaddleBilling.sync_transaction(transaction_id)` |
+| `Pay::LemonSqueezy.owner_from_passthrough` | `GlobalID::Locator.locate_signed(passthrough)` |
+| `retry_failed_payment` on Paddle Billing and Paddle Classic subscriptions | These were empty; Paddle handles retries itself |
+
+### Unsupported operations raise `NotImplementedError`
+
+Calling something a processor cannot do now raises `NotImplementedError` with the processor named, instead of a `Pay::Error` or a silent `nil`. This affects `charge` and `cancel_now!` on Lemon Squeezy customers and subscriptions, and `subscribe` on Paddle Billing and Paddle Classic customers. `NotImplementedError` is not a `StandardError`, so a bare `rescue` or `rescue Pay::Error` no longer catches these. That is deliberate: they are programming errors, not runtime failures.
+
+### Stripe errors are always `Pay::Stripe::Error`
+
+Every Stripe method that calls the API now raises `Pay::Stripe::Error` when Stripe fails. Before, about twenty methods let the raw `Stripe::StripeError` through, including `checkout`, `billing_portal`, `pause`, `invoice!`, the `sync` methods, and `Pay::Payment.from_id`. If you have `rescue Stripe::StripeError` around any of those, change it to `rescue Pay::Error`. The original Stripe error is available as `error.cause`.
+
+### Duplicates raise `ActiveRecord::RecordNotUnique`
+
+The `processor_id` uniqueness validations on `Pay::Customer`, `Pay::Charge`, `Pay::Subscription`, and `Pay::PaymentMethod` are gone; the unique indexes that have existed since Pay 3 enforce it. If you create these records yourself and rescued `ActiveRecord::RecordInvalid` for a duplicate, rescue `ActiveRecord::RecordNotUnique` instead. Pay's own syncs already handle both.
+
+### Webhook controllers
+
+The five webhook controllers now inherit from `Pay::Webhooks::BaseController`. If you subclass or override one, the extension points are `verified_event`, which returns the event or raises a `Pay::Error` subclass on a bad signature, and `event_type(event)`. The private `verify_params` and the old `queue_event(event)` signature are gone.
+
+`Pay::Braintree::Webhooks::SubscriptionChargedUnsuccessfully` was an empty handler and is removed. If you subscribed your own handler to `braintree.subscription_charged_unsuccessfully`, it keeps working.
+
+### Stripe SCA confirmation page
+
+If you copied the payment views with `rails g pay:views`, regenerate them. The page's Stripe.js setup moved from an inline `window.stripe = Stripe(...)` into the Stimulus controller, which reads the publishable key, Connect account, and messages from data attributes on the root element.
+
+### Lemon Squeezy
+
 
 Lemon Squeezy subscriptions now store the same statuses as every other processor: `trialing` instead of `on_trial` and `canceled` instead of `cancelled`. The end of a pause is stored in `pause_resumes_at` instead of `pause_starts_at`. Rows synced before this version keep the old values until they are synced again, so run this once after upgrading:
 
