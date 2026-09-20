@@ -73,9 +73,9 @@ class ActiveSupport::TestCase
     ActiveSupport::InheritableOptions.new json_fixture("paddle_classic/#{name}").deep_merge(overrides).deep_symbolize_keys
   end
 
-  def stripe_event(name, overrides: {})
+  def stripe_event(name, overrides: {}, account: nil)
     data = json_fixture("stripe/#{name}")
-    ::Stripe::Event.construct_from({data: data.deep_merge(overrides)})
+    ::Stripe::Event.construct_from({data: data.deep_merge(overrides), account: account}.compact)
   end
 
   def travel_to_cassette
