@@ -50,7 +50,7 @@ module Pay
         Pay::Payment.new(payment_intent).validate
 
         charge = payment_intent.latest_charge
-        Pay::Stripe::Charge.sync(charge.id, object: charge)
+        Pay::Stripe::Charge.sync(charge.id, object: charge, stripe_account: stripe_account)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -73,7 +73,7 @@ module Pay
         # No trial, payment method requires SCA
         if options[:payment_behavior].to_s != "default_incomplete" && subscription.incomplete?
           payment_intent_id = stripe_sub.latest_invoice.payments.first.payment.payment_intent
-          Pay::Payment.from_id(payment_intent_id).validate
+          Pay::Payment.from_id(payment_intent_id, stripe_account: stripe_account).validate
         end
 
         subscription
@@ -151,7 +151,7 @@ module Pay
       def sync_subscriptions(**options)
         subscriptions = ::Stripe::Subscription.list(options.with_defaults(customer: processor_id), stripe_options)
         subscriptions.map do |subscription|
-          Pay::Stripe::Subscription.sync(subscription.id)
+          Pay::Stripe::Subscription.sync(subscription.id, stripe_account: stripe_account)
         end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -251,7 +251,7 @@ module Pay
         ::Stripe::Billing::MeterEvent.create({
           event_name: event_name,
           payload: {stripe_customer_id: processor_id}.merge(payload)
-        }.merge(options))
+        }.merge(options), stripe_options)
       end
 
       private

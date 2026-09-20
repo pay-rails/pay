@@ -6,7 +6,7 @@ module Pay
         payment_intent = ::Stripe::PaymentIntent.retrieve({id: id, expand: ["payment_method"]}, {stripe_account: stripe_account}.compact)
         payment_method = payment_intent.payment_method
         return unless payment_method
-        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method)
+        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
       end
 
       # Syncs a SetupIntent's payment method to the database
@@ -14,7 +14,7 @@ module Pay
         setup_intent = ::Stripe::SetupIntent.retrieve({id: id, expand: ["payment_method"]}, {stripe_account: stripe_account}.compact)
         payment_method = setup_intent.payment_method
         return unless payment_method
-        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method)
+        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
       end
 
       # Syncs PaymentMethod objects from Stripe
@@ -30,6 +30,9 @@ module Pay
           Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Stripe PaymentMethod #{object.id}"
           return
         end
+
+        # Record the same Stripe Connect account as the customer when one wasn't given
+        stripe_account ||= pay_customer.stripe_account
 
         default_payment_method_id = pay_customer.api_record.invoice_settings&.default_payment_method
         default = (id == default_payment_method_id)

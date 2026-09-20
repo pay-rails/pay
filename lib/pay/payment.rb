@@ -4,8 +4,9 @@ module Pay
 
     delegate :id, :amount, :client_secret, :currency, :customer, :status, :confirm, to: :intent
 
-    def self.from_id(id)
-      intent = id.start_with?("seti_") ? ::Stripe::SetupIntent.retrieve(id) : ::Stripe::PaymentIntent.retrieve(id)
+    def self.from_id(id, stripe_account: nil)
+      options = {stripe_account: stripe_account}.compact
+      intent = id.start_with?("seti_") ? ::Stripe::SetupIntent.retrieve(id, options) : ::Stripe::PaymentIntent.retrieve(id, options)
       new(intent)
     end
 

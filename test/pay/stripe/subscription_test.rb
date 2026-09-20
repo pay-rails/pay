@@ -408,6 +408,27 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_nil pay_subscription.latest_payment
   end
 
+  test "stripe sync passes the customer's stripe_account to the payment method sync" do
+    @pay_customer.update!(stripe_account: "acct_123")
+    Pay::Stripe::PaymentMethod.expects(:sync).with("pm_1000", stripe_account: "acct_123").returns(pay_payment_methods(:one))
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: "pm_1000"))
+    assert_equal "acct_123", pay_subscription.stripe_account
+  end
+
+  test "stripe sync! defaults to the subscription's stripe_account" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.update!(stripe_account: "acct_123")
+    Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: "acct_123")
+    pay_subscription.sync!
+  end
+
+  test "stripe sync_from_checkout_session passes the stripe_account through" do
+    session = ::Stripe::Checkout::Session.construct_from(id: "cs_1", object: "checkout.session", subscription: "sub_1")
+    ::Stripe::Checkout::Session.expects(:retrieve).with({id: "cs_1"}, {stripe_account: "acct_123"}).returns(session)
+    Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: "acct_123")
+    Pay::Stripe::Subscription.sync_from_checkout_session("cs_1", stripe_account: "acct_123")
+  end
+
   private
 
   def fake_stripe_open_invoice(payment_intent:)

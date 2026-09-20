@@ -476,6 +476,20 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
     @pay_customer.sync_subscriptions
   end
 
+  test "stripe sync_subscriptions passes the stripe_account through" do
+    @pay_customer.update!(processor_id: "cus_1234", stripe_account: "acct_123")
+    subscriptions = ::Stripe::ListObject.construct_from(object: "list", has_more: false, data: [{id: "sub_1", object: "subscription"}])
+    ::Stripe::Subscription.expects(:list).with({customer: "cus_1234"}, {stripe_account: "acct_123"}).returns(subscriptions)
+    Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: "acct_123")
+    @pay_customer.sync_subscriptions
+  end
+
+  test "stripe create_meter_event sends the request to the connected account" do
+    @pay_customer.update!(processor_id: "cus_1234", stripe_account: "acct_123")
+    ::Stripe::Billing::MeterEvent.expects(:create).with({event_name: :api_request, payload: {stripe_customer_id: "cus_1234", value: 1}}, {stripe_account: "acct_123"})
+    @pay_customer.create_meter_event(:api_request, payload: {value: 1})
+  end
+
   private
 
   def payment_method
