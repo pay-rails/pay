@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* `Pay::Stripe::Subscription#change_quantity` always updates the SubscriptionItem. The fallback that sent a top-level `quantity` to the subscription was unreachable and is no longer accepted by the Stripe API
+
 * `invoice.updated` webhook no longer raises when the subscription has no `latest_invoice`, and handles a bare invoice ID
 * `Pay::Stripe::Subscription#resume` stores the status Stripe returns instead of always `active`
 * `Pay::Stripe::Subscription#retry_failed_payment` raises a `Pay::Stripe::Error` when there is no default payment method to retry with
