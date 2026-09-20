@@ -1,10 +1,8 @@
 module Pay
   module Stripe
     module Webhooks
-      class SubscriptionCreated
-        def call(event)
-          Pay::Stripe::Subscription.sync(event.data.object.id, stripe_account: event.try(:account))
-        end
+      # If a subscription is manually created on Stripe, we want to sync it the same way as an update
+      class SubscriptionCreated < SubscriptionUpdated
       end
     end
   end

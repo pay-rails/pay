@@ -38,8 +38,7 @@ module Pay
       end
 
       def update_api_record(**attributes)
-        api_record unless processor_id?
-        ::Stripe::Customer.update(processor_id, api_record_attributes.merge(attributes), stripe_options)
+        ::Stripe::Customer.update(stripe_customer_id, api_record_attributes.merge(attributes), stripe_options)
       end
 
       # Charges an amount to the customer's default payment method
@@ -62,7 +61,7 @@ module Pay
         }.merge(options)
 
         # Load the Stripe customer to verify it exists and update payment method if needed
-        opts[:customer] = processor_id || api_record.id
+        opts[:customer] = stripe_customer_id
 
         # Create subscription on Stripe
         stripe_sub = ::Stripe::Subscription.create(opts.merge(Pay::Stripe::Subscription.expand_options), stripe_options)
@@ -82,11 +81,10 @@ module Pay
       end
 
       def add_payment_method(payment_method_id, default: false)
-        api_record unless processor_id?
-        payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: processor_id}, stripe_options)
+        payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: stripe_customer_id}, stripe_options)
 
         if default
-          ::Stripe::Customer.update(processor_id, {
+          ::Stripe::Customer.update(stripe_customer_id, {
             invoice_settings: {
               default_payment_method: payment_method.id
             }
@@ -121,7 +119,7 @@ module Pay
         args = {
           amount: amount,
           currency: "usd",
-          customer: processor_id || api_record.id,
+          customer: stripe_customer_id,
           expand: Pay::Stripe::Charge::EXPAND.map { |option| "latest_charge.#{option}" },
           return_url: root_url
         }.merge(options)
@@ -135,15 +133,15 @@ module Pay
       end
 
       def create_setup_intent(options = {})
-        ::Stripe::SetupIntent.create({customer: processor_id || api_record.id, usage: :off_session}.merge(options), stripe_options)
+        ::Stripe::SetupIntent.create({customer: stripe_customer_id, usage: :off_session}.merge(options), stripe_options)
       end
 
       def invoice!(options = {})
-        ::Stripe::Invoice.create(options.merge(customer: processor_id || api_record.id), stripe_options).pay
+        ::Stripe::Invoice.create(options.merge(customer: stripe_customer_id), stripe_options).pay
       end
 
       def preview_invoice(**options)
-        ::Stripe::Invoice.create_preview(options.merge(customer: processor_id || api_record.id), stripe_options)
+        ::Stripe::Invoice.create_preview(options.merge(customer: stripe_customer_id), stripe_options)
       end
 
       # Syncs a customer's subscriptions from Stripe to the database.
@@ -168,9 +166,8 @@ module Pay
       # checkout(line_items: "price_12345", allow_promotion_codes: true)
       #
       def checkout(**options)
-        api_record unless processor_id?
         args = {
-          customer: processor_id,
+          customer: stripe_customer_id,
           mode: "payment"
         }
 
@@ -208,7 +205,6 @@ module Pay
       # checkout_charge(amount: 15_00, name: "T-shirt", quantity: 2)
       #
       def checkout_charge(amount:, name:, quantity: 1, **options)
-        api_record unless processor_id?
         currency = options.delete(:currency) || "usd"
         checkout(
           line_items: {
@@ -224,17 +220,15 @@ module Pay
       end
 
       def billing_portal(**options)
-        api_record unless processor_id?
         args = {
-          customer: processor_id,
+          customer: stripe_customer_id,
           return_url: options.delete(:return_url) || root_url
         }
         ::Stripe::BillingPortal::Session.create(args.merge(options), stripe_options)
       end
 
       def customer_session(**options)
-        api_record unless processor_id?
-        args = {customer: processor_id}
+        args = {customer: stripe_customer_id}
         ::Stripe::CustomerSession.create(args.merge(options), stripe_options)
       end
 
@@ -247,14 +241,18 @@ module Pay
       # create_meter_event(:api_request, value: 1)
       # create_meter_event(:api_request, token: 7)
       def create_meter_event(event_name, payload: {}, **options)
-        api_record unless processor_id?
         ::Stripe::Billing::MeterEvent.create({
           event_name: event_name,
-          payload: {stripe_customer_id: processor_id}.merge(payload)
+          payload: {stripe_customer_id: stripe_customer_id}.merge(payload)
         }.merge(options), stripe_options)
       end
 
       private
+
+      # The Stripe::Customer ID, creating the customer on Stripe first if this record doesn't have one yet
+      def stripe_customer_id
+        processor_id || api_record.id
+      end
 
       # Options for Stripe requests
       def stripe_options

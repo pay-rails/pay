@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* `Pay::Stripe::Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` share one retry and customer lookup via `Pay::Stripe::Sync`. A retry now re-reads the object from Stripe when the caller didn't pass one in (previously it reused the first read), and all three use the same growing delay. The internal `try:` keyword and the debug log lines for a missing customer are removed
+
 ### 11.8.0
 
 * Fix `Pay::Stripe::Subscription#pay_open_invoices` and `#latest_payment`, which relied on the removed `Invoice#payment_intent` attribute. They now look up the PaymentIntent through the invoice's `payments`.

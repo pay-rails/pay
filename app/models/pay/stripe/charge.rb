@@ -1,6 +1,8 @@
 module Pay
   module Stripe
     class Charge < Pay::Charge
+      extend Pay::Stripe::Sync
+
       EXPAND = ["balance_transaction", "payment_intent", "refunds.data.balance_transaction"]
 
       delegate :amount_captured, :payment_intent, to: :stripe_object, allow_nil: true
@@ -13,70 +15,52 @@ module Pay
         sync(payment_intent.latest_charge, stripe_account: stripe_account)
       end
 
-      def self.sync(charge_id, object: nil, stripe_account: nil, try: 0, retries: 1)
-        # Skip loading the latest charge details from the API if we already have it
-        object ||= ::Stripe::Charge.retrieve({id: charge_id, expand: EXPAND}, {stripe_account: stripe_account}.compact)
-        if object.customer.blank?
-          Rails.logger.debug "Stripe Charge #{object.id} does not have a customer"
-          return
-        end
+      def self.sync(charge_id, object: nil, stripe_account: nil, retries: 1)
+        sync_with_retries(retries: retries) do
+          charge = object || ::Stripe::Charge.retrieve({id: charge_id, expand: EXPAND}, {stripe_account: stripe_account}.compact)
+          return unless (pay_customer = find_pay_customer(charge))
+          stripe_account ||= pay_customer.stripe_account
 
-        pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
-        if pay_customer.blank?
-          Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Stripe Charge #{object.id}"
-          return
-        end
+          payment_method = charge.payment_method_details.try(charge.payment_method_details.type)
+          attrs = {
+            object: charge.to_hash,
+            amount: charge.amount,
+            amount_refunded: charge.amount_refunded,
+            application_fee_amount: charge.application_fee_amount,
+            bank: payment_method.try(:bank_name) || payment_method.try(:bank), # eps, fpx, ideal, p24, acss_debit, etc
+            brand: payment_method.try(:brand)&.capitalize,
+            created_at: Time.at(charge.created),
+            currency: charge.currency,
+            exp_month: payment_method.try(:exp_month).to_s,
+            exp_year: payment_method.try(:exp_year).to_s,
+            last4: payment_method.try(:last4).to_s,
+            metadata: charge.metadata,
+            payment_method_type: charge.payment_method_details.type,
+            stripe_account: stripe_account,
+            stripe_receipt_url: charge.receipt_url
+          }
 
-        # Requests for the rest of the sync should go to the same Stripe Connect account as the customer
-        stripe_account ||= pay_customer.stripe_account
-
-        payment_method = object.payment_method_details.try(object.payment_method_details.type)
-        attrs = {
-          object: object.to_hash,
-          amount: object.amount,
-          amount_refunded: object.amount_refunded,
-          application_fee_amount: object.application_fee_amount,
-          bank: payment_method.try(:bank_name) || payment_method.try(:bank), # eps, fpx, ideal, p24, acss_debit, etc
-          brand: payment_method.try(:brand)&.capitalize,
-          created_at: Time.at(object.created),
-          currency: object.currency,
-          exp_month: payment_method.try(:exp_month).to_s,
-          exp_year: payment_method.try(:exp_year).to_s,
-          last4: payment_method.try(:last4).to_s,
-          metadata: object.metadata,
-          payment_method_type: object.payment_method_details.type,
-          stripe_account: stripe_account,
-          stripe_receipt_url: object.receipt_url
-        }
-
-        # Associate charge with subscription if we can
-        if object.payment_intent.present?
-          invoice_payments = ::Stripe::InvoicePayment.list({payment: {type: :payment_intent, payment_intent: object.payment_intent}, status: :paid}, {stripe_account: stripe_account}.compact)
-          if invoice_payments.any?
-            invoice = ::Stripe::Invoice.retrieve({id: invoice_payments.first.invoice, expand: ["total_discount_amounts.discount.source.coupon"]}, {stripe_account: stripe_account}.compact)
-            attrs[:stripe_invoice] = invoice.to_hash
-            attrs[:subtotal] = invoice.subtotal
-            attrs[:tax] = invoice.total - invoice.total_excluding_tax.to_i
-            if (subscription = invoice.parent.try(:subscription_details).try(:subscription))
-              attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: subscription)
+          # Associate charge with subscription if we can
+          if charge.payment_intent.present?
+            invoice_payments = ::Stripe::InvoicePayment.list({payment: {type: :payment_intent, payment_intent: charge.payment_intent}, status: :paid}, {stripe_account: stripe_account}.compact)
+            if invoice_payments.any?
+              invoice = ::Stripe::Invoice.retrieve({id: invoice_payments.first.invoice, expand: ["total_discount_amounts.discount.source.coupon"]}, {stripe_account: stripe_account}.compact)
+              attrs[:stripe_invoice] = invoice.to_hash
+              attrs[:subtotal] = invoice.subtotal
+              attrs[:tax] = invoice.total - invoice.total_excluding_tax.to_i
+              if (subscription = invoice.parent.try(:subscription_details).try(:subscription))
+                attrs[:subscription] = pay_customer.subscriptions.find_by(processor_id: subscription)
+              end
             end
           end
-        end
 
-        # Update or create the charge
-        if (pay_charge = find_by(customer: pay_customer, processor_id: object.id))
-          pay_charge.with_lock { pay_charge.update!(attrs) }
-          pay_charge
-        else
-          create!(attrs.merge(customer: pay_customer, processor_id: object.id))
-        end
-      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-        if try > retries
-          raise
-        else
-          try += 1
-          sleep 0.15 * try
-          retry
+          # Update or create the charge
+          if (pay_charge = find_by(customer: pay_customer, processor_id: charge.id))
+            pay_charge.with_lock { pay_charge.update!(attrs) }
+            pay_charge
+          else
+            create!(attrs.merge(customer: pay_customer, processor_id: charge.id))
+          end
         end
       end
 
