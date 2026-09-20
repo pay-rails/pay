@@ -1,7 +1,7 @@
 require "test_helper"
 
 class Pay::PaddleBilling::ErrorTest < ActiveSupport::TestCase
-  test "re-raised paddle classic exceptions keep the same message" do
+  test "re-raised paddle billing exceptions keep the same message" do
     exception = assert_raises {
       begin
         raise ::Paddle::Error, "The connection failed"

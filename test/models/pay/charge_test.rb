@@ -69,9 +69,9 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     charge = pay_charges(:stripe)
     customer = charge.customer
 
-    refute_includes Pay::Charge.with_deleted_customer, charge
+    assert_includes Pay::Charge.with_active_customer, charge
     customer.update(deleted_at: Time.now)
-    assert_includes Pay::Charge.with_deleted_customer, charge
+    refute_includes Pay::Charge.with_active_customer, charge
   end
 
   test "with_deleted_customer scope" do
@@ -115,7 +115,7 @@ class Pay::Charge::Test < ActiveSupport::TestCase
   end
 
   test "amount_refunded_with_currency" do
-    assert_equal "$0.00", Pay::Charge.new(amount_refunded: nil, currency: nil).amount_with_currency
+    assert_equal "$0.00", Pay::Charge.new(amount_refunded: nil, currency: nil).amount_refunded_with_currency
     assert_equal "$123.45", Pay::Charge.new(amount_refunded: 123_45, currency: :usd).amount_refunded_with_currency
     assert_equal "€123,45", Pay::Charge.new(amount_refunded: 123_45, currency: :eur).amount_refunded_with_currency
     assert_equal "£123.45", Pay::Charge.new(amount_refunded: 123_45, currency: :gbp).amount_refunded_with_currency

@@ -365,8 +365,8 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
 
   test "resume off grace period" do
     @subscription.update ends_at: 1.day.ago
-    assert_raises StandardError do
-      subscription.resume
+    assert_raises Pay::Error do
+      @subscription.resume
     end
   end
 
