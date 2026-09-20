@@ -13,4 +13,9 @@ class Pay::PaddleClassic::ErrorTest < ActiveSupport::TestCase
     assert_equal "The connection failed", exception.message
     assert_equal ::Paddle::Error, exception.cause.class
   end
+
+  test "errors raised with a string keep their message" do
+    exception = assert_raises(Pay::PaddleClassic::Error) { raise Pay::PaddleClassic::Error, "not supported" }
+    assert_equal "not supported", exception.message
+  end
 end

@@ -62,4 +62,18 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert_not_includes Pay::Customer.not_fake_processor, pay_customers(:fake)
     assert_includes Pay::Customer.not_fake_processor, pay_customers(:stripe)
   end
+
+  test "has_incomplete_payment? is true for incomplete or past_due subscriptions" do
+    pay_customer = pay_customers(:stripe)
+    subscription = pay_customer.subscriptions.first
+
+    subscription.update!(status: :active)
+    refute pay_customer.has_incomplete_payment?
+
+    subscription.update!(status: :incomplete)
+    assert pay_customer.has_incomplete_payment?
+
+    subscription.update!(status: :past_due)
+    assert pay_customer.has_incomplete_payment?
+  end
 end

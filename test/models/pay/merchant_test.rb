@@ -8,4 +8,8 @@ class Pay::MerchantTest < ActiveSupport::TestCase
     merchant.onboarding_complete = true
     assert_equal true, merchant.onboarding_complete?
   end
+
+  test "onboarding_complete? is false when data holds other keys" do
+    assert_equal false, Pay::Merchant.new(data: {"other" => 1}).onboarding_complete?
+  end
 end

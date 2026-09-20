@@ -65,7 +65,7 @@ module Pay
 
       # Remove payment method
       def detach
-        ::Stripe::PaymentMethod.detach(processor_id, stripe_options)
+        ::Stripe::PaymentMethod.detach(processor_id, {}, stripe_options)
       end
 
       private

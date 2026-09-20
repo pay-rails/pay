@@ -13,4 +13,9 @@ class Pay::LemonSqueezy::ErrorTest < ActiveSupport::TestCase
     assert_equal "The connection failed", exception.message
     assert_equal ::LemonSqueezy::Error, exception.cause.class
   end
+
+  test "errors raised with a string keep their message" do
+    exception = assert_raises(Pay::LemonSqueezy::Error) { raise Pay::LemonSqueezy::Error, "not supported" }
+    assert_equal "not supported", exception.message
+  end
 end

@@ -2,6 +2,24 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Pay 11.9
+
+Lemon Squeezy subscriptions now store the same statuses as every other processor: `trialing` instead of `on_trial` and `canceled` instead of `cancelled`. The end of a pause is stored in `pause_resumes_at` instead of `pause_starts_at`. Rows synced before this version keep the old values until they are synced again, so run this once after upgrading:
+
+```ruby
+Pay::LemonSqueezy::Subscription.find_each { |subscription| subscription.sync! }
+```
+
+Or, without an API call per row, translate the stored values directly:
+
+```ruby
+Pay::LemonSqueezy::Subscription.where(status: "on_trial").update_all(status: "trialing")
+Pay::LemonSqueezy::Subscription.where(status: "cancelled").update_all(status: "canceled")
+Pay::LemonSqueezy::Subscription.where.not(pause_starts_at: nil).find_each { |s| s.update_columns(pause_resumes_at: s.pause_starts_at, pause_starts_at: nil) }
+```
+
+`Pay::LemonSqueezy::Charge#save` no longer syncs from the API; call `sync!` for that.
+
 ## Pay 11.8
 
 The Stripe SCA confirmation page now supports Stripe Connect. The page is linked with the connected account as a query parameter, `/pay/payments/:id?stripe_account=acct_123`, and initializes Stripe.js with that account.

@@ -110,4 +110,12 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
     Pay::Stripe::PaymentMethod.expects(:sync).with("pm_123", object: payment_intent.payment_method, stripe_account: "acct_123")
     Pay::Stripe::PaymentMethod.sync_payment_intent("pi_123", stripe_account: "acct_123")
   end
+
+  test "Stripe detach sends the connected account as options" do
+    payment_method = pay_payment_methods(:one)
+    payment_method.customer.update!(stripe_account: "acct_123")
+    ::Stripe::PaymentMethod.expects(:detach).with("pm_1000", {}, {stripe_account: "acct_123"})
+
+    payment_method.detach
+  end
 end

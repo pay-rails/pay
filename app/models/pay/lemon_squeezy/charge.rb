@@ -2,6 +2,17 @@ module Pay
   module LemonSqueezy
     class Charge < Pay::Charge
       # LemonSqueezy uses Order for one-time payments and Order + Subscription + SubscriptionInvoice for subscriptions
+      # Charges are stored with a "order:123" or "subscription_invoice:123" processor_id so both can be synced by ID
+
+      def self.sync(processor_id, object: nil)
+        type, id = processor_id.split(":", 2)
+        case type
+        when "order"
+          sync_order(id, object: object)
+        when "subscription_invoice"
+          sync_subscription_invoice(id, object: object)
+        end
+      end
 
       def self.sync_order(order_id, object: nil, try: 0, retries: 1)
         object ||= ::LemonSqueezy::Order.retrieve(id: order_id)
@@ -65,16 +76,6 @@ module Pay
           pay_charge
         else
           pay_customer.charges.create!(attributes.merge(processor_id: processor_id))
-        end
-      end
-
-      def save
-        ls_type, ls_id = processor_id.split(":", 2)
-        case ls_type
-        when "order"
-          self.class.sync_order(ls_id)
-        when "subscription_invoice"
-          self.class.sync_subscription_invoice(ls_id)
         end
       end
 
