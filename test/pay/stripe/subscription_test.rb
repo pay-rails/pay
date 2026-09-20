@@ -459,6 +459,29 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_match(/no default payment method/, error.message)
   end
 
+  test "stripe sync re-reads from the API when retrying without a passed object" do
+    ::Stripe::Subscription.expects(:retrieve).twice.returns(fake_stripe_subscription)
+    Pay::Stripe::Subscription.stubs(:create!).raises(ActiveRecord::RecordNotUnique.new("duplicate")).then.returns(pay_subscriptions(:stripe))
+    Pay::Stripe::Subscription.stubs(:sleep)
+
+    assert_equal pay_subscriptions(:stripe), Pay::Stripe::Subscription.sync("123")
+  end
+
+  test "stripe sync reuses a passed object when retrying" do
+    ::Stripe::Subscription.expects(:retrieve).never
+    Pay::Stripe::Subscription.stubs(:create!).raises(ActiveRecord::RecordNotUnique.new("duplicate")).then.returns(pay_subscriptions(:stripe))
+    Pay::Stripe::Subscription.stubs(:sleep)
+
+    assert_equal pay_subscriptions(:stripe), Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+  end
+
+  test "stripe sync raises once retries are exhausted" do
+    Pay::Stripe::Subscription.stubs(:create!).raises(ActiveRecord::RecordNotUnique.new("duplicate"))
+    Pay::Stripe::Subscription.stubs(:sleep)
+
+    assert_raises(ActiveRecord::RecordNotUnique) { Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription, retries: 1) }
+  end
+
   private
 
   def fake_stripe_open_invoice(payment_intent:)

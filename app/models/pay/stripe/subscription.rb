@@ -1,6 +1,8 @@
 module Pay
   module Stripe
     class Subscription < Pay::Subscription
+      extend Pay::Stripe::Sync
+
       attr_writer :api_record
 
       def self.sync_from_checkout_session(session_id, stripe_account: nil)
@@ -8,122 +10,106 @@ module Pay
         sync(checkout_session.subscription, stripe_account: stripe_account)
       end
 
-      def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
-        # Skip loading the latest subscription details from the API if we already have it
-        object ||= ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)
-        if object.customer.blank?
-          Rails.logger.debug "Stripe Subscription #{object.id} does not have a customer"
-          return
-        end
+      def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, retries: 1)
+        sync_with_retries(retries: retries) do
+          # Skip loading the latest details from the API if the caller already has them
+          subscription = object || ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)
+          pay_customer = find_pay_customer(subscription) or next
+          # Requests for the rest of the sync should go to the same Stripe Connect account as the customer
+          stripe_account ||= pay_customer.stripe_account
 
-        pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
-        if pay_customer.blank?
-          Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Stripe Subscription #{object.id}"
-          return
-        end
+          attributes = {
+            object: subscription.to_hash,
+            application_fee_percent: subscription.application_fee_percent,
+            created_at: Time.at(subscription.created),
+            processor_plan: subscription.items.first.price.id,
+            quantity: subscription.items.first.try(:quantity) || 0,
+            status: subscription.status,
+            stripe_account: stripe_account,
+            metadata: subscription.metadata,
+            metered: false,
+            pause_behavior: subscription.pause_collection&.behavior,
+            pause_resumes_at: (subscription.pause_collection&.resumes_at ? Time.at(subscription.pause_collection&.resumes_at) : nil),
+            current_period_start: (subscription.items.first.current_period_start ? Time.at(subscription.items.first.current_period_start) : nil),
+            current_period_end: (subscription.items.first.current_period_end ? Time.at(subscription.items.first.current_period_end) : nil)
+          }
 
-        # Requests for the rest of the sync should go to the same Stripe Connect account as the customer
-        stripe_account ||= pay_customer.stripe_account
-
-        attributes = {
-          object: object.to_hash,
-          application_fee_percent: object.application_fee_percent,
-          created_at: Time.at(object.created),
-          processor_plan: object.items.first.price.id,
-          quantity: object.items.first.try(:quantity) || 0,
-          status: object.status,
-          stripe_account: stripe_account,
-          metadata: object.metadata,
-          metered: false,
-          pause_behavior: object.pause_collection&.behavior,
-          pause_resumes_at: (object.pause_collection&.resumes_at ? Time.at(object.pause_collection&.resumes_at) : nil),
-          current_period_start: (object.items.first.current_period_start ? Time.at(object.items.first.current_period_start) : nil),
-          current_period_end: (object.items.first.current_period_end ? Time.at(object.items.first.current_period_end) : nil)
-        }
-
-        # Subscriptions that have ended should have their trial ended at the
-        # same time if they were still on trial (if you cancel a
-        # subscription, your are cancelling your trial as well at the same
-        # instant). This avoids canceled subscriptions responding `true`
-        # to #on_trial? due to the `trial_ends_at` being left set in the
-        # future.
-        if object.trial_end
-          trial_ended_at = [object.ended_at, object.trial_end].compact.min
-          attributes[:trial_ends_at] = Time.at(trial_ended_at)
-        else
-          attributes[:trial_ends_at] = nil
-        end
-
-        object.items.auto_paging_each do |subscription_item|
-          next if attributes[:metered]
-          attributes[:metered] = true if subscription_item.price.try(:recurring).try(:usage_type) == "metered"
-        end
-
-        attributes[:ends_at] = if object.ended_at
-          # Fully cancelled subscription
-          Time.at(object.ended_at)
-        elsif object.cancel_at
-          # subscription cancelling in the future
-          Time.at(object.cancel_at)
-        elsif object.cancel_at_period_end
-          # Subscriptions cancelling in the future
-          Time.at(object.items.first.current_period_end)
-        end
-
-        # Sync payment method if directly attached to subscription
-        if object.default_payment_method
-          if object.default_payment_method.is_a? String
-            Pay::Stripe::PaymentMethod.sync(object.default_payment_method, stripe_account: stripe_account)
-            attributes[:payment_method_id] = object.default_payment_method
+          # Subscriptions that have ended should have their trial ended at the
+          # same time if they were still on trial (if you cancel a
+          # subscription, your are cancelling your trial as well at the same
+          # instant). This avoids canceled subscriptions responding `true`
+          # to #on_trial? due to the `trial_ends_at` being left set in the
+          # future.
+          if subscription.trial_end
+            trial_ended_at = [subscription.ended_at, subscription.trial_end].compact.min
+            attributes[:trial_ends_at] = Time.at(trial_ended_at)
           else
-            Pay::Stripe::PaymentMethod.sync(object.default_payment_method.id, object: object.default_payment_method, stripe_account: stripe_account)
-            attributes[:payment_method_id] = object.default_payment_method.id
+            attributes[:trial_ends_at] = nil
           end
-        end
 
-        # Update or create the subscription
-        pay_subscription = find_by(customer: pay_customer, processor_id: object.id)
-        if pay_subscription
-          # If pause behavior is changing to `void`, record the pause start date
-          # Any other pause status (or no pause at all) should have nil for start
-          if pay_subscription.pause_behavior != attributes[:pause_behavior]
-            attributes[:pause_starts_at] = if attributes[:pause_behavior] == "void"
-              Time.at(object.items.first.current_period_end)
+          subscription.items.auto_paging_each do |subscription_item|
+            next if attributes[:metered]
+            attributes[:metered] = true if subscription_item.price.try(:recurring).try(:usage_type) == "metered"
+          end
+
+          attributes[:ends_at] = if subscription.ended_at
+            # Fully cancelled subscription
+            Time.at(subscription.ended_at)
+          elsif subscription.cancel_at
+            # subscription cancelling in the future
+            Time.at(subscription.cancel_at)
+          elsif subscription.cancel_at_period_end
+            # Subscriptions cancelling in the future
+            Time.at(subscription.items.first.current_period_end)
+          end
+
+          # Sync payment method if directly attached to subscription
+          if subscription.default_payment_method
+            if subscription.default_payment_method.is_a? String
+              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method, stripe_account: stripe_account)
+              attributes[:payment_method_id] = subscription.default_payment_method
+            else
+              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method.id, object: subscription.default_payment_method, stripe_account: stripe_account)
+              attributes[:payment_method_id] = subscription.default_payment_method.id
             end
           end
 
-          pay_subscription.with_lock { pay_subscription.update!(attributes) }
-        else
-          # Allow setting the subscription name in metadata, otherwise use the default
-          name ||= object.metadata["pay_name"] || Pay.default_product_name
-          pay_subscription = create!(attributes.merge(customer: pay_customer, name: name, processor_id: object.id))
-        end
+          # Update or create the subscription
+          pay_subscription = find_by(customer: pay_customer, processor_id: subscription.id)
+          if pay_subscription
+            # If pause behavior is changing to `void`, record the pause start date
+            # Any other pause status (or no pause at all) should have nil for start
+            if pay_subscription.pause_behavior != attributes[:pause_behavior]
+              attributes[:pause_starts_at] = if attributes[:pause_behavior] == "void"
+                Time.at(subscription.items.first.current_period_end)
+              end
+            end
 
-        # Cache the Stripe subscription on the Pay::Subscription that we return
-        pay_subscription.api_record = object
+            pay_subscription.with_lock { pay_subscription.update!(attributes) }
+          else
+            # Allow setting the subscription name in metadata, otherwise use the default
+            name ||= subscription.metadata["pay_name"] || Pay.default_product_name
+            pay_subscription = create!(attributes.merge(customer: pay_customer, name: name, processor_id: subscription.id))
+          end
 
-        # Sync the latest charge if we already have it loaded (like during subscrbe), otherwise, let webhooks take care of creating it
-        if (invoice = object.try(:latest_invoice))
-          Array(invoice.try(:payments)).each do |invoice_payment|
-            next unless invoice_payment.status == "paid"
+          # Cache the Stripe subscription on the Pay::Subscription that we return
+          pay_subscription.api_record = subscription
 
-            case invoice_payment.payment.type
-            when "payment_intent"
-              Pay::Stripe::Charge.sync_payment_intent(invoice_payment.payment.payment_intent, stripe_account: stripe_account)
-            when "charge"
-              Pay::Stripe::Charge.sync(invoice_payment.payment.charge, stripe_account: stripe_account)
+          # Sync the latest charge if we already have it loaded (like during subscrbe), otherwise, let webhooks take care of creating it
+          if (invoice = subscription.try(:latest_invoice))
+            Array(invoice.try(:payments)).each do |invoice_payment|
+              next unless invoice_payment.status == "paid"
+
+              case invoice_payment.payment.type
+              when "payment_intent"
+                Pay::Stripe::Charge.sync_payment_intent(invoice_payment.payment.payment_intent, stripe_account: stripe_account)
+              when "charge"
+                Pay::Stripe::Charge.sync(invoice_payment.payment.charge, stripe_account: stripe_account)
+              end
             end
           end
-        end
 
-        pay_subscription
-      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-        try += 1
-        if try <= retries
-          sleep 0.1
-          retry
-        else
-          raise
+          pay_subscription
         end
       end
 

@@ -1,6 +1,8 @@
 module Pay
   module Stripe
     class PaymentMethod < Pay::PaymentMethod
+      extend Pay::Stripe::Sync
+
       # Syncs a PaymentIntent's payment method to the database
       def self.sync_payment_intent(id, stripe_account: nil)
         payment_intent = ::Stripe::PaymentIntent.retrieve({id: id, expand: ["payment_method"]}, {stripe_account: stripe_account}.compact)
@@ -18,38 +20,23 @@ module Pay
       end
 
       # Syncs PaymentMethod objects from Stripe
-      def self.sync(id, object: nil, stripe_account: nil, try: 0, retries: 1)
-        object ||= ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
-        if object.customer.blank?
-          Rails.logger.debug "Stripe PaymentMethod #{object.id} does not have a customer"
-          return
-        end
+      def self.sync(id, object: nil, stripe_account: nil, retries: 1)
+        sync_with_retries(retries: retries) do
+          # Skip loading the latest details from the API if the caller already has them
+          payment_method = object || ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
+          pay_customer = find_pay_customer(payment_method) or next
+          # Requests for the rest of the sync should go to the same Stripe Connect account as the customer
+          stripe_account ||= pay_customer.stripe_account
 
-        pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
-        if pay_customer.blank?
-          Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Stripe PaymentMethod #{object.id}"
-          return
-        end
+          default_payment_method_id = pay_customer.api_record.invoice_settings&.default_payment_method
+          default = (id == default_payment_method_id)
 
-        # Record the same Stripe Connect account as the customer when one wasn't given
-        stripe_account ||= pay_customer.stripe_account
+          attributes = extract_attributes(payment_method).merge(default: default, stripe_account: stripe_account)
 
-        default_payment_method_id = pay_customer.api_record.invoice_settings&.default_payment_method
-        default = (id == default_payment_method_id)
-
-        attributes = extract_attributes(object).merge(default: default, stripe_account: stripe_account)
-
-        where(customer: pay_customer).update_all(default: false) if default
-        pay_payment_method = where(customer: pay_customer, processor_id: object.id).first_or_initialize
-        pay_payment_method.update!(attributes)
-        pay_payment_method
-      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-        if try > retries
-          raise
-        else
-          try += 1
-          sleep 0.15 * try
-          retry
+          where(customer: pay_customer).update_all(default: false) if default
+          pay_payment_method = where(customer: pay_customer, processor_id: payment_method.id).first_or_initialize
+          pay_payment_method.update!(attributes)
+          pay_payment_method
         end
       end
 
