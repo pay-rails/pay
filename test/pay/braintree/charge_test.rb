@@ -1,5 +1,4 @@
 require "test_helper"
-require "minitest/mock"
 
 class Pay::Braintree::Charge::Test < ActiveSupport::TestCase
   setup do
