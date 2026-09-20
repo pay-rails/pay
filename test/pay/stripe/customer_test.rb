@@ -394,6 +394,12 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
     @pay_customer.retry_past_due_subscriptions!
   end
 
+  test "stripe checkout wraps Stripe errors in Pay::Stripe::Error" do
+    @pay_customer.update!(processor_id: "cus_1234")
+    ::Stripe::Checkout::Session.stubs(:create).raises(::Stripe::InvalidRequestError.new("Invalid price", "line_items"))
+    assert_raises(Pay::Stripe::Error) { @pay_customer.checkout(mode: "payment", line_items: "price_missing") }
+  end
+
   private
 
   def payment_method

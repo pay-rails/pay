@@ -13,6 +13,8 @@ module Pay
       def self.sync_payment_intent(id, stripe_account: nil)
         payment_intent = ::Stripe::PaymentIntent.retrieve({id: id}, {stripe_account: stripe_account}.compact)
         sync(payment_intent.latest_charge, stripe_account: stripe_account)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       def self.sync(charge_id, object: nil, stripe_account: nil, retries: 1)
@@ -62,6 +64,8 @@ module Pay
             create!(attrs.merge(customer: pay_customer, processor_id: charge.id))
           end
         end
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       def api_record

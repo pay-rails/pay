@@ -54,6 +54,15 @@ module Pay
       assert_select "a[href=?]", "/"
     end
 
+    test "redirects with the Stripe error message when the payment cannot be found" do
+      ::Stripe::PaymentIntent.stubs(:retrieve).raises(::Stripe::InvalidRequestError.new("No such payment_intent: 'pi_missing'", "id"))
+
+      get payment_path("pi_missing")
+
+      assert_redirected_to "/"
+      assert_equal "No such payment_intent: 'pi_missing'", flash[:alert]
+    end
+
     private
 
     def fake_payment_intent

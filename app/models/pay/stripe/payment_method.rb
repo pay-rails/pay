@@ -9,6 +9,8 @@ module Pay
         payment_method = payment_intent.payment_method
         return unless payment_method
         Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Syncs a SetupIntent's payment method to the database
@@ -17,6 +19,8 @@ module Pay
         payment_method = setup_intent.payment_method
         return unless payment_method
         Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Syncs PaymentMethod objects from Stripe
@@ -36,6 +40,8 @@ module Pay
           pay_payment_method.update!(attributes)
           pay_payment_method
         end
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Extracts payment method details from a Stripe::PaymentMethod object
@@ -61,11 +67,15 @@ module Pay
 
         customer.payment_methods.update_all(default: false)
         update!(default: true)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Remove payment method
       def detach
         ::Stripe::PaymentMethod.detach(processor_id, {}, stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       private

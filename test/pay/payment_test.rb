@@ -29,4 +29,9 @@ class Pay::Payment::Test < ActiveSupport::TestCase
     assert_equal "acct_123", Pay::Payment.from_id("pi_123", stripe_account: "acct_123").stripe_account
     assert_nil Pay::Payment.from_id("pi_123").stripe_account
   end
+
+  test "from_id wraps Stripe errors in Pay::Stripe::Error" do
+    ::Stripe::PaymentIntent.stubs(:retrieve).raises(::Stripe::InvalidRequestError.new("No such payment_intent", "id"))
+    assert_raises(Pay::Stripe::Error) { Pay::Payment.from_id("pi_missing") }
+  end
 end

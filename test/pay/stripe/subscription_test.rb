@@ -494,6 +494,17 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription.swap("price_new", prorate: false)
   end
 
+  test "stripe pause wraps Stripe errors in Pay::Stripe::Error" do
+    ::Stripe::Subscription.stubs(:update).raises(::Stripe::InvalidRequestError.new("No such subscription", "id"))
+    error = assert_raises(Pay::Stripe::Error) { pay_subscriptions(:stripe).pause }
+    assert_equal "No such subscription", error.message
+  end
+
+  test "stripe sync wraps Stripe errors in Pay::Stripe::Error" do
+    ::Stripe::Subscription.stubs(:retrieve).raises(::Stripe::InvalidRequestError.new("No such subscription", "id"))
+    assert_raises(Pay::Stripe::Error) { Pay::Stripe::Subscription.sync("sub_missing") }
+  end
+
   private
 
   def fake_stripe_open_invoice(payment_intent:)

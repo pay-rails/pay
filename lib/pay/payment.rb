@@ -10,6 +10,8 @@ module Pay
       options = {stripe_account: stripe_account}.compact
       intent = id.start_with?("seti_") ? ::Stripe::SetupIntent.retrieve(id, options) : ::Stripe::PaymentIntent.retrieve(id, options)
       new(intent, stripe_account: stripe_account)
+    rescue ::Stripe::StripeError => e
+      raise Pay::Stripe::Error, e
     end
 
     def initialize(intent, stripe_account: nil)
