@@ -3,6 +3,15 @@
 ### Unreleased
 
 * `Pay::Stripe::Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` share one retry and customer lookup via `Pay::Stripe::Sync`. A retry now re-reads the object from Stripe when the caller didn't pass one in (previously it reused the first read), and all three use the same growing delay. The internal `try:` keyword and the debug log lines for a missing customer are removed
+* Fix `Pay::Customer#has_incomplete_payment?`, which combined the `active` and `incomplete` scopes and could never return true
+* Fix `Pay::Merchant#onboarding_complete?` raising `KeyError` when `data` holds other keys
+* `Pay::PaddleBilling::Error`, `Pay::PaddleClassic::Error`, and `Pay::LemonSqueezy::Error` no longer raise from `#message` when raised with a string
+* `Pay::LemonSqueezy::Charge` no longer overrides ActiveRecord `save` with an API fetch; `Pay::LemonSqueezy::Charge.sync("order:123")` and `sync!` now work like the other processors
+* Fix canceled Paddle Billing and Lemon Squeezy subscriptions not removing the customer's payment methods (the lookup compared the processor's customer ID to Pay's integer foreign key)
+* Lemon Squeezy subscriptions now sync `on_trial` as `trialing` and `cancelled` as `canceled`, so they answer `active?` correctly, and store the pause end in `pause_resumes_at` instead of `pause_starts_at`. `resume` unpauses paused subscriptions instead of uncancelling them
+* Fix `Pay::Stripe::Subscription#retry_failed_payment` and `Pay::Stripe::PaymentMethod#detach` sending the Connect account as a request parameter instead of a request option
+* `Pay::Stripe::Subscription#swap(prorate: false)` no longer forwards the removed `prorate` parameter to Stripe
+* `retry_past_due_subscriptions!` moved from `Pay::Customer` to `Pay::Stripe::Customer`; it relies on `pay_open_invoices`, which only Stripe supports
 
 ### 11.8.0
 

@@ -1,6 +1,9 @@
 module Pay
   module LemonSqueezy
     class Subscription < Pay::Subscription
+      # Lemon Squeezy statuses that Pay spells differently
+      STATUSES = {"on_trial" => "trialing", "cancelled" => "canceled"}.freeze
+
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         object ||= ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
 
@@ -10,8 +13,8 @@ module Pay
         attributes = {
           current_period_end: object.renews_at,
           ends_at: (object.ends_at ? Time.parse(object.ends_at) : nil),
-          pause_starts_at: (object.pause&.resumes_at ? Time.parse(object.pause.resumes_at) : nil),
-          status: object.status,
+          pause_resumes_at: (object.pause&.resumes_at ? Time.parse(object.pause.resumes_at) : nil),
+          status: STATUSES.fetch(object.status, object.status),
           processor_plan: object.first_subscription_item.price_id,
           quantity: object.first_subscription_item.quantity,
           created_at: (object.created_at ? Time.parse(object.created_at) : nil),
@@ -19,16 +22,14 @@ module Pay
         }
 
         case attributes[:status]
-        when "cancelled"
+        when "canceled"
           # Remove payment methods since customer cannot be reused after cancelling
-          Pay::PaymentMethod.where(customer_id: object.customer_id).destroy_all
-        when "on_trial"
+          pay_customer.payment_methods.destroy_all
+        when "trialing"
           attributes[:trial_ends_at] = Time.parse(object.trial_ends_at)
-        when "paused"
-          # attributes[:pause_starts_at] = Time.parse(object.paused_at)
         when "active", "past_due"
           attributes[:trial_ends_at] = nil
-          attributes[:pause_starts_at] = nil
+          attributes[:pause_resumes_at] = nil
           attributes[:ends_at] = nil
         end
 
@@ -75,19 +76,13 @@ module Pay
         raise Pay::LemonSqueezy::Error, e
       end
 
-      # A subscription could be set to cancel or pause in the future
-      # It is considered on grace period until the cancel or pause time begins
-      def on_grace_period?
-        (canceled? && Time.current < ends_at) || (paused? && pause_starts_at? && Time.current < pause_starts_at)
-      end
-
       def paused?
         status == "paused"
       end
 
       def pause(**options)
         response = ::LemonSqueezy::Subscription.pause(id: processor_id, **options)
-        update!(status: :paused, pause_starts_at: response.pause&.resumes_at)
+        update!(status: :paused, pause_resumes_at: response.pause&.resumes_at)
       rescue ::LemonSqueezy::Error => e
         raise Pay::LemonSqueezy::Error, e
       end
@@ -101,13 +96,13 @@ module Pay
           raise Error, "You can only resume paused or cancelled subscriptions"
         end
 
-        if paused? && pause_starts_at? && Time.current < pause_starts_at
+        if paused?
           ::LemonSqueezy::Subscription.unpause(id: processor_id)
         else
           ::LemonSqueezy::Subscription.uncancel(id: processor_id)
         end
 
-        update(ends_at: nil, status: :active, pause_starts_at: nil)
+        update(ends_at: nil, status: :active, pause_resumes_at: nil)
       rescue ::LemonSqueezy::Error => e
         raise Pay::LemonSqueezy::Error, e
       end

@@ -386,7 +386,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = pay_subscriptions(:stripe)
     ::Stripe::Invoice.stubs(:list).returns(::Stripe::ListObject.construct_from(object: "list", has_more: false, data: [fake_stripe_open_invoice(payment_intent: "pi_1000")]))
     ::Stripe::PaymentIntent.stubs(:retrieve).with({id: "pi_1000"}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "requires_confirmation"))
-    ::Stripe::PaymentIntent.expects(:confirm).with("pi_1000", {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded"))
+    ::Stripe::PaymentIntent.expects(:confirm).with("pi_1000", {}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded"))
 
     pay_subscription.pay_open_invoices
   end
@@ -482,6 +482,23 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     Pay::Stripe::Subscription.stubs(:sleep)
 
     assert_raises(ActiveRecord::RecordNotUnique) { Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription, retries: 1) }
+  end
+
+  test "stripe retry_failed_payment confirms on the connected account" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.update!(stripe_account: "acct_123")
+    ::Stripe::PaymentIntent.stubs(:retrieve).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "requires_confirmation"))
+    ::Stripe::PaymentIntent.expects(:confirm).with("pi_1000", {}, {stripe_account: "acct_123"}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded"))
+
+    pay_subscription.retry_failed_payment(payment_intent_id: "pi_1000")
+  end
+
+  test "stripe swap does not forward prorate to Stripe" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.update!(object: fake_stripe_subscription(id: "sub_1").to_hash)
+    ::Stripe::Subscription.expects(:update).with("sub_1", Not(has_key(:prorate)) & has_entry(proration_behavior: "none"), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+
+    pay_subscription.swap("price_new", prorate: false)
   end
 
   private

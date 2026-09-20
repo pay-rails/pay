@@ -36,7 +36,7 @@ module Pay
         case attributes[:status]
         when "canceled"
           # Remove payment methods since customer cannot be reused after cancelling
-          Pay::PaymentMethod.where(customer_id: object.customer_id).destroy_all
+          pay_customer.payment_methods.destroy_all
         when "trialing"
           attributes[:trial_ends_at] = Time.parse(object.next_billed_at) if object.next_billed_at
         when "paused"

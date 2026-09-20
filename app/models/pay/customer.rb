@@ -58,7 +58,7 @@ module Pay
     end
 
     def has_incomplete_payment?
-      subscriptions.active.incomplete.any?
+      subscriptions.where(status: %w[incomplete past_due]).exists?
     end
 
     def customer_name
@@ -82,12 +82,6 @@ module Pay
 
       # If these match, consider it a generic trial
       subscription.trial_ends_at == subscription.ends_at
-    end
-
-    # Attempts to pay all past_due subscription invoices to bring them back to active state
-    # Pass in `statuses: []` if you would like to only include specific subscription statuses
-    def retry_past_due_subscriptions!(status: [:past_due])
-      subscriptions.where(status: Array.wrap(status)).each(&:pay_open_invoices)
     end
   end
 end

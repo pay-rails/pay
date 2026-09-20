@@ -1,7 +1,10 @@
 module Pay
   module PaddleClassic
     class Error < Pay::Error
-      delegate :message, to: :cause
+      # Wrapped processor errors report the original message; errors raised with a string keep theirs
+      def message
+        cause&.message || super
+      end
     end
 
     module Webhooks

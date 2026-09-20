@@ -7,7 +7,7 @@ module Pay
     store_accessor :data, :onboarding_complete
 
     def onboarding_complete?
-      ActiveModel::Type::Boolean.new.cast(data&.fetch("onboarding_complete")) || false
+      ActiveModel::Type::Boolean.new.cast(onboarding_complete) || false
     end
   end
 end

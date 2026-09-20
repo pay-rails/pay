@@ -236,6 +236,12 @@ module Pay
         charge(amount, options.merge(capture_method: :manual))
       end
 
+      # Attempts to pay all past_due subscription invoices to bring them back to active state
+      # Pass in `status: []` to include other subscription statuses
+      def retry_past_due_subscriptions!(status: [:past_due])
+        subscriptions.where(status: Array.wrap(status)).each(&:pay_open_invoices)
+      end
+
       # Creates a meter event to bill for usage
       #
       # create_meter_event(:api_request, value: 1)
