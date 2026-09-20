@@ -205,16 +205,12 @@ module Pay
 
       # This updates a SubscriptionItem's quantity in Stripe
       #
-      # For a subscription with a single item, we can update the subscription directly if no SubscriptionItem ID is available
-      # Otherwise a SubscriptionItem ID is required so Stripe knows which entry to update
+      # Defaults to the first SubscriptionItem. Pass subscription_item_id: to update a different one
+      # (Stripe no longer accepts a top-level quantity on the subscription itself)
       def change_quantity(quantity, **options)
-        subscription_item_id = options.delete(:subscription_item_id) || subscription_items&.first&.id
-        if subscription_item_id
-          ::Stripe::SubscriptionItem.update(subscription_item_id, options.merge(quantity: quantity), stripe_options)
-          @api_record = nil
-        else
-          @api_record = ::Stripe::Subscription.update(processor_id, options.merge(quantity: quantity).merge(expand_options), stripe_options)
-        end
+        subscription_item_id = options.delete(:subscription_item_id) || subscription_items.first.id
+        ::Stripe::SubscriptionItem.update(subscription_item_id, options.merge(quantity: quantity), stripe_options)
+        @api_record = nil
         update(quantity: quantity)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e

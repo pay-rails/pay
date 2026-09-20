@@ -27,8 +27,28 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     subscription = @pay_customer.subscribe(name: "default", plan: "default")
     subscription.change_quantity(5)
     stripe_subscription = subscription.api_record
-    assert_equal 5, stripe_subscription.quantity
+    assert_equal 5, stripe_subscription.items.first.quantity
     assert_equal 5, subscription.quantity
+  end
+
+  test "stripe change subscription quantity updates the subscription item" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.update!(object: fake_stripe_subscription(id: "sub_1").to_hash)
+    ::Stripe::Subscription.expects(:update).never
+    ::Stripe::SubscriptionItem.expects(:update).with("si_1", {quantity: 3}, {}).returns(::Stripe::SubscriptionItem.construct_from(id: "si_1", object: "subscription_item", quantity: 3))
+
+    pay_subscription.change_quantity(3)
+
+    assert_equal 3, pay_subscription.reload.quantity
+  end
+
+  test "stripe change subscription quantity accepts a subscription_item_id" do
+    pay_subscription = pay_subscriptions(:stripe)
+    ::Stripe::SubscriptionItem.expects(:update).with("si_other", {quantity: 2, proration_behavior: "none"}, {}).returns(::Stripe::SubscriptionItem.construct_from(id: "si_other", object: "subscription_item", quantity: 2))
+
+    pay_subscription.change_quantity(2, subscription_item_id: "si_other", proration_behavior: "none")
+
+    assert_equal 2, pay_subscription.reload.quantity
   end
 
   test "cancel_now when scheduled for cancellation" do
