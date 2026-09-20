@@ -23,4 +23,10 @@ class Pay::Payment::Test < ActiveSupport::TestCase
     ::Stripe::PaymentIntent.expects(:retrieve).with("pi_123", {}).returns(payment_intent)
     assert_equal payment_intent, Pay::Payment.from_id("pi_123").intent
   end
+
+  test "from_id remembers the stripe_account it was retrieved with" do
+    ::Stripe::PaymentIntent.stubs(:retrieve).returns(::Stripe::PaymentIntent.construct_from(id: "pi_123", object: "payment_intent"))
+    assert_equal "acct_123", Pay::Payment.from_id("pi_123", stripe_account: "acct_123").stripe_account
+    assert_nil Pay::Payment.from_id("pi_123").stripe_account
+  end
 end
