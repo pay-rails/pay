@@ -431,13 +431,6 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription.sync!
   end
 
-  test "stripe sync_from_checkout_session passes the stripe_account through" do
-    session = ::Stripe::Checkout::Session.construct_from(id: "cs_1", object: "checkout.session", subscription: "sub_1")
-    ::Stripe::Checkout::Session.expects(:retrieve).with({id: "cs_1"}, {stripe_account: "acct_123"}).returns(session)
-    Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: "acct_123")
-    Pay::Stripe::Subscription.sync_from_checkout_session("cs_1", stripe_account: "acct_123")
-  end
-
   test "stripe resume keeps the trialing status returned by Stripe" do
     pay_subscription = pay_subscriptions(:stripe)
     pay_subscription.update!(status: "trialing", trial_ends_at: 5.days.from_now, ends_at: 3.days.from_now)

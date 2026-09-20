@@ -141,10 +141,6 @@ module Pay
       rescue ::Paddle::Error => e
         raise Pay::PaddleClassic::Error, e
       end
-
-      # Retries the latest invoice for a Past Due subscription
-      def retry_failed_payment
-      end
     end
   end
 end

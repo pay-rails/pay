@@ -17,10 +17,6 @@ module Pay
     def self.find_by_processor_and_id(processor, processor_id)
       joins(:customer).find_by(processor_id: processor_id, pay_customers: {processor: processor})
     end
-
-    def self.pay_processor_for(name)
-      "Pay::#{name.to_s.classify}::PaymentMethod".constantize
-    end
   end
 end
 

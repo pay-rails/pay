@@ -65,10 +65,6 @@ module Pay
       attributes["format"]
     end
 
-    def subunit?
-      subunit.blank?
-    end
-
     def subunit
       attributes["subunit"]
     end

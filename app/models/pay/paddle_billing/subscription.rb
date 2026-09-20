@@ -6,11 +6,6 @@ module Pay
       store_accessor :data, :paddle_update_url
       store_accessor :data, :paddle_cancel_url
 
-      def self.sync_from_transaction(transaction_id)
-        transaction = ::Paddle::Transaction.retrieve(id: transaction_id)
-        sync(transaction.subscription_id) if transaction.subscription_id
-      end
-
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         sync_with_retries do
           subscription = object || ::Paddle::Subscription.retrieve(id: subscription_id)
@@ -167,10 +162,6 @@ module Pay
           proration_billing_mode: options.delete(:proration_billing_mode) || "prorated_immediately"
         )
         update(processor_plan: plan, ends_at: nil, status: :active)
-      end
-
-      # Retries the latest invoice for a Past Due subscription
-      def retry_failed_payment
       end
     end
   end
