@@ -429,6 +429,27 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     Pay::Stripe::Subscription.sync_from_checkout_session("cs_1", stripe_account: "acct_123")
   end
 
+  test "stripe resume keeps the trialing status returned by Stripe" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.update!(status: "trialing", trial_ends_at: 5.days.from_now, ends_at: 3.days.from_now)
+    ::Stripe::Subscription.expects(:update).returns(fake_stripe_subscription(id: "sub_1", status: "trialing"))
+
+    pay_subscription.resume
+
+    assert_nil pay_subscription.ends_at
+    assert_equal "trialing", pay_subscription.status
+  end
+
+  test "stripe retry_failed_payment raises a clear error without a default payment method" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.customer.payment_methods.update_all(default: false)
+    ::Stripe::PaymentIntent.stubs(:retrieve).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "requires_payment_method"))
+    ::Stripe::PaymentIntent.expects(:confirm).never
+
+    error = assert_raises(Pay::Stripe::Error) { pay_subscription.retry_failed_payment(payment_intent_id: "pi_1000") }
+    assert_match(/no default payment method/, error.message)
+  end
+
   private
 
   def fake_stripe_open_invoice(payment_intent:)

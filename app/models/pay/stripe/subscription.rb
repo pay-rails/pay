@@ -292,7 +292,7 @@ module Pay
           }.merge(expand_options),
             stripe_options)
         end
-        update(ends_at: nil, status: :active)
+        update(ends_at: nil, status: @api_record.status)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -345,7 +345,10 @@ module Pay
         payment_intent = ::Stripe::PaymentIntent.retrieve({id: payment_intent_id}, stripe_options)
 
         payment_intent = if payment_intent.status == "requires_payment_method"
-          ::Stripe::PaymentIntent.confirm(payment_intent_id, {payment_method: customer.default_payment_method.processor_id}, stripe_options)
+          payment_method = customer.default_payment_method
+          raise Pay::Stripe::Error, "no default payment method to retry the payment with" if payment_method.nil?
+
+          ::Stripe::PaymentIntent.confirm(payment_intent_id, {payment_method: payment_method.processor_id}, stripe_options)
         else
           ::Stripe::PaymentIntent.confirm(payment_intent_id, stripe_options)
         end

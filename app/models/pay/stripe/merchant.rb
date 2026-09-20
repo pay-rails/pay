@@ -28,7 +28,7 @@ module Pay
 
       # A single-use login link for Express accounts to access their Stripe dashboard
       def login_link(**options)
-        ::Stripe::Account.create_login_link(processor_id)
+        ::Stripe::Account.create_login_link(processor_id, options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
