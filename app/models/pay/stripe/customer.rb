@@ -84,7 +84,7 @@ module Pay
         payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: stripe_customer_id}, stripe_options)
 
         if default
-          ::Stripe::Customer.update(processor_id, {
+          ::Stripe::Customer.update(stripe_customer_id, {
             invoice_settings: {
               default_payment_method: payment_method.id
             }

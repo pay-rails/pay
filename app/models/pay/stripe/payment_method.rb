@@ -22,10 +22,8 @@ module Pay
       # Syncs PaymentMethod objects from Stripe
       def self.sync(id, object: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          # Skip loading the latest details from the API if the caller already has them
           payment_method = object || ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
-          pay_customer = find_pay_customer(payment_method) or next
-          # Requests for the rest of the sync should go to the same Stripe Connect account as the customer
+          return unless (pay_customer = find_pay_customer(payment_method))
           stripe_account ||= pay_customer.stripe_account
 
           default_payment_method_id = pay_customer.api_record.invoice_settings&.default_payment_method

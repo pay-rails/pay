@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* `Pay::Stripe::Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` share one retry and customer lookup via `Pay::Stripe::Sync`. A retry now re-reads the object from Stripe when the caller didn't pass one in (previously it reused the first read), and all three use the same growing delay. The internal `try:` keyword is removed
+* `Pay::Stripe::Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` share one retry and customer lookup via `Pay::Stripe::Sync`. A retry now re-reads the object from Stripe when the caller didn't pass one in (previously it reused the first read), and all three use the same growing delay. The internal `try:` keyword and the debug log lines for a missing customer are removed
 
 ### 11.8.0
 

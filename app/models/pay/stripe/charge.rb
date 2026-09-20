@@ -17,10 +17,8 @@ module Pay
 
       def self.sync(charge_id, object: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          # Skip loading the latest details from the API if the caller already has them
           charge = object || ::Stripe::Charge.retrieve({id: charge_id, expand: EXPAND}, {stripe_account: stripe_account}.compact)
-          pay_customer = find_pay_customer(charge) or next
-          # Requests for the rest of the sync should go to the same Stripe Connect account as the customer
+          return unless (pay_customer = find_pay_customer(charge))
           stripe_account ||= pay_customer.stripe_account
 
           payment_method = charge.payment_method_details.try(charge.payment_method_details.type)

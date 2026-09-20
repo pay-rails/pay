@@ -459,12 +459,14 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_match(/no default payment method/, error.message)
   end
 
-  test "stripe sync re-reads from the API when retrying without a passed object" do
+  test "stripe sync re-reads from the API when retrying after a stale read" do
+    # Simulate the race: the first lookup misses a row another process just created, so create! hits the uniqueness validation
+    existing = @pay_customer.subscriptions.create!(processor_id: "123", name: "default", processor_plan: "default", status: "active")
+    Pay::Stripe::Subscription.stubs(:find_by).returns(nil).then.returns(existing)
     ::Stripe::Subscription.expects(:retrieve).twice.returns(fake_stripe_subscription)
-    Pay::Stripe::Subscription.stubs(:create!).raises(ActiveRecord::RecordNotUnique.new("duplicate")).then.returns(pay_subscriptions(:stripe))
     Pay::Stripe::Subscription.stubs(:sleep)
 
-    assert_equal pay_subscriptions(:stripe), Pay::Stripe::Subscription.sync("123")
+    assert_equal existing, Pay::Stripe::Subscription.sync("123")
   end
 
   test "stripe sync reuses a passed object when retrying" do

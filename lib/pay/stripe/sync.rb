@@ -3,9 +3,9 @@ module Pay
     # Shared skeleton for Charge.sync, Subscription.sync, and PaymentMethod.sync
     module Sync
       # Runs the sync block, retrying it when a webhook and an API call race to
-      # create the same record. The block is responsible for retrieving the
-      # Stripe object when the caller didn't pass one in, so each retry gets a
-      # fresh read from the API.
+      # create the same record. The block retrieves the Stripe object itself when
+      # the caller didn't pass one in, so each retry gets a fresh read from the
+      # API, and requests made during the sync use the customer's Connect account.
       def sync_with_retries(retries: 1)
         try = 0
         begin
@@ -18,21 +18,9 @@ module Pay
         end
       end
 
-      # Looks up the Pay::Customer for a Stripe object. Returns nil when the
-      # object has no customer or the customer isn't in the database.
+      # The Pay::Customer for a Stripe object, or nil when the object has no customer or the customer isn't in the database
       def find_pay_customer(object)
-        if object.customer.blank?
-          Rails.logger.debug "Stripe #{object.object} #{object.id} does not have a customer"
-          return
-        end
-
-        pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.customer)
-        if pay_customer.blank?
-          Rails.logger.debug "Pay::Customer #{object.customer} is not in the database while syncing Stripe #{object.object} #{object.id}"
-          return
-        end
-
-        pay_customer
+        Pay::Customer.find_by(processor: :stripe, processor_id: object.customer) if object.customer.present?
       end
     end
   end

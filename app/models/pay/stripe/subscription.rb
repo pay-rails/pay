@@ -12,10 +12,8 @@ module Pay
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          # Skip loading the latest details from the API if the caller already has them
           subscription = object || ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)
-          pay_customer = find_pay_customer(subscription) or next
-          # Requests for the rest of the sync should go to the same Stripe Connect account as the customer
+          return unless (pay_customer = find_pay_customer(subscription))
           stripe_account ||= pay_customer.stripe_account
 
           attributes = {
