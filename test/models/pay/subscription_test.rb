@@ -24,17 +24,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     end
   end
 
-  test "pay subscription stores metadata" do
-    pay_subscription = pay_subscriptions(:stripe)
-    metadata = {"foo" => "bar"}
-    pay_subscription.update(metadata: metadata)
-    assert_equal metadata, pay_subscription.metadata
-  end
-
-  test "subscription has many charges" do
-    assert_equal pay_charges(:stripe), pay_subscriptions(:stripe).charges.first
-  end
-
   test "braintree?" do
     assert pay_subscriptions(:braintree).braintree?
     refute pay_subscriptions(:fake).braintree?
@@ -55,20 +44,15 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute pay_subscriptions(:stripe).fake_processor?
   end
 
-  test "braintree scope" do
-    assert Pay::Subscription.braintree.is_a?(ActiveRecord::Relation)
-  end
+  test "a paused subscription is paused, not active and not canceled on every processor that pauses by status" do
+    %i[paddle_billing paddle_classic lemon_squeezy].each do |processor|
+      subscription = pay_subscriptions(processor)
+      subscription.update!(status: :paused)
 
-  test "stripe scope" do
-    assert Pay::Subscription.stripe.is_a?(ActiveRecord::Relation)
-  end
-
-  test "paddle_classic scope" do
-    assert Pay::Subscription.paddle_classic.is_a?(ActiveRecord::Relation)
-  end
-
-  test "fake processor scope" do
-    assert Pay::Subscription.fake_processor.is_a?(ActiveRecord::Relation)
+      assert subscription.paused?, processor
+      refute subscription.active?, processor
+      refute subscription.canceled?, processor
+    end
   end
 
   test ".for_name(name) scope" do

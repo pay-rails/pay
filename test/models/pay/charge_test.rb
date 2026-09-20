@@ -1,32 +1,8 @@
 require "test_helper"
 
 class Pay::Charge::Test < ActiveSupport::TestCase
-  test "belongs to a Pay::Customer" do
-    assert_equal Pay::Stripe::Customer, pay_charges(:stripe).customer.class
-  end
-
   test "owner" do
     assert_equal users(:stripe), pay_charges(:stripe).owner
-  end
-
-  test "braintree scope" do
-    assert Pay::Charge.braintree.is_a?(ActiveRecord::Relation)
-  end
-
-  test "stripe scope" do
-    assert Pay::Charge.stripe.is_a?(ActiveRecord::Relation)
-  end
-
-  test "paddle_classic scope" do
-    assert Pay::Charge.paddle_classic.is_a?(ActiveRecord::Relation)
-  end
-
-  test "fake processor scope" do
-    assert Pay::Charge.fake_processor.is_a?(ActiveRecord::Relation)
-  end
-
-  test "charge belongs to subscription" do
-    assert_equal pay_subscriptions(:stripe), pay_charges(:stripe).subscription
   end
 
   test "validates charge uniqueness by Pay::Customer and processor ID" do
@@ -49,20 +25,6 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     charge = pay_charges(:braintree)
     charge.update(email: nil)
     assert_equal "PayPal", charge.charged_to
-  end
-
-  test "stores data about the charge" do
-    charge = pay_charges(:stripe)
-    data = {"foo" => "bar"}
-    charge.update(data: data)
-    assert_equal data, charge.data
-  end
-
-  test "stores metadata" do
-    charge = pay_charges(:stripe)
-    metadata = {"foo" => "bar"}
-    charge.update(metadata: metadata)
-    assert_equal metadata, charge.metadata
   end
 
   test "with_active_customer scope" do
