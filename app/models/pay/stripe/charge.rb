@@ -27,6 +27,9 @@ module Pay
           return
         end
 
+        # Requests for the rest of the sync should go to the same Stripe Connect account as the customer
+        stripe_account ||= pay_customer.stripe_account
+
         payment_method = object.payment_method_details.try(object.payment_method_details.type)
         attrs = {
           object: object.to_hash,
@@ -42,7 +45,7 @@ module Pay
           last4: payment_method.try(:last4).to_s,
           metadata: object.metadata,
           payment_method_type: object.payment_method_details.type,
-          stripe_account: pay_customer.stripe_account,
+          stripe_account: stripe_account,
           stripe_receipt_url: object.receipt_url
         }
 
@@ -124,7 +127,7 @@ module Pay
         raise Pay::Stripe::Error, "no payment_intent on charge" unless payment_intent.present?
         payment_intent_id = payment_intent.is_a?(::Stripe::PaymentIntent) ? payment_intent.id : payment_intent
         ::Stripe::PaymentIntent.capture(payment_intent_id, options, stripe_options)
-        self.class.sync(processor_id)
+        self.class.sync(processor_id, stripe_account: stripe_account)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -142,6 +145,10 @@ module Pay
       def stripe_object
         sync! if object.nil?
         ::Stripe::Charge.construct_from(object)
+      end
+
+      def sync!(**options)
+        super(**options.with_defaults(stripe_account: stripe_account))
       end
 
       private

@@ -3,7 +3,7 @@
 ### Unreleased
 
 * Fix `checkout.session.completed` webhook clearing an owner's `processor_id` when the session has no Stripe customer, and pass the Connect account from the event when associating the owner
-
+* Pass the Stripe Connect `stripe_account` through every Stripe request. `Pay::Stripe::Charge.sync`, `Pay::Stripe::Subscription.sync`, and `Pay::Stripe::PaymentMethod.sync` default it from the `Pay::Customer`, `Pay::Payment.from_id` accepts a `stripe_account:` keyword, and `Customer#charge`, `#subscribe`, `#sync_subscriptions`, `#create_meter_event`, `Subscription#swap`, `Charge#capture`, and the `invoice.payment_action_required` webhook no longer fall back to the platform account
 * Fix `Pay::Stripe::Subscription#pay_open_invoices` and `#latest_payment`, which relied on the removed `Invoice#payment_intent` attribute. They now look up the PaymentIntent through the invoice's `payments`.
 * Fix retry delay in `Pay::Stripe.sync_checkout_session`, `Pay::Stripe::Charge.sync`, and `Pay::Stripe::PaymentMethod.sync`. The delay was `0.15**try`, which shrinks on every attempt, so the checkout session retries waited well under a second in total. It now grows with each attempt.
 

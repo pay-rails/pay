@@ -5,7 +5,7 @@ module Pay
 
       def self.sync_from_checkout_session(session_id, stripe_account: nil)
         checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id}, {stripe_account: stripe_account}.compact)
-        sync(checkout_session.subscription)
+        sync(checkout_session.subscription, stripe_account: stripe_account)
       end
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, try: 0, retries: 1)
@@ -22,6 +22,9 @@ module Pay
           return
         end
 
+        # Requests for the rest of the sync should go to the same Stripe Connect account as the customer
+        stripe_account ||= pay_customer.stripe_account
+
         attributes = {
           object: object.to_hash,
           application_fee_percent: object.application_fee_percent,
@@ -29,7 +32,7 @@ module Pay
           processor_plan: object.items.first.price.id,
           quantity: object.items.first.try(:quantity) || 0,
           status: object.status,
-          stripe_account: pay_customer.stripe_account,
+          stripe_account: stripe_account,
           metadata: object.metadata,
           metered: false,
           pause_behavior: object.pause_collection&.behavior,
@@ -70,10 +73,10 @@ module Pay
         # Sync payment method if directly attached to subscription
         if object.default_payment_method
           if object.default_payment_method.is_a? String
-            Pay::Stripe::PaymentMethod.sync(object.default_payment_method)
+            Pay::Stripe::PaymentMethod.sync(object.default_payment_method, stripe_account: stripe_account)
             attributes[:payment_method_id] = object.default_payment_method
           else
-            Pay::Stripe::PaymentMethod.sync(object.default_payment_method.id, object: object.default_payment_method)
+            Pay::Stripe::PaymentMethod.sync(object.default_payment_method.id, object: object.default_payment_method, stripe_account: stripe_account)
             attributes[:payment_method_id] = object.default_payment_method.id
           end
         end
@@ -106,9 +109,9 @@ module Pay
 
             case invoice_payment.payment.type
             when "payment_intent"
-              Pay::Stripe::Charge.sync_payment_intent(invoice_payment.payment.payment_intent, stripe_account: pay_subscription.stripe_account)
+              Pay::Stripe::Charge.sync_payment_intent(invoice_payment.payment.payment_intent, stripe_account: stripe_account)
             when "charge"
-              Pay::Stripe::Charge.sync(invoice_payment.payment.charge, stripe_account: pay_subscription.stripe_account)
+              Pay::Stripe::Charge.sync(invoice_payment.payment.charge, stripe_account: stripe_account)
             end
           end
         end
@@ -142,6 +145,10 @@ module Pay
       def stripe_object
         sync! if object.nil?
         ::Stripe::Subscription.construct_from(object)
+      end
+
+      def sync!(**options)
+        super(**options.with_defaults(stripe_account: stripe_account))
       end
 
       def api_record(**options)
@@ -309,7 +316,7 @@ module Pay
 
         # Validate that swap was successful and handle SCA if needed
         if (payment_intent_id = @api_record.latest_invoice.payments.first&.payment&.payment_intent)
-          Pay::Payment.from_id(payment_intent_id).validate
+          Pay::Payment.from_id(payment_intent_id, stripe_account: stripe_account).validate
         end
 
         sync!(object: @api_record)

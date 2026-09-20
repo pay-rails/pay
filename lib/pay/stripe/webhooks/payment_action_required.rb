@@ -13,7 +13,7 @@ module Pay
           pay_subscription = Pay::Subscription.find_by_processor_and_id(:stripe, subscription_id)
           return if pay_subscription.nil? || pay_subscription.status == "incomplete"
 
-          invoice_payment = ::Stripe::InvoicePayment.list({invoice: invoice.id, status: :open}).first
+          invoice_payment = ::Stripe::InvoicePayment.list({invoice: invoice.id, status: :open}, {stripe_account: event.try(:account)}.compact).first
 
           if invoice_payment && Pay.send_email?(:payment_action_required, pay_subscription)
             Pay.mailer.with(
