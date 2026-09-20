@@ -4,6 +4,7 @@
 
 * Webhook controllers share `Pay::Webhooks::BaseController`; each processor now only implements signature verification and event type. A malformed `Paddle-Signature` header and a missing Lemon Squeezy signing secret respond 400 instead of raising
 * Braintree subscription webhooks share one `Pay::Braintree::Webhooks::Subscription` handler; the named handler classes remain as subclasses. The no-op `subscription_charged_unsuccessfully` handler is removed
+* The Stripe SCA confirmation page passes the publishable key, Connect account, and messages to its Stimulus controller as values, so the script contains no ERB and a translation with a quote can't break it. The `back` parameter is validated with Rails' `url_from`, which keeps a same-site query string and no longer raises on a malformed value. Regenerate the view with `rails g pay:views` if you have customized it
 
 * `Pay::Stripe::Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` share one retry and customer lookup via `Pay::Stripe::Sync`. A retry now re-reads the object from Stripe when the caller didn't pass one in (previously it reused the first read), and all three use the same growing delay. The internal `try:` keyword and the debug log lines for a missing customer are removed
 * Fix `Pay::Customer#has_incomplete_payment?`, which combined the `active` and `incomplete` scopes and could never return true
