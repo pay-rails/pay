@@ -19,7 +19,8 @@ module Pay
             Pay.mailer.with(
               pay_customer: pay_subscription.customer,
               pay_subscription: pay_subscription,
-              payment_intent_id: invoice_payment.payment.payment_intent
+              payment_intent_id: invoice_payment.payment.payment_intent,
+              stripe_account: event.try(:account)
             ).payment_action_required.deliver_later
           end
         end

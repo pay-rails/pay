@@ -72,6 +72,14 @@ class UserMailerTest < ActionMailer::TestCase
     assert_equal [@user.email], email.to
     assert_equal I18n.t("pay.user_mailer.payment_action_required.subject", application: Pay.application_name), email.subject
     assert_includes email.html_part.decoded, Pay::Engine.instance.routes.url_helpers.payment_path("x")
+    refute_includes email.html_part.decoded, "stripe_account"
+  end
+
+  test "payment_action_required links to the payment on the connected account" do
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, payment_intent_id: "x", stripe_account: "acct_123", pay_subscription: Pay::Subscription.new).payment_action_required
+
+    assert_includes email.html_part.decoded, Pay::Engine.instance.routes.url_helpers.payment_path("x", stripe_account: "acct_123")
+    assert_includes email.text_part.decoded, Pay::Engine.instance.routes.url_helpers.payment_path("x", stripe_account: "acct_123")
   end
 
   test "receipt with no extra billing info column" do

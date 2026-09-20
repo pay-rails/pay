@@ -64,7 +64,7 @@
 </div>
 
 <script type="module">
-  window.stripe = Stripe('<%= Pay::Stripe.public_key %>')
+  window.stripe = Stripe('<%= Pay::Stripe.public_key %>', <%= {stripeAccount: @payment.stripe_account}.compact.to_json.html_safe %>)
 
   import { Application, Controller } from 'https://unpkg.com/@hotwired/stimulus/dist/stimulus.js'
   const application = Application.start()

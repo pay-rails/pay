@@ -31,7 +31,8 @@ def create
 
 rescue Pay::ActionRequired => e
   # Redirect to the Pay SCA confirmation page
-  redirect_to pay.payment_path(e.payment.id)
+  # stripe_account is only added to the URL for payments on a Stripe Connect account
+  redirect_to pay.payment_path(e.payment.id, stripe_account: e.payment.stripe_account)
 
 rescue Pay::Error => e
   # Display any other errors
@@ -43,6 +44,8 @@ end
 ### Stripe SCA Confirm Page
 
 We provide a route for confirming Stripe SCA payments at `/pay/payments/:payment_intent_id`.
+
+For payments on a Stripe Connect account, add the account as a query parameter: `/pay/payments/:payment_intent_id?stripe_account=acct_123`. Pay uses it to look up the PaymentIntent on the connected account and to initialize Stripe.js with `stripeAccount`. The `payment_action_required` email includes it automatically.
 
 If you'd like to change the views of the payment confirmation page, you can install the views using the generator and modify the template.
 
