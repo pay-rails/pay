@@ -3,6 +3,7 @@
 ### Unreleased
 
 * Fix `Pay::Stripe::Subscription#pay_open_invoices` and `#latest_payment`, which relied on the removed `Invoice#payment_intent` attribute. They now look up the PaymentIntent through the invoice's `payments`.
+* Fix retry delay in `Pay::Stripe.sync_checkout_session`, `Pay::Stripe::Charge.sync`, and `Pay::Stripe::PaymentMethod.sync`. The delay was `0.15**try`, which shrinks on every attempt, so the checkout session retries waited well under a second in total. It now grows with each attempt.
 
 ### 11.7.2
 
