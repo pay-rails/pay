@@ -6,7 +6,7 @@ class Pay::Stripe::Webhooks::InvoiceUpdatedTest < ActiveSupport::TestCase
     @invoice = @event.data.object
     @pay_customer = pay_customers(:stripe)
     @subscription_id = @invoice.parent.subscription_details.subscription
-    @local_subscription = create_subscription(processor_id: @subscription_id)
+    @local_subscription = create_stripe_subscription(processor_id: @subscription_id)
   end
 
   test "the method exits early if the event doesn't send an associated subscription_id" do
@@ -69,11 +69,5 @@ class Pay::Stripe::Webhooks::InvoiceUpdatedTest < ActiveSupport::TestCase
     Pay::Stripe::Subscription.expects(:sync).with(@subscription_id, stripe_account: nil).once
 
     Pay::Stripe::Webhooks::InvoiceUpdated.new.call(@event)
-  end
-
-  private
-
-  def create_subscription(processor_id:)
-    @pay_customer.subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active")
   end
 end

@@ -9,7 +9,7 @@ class Pay::Stripe::Webhooks::PaymentFailedTest < ActiveSupport::TestCase
 
   test "customer should receive payment failed email if setting is enabled" do
     Pay.emails.stub(:payment_failed, true) do
-      create_subscription(processor_id: @event.data.object.parent.subscription_details.subscription)
+      create_stripe_subscription(processor_id: @event.data.object.parent.subscription_details.subscription)
       mail = Pay::Stripe::Webhooks::PaymentFailed.new.call(@event)
 
       assert_equal I18n.t("pay.user_mailer.payment_failed.subject", application: Pay.application_name), mail.subject
@@ -17,15 +17,9 @@ class Pay::Stripe::Webhooks::PaymentFailedTest < ActiveSupport::TestCase
   end
 
   test "skips email if subscription is incomplete" do
-    create_subscription(processor_id: @event.data.object.parent.subscription_details.subscription)
+    create_stripe_subscription(processor_id: @event.data.object.parent.subscription_details.subscription)
     assert_no_enqueued_jobs do
       Pay::Stripe::Webhooks::PaymentFailed.new.call(@event)
     end
-  end
-
-  private
-
-  def create_subscription(processor_id:)
-    @pay_customer.subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active")
   end
 end
