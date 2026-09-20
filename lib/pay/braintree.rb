@@ -27,9 +27,9 @@ module Pay
     end
 
     module Webhooks
+      autoload :Subscription, "pay/braintree/webhooks/subscription"
       autoload :SubscriptionCanceled, "pay/braintree/webhooks/subscription_canceled"
       autoload :SubscriptionChargedSuccessfully, "pay/braintree/webhooks/subscription_charged_successfully"
-      autoload :SubscriptionChargedUnsuccessfully, "pay/braintree/webhooks/subscription_charged_unsuccessfully"
       autoload :SubscriptionExpired, "pay/braintree/webhooks/subscription_expired"
       autoload :SubscriptionTrialEnded, "pay/braintree/webhooks/subscription_trial_ended"
       autoload :SubscriptionWentActive, "pay/braintree/webhooks/subscription_went_active"
@@ -73,7 +73,6 @@ module Pay
       Pay::Webhooks.configure do |events|
         events.subscribe "braintree.subscription_canceled", Pay::Braintree::Webhooks::SubscriptionCanceled.new
         events.subscribe "braintree.subscription_charged_successfully", Pay::Braintree::Webhooks::SubscriptionChargedSuccessfully.new
-        events.subscribe "braintree.subscription_charged_unsuccessfully", Pay::Braintree::Webhooks::SubscriptionChargedUnsuccessfully.new
         events.subscribe "braintree.subscription_expired", Pay::Braintree::Webhooks::SubscriptionExpired.new
         events.subscribe "braintree.subscription_trial_ended", Pay::Braintree::Webhooks::SubscriptionTrialEnded.new
         events.subscribe "braintree.subscription_went_active", Pay::Braintree::Webhooks::SubscriptionWentActive.new

@@ -1,47 +1,25 @@
 module Pay
   module Webhooks
-    class PaddleBillingController < ActionController::API
-      def create
-        if valid_signature?(request.headers["Paddle-Signature"])
-          queue_event(verify_params.as_json)
-          head :ok
-        else
-          head :bad_request
-        end
-      rescue Pay::PaddleBilling::Error
-        head :bad_request
-      end
-
+    class PaddleBillingController < BaseController
       private
 
-      def queue_event(event)
-        return unless Pay::Webhooks.delegator.listening?("paddle_billing.#{params[:event_type]}")
-
-        record = Pay::Webhook.create!(processor: :paddle_billing, event_type: params[:event_type], event: event)
-        Pay::Webhooks::ProcessJob.perform_later(record)
+      def verified_event
+        raise Pay::PaddleBilling::Error, "Unable to verify Paddle webhook signature" unless valid_signature?(request.headers["Paddle-Signature"])
+        verified_params
       end
 
-      # Pass Paddle signature from request.headers["Paddle-Signature"]
-      def valid_signature?(paddle_signature)
-        return false if paddle_signature.blank?
+      def event_type(event)
+        event["event_type"]
+      end
 
-        ts_part, h1_part = paddle_signature.split(";")
-        _, ts = ts_part.split("=")
-        _, h1 = h1_part.split("=")
+      # The header looks like "ts=1671552777;h1=eb4d0dc8..."
+      def valid_signature?(signature)
+        parts = signature.to_s.split(";").filter_map { |part| part.split("=", 2) if part.include?("=") }.to_h
+        ts, h1 = parts.values_at("ts", "h1")
+        return false if ts.blank? || h1.blank?
 
-        signed_payload = "#{ts}:#{request.raw_post}"
-
-        key = Pay::PaddleBilling.signing_secret
-        data = signed_payload
-        digest = OpenSSL::Digest.new("sha256")
-
-        hmac = OpenSSL::HMAC.hexdigest(digest, key, data)
-        return false if h1.nil? || hmac.bytesize != h1.bytesize
+        hmac = OpenSSL::HMAC.hexdigest("sha256", Pay::PaddleBilling.signing_secret.to_s, "#{ts}:#{request.raw_post}")
         ActiveSupport::SecurityUtils.secure_compare(hmac, h1)
-      end
-
-      def verify_params
-        params.except(:action, :controller).permit!
       end
     end
   end

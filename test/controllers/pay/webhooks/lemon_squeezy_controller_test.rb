@@ -23,5 +23,10 @@ module Pay
         end
       end
     end
+
+    test "responds bad request to a bad signature" do
+      post webhooks_lemon_squeezy_path, params: json_fixture("lemon_squeezy/subscription_created"), headers: {"X-Signature" => "garbage"}
+      assert_response :bad_request
+    end
   end
 end

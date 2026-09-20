@@ -3,13 +3,7 @@
 module Pay
   module Braintree
     module Webhooks
-      class SubscriptionExpired
-        def call(event)
-          subscription = event.subscription
-          return if subscription.nil?
-
-          Pay::Braintree::Subscription.sync(subscription.id)
-        end
+      class SubscriptionExpired < Subscription
       end
     end
   end
