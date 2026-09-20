@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Fix `Pay::Stripe::Subscription#pay_open_invoices` and `#latest_payment`, which relied on the removed `Invoice#payment_intent` attribute. They now look up the PaymentIntent through the invoice's `payments`.
+
 ### 11.7.2
 
 * `Pay::Customer#subscription` now prefers an active or paused subscription over a newer canceled one, falling back to the most recently created subscription when none are active
