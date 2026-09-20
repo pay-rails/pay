@@ -1,6 +1,8 @@
 module Pay
   module PaddleBilling
     class Subscription < Pay::Subscription
+      extend Pay::Sync
+
       store_accessor :data, :paddle_update_url
       store_accessor :data, :paddle_cancel_url
 
@@ -9,67 +11,58 @@ module Pay
         sync(transaction.subscription_id) if transaction.subscription_id
       end
 
-      def self.sync(subscription_id, object: nil, name: Pay.default_product_name, try: 0, retries: 1)
-        # Passthrough is not return from this API, so we can't use that
-        object ||= ::Paddle::Subscription.retrieve(id: subscription_id)
+      def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
+        sync_with_retries do
+          subscription = object || ::Paddle::Subscription.retrieve(id: subscription_id)
+          return unless (pay_customer = find_pay_customer(subscription.customer_id))
 
-        pay_customer = Pay::Customer.find_by(processor: :paddle_billing, processor_id: object.customer_id)
-        return unless pay_customer
+          attributes = {
+            current_period_end: subscription.current_billing_period&.ends_at,
+            current_period_start: subscription.current_billing_period&.starts_at,
+            ends_at: (subscription.canceled_at ? Time.parse(subscription.canceled_at) : nil),
+            metadata: subscription.custom_data,
+            paddle_cancel_url: subscription.management_urls&.cancel,
+            paddle_update_url: subscription.management_urls&.update_payment_method,
+            pause_starts_at: (subscription.paused_at ? Time.parse(subscription.paused_at) : nil),
+            status: subscription.status
+          }
 
-        attributes = {
-          current_period_end: object.current_billing_period&.ends_at,
-          current_period_start: object.current_billing_period&.starts_at,
-          ends_at: (object.canceled_at ? Time.parse(object.canceled_at) : nil),
-          metadata: object.custom_data,
-          paddle_cancel_url: object.management_urls&.cancel,
-          paddle_update_url: object.management_urls&.update_payment_method,
-          pause_starts_at: (object.paused_at ? Time.parse(object.paused_at) : nil),
-          status: object.status
-        }
+          if subscription.items&.first
+            item = subscription.items.first
+            attributes[:processor_plan] = item.price.id
+            attributes[:quantity] = item.quantity
+          end
 
-        if object.items&.first
-          item = object.items.first
-          attributes[:processor_plan] = item.price.id
-          attributes[:quantity] = item.quantity
-        end
+          case attributes[:status]
+          when "canceled"
+            # Remove payment methods since customer cannot be reused after cancelling
+            pay_customer.payment_methods.destroy_all
+          when "trialing"
+            attributes[:trial_ends_at] = Time.parse(subscription.next_billed_at) if subscription.next_billed_at
+          when "paused"
+            attributes[:pause_starts_at] = Time.parse(subscription.paused_at) if subscription.paused_at
+          when "active", "past_due"
+            attributes[:trial_ends_at] = nil
+            attributes[:pause_starts_at] = nil
+            attributes[:ends_at] = nil
+          end
 
-        case attributes[:status]
-        when "canceled"
-          # Remove payment methods since customer cannot be reused after cancelling
-          pay_customer.payment_methods.destroy_all
-        when "trialing"
-          attributes[:trial_ends_at] = Time.parse(object.next_billed_at) if object.next_billed_at
-        when "paused"
-          attributes[:pause_starts_at] = Time.parse(object.paused_at) if object.paused_at
-        when "active", "past_due"
-          attributes[:trial_ends_at] = nil
-          attributes[:pause_starts_at] = nil
-          attributes[:ends_at] = nil
-        end
+          case subscription.scheduled_change&.action
+          when "cancel"
+            attributes[:ends_at] = Time.parse(subscription.scheduled_change.effective_at)
+          when "pause"
+            attributes[:pause_starts_at] = Time.parse(subscription.scheduled_change.effective_at)
+          when "resume"
+            attributes[:pause_resumes_at] = Time.parse(subscription.scheduled_change.effective_at)
+          end
 
-        case object.scheduled_change&.action
-        when "cancel"
-          attributes[:ends_at] = Time.parse(object.scheduled_change.effective_at)
-        when "pause"
-          attributes[:pause_starts_at] = Time.parse(object.scheduled_change.effective_at)
-        when "resume"
-          attributes[:pause_resumes_at] = Time.parse(object.scheduled_change.effective_at)
-        end
-
-        # Update or create the subscription
-        if (pay_subscription = find_by(customer: pay_customer, processor_id: subscription_id))
-          pay_subscription.with_lock { pay_subscription.update!(attributes) }
-          pay_subscription
-        else
-          create!(attributes.merge(customer: pay_customer, name: name, processor_id: subscription_id))
-        end
-      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-        try += 1
-        if try <= retries
-          sleep 0.1
-          retry
-        else
-          raise
+          # Update or create the subscription
+          if (pay_subscription = find_by(customer: pay_customer, processor_id: subscription_id))
+            pay_subscription.with_lock { pay_subscription.update!(attributes) }
+            pay_subscription
+          else
+            create!(attributes.merge(customer: pay_customer, name: name, processor_id: subscription_id))
+          end
         end
       end
 

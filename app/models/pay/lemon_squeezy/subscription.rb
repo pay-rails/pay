@@ -1,44 +1,46 @@
 module Pay
   module LemonSqueezy
     class Subscription < Pay::Subscription
+      extend Pay::Sync
+
       # Lemon Squeezy statuses that Pay spells differently
       STATUSES = {"on_trial" => "trialing", "cancelled" => "canceled"}.freeze
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
-        object ||= ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
+        sync_with_retries do
+          subscription = object || ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
+          return unless (pay_customer = find_pay_customer(subscription.customer_id))
 
-        pay_customer = Pay::Customer.find_by(processor: :lemon_squeezy, processor_id: object.customer_id)
-        return unless pay_customer
+          attributes = {
+            current_period_end: subscription.renews_at,
+            ends_at: (subscription.ends_at ? Time.parse(subscription.ends_at) : nil),
+            pause_resumes_at: (subscription.pause&.resumes_at ? Time.parse(subscription.pause.resumes_at) : nil),
+            status: STATUSES.fetch(subscription.status, subscription.status),
+            processor_plan: subscription.first_subscription_item.price_id,
+            quantity: subscription.first_subscription_item.quantity,
+            created_at: (subscription.created_at ? Time.parse(subscription.created_at) : nil),
+            updated_at: (subscription.updated_at ? Time.parse(subscription.updated_at) : nil)
+          }
 
-        attributes = {
-          current_period_end: object.renews_at,
-          ends_at: (object.ends_at ? Time.parse(object.ends_at) : nil),
-          pause_resumes_at: (object.pause&.resumes_at ? Time.parse(object.pause.resumes_at) : nil),
-          status: STATUSES.fetch(object.status, object.status),
-          processor_plan: object.first_subscription_item.price_id,
-          quantity: object.first_subscription_item.quantity,
-          created_at: (object.created_at ? Time.parse(object.created_at) : nil),
-          updated_at: (object.updated_at ? Time.parse(object.updated_at) : nil)
-        }
+          case attributes[:status]
+          when "canceled"
+            # Remove payment methods since customer cannot be reused after cancelling
+            pay_customer.payment_methods.destroy_all
+          when "trialing"
+            attributes[:trial_ends_at] = Time.parse(subscription.trial_ends_at)
+          when "active", "past_due"
+            attributes[:trial_ends_at] = nil
+            attributes[:pause_resumes_at] = nil
+            attributes[:ends_at] = nil
+          end
 
-        case attributes[:status]
-        when "canceled"
-          # Remove payment methods since customer cannot be reused after cancelling
-          pay_customer.payment_methods.destroy_all
-        when "trialing"
-          attributes[:trial_ends_at] = Time.parse(object.trial_ends_at)
-        when "active", "past_due"
-          attributes[:trial_ends_at] = nil
-          attributes[:pause_resumes_at] = nil
-          attributes[:ends_at] = nil
-        end
-
-        # Update or create the subscription
-        if (pay_subscription = find_by(customer: pay_customer, processor_id: object.id))
-          pay_subscription.with_lock { pay_subscription.update!(attributes) }
-          pay_subscription
-        else
-          create!(attributes.merge(customer: pay_customer, name: name, processor_id: object.id))
+          # Update or create the subscription
+          if (pay_subscription = find_by(customer: pay_customer, processor_id: subscription.id))
+            pay_subscription.with_lock { pay_subscription.update!(attributes) }
+            pay_subscription
+          else
+            create!(attributes.merge(customer: pay_customer, name: name, processor_id: subscription.id))
+          end
         end
       end
 

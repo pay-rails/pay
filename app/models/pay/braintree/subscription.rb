@@ -1,49 +1,44 @@
 module Pay
   module Braintree
     class Subscription < Pay::Subscription
-      def self.sync(subscription_id, object: nil, name: nil, try: 0, retries: 1)
-        object ||= Pay.braintree_gateway.subscription.find(subscription_id)
+      extend Pay::Sync
 
-        # Retrieve Pay::Customer
-        payment_method = Pay.braintree_gateway.payment_method.find(object.payment_method_token)
-        pay_customer = Pay::Customer.find_by(processor: :braintree, processor_id: payment_method.customer_id)
-        return unless pay_customer
+      def self.sync(subscription_id, object: nil, name: nil)
+        sync_with_retries do
+          subscription = object || Pay.braintree_gateway.subscription.find(subscription_id)
 
-        # Sync the PaymentMethod since we've got it
-        pay_customer.save_payment_method(payment_method, default: payment_method.default?)
+          # The customer is only reachable through the subscription's payment method
+          payment_method = Pay.braintree_gateway.payment_method.find(subscription.payment_method_token)
+          return unless (pay_customer = find_pay_customer(payment_method.customer_id))
 
-        attributes = {
-          created_at: object.created_at,
-          current_period_end: object.billing_period_end_date,
-          current_period_start: object.billing_period_start_date,
-          payment_method_id: object.payment_method_token,
-          processor_plan: object.plan_id,
-          status: object.status.parameterize(separator: "_"),
-          trial_ends_at: (object.created_at + object.trial_duration.send(object.trial_duration_unit) if object.trial_period)
-        }
+          # Sync the PaymentMethod since we've got it
+          pay_customer.save_payment_method(payment_method, default: payment_method.default?)
 
-        # Canceled subscriptions should have access through the paid_through_date or updated_at
-        if object.status == "Canceled"
-          attributes[:ends_at] = object.updated_at
+          attributes = {
+            created_at: subscription.created_at,
+            current_period_end: subscription.billing_period_end_date,
+            current_period_start: subscription.billing_period_start_date,
+            payment_method_id: subscription.payment_method_token,
+            processor_plan: subscription.plan_id,
+            status: subscription.status.parameterize(separator: "_"),
+            trial_ends_at: (subscription.created_at + subscription.trial_duration.send(subscription.trial_duration_unit) if subscription.trial_period)
+          }
 
-        # Set grace period for subscriptions that are marked to be canceled
-        elsif object.status == "Active" && object.number_of_billing_cycles
-          attributes[:ends_at] = object.paid_through_date.end_of_day
-        end
+          # Canceled subscriptions should have access through the paid_through_date or updated_at
+          if subscription.status == "Canceled"
+            attributes[:ends_at] = subscription.updated_at
 
-        if (pay_subscription = find_by(customer: pay_customer, processor_id: object.id))
-          pay_subscription.with_lock { pay_subscription.update!(attributes) }
-        else
-          name ||= Pay.default_product_name
-          create!(attributes.merge(customer: pay_customer, name: name, processor_id: object.id))
-        end
-      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
-        try += 1
-        if try <= retries
-          sleep 0.1
-          retry
-        else
-          raise
+          # Set grace period for subscriptions that are marked to be canceled
+          elsif subscription.status == "Active" && subscription.number_of_billing_cycles
+            attributes[:ends_at] = subscription.paid_through_date.end_of_day
+          end
+
+          if (pay_subscription = find_by(customer: pay_customer, processor_id: subscription.id))
+            pay_subscription.with_lock { pay_subscription.update!(attributes) }
+          else
+            name ||= Pay.default_product_name
+            create!(attributes.merge(customer: pay_customer, name: name, processor_id: subscription.id))
+          end
         end
       end
 
