@@ -5,10 +5,10 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert_equal users(:stripe), pay_charges(:stripe).owner
   end
 
-  test "validates charge uniqueness by Pay::Customer and processor ID" do
+  test "charge processor ID is unique per Pay::Customer" do
     user = users(:stripe)
     user.payment_processor.charges.create!(amount: 1, processor_id: "1")
-    assert_raises ActiveRecord::RecordInvalid do
+    assert_raises ActiveRecord::RecordNotUnique do
       user.payment_processor.charges.create!(amount: 1, processor_id: "1")
     end
   end
