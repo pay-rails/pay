@@ -12,6 +12,7 @@ module Pay
   autoload :NanoId, "pay/nano_id"
   autoload :Payment, "pay/payment"
   autoload :Receipts, "pay/receipts"
+  autoload :Sync, "pay/sync"
   autoload :Currency, "pay/currency"
 
   # Payment processors

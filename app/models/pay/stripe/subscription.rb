@@ -1,7 +1,7 @@
 module Pay
   module Stripe
     class Subscription < Pay::Subscription
-      extend Pay::Stripe::Sync
+      extend Pay::Sync
 
       attr_writer :api_record
 
@@ -13,7 +13,7 @@ module Pay
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
           subscription = object || ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)
-          return unless (pay_customer = find_pay_customer(subscription))
+          return unless (pay_customer = find_pay_customer(subscription.customer))
           stripe_account ||= pay_customer.stripe_account
 
           attributes = {

@@ -1,7 +1,7 @@
 module Pay
   module Stripe
     class PaymentMethod < Pay::PaymentMethod
-      extend Pay::Stripe::Sync
+      extend Pay::Sync
 
       # Syncs a PaymentIntent's payment method to the database
       def self.sync_payment_intent(id, stripe_account: nil)
@@ -23,7 +23,7 @@ module Pay
       def self.sync(id, object: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
           payment_method = object || ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
-          return unless (pay_customer = find_pay_customer(payment_method))
+          return unless (pay_customer = find_pay_customer(payment_method.customer))
           stripe_account ||= pay_customer.stripe_account
 
           default_payment_method_id = pay_customer.api_record.invoice_settings&.default_payment_method

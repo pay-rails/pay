@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* `Pay::Stripe::Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` share one retry and customer lookup via `Pay::Stripe::Sync`. A retry now re-reads the object from Stripe when the caller didn't pass one in (previously it reused the first read), and all three use the same growing delay. The internal `try:` keyword and the debug log lines for a missing customer are removed
+* `Pay::Stripe::Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` share one retry and customer lookup via `Pay::Sync`, which the Braintree, Paddle Billing, Paddle Classic, and Lemon Squeezy syncs now use too. Paddle Classic and Lemon Squeezy gained the retry, and Braintree's payment method sync declared one it never had. A retry now re-reads the object from Stripe when the caller didn't pass one in (previously it reused the first read), and all three use the same growing delay. The internal `try:` keyword and the debug log lines for a missing customer are removed
 * Fix `Pay::Customer#has_incomplete_payment?`, which combined the `active` and `incomplete` scopes and could never return true
 * Fix `Pay::Merchant#onboarding_complete?` raising `KeyError` when `data` holds other keys
 * `Pay::PaddleBilling::Error`, `Pay::PaddleClassic::Error`, and `Pay::LemonSqueezy::Error` no longer raise from `#message` when raised with a string
