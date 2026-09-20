@@ -6,11 +6,11 @@ class Pay::Test < ActiveSupport::TestCase
   end
 
   test "default automount_routes is true" do
-    assert Pay.automount_routes, true
+    assert_equal true, Pay.automount_routes
   end
 
   test "default routes_path is /pay" do
-    assert Pay.routes_path, "/pay"
+    assert_equal "/pay", Pay.routes_path
   end
 
   test "can set business name" do

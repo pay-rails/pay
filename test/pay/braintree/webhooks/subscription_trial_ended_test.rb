@@ -7,6 +7,6 @@ class Pay::Braintree::Webhooks::SubscriptionTrialEndedTest < ActiveSupport::Test
 
   test "braintree syncs subscription on trial ended webhook" do
     Pay::Braintree::Subscription.expects(:sync)
-    Pay::Braintree::Webhooks::SubscriptionCanceled.new.call(@event)
+    Pay::Braintree::Webhooks::SubscriptionTrialEnded.new.call(@event)
   end
 end

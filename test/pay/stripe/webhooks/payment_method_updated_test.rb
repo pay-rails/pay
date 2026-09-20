@@ -15,7 +15,6 @@ class Pay::Stripe::Webhooks::PaymentMethodUpdatedTest < ActiveSupport::TestCase
     fake_customer = ::Stripe::Customer.construct_from(invoice_settings: Stripe::Util.convert_to_stripe_object({default_payment_method: nil}))
     ::Stripe::Customer.expects(:retrieve).returns(fake_customer)
 
-    assert_equal payment_method.exp_year, payment_method.exp_year
     Pay::Stripe::Webhooks::PaymentMethodUpdated.new.call(@event)
 
     payment_method.reload

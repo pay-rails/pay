@@ -5,7 +5,7 @@ class Pay::Stripe::Webhooks::ChargeUpdatedTest < ActiveSupport::TestCase
     @event = stripe_event("charge.updated")
   end
 
-  test "a charge is created" do
+  test "a charge is updated" do
     pay_customers(:stripe).update(processor_id: @event.data.object.customer)
 
     ::Stripe::Charge.expects(:retrieve).returns(@event.data.object)
