@@ -104,6 +104,8 @@ module Pay
 
           pay_subscription
         end
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Common expand options for all requests that create, retrieve, or update a Stripe Subscription
@@ -132,6 +134,8 @@ module Pay
 
       def api_record(**options)
         @api_record ||= ::Stripe::Subscription.retrieve(options.with_defaults(id: processor_id).merge(expand_options), {stripe_account: stripe_account}.compact)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Returns a SetupIntent or PaymentIntent client secret for the subscription
@@ -235,6 +239,8 @@ module Pay
           pause_resumes_at: (@api_record.pause_collection&.resumes_at ? Time.at(@api_record.pause_collection&.resumes_at) : nil),
           pause_starts_at: ((behavior == "void") ? Time.at(@api_record.items.first.current_period_end) : nil)
         )
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Unpauses a subscription
@@ -247,6 +253,8 @@ module Pay
           pause_resumes_at: nil,
           pause_starts_at: nil
         )
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       def resumable?
@@ -312,6 +320,8 @@ module Pay
 
       def preview_invoice(**options)
         ::Stripe::Invoice.create_preview(options.merge(subscription: processor_id), stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Retries the latest invoice for a Past Due subscription and attempts to pay it
@@ -340,6 +350,8 @@ module Pay
           payment_intent_id = invoice.payments.first&.payment&.payment_intent
           retry_failed_payment(payment_intent_id: payment_intent_id) if payment_intent_id
         end
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Returns the Stripe::PaymentIntent for the latest invoice, if there is one

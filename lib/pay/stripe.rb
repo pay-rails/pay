@@ -175,9 +175,9 @@ module Pay
       when "subscription"
         Pay::Stripe::Subscription.sync(checkout_session.subscription, stripe_account: stripe_account)
       end
-    rescue ::Stripe::InvalidRequestError
+    rescue ::Stripe::InvalidRequestError => e
       if try > retries
-        raise
+        raise Pay::Stripe::Error, e
       else
         try += 1
         sleep 0.15 * try

@@ -7,7 +7,7 @@ module Pay
     def show
       @payment = Payment.from_id(params[:id], stripe_account: params[:stripe_account].presence)
       @redirect_to = url_from(params[:back]) || root_path
-    rescue ::Stripe::StripeError => e
+    rescue Pay::Error => e
       redirect_to root_path, alert: e.message
     end
   end

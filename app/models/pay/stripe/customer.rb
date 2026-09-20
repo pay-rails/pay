@@ -39,6 +39,8 @@ module Pay
 
       def update_api_record(**attributes)
         ::Stripe::Customer.update(stripe_customer_id, api_record_attributes.merge(attributes), stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Charges an amount to the customer's default payment method
@@ -125,6 +127,8 @@ module Pay
         }.merge(options)
 
         ::Stripe::PaymentIntent.create(args, stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Used for creating Stripe Terminal charges
@@ -134,14 +138,20 @@ module Pay
 
       def create_setup_intent(options = {})
         ::Stripe::SetupIntent.create({customer: stripe_customer_id, usage: :off_session}.merge(options), stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       def invoice!(options = {})
         ::Stripe::Invoice.create(options.merge(customer: stripe_customer_id), stripe_options).pay
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       def preview_invoice(**options)
         ::Stripe::Invoice.create_preview(options.merge(customer: stripe_customer_id), stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # Syncs a customer's subscriptions from Stripe to the database.
@@ -198,6 +208,8 @@ module Pay
         end
 
         ::Stripe::Checkout::Session.create(args.merge(options), stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       # https://stripe.com/docs/api/checkout/sessions/create
@@ -225,11 +237,15 @@ module Pay
           return_url: options.delete(:return_url) || root_url
         }
         ::Stripe::BillingPortal::Session.create(args.merge(options), stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       def customer_session(**options)
         args = {customer: stripe_customer_id}
         ::Stripe::CustomerSession.create(args.merge(options), stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       def authorize(amount, options = {})
@@ -251,6 +267,8 @@ module Pay
           event_name: event_name,
           payload: {stripe_customer_id: stripe_customer_id}.merge(payload)
         }.merge(options), stripe_options)
+      rescue ::Stripe::StripeError => e
+        raise Pay::Stripe::Error, e
       end
 
       private

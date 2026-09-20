@@ -123,6 +123,7 @@ class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.stubs(:retrieve).raises(error)
     Pay::Stripe.stubs(:sleep)
 
-    assert_raises(::Stripe::InvalidRequestError) { Pay::Stripe.sync_checkout_session("cs_1", retries: 2) }
+    error = assert_raises(Pay::Stripe::Error) { Pay::Stripe.sync_checkout_session("cs_1", retries: 2) }
+    assert_kind_of ::Stripe::InvalidRequestError, error.cause
   end
 end
