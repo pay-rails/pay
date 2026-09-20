@@ -45,7 +45,7 @@ module Pay
           raise
         else
           try += 1
-          sleep 0.15**try
+          sleep 0.15 * try
           retry
         end
       end
