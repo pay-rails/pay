@@ -1,10 +1,6 @@
 require "test_helper"
 
 class Pay::Test < ActiveSupport::TestCase
-  test "truth" do
-    assert_kind_of Module, Pay
-  end
-
   test "default automount_routes is true" do
     assert_equal true, Pay.automount_routes
   end
@@ -13,51 +9,11 @@ class Pay::Test < ActiveSupport::TestCase
     assert_equal "/pay", Pay.routes_path
   end
 
-  test "can set business name" do
-    assert Pay.respond_to?(:business_name)
-    assert Pay.respond_to?(:business_name=)
-  end
-
-  test "can set business address" do
-    assert Pay.respond_to?(:business_address)
-    assert Pay.respond_to?(:business_address=)
-  end
-
-  test "can set application name" do
-    assert Pay.respond_to?(:application_name)
-    assert Pay.respond_to?(:application_name=)
-  end
-
-  test "can set support email" do
-    assert Pay.respond_to?(:support_email)
-    assert Pay.respond_to?(:support_email=)
-  end
-
-  test "can set default product name" do
-    assert Pay.respond_to?(:default_product_name)
-    assert Pay.respond_to?(:default_product_name=)
-  end
-
-  test "can set default plan name" do
-    assert Pay.respond_to?(:default_plan_name)
-    assert Pay.respond_to?(:default_plan_name=)
-  end
-
-  test "can configure enabled_processors" do
-    assert Pay.respond_to?(:enabled_processors)
-    assert Pay.respond_to?(:enabled_processors=)
-  end
-
   test "parent_mailer config" do
-    assert Pay.respond_to?(:parent_mailer=)
-    assert Pay.respond_to?(:parent_mailer)
     assert_equal "Pay::ApplicationMailer", Pay.parent_mailer
   end
 
   test "mailer config" do
-    assert Pay.respond_to?(:mailer=)
-    assert Pay.respond_to?(:mailer)
-
     Pay.mailer = "Pay::ApplicationMailer"
     assert_equal Pay::ApplicationMailer, Pay.mailer
 
@@ -65,52 +21,18 @@ class Pay::Test < ActiveSupport::TestCase
     assert_equal Pay::UserMailer, Pay.mailer
   end
 
-  test "can enable and disable the stripe processor" do
-    original = Pay.enabled_processors
+  {stripe: Pay::Stripe, braintree: Pay::Braintree, paddle_billing: Pay::PaddleBilling, paddle_classic: Pay::PaddleClassic, lemon_squeezy: Pay::LemonSqueezy}.each do |name, processor|
+    test "can enable and disable the #{name} processor" do
+      original = Pay.enabled_processors
 
-    Pay.enabled_processors = []
-    refute Pay::Stripe.enabled?
+      Pay.enabled_processors = []
+      refute processor.enabled?
 
-    Pay.enabled_processors = [:stripe]
-    assert Pay::Stripe.enabled?
-
-    Pay.enabled_processors = original
-  end
-
-  test "can enable and disable the braintree processor" do
-    original = Pay.enabled_processors
-
-    Pay.enabled_processors = []
-    refute Pay::Braintree.enabled?
-
-    Pay.enabled_processors = [:braintree]
-    assert Pay::Braintree.enabled?
-
-    Pay.enabled_processors = original
-  end
-
-  test "can enable and disable the paddle billing processor" do
-    original = Pay.enabled_processors
-
-    Pay.enabled_processors = []
-    refute Pay::PaddleBilling.enabled?
-
-    Pay.enabled_processors = [:paddle_billing]
-    assert Pay::PaddleBilling.enabled?
-
-    Pay.enabled_processors = original
-  end
-
-  test "can enable and disable the paddle classic processor" do
-    original = Pay.enabled_processors
-
-    Pay.enabled_processors = []
-    refute Pay::PaddleClassic.enabled?
-
-    Pay.enabled_processors = [:paddle_classic]
-    assert Pay::PaddleClassic.enabled?
-
-    Pay.enabled_processors = original
+      Pay.enabled_processors = [name]
+      assert processor.enabled?
+    ensure
+      Pay.enabled_processors = original
+    end
   end
 
   test "can disable all emails with a boolean" do

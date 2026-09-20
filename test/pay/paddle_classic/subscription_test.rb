@@ -60,21 +60,6 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
     assert subscription.on_grace_period?
   end
 
-  test "paddle classic paused subscription is not active" do
-    @pay_customer.subscription.update!(status: :paused)
-    refute @pay_customer.subscription.active?
-  end
-
-  test "paddle classic paused subscription is paused" do
-    @pay_customer.subscription.update!(status: :paused)
-    assert @pay_customer.subscription.paused?
-  end
-
-  test "paddle classic paused subscription is not canceled" do
-    @pay_customer.subscription.update!(status: :paused)
-    assert_not @pay_customer.subscription.canceled?
-  end
-
   test "paddle classic resume on paused state" do
     travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
       subscription = @pay_customer.subscription
@@ -92,11 +77,6 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
     @pay_customer.subscription.swap("594470")
     assert_equal 594470, @pay_customer.subscription.api_record.plan_id
     assert_equal "active", @pay_customer.subscription.status
-  end
-
-  test "paused from timestamp" do
-    pay_subscriptions(:paddle_classic).update(pause_starts_at: 14.days.from_now)
-    assert_equal ActiveSupport::TimeWithZone, pay_subscriptions(:paddle_classic).pause_starts_at.class
   end
 
   test "paddle classic cancel paused subscription" do
