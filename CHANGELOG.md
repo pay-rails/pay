@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 12.0.0
+
 #### Breaking changes
 
 See the [UPGRADE guide](./UPGRADE.md#pay-120) for each of these.
