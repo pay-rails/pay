@@ -5,6 +5,11 @@ module Pay
 
       attr_writer :api_record
 
+      def self.sync_from_checkout_session(session_id, stripe_account: nil)
+        Pay.deprecator.warn "Pay::Stripe::Subscription.sync_from_checkout_session is deprecated, use Pay::Stripe.sync_checkout_session instead"
+        Pay::Stripe.sync_checkout_session(session_id, stripe_account: stripe_account)
+      end
+
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
           subscription = object || ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)

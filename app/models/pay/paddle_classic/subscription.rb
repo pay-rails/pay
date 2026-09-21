@@ -95,7 +95,7 @@ module Pay
       end
 
       def change_quantity(quantity, **options)
-        raise NotImplementedError, "Paddle does not support setting quantity on subscriptions"
+        raise Pay::NotSupportedError, "Paddle does not support setting quantity on subscriptions"
       end
 
       # A subscription could be set to cancel or pause in the future

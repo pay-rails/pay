@@ -3,6 +3,10 @@ module Pay
   class Error < StandardError
   end
 
+  # Raised when a payment processor cannot perform an operation, such as pausing a Braintree subscription
+  class NotSupportedError < Error
+  end
+
   class PaymentError < Error
     attr_reader :payment
 

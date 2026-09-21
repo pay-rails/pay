@@ -12,7 +12,6 @@ These had no callers in Pay and were never documented. Each has a replacement or
 |---|---|
 | `Pay::Subscription#has_trial?` | `trial_ends_at?` |
 | `Pay::Subscription#skip_trial` | `subscription.trial_ends_at = nil` |
-| `Pay::Subscription.cancelled` scope | `Pay::Subscription.canceled` (`cancelled?` on an instance still works) |
 | `Pay::Subscription::STATUSES` | Not needed; statuses are validated by the processors |
 | `Pay::Customer.not_fake_processor` | `where.not(processor: :fake_processor)` |
 | `Pay::PaymentMethod.pay_processor_for` | `"Pay::#{name.classify}::PaymentMethod".constantize` |
@@ -20,14 +19,29 @@ These had no callers in Pay and were never documented. Each has a replacement or
 | `Pay::Receipts#filename` | `receipt_filename` |
 | `Pay::Payment#payment_intent?`, `#setup_intent?` | `intent.is_a?(::Stripe::PaymentIntent)` / `::Stripe::SetupIntent` |
 | `Pay::Payment#cancelled?` | `canceled?` |
-| `Pay::Stripe::Subscription.sync_from_checkout_session` | `Pay::Stripe.sync_checkout_session(session_id)` |
-| `Pay::PaddleBilling::Subscription.sync_from_transaction` | `Pay::PaddleBilling.sync_transaction(transaction_id)` |
 | `Pay::LemonSqueezy.owner_from_passthrough` | `GlobalID::Locator.locate_signed(passthrough)` |
 | `retry_failed_payment` on Paddle Billing and Paddle Classic subscriptions | These were empty; Paddle handles retries itself |
 
-### Unsupported operations raise `NotImplementedError`
+### Deprecated methods
 
-Calling something a processor cannot do now raises `NotImplementedError` with the processor named, instead of a `Pay::Error` or a silent `nil`. This affects `charge` and `cancel_now!` on Lemon Squeezy customers and subscriptions, and `subscribe` on Paddle Billing and Paddle Classic customers. `NotImplementedError` is not a `StandardError`, so a bare `rescue` or `rescue Pay::Error` no longer catches these. That is deliberate: they are programming errors, not runtime failures.
+These still work but log a deprecation warning, and will be removed in Pay 13.
+
+| Deprecated | Use instead |
+|---|---|
+| `Pay::Stripe::Subscription.sync_from_checkout_session(session_id)` | `Pay::Stripe.sync_checkout_session(session_id)`, which also syncs one-time payments and retries while Stripe attaches the subscription |
+| `Pay::PaddleBilling::Subscription.sync_from_transaction(transaction_id)` | `Pay::PaddleBilling.sync_transaction(transaction_id)`, which also syncs one-time charges |
+
+### Unsupported operations raise `Pay::NotSupportedError`
+
+Calling something a processor cannot do now raises `Pay::NotSupportedError` with the processor named. It is a subclass of `Pay::Error`, so existing `rescue Pay::Error` blocks still catch it.
+
+| Operation | Previously |
+|---|---|
+| Lemon Squeezy `charge` and `cancel_now!` | `Pay::Error` |
+| Paddle Billing and Paddle Classic `subscribe` | Returned `nil` silently |
+| Braintree `pause` and `change_quantity`, Paddle Classic `change_quantity` | `NotImplementedError` |
+
+If you rescued `NotImplementedError` around the Braintree or Paddle Classic calls, rescue `Pay::NotSupportedError` instead.
 
 ### Stripe errors are always `Pay::Stripe::Error`
 

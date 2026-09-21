@@ -17,6 +17,10 @@ module Pay
       end
     end
 
+    initializer "pay.deprecator" do |app|
+      app.deprecators[:pay] = Pay.deprecator if app.respond_to?(:deprecators)
+    end
+
     initializer "pay.receipts" do
       if defined?(::Receipts::VERSION)
         raise "[Pay] receipts gem must be version ~> 2" unless Pay::Engine.version_matches?(required: "~> 2", current: ::Receipts::VERSION)

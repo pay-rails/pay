@@ -60,7 +60,7 @@ module Pay
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)
-        raise NotImplementedError, "Paddle Billing subscriptions are created with Paddle Checkout and synced from webhooks"
+        raise Pay::NotSupportedError, "Paddle Billing subscriptions are created with Paddle Checkout and synced from webhooks"
       end
 
       # Paddle does not use payment method tokens. The method signature has it here

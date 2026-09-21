@@ -6,6 +6,11 @@ module Pay
       store_accessor :data, :paddle_update_url
       store_accessor :data, :paddle_cancel_url
 
+      def self.sync_from_transaction(transaction_id)
+        Pay.deprecator.warn "Pay::PaddleBilling::Subscription.sync_from_transaction is deprecated, use Pay::PaddleBilling.sync_transaction instead"
+        Pay::PaddleBilling.sync_transaction(transaction_id)
+      end
+
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         sync_with_retries do
           subscription = object || ::Paddle::Subscription.retrieve(id: subscription_id)

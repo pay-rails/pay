@@ -84,6 +84,10 @@ module Pay
     @@mailer.constantize
   end
 
+  def self.deprecator
+    @deprecator ||= ActiveSupport::Deprecation.new("13.0", "Pay")
+  end
+
   mattr_accessor :parent_mailer
   @@parent_mailer = "Pay::ApplicationMailer"
 

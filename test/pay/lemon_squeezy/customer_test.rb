@@ -6,6 +6,6 @@ class Pay::LemonSqueezy::CustomerTest < ActiveSupport::TestCase
   end
 
   test "lemon squeezy cannot create a charge" do
-    assert_raises(NotImplementedError) { @pay_customer.charge(1000) }
+    assert_raises(Pay::NotSupportedError) { @pay_customer.charge(1000) }
   end
 end

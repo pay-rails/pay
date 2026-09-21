@@ -76,6 +76,18 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     refute_includes subscriptions, subscription3
   end
 
+  test "cancelled scope" do
+    subscription1 = create_subscription(ends_at: 7.days.ago)
+    subscription2 = create_subscription(ends_at: 7.days.from_now)
+    subscription3 = create_subscription(ends_at: nil)
+
+    subscriptions = Pay::Subscription.cancelled
+
+    assert_includes subscriptions, subscription1
+    assert_includes subscriptions, subscription2
+    refute_includes subscriptions, subscription3
+  end
+
   test "on grace period scope" do
     subscription1 = create_subscription(ends_at: 7.days.from_now)
     subscription2 = create_subscription(ends_at: nil)
