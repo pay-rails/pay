@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 12.1.0
+
 * Support receipts 3.0, which replaces Prawn with a pure Ruby PDF generator and adds Unicode support by default
 
 ### 12.0.0
