@@ -22,7 +22,7 @@ gem "paddle", "~> 2.9"
 gem "lemonsqueezy", "~> 1.1"
 
 # To use Receipts gem for creating invoice and receipt PDFs, also include:
-gem "receipts", "~> 2.4"
+gem "receipts", "~> 3.0"
 ```
 
 And then execute:

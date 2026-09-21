@@ -1,6 +1,13 @@
 require "test_helper"
 
 class Pay::Test < ActiveSupport::TestCase
+  test "supports receipts 2 and 3" do
+    assert Pay::Engine.version_matches?(required: Pay::Engine::RECEIPTS_VERSION, current: "2.4.0")
+    assert Pay::Engine.version_matches?(required: Pay::Engine::RECEIPTS_VERSION, current: "3.0.0")
+    refute Pay::Engine.version_matches?(required: Pay::Engine::RECEIPTS_VERSION, current: "1.1.2")
+    refute Pay::Engine.version_matches?(required: Pay::Engine::RECEIPTS_VERSION, current: "4.0.0")
+  end
+
   test "default automount_routes is true" do
     assert_equal true, Pay.automount_routes
   end

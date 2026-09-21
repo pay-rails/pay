@@ -22,8 +22,8 @@ gem "lemonsqueezy", "~> 1.0"
 gem "paddle", "~> 2.6"
 gem "stripe", "~> 19.0"
 
-gem "prawn"
-gem "receipts"
+# TODO: Switch to "~> 3.0" once receipts 3.0 is released
+gem "receipts", github: "excid3/receipts", branch: "pure-ruby-pdf"
 
 # Test against different databases
 gem "mysql2"
