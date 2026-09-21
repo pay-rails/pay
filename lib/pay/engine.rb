@@ -21,9 +21,11 @@ module Pay
       app.deprecators[:pay] = Pay.deprecator if app.respond_to?(:deprecators)
     end
 
+    RECEIPTS_VERSION = [">= 2", "< 4"]
+
     initializer "pay.receipts" do
       if defined?(::Receipts::VERSION)
-        raise "[Pay] receipts gem must be version ~> 2" unless Pay::Engine.version_matches?(required: "~> 2", current: ::Receipts::VERSION)
+        raise "[Pay] receipts gem must be version #{RECEIPTS_VERSION.join(", ")}" unless Pay::Engine.version_matches?(required: RECEIPTS_VERSION, current: ::Receipts::VERSION)
 
         ActiveSupport.on_load :pay_charge do
           include Pay::Receipts

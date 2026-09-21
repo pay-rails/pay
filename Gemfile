@@ -22,8 +22,7 @@ gem "lemonsqueezy", "~> 1.0"
 gem "paddle", "~> 2.6"
 gem "stripe", "~> 19.0"
 
-gem "prawn"
-gem "receipts"
+gem "receipts", "~> 3.0"
 
 # Test against different databases
 gem "mysql2"
