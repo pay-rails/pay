@@ -27,6 +27,14 @@ class Pay::Charge::Test < ActiveSupport::TestCase
     assert_equal "PayPal", charge.charged_to
   end
 
+  test "sorted scope orders newest first" do
+    customer = users(:stripe).payment_processor
+    older = customer.charges.create!(amount: 1, processor_id: "older", created_at: 2.days.ago)
+    newer = customer.charges.create!(amount: 1, processor_id: "newer", created_at: 1.day.ago)
+
+    assert_equal [newer, older], customer.charges.where(id: [older, newer]).sorted.to_a
+  end
+
   test "with_active_customer scope" do
     charge = pay_charges(:stripe)
     customer = charge.customer

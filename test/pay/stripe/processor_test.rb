@@ -126,4 +126,12 @@ class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
     error = assert_raises(Pay::Stripe::Error) { Pay::Stripe.sync_checkout_session("cs_1", retries: 2) }
     assert_kind_of ::Stripe::InvalidRequestError, error.cause
   end
+
+  test "Subscription.sync_from_checkout_session is deprecated in favor of sync_checkout_session" do
+    Pay::Stripe.expects(:sync_checkout_session).with("cs_1", stripe_account: "acct_1").returns(:synced)
+
+    assert_deprecated(/Pay::Stripe.sync_checkout_session/, Pay.deprecator) do
+      assert_equal :synced, Pay::Stripe::Subscription.sync_from_checkout_session("cs_1", stripe_account: "acct_1")
+    end
+  end
 end

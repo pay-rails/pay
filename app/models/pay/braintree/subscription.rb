@@ -70,7 +70,7 @@ module Pay
       end
 
       def change_quantity(quantity, **options)
-        raise NotImplementedError, "Braintree does not support setting quantity on subscriptions"
+        raise Pay::NotSupportedError, "Braintree does not support setting quantity on subscriptions"
       end
 
       def paused?
@@ -78,7 +78,7 @@ module Pay
       end
 
       def pause
-        raise NotImplementedError, "Braintree does not support pausing subscriptions"
+        raise Pay::NotSupportedError, "Braintree does not support pausing subscriptions"
       end
 
       def resumable?

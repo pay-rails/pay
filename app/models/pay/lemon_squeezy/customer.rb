@@ -41,7 +41,7 @@ module Pay
       end
 
       def charge(amount, options = {})
-        raise NotImplementedError, "Lemon Squeezy does not support one-off charges"
+        raise Pay::NotSupportedError, "Lemon Squeezy does not support one-off charges"
       end
 
       def subscribe(name: Pay.default_product_name, plan: Pay.default_plan_name, **options)

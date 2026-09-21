@@ -5,6 +5,11 @@ class Pay::LemonSqueezy::Subscription::Test < ActiveSupport::TestCase
     @pay_customer = pay_customers(:lemon_squeezy)
   end
 
+  test "lemon squeezy cancel_now! is not supported" do
+    error = assert_raises(Pay::NotSupportedError) { @pay_customer.subscription.cancel_now! }
+    assert_kind_of Pay::Error, error
+  end
+
   test "lemon squeezy api_record" do
     assert_equal @pay_customer.subscription.api_record.class, ::LemonSqueezy::Subscription
     assert_equal "active", @pay_customer.subscription.status

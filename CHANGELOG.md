@@ -2,26 +2,40 @@
 
 ### Unreleased
 
-* Webhook controllers share `Pay::Webhooks::BaseController`; each processor now only implements signature verification and event type. A malformed `Paddle-Signature` header and a missing Lemon Squeezy signing secret respond 400 instead of raising
-* Braintree subscription webhooks share one `Pay::Braintree::Webhooks::Subscription` handler; the named handler classes remain as subclasses. The no-op `subscription_charged_unsuccessfully` handler is removed
-* The Stripe SCA confirmation page passes the publishable key, Connect account, and messages to its Stimulus controller as values, so the script contains no ERB and a translation with a quote can't break it. The `back` parameter is validated with Rails' `url_from`, which keeps a same-site query string and no longer raises on a malformed value. Regenerate the view with `rails g pay:views` if you have customized it
-* Remove the `processor_id` uniqueness validations from `Pay::Customer`, `Pay::Charge`, `Pay::Subscription`, and `Pay::PaymentMethod`. The unique indexes have enforced this since Pay 3; the validations only added a query to every save. A duplicate now raises `ActiveRecord::RecordNotUnique`, which the sync retries already handle
-* [Breaking] Removed public methods that Pay never called and never documented: `Pay::Subscription#skip_trial`, `#has_trial?`, `Pay::Subscription::STATUSES`, the `cancelled` scope (the `cancelled?` predicate stays), `Pay::Charge.sorted`, `Pay::Customer.not_fake_processor`, `Pay::PaymentMethod.pay_processor_for`, `Pay::Currency#subunit?`, `Pay::Receipts#filename`, `Pay::Payment#payment_intent?`, `#setup_intent?` and `#cancelled?`, `Pay::Stripe::Subscription.sync_from_checkout_session` (use `Pay::Stripe.sync_checkout_session`), `Pay::PaddleBilling::Subscription.sync_from_transaction`, `Pay::LemonSqueezy.owner_from_passthrough`, and the empty `retry_failed_payment` on Paddle Billing and Paddle Classic subscriptions
-* [Breaking] Operations a processor cannot perform raise `NotImplementedError` consistently: Lemon Squeezy `charge` and `cancel_now!` (previously `Pay::Error`), and Paddle Billing and Paddle Classic `subscribe` (previously returned nil silently)
-* Documented `checkout_charge`, `customer_session`, and `preview_invoice` for Stripe
-* Every Stripe method that calls the API now raises `Pay::Stripe::Error` on a Stripe failure, as the docs promise. Previously 20 of them (`checkout`, `billing_portal`, `pause`, `invoice!`, the `sync` methods, `Pay::Payment.from_id`, and others) let the raw `Stripe::StripeError` through
+#### Breaking changes
 
-* `Pay::Stripe::Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` share one retry and customer lookup via `Pay::Stripe::Sync`. A retry now re-reads the object from Stripe when the caller didn't pass one in (previously it reused the first read), and all three use the same growing delay. The internal `try:` keyword and the debug log lines for a missing customer are removed
-* `Pay::Stripe::Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` share one retry and customer lookup via `Pay::Sync`, which the Braintree, Paddle Billing, Paddle Classic, and Lemon Squeezy syncs now use too. Paddle Classic and Lemon Squeezy gained the retry, and Braintree's payment method sync declared one it never had. A retry now re-reads the object from Stripe when the caller didn't pass one in (previously it reused the first read), and all three use the same growing delay. The internal `try:` keyword and the debug log lines for a missing customer are removed
+See the [UPGRADE guide](./UPGRADE.md#pay-120) for each of these.
+
+* Removed public methods that Pay never called and never documented: `Pay::Subscription#skip_trial`, `#has_trial?`, `Pay::Subscription::STATUSES`, `Pay::Customer.not_fake_processor`, `Pay::PaymentMethod.pay_processor_for`, `Pay::Currency#subunit?`, `Pay::Receipts#filename`, `Pay::Payment#payment_intent?`, `#setup_intent?` and `#cancelled?`, `Pay::LemonSqueezy.owner_from_passthrough`, and the empty `retry_failed_payment` on Paddle Billing and Paddle Classic subscriptions
+* Operations a processor cannot perform raise `Pay::NotSupportedError`, a subclass of `Pay::Error`: Lemon Squeezy `charge` and `cancel_now!` (previously `Pay::Error`), Paddle Billing and Paddle Classic `subscribe` (previously returned nil silently), and Braintree `pause` and `change_quantity` and Paddle Classic `change_quantity` (previously `NotImplementedError`)
+* Every Stripe method that calls the API now raises `Pay::Stripe::Error` on a Stripe failure, as the docs promise. Previously 20 of them (`checkout`, `billing_portal`, `pause`, `invoice!`, the `sync` methods, `Pay::Payment.from_id`, and others) let the raw `Stripe::StripeError` through
+* Lemon Squeezy subscriptions now sync `on_trial` as `trialing` and `cancelled` as `canceled`, so they answer `active?` correctly, and store the pause end in `pause_resumes_at` instead of `pause_starts_at`. `resume` unpauses paused subscriptions instead of uncancelling them. Existing rows need a one-time update
+* `Pay::LemonSqueezy::Charge` no longer overrides ActiveRecord `save` with an API fetch; `Pay::LemonSqueezy::Charge.sync("order:123")` and `sync!` now work like the other processors
+* Removed the `processor_id` uniqueness validations from `Pay::Customer`, `Pay::Charge`, `Pay::Subscription`, and `Pay::PaymentMethod`. The unique indexes have enforced this since Pay 3; a duplicate now raises `ActiveRecord::RecordNotUnique` instead of `RecordInvalid`
+* `retry_past_due_subscriptions!` moved from `Pay::Customer` to `Pay::Stripe::Customer`; it relies on `pay_open_invoices`, which only Stripe supports
+* Webhook controllers share `Pay::Webhooks::BaseController`; each processor now only implements `verified_event` and `event_type`. The no-op `Pay::Braintree::Webhooks::SubscriptionChargedUnsuccessfully` handler is removed
+
+#### Deprecations
+
+* `Pay::Stripe::Subscription.sync_from_checkout_session` is deprecated in favor of `Pay::Stripe.sync_checkout_session`, and `Pay::PaddleBilling::Subscription.sync_from_transaction` in favor of `Pay::PaddleBilling.sync_transaction`. Both will be removed in Pay 13
+
+#### Fixes
+
 * Fix `Pay::Customer#has_incomplete_payment?`, which combined the `active` and `incomplete` scopes and could never return true
 * Fix `Pay::Merchant#onboarding_complete?` raising `KeyError` when `data` holds other keys
 * `Pay::PaddleBilling::Error`, `Pay::PaddleClassic::Error`, and `Pay::LemonSqueezy::Error` no longer raise from `#message` when raised with a string
-* `Pay::LemonSqueezy::Charge` no longer overrides ActiveRecord `save` with an API fetch; `Pay::LemonSqueezy::Charge.sync("order:123")` and `sync!` now work like the other processors
 * Fix canceled Paddle Billing and Lemon Squeezy subscriptions not removing the customer's payment methods (the lookup compared the processor's customer ID to Pay's integer foreign key)
-* Lemon Squeezy subscriptions now sync `on_trial` as `trialing` and `cancelled` as `canceled`, so they answer `active?` correctly, and store the pause end in `pause_resumes_at` instead of `pause_starts_at`. `resume` unpauses paused subscriptions instead of uncancelling them
 * Fix `Pay::Stripe::Subscription#retry_failed_payment` and `Pay::Stripe::PaymentMethod#detach` sending the Connect account as a request parameter instead of a request option
 * `Pay::Stripe::Subscription#swap(prorate: false)` no longer forwards the removed `prorate` parameter to Stripe
-* `retry_past_due_subscriptions!` moved from `Pay::Customer` to `Pay::Stripe::Customer`; it relies on `pay_open_invoices`, which only Stripe supports
+* `Pay.mailer` is resolved on every call instead of memoizing the class, so code reloading in development no longer leaves it pointing at a stale mailer
+* A malformed `Paddle-Signature` header and a missing Lemon Squeezy signing secret respond 400 instead of raising
+
+#### Improvements
+
+* `Charge.sync`, `Subscription.sync`, and `PaymentMethod.sync` on every processor share one retry and customer lookup via `Pay::Sync`. A retry now re-reads the object from the processor when the caller didn't pass one in (previously it reused the first read), all processors use the same growing delay, and Paddle Classic and Lemon Squeezy gained the retry. The internal `try:` keyword and the debug log lines for a missing customer are removed
+* Braintree subscription webhooks share one `Pay::Braintree::Webhooks::Subscription` handler; the named handler classes remain as subclasses
+* The Stripe SCA confirmation page passes the publishable key, Connect account, and messages to its Stimulus controller as values, so the script contains no ERB and a translation with a quote can't break it. The `back` parameter is validated with Rails' `url_from`, which keeps a same-site query string and no longer raises on a malformed value. Regenerate the view with `rails g pay:views` if you have customized it
+* Documented `checkout_charge`, `customer_session`, and `preview_invoice` for Stripe
 
 ### 11.8.0
 

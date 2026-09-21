@@ -15,6 +15,10 @@ class Pay::PaddleClassic::CustomerTest < ActiveSupport::TestCase
     assert_raises(Pay::Error) { @pay_customer.charge(1000) }
   end
 
+  test "paddle classic subscribe is not supported" do
+    assert_raises(Pay::NotSupportedError) { @pay_customer.subscribe }
+  end
+
   test "paddle classic can sync payment information" do
     Pay::PaddleClassic::PaymentMethod.sync(pay_customer: @pay_customer)
 

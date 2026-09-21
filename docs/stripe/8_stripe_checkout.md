@@ -101,6 +101,16 @@ For one-time payments, you'll need to add a webhook listener for the Checkout `s
 
 For subscriptions, Pay will automatically create the `Pay::Subscription` record for you.
 
+The webhook can arrive after the customer lands on your `success_url`. To have the `Pay::Subscription` or `Pay::Charge` ready when they get there, sync the Checkout Session in your success action. Pay adds a `stripe_checkout_session_id` param to your `success_url` for this:
+
+```ruby
+def success
+  Pay::Stripe.sync_checkout_session(params[:stripe_checkout_session_id]) if params[:stripe_checkout_session_id]
+end
+```
+
+`sync_checkout_session` syncs the subscription for `subscription` mode and the charge for `payment` mode. It retries a few times because Stripe doesn't always attach the subscription to the session right away.
+
 To create custom webhook listeners for specific events, you can create your custom webhook listener classes under a folder like `app/webhooks`, like this:
 ```ruby
 # app/webhooks/fulfill_checkout.rb

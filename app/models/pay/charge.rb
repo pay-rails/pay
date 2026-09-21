@@ -5,6 +5,7 @@ module Pay
     belongs_to :subscription, optional: true
 
     # Scopes
+    scope :sorted, -> { order(created_at: :desc) }
     scope :with_active_customer, -> { joins(:customer).merge(Customer.active) }
     scope :with_deleted_customer, -> { joins(:customer).merge(Customer.deleted) }
 

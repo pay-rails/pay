@@ -5,6 +5,14 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
     @pay_customer = pay_customers(:paddle_billing)
   end
 
+  test "sync_from_transaction is deprecated in favor of Pay::PaddleBilling.sync_transaction" do
+    Pay::PaddleBilling.expects(:sync_transaction).with("txn_1").returns(:synced)
+
+    assert_deprecated(/Pay::PaddleBilling.sync_transaction/, Pay.deprecator) do
+      assert_equal :synced, Pay::PaddleBilling::Subscription.sync_from_transaction("txn_1")
+    end
+  end
+
   test "paddle billing processor subscription" do
     assert_equal @pay_customer.subscription.api_record.class, ::Paddle::Subscription
     assert_equal "active", @pay_customer.subscription.status
