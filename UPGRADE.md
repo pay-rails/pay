@@ -14,7 +14,6 @@ These had no callers in Pay and were never documented. Each has a replacement or
 | `Pay::Subscription#skip_trial` | `subscription.trial_ends_at = nil` |
 | `Pay::Subscription.cancelled` scope | `Pay::Subscription.canceled` (`cancelled?` on an instance still works) |
 | `Pay::Subscription::STATUSES` | Not needed; statuses are validated by the processors |
-| `Pay::Charge.sorted` | `order(created_at: :desc)` |
 | `Pay::Customer.not_fake_processor` | `where.not(processor: :fake_processor)` |
 | `Pay::PaymentMethod.pay_processor_for` | `"Pay::#{name.classify}::PaymentMethod".constantize` |
 | `Pay::Currency#subunit?` | `subunit.present?` (the removed method returned the opposite) |
