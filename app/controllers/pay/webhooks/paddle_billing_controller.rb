@@ -14,11 +14,14 @@ module Pay
 
       # The header looks like "ts=1671552777;h1=eb4d0dc8..."
       def valid_signature?(signature)
+        secret = Pay::PaddleBilling.signing_secret
+        raise Pay::PaddleBilling::Error, "Cannot verify signature without a Paddle Billing signing secret" if secret.blank?
+
         parts = signature.to_s.split(";").filter_map { |part| part.split("=", 2) if part.include?("=") }.to_h
         ts, h1 = parts.values_at("ts", "h1")
         return false if ts.blank? || h1.blank?
 
-        hmac = OpenSSL::HMAC.hexdigest("sha256", Pay::PaddleBilling.signing_secret.to_s, "#{ts}:#{request.raw_post}")
+        hmac = OpenSSL::HMAC.hexdigest("sha256", secret, "#{ts}:#{request.raw_post}")
         ActiveSupport::SecurityUtils.secure_compare(hmac, h1)
       end
     end

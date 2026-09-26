@@ -13,9 +13,11 @@ module Pay
       end
 
       def valid_signature?(signature)
+        secret = Pay::LemonSqueezy.signing_secret
+        raise Pay::LemonSqueezy::Error, "Cannot verify signature without a Lemon Squeezy signing secret" if secret.blank?
         return false if signature.blank?
 
-        hmac = OpenSSL::HMAC.hexdigest("sha256", Pay::LemonSqueezy.signing_secret.to_s, request.raw_post)
+        hmac = OpenSSL::HMAC.hexdigest("sha256", secret, request.raw_post)
         ActiveSupport::SecurityUtils.secure_compare(hmac, signature)
       end
     end

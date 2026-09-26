@@ -2,6 +2,10 @@
 
 ### Unreleased
 
+### 12.1.1
+
+* **Security:** Paddle Billing and Lemon Squeezy webhooks now reject every request with a 400 when no signing secret is configured. In 12.0.0 and 12.1.0 a missing or blank secret was used as an empty HMAC key, so anyone could forge webhook events (GHSA-5p37-w3f3-55pm, GHSA-6mr3-672j-v5hf)
+
 ### 12.1.0
 
 * Support receipts 3.0, which replaces Prawn with a pure Ruby PDF generator and adds Unicode support by default
