@@ -37,8 +37,8 @@ jobs:
           git config user.name 'GitHub Actions'
           git config user.email github-actions@github.com
           git add Gemfile.lock gemfiles lib
-          git commit -m "Version bump"
-          git push
+          # The version may already be bumped on main; only commit when something changed
+          git diff --cached --quiet || { git commit -m "Version bump" && git push; }
 
       # Release
       - uses: rubygems/release-gem@v1
