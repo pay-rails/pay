@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Stripe subscriptions with a `paused` status, which Stripe sets when a trial ends without a payment method, now answer `paused?` and `resumable?` as true. `resume` calls Stripe's resume endpoint for them, which bills the customer immediately, instead of raising `Pay::Error`
+
 ### 12.1.0
 
 * Support receipts 3.0, which replaces Prawn with a pure Ruby PDF generator and adds Unicode support by default

@@ -216,8 +216,10 @@ module Pay
         pause_starts_at? && Time.current < pause_starts_at
       end
 
+      # Stripe sets the status to `paused` when a trial ends without a payment method
+      # Pausing collection with `void` leaves the status unchanged, so check pause_behavior as well
       def paused?
-        pause_behavior == "void"
+        status == "paused" || pause_behavior == "void"
       end
 
       # Pauses a Stripe subscription
@@ -266,12 +268,21 @@ module Pay
         on_grace_period? || paused?
       end
 
-      def resume
+      # Resumes a subscription that is on its grace period or paused
+      #
+      # Subscriptions with a `paused` status are billed immediately and stay paused until that invoice is paid
+      #
+      # resume(billing_cycle_anchor: "unchanged")
+      #
+      # https://docs.stripe.com/api/subscriptions/resume
+      def resume(**options)
         unless resumable?
           raise Error, "You can only resume subscriptions within their grace period."
         end
 
-        if paused?
+        if status == "paused"
+          @api_record = ::Stripe::Subscription.resume(processor_id, options.merge(expand_options), stripe_options)
+        elsif paused?
           unpause
         else
           @api_record = ::Stripe::Subscription.update(processor_id, {

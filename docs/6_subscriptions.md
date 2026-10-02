@@ -366,6 +366,16 @@ Paddle will pause payments at the end of the period. The status remains `active`
 @user.payment_processor.subscription.resume
 ```
 
+##### Stripe trials that end without a payment method
+
+Stripe sets a subscription's status to `paused` when its trial ends without a payment method and `trial_settings: {end_behavior: {missing_payment_method: "pause"}}` is set. These subscriptions are `paused?` and not `active?`.
+
+Once the customer has added a payment method, `resume` calls Stripe's [resume endpoint](https://docs.stripe.com/api/subscriptions/resume). Stripe bills the customer immediately and the subscription stays paused until that invoice is paid. Options are passed through to Stripe:
+
+```ruby
+@user.payment_processor.subscription.resume(billing_cycle_anchor: "unchanged")
+```
+
 ## Manually syncing subscriptions
 
 In general, you don't need to use these methods as Pay's webhooks will keep you all your subscriptions in sync automatically.

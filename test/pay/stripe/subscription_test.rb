@@ -195,6 +195,40 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     end
   end
 
+  test "stripe subscription with paused status is paused" do
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(status: "paused"))
+
+    assert pay_subscription.paused?
+    assert pay_subscription.pause_active?
+    assert pay_subscription.resumable?
+    refute pay_subscription.active?
+    refute pay_subscription.on_grace_period?
+  end
+
+  test "stripe resume with paused status resumes the subscription" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.update!(status: "paused")
+    ::Stripe::Subscription.expects(:update).never
+    ::Stripe::Subscription.expects(:resume).with("sub_1", has_key(:expand), anything).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
+
+    pay_subscription.resume
+
+    assert_equal "active", pay_subscription.status
+    refute pay_subscription.paused?
+    assert pay_subscription.active?
+  end
+
+  test "stripe resume with paused status stays paused until the invoice is paid" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.update!(status: "paused")
+    ::Stripe::Subscription.expects(:resume).with("sub_1", has_entry(billing_cycle_anchor: "unchanged"), anything).returns(fake_stripe_subscription(id: "sub_1", status: "paused"))
+
+    pay_subscription.resume(billing_cycle_anchor: "unchanged")
+
+    assert pay_subscription.paused?
+    refute pay_subscription.active?
+  end
+
   test "syncing multiple subscription items" do
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(items: {
       object: "list",
