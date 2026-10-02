@@ -1,12 +1,14 @@
+<% scope = @payment.setup_intent? ? "pay.setup_intent" : "pay" %>
 <div
   data-controller="payment-intent"
   data-payment-intent-public-key-value="<%= Pay::Stripe.public_key %>"
   data-payment-intent-stripe-account-value="<%= @payment.stripe_account %>"
   data-payment-intent-client-secret-value="<%= @payment.client_secret %>"
   data-payment-intent-status-value="<%= @payment.status %>"
+  data-payment-intent-setup-intent-value="<%= @payment.setup_intent? %>"
   data-payment-intent-customer-value="<%= @payment.customer %>"
   data-payment-intent-name-missing-message-value="<%= t("pay.requires_action.name_missing") %>"
-  data-payment-intent-confirmed-message-value="<%= t("pay.requires_action.success") %>"
+  data-payment-intent-confirmed-message-value="<%= t("requires_action.success", scope: scope) %>"
   class="h-screen md:flex md:justify-center md:items-center">
   <div class="w-full max-w-lg">
     <!-- Status Messages -->
@@ -28,18 +30,18 @@
 
     <div class="bg-white rounded-lg shadow-xl p-4 sm:py-6 sm:px-10 mb-5">
       <% if @payment.succeeded? %>
-        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "pay.successful.header" %></h1>
-        <p class="mb-6"><%=t "pay.successful.description" %></p>
+        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "successful.header", scope: scope %></h1>
+        <p class="mb-6"><%=t "successful.description", scope: scope %></p>
 
       <% elsif @payment.canceled? %>
-        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "pay.cancelled.header" %></h1>
-        <p class="mb-6"><%=t "pay.cancelled.description" %></p>
+        <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "cancelled.header", scope: scope %></h1>
+        <p class="mb-6"><%=t "cancelled.description", scope: scope %></p>
 
       <% else %>
         <div data-payment-intent-target="form" id="payment-elements">
           <!-- Instructions -->
-          <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "pay.requires_action.header", amount: @payment.amount_with_currency %></h1>
-          <p class="mb-6"><%=t "pay.requires_action.description" %></p>
+          <h1 class="text-xl mt-2 mb-4 text-gray-700"><%=t "requires_action.header", scope: scope, amount: @payment.amount_with_currency %></h1>
+          <p class="mb-6"><%=t "requires_action.description", scope: scope %></p>
 
           <div data-payment-intent-target="cardFields" class="hidden">
             <!-- Name -->
@@ -53,7 +55,7 @@
 
           <!-- Pay Button -->
           <button data-payment-intent-target="button" data-action="click->payment-intent#confirmPayment" class="inline-block w-full px-4 py-3 mb-4 text-white rounded-lg bg-blue-400 hover:bg-blue-500">
-            <%=t "pay.requires_action.button", amount: @payment.amount_with_currency %>
+            <%=t "requires_action.button", scope: scope, amount: @payment.amount_with_currency %>
           </button>
         </div>
       <% end %>
@@ -79,6 +81,7 @@
       clientSecret: String,
       customer: String,
       status: String,
+      setupIntent: Boolean,
       nameMissingMessage: String,
       confirmedMessage: String,
       errorMessage: String,
@@ -104,7 +107,7 @@
       switch(this.statusValue) {
         case "requires_action":
           this.processingValue = true
-          this.stripe.confirmPayment({clientSecret: this.clientSecretValue, confirmParams: { return_url: document.location.href }}).then(this.handleConfirmResult.bind(this))
+          this.confirm({clientSecret: this.clientSecretValue})
           break
         case "requires_payment_method":
           this.cardFieldsTarget.classList.toggle("hidden", false)
@@ -114,7 +117,14 @@
 
     confirmPayment() {
       this.processingValue = true
-      this.stripe.confirmPayment({elements: this.elements, confirmParams: { return_url: document.location.href }}).then(this.handleConfirmResult.bind(this))
+      this.confirm({elements: this.elements})
+    }
+
+    // SetupIntents (saving a payment method) and PaymentIntents confirm through different Stripe.js methods
+    confirm(options) {
+      const params = {...options, confirmParams: { return_url: document.location.href }}
+      const result = this.setupIntentValue ? this.stripe.confirmSetup(params) : this.stripe.confirmPayment(params)
+      result.then(this.handleConfirmResult.bind(this))
     }
 
     handleConfirmResult(result) {
@@ -126,7 +136,8 @@
           this.errorMessageValue = this.nameMissingMessageValue
         } else {
           this.errorMessageValue = result.error.message
-          this.statusValue = result.error.payment_intent.status
+          const intent = result.error.payment_intent || result.error.setup_intent
+          if (intent) { this.statusValue = intent.status }
         }
       } else {
         this.completeValue = true

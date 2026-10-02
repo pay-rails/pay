@@ -2,7 +2,12 @@
 
 ### Unreleased
 
+* Fix the SCA confirmation page for SetupIntents. It raised on the missing `amount` and confirmed with `confirmPayment`; it now uses `stripe.confirmSetup` with setup-specific copy. If you translate Pay's `pay.*` keys into other languages, add the new `pay.setup_intent.*` keys from `config/locales/en.yml` to your locale files
 * Stripe subscriptions with a `paused` status, which Stripe sets when a trial ends without a payment method, now answer `paused?` and `resumable?` as true. `resume` calls Stripe's resume endpoint for them, which bills the customer immediately, instead of raising `Pay::Error`
+
+### 12.1.1
+
+* **Security:** Paddle Billing and Lemon Squeezy webhooks now reject every request with a 400 when no signing secret is configured. In 12.0.0 and 12.1.0 a missing or blank secret was used as an empty HMAC key, so anyone could forge webhook events (GHSA-5p37-w3f3-55pm, GHSA-6mr3-672j-v5hf)
 
 ### 12.1.0
 
