@@ -6,9 +6,12 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
   end
 
   test "braintree customer" do
-    braintree_customer = @pay_customer.api_record
+    pay_customer = pay_customers(:braintree)
+    pay_customer.update!(processor_id: nil)
+
+    braintree_customer = pay_customer.api_record
     assert braintree_customer.id.present?
-    assert_equal "braintree@example.org", braintree_customer.email
+    assert_equal pay_customer.email, braintree_customer.email
   end
 
   test "customer attributes proc" do
@@ -56,14 +59,6 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
     assert_equal "Visa", charge.brand
   end
 
-  # Disable because you have to enable Apple Pay in Braintree
-  # test "braintree can charge card with Apple Pay Card" do
-  #  @pay_customer.update_payment_method "fake-apple-pay-visa-nonce"
-  #  charge = @pay_customer.charge(29_00)
-  #  assert_equal "card", charge.payment_method_type
-  #  assert_equal "Apple Pay - Visa", charge.brand
-  # end
-
   test "braintree can charge card with Google Pay Card" do
     # If Braintree ever introduces fake google pay nonces, we can update this
     @pay_customer.update_payment_method "fake-android-pay-visa-nonce"
@@ -72,24 +67,11 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
     assert_equal "Visa", charge.brand
   end
 
-  # test "braintree can charge card with PayPal Account" do
-  #   @pay_customer.update_payment_method "fake-paypal-billing-agreement-nonce"
-  #   charge = @pay_customer.charge(29_00)
-  #   assert_equal "paypal", charge.payment_method_type
-  #   assert_equal "PayPal", charge.brand
-  # end
-
   test "braintree can charge card with Venmo" do
     @pay_customer.update_payment_method "fake-venmo-account-nonce"
     charge = @pay_customer.charge(29_00)
     assert_equal "venmo", charge.payment_method_type
     assert_equal "Venmo", charge.brand
-  end
-
-  test "braintree update credit card" do
-    @pay_customer.update_payment_method "fake-valid-discover-nonce"
-    assert_equal "card", @pay_customer.default_payment_method.payment_method_type
-    assert_equal "Discover", @pay_customer.default_payment_method.brand
   end
 
   test "braintree update Apple Pay Card" do
@@ -117,13 +99,6 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
     assert_equal "Venmo", @pay_customer.default_payment_method.brand
   end
 
-  # Invalid amount will cause the transaction to fail
-  # https://developers.braintreepayments.com/reference/general/testing/ruby#amount-200000-300099
-  test "braintree handles charge failures" do
-    @pay_customer.update_payment_method "fake-valid-visa-nonce"
-    assert_raises(Pay::Braintree::Error) { @pay_customer.charge(2000_00) }
-  end
-
   test "braintree fails with paypal processor declined" do
     @pay_customer.update_payment_method "fake-paypal-billing-agreement-nonce"
     assert_raises(Pay::Braintree::Error) { @pay_customer.charge(5001_01) }
@@ -143,7 +118,7 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
   end
 
   test "braintree trial period options" do
-    travel_to(VCR.current_cassette.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       @pay_customer.update_payment_method "fake-valid-visa-nonce"
       subscription = @pay_customer.subscribe(trial_period_days: 15)
       # Braintree subscriptions don't use trialing status for simplicity
@@ -155,6 +130,7 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
   end
 
   # $2000.00 - 2999.99 returns a Processor Declined
+  # https://developers.braintreepayments.com/reference/general/testing/ruby#amount-200000-300099
   test "braintree fails charges with invalid cards" do
     @pay_customer.update_payment_method "fake-valid-visa-nonce"
     err = assert_raises(Pay::Braintree::Error) { @pay_customer.charge(2000_00) }

@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::Subscription::Test < ActiveSupport::TestCase
+class Pay::SubscriptionTest < ActiveSupport::TestCase
   setup do
     @owner = users(:fake)
     @pay_customer = @owner.payment_processor
@@ -143,39 +143,39 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "active scope includes future Stripe paused subscription" do
-    subscription = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.from_now)
+    subscription = create_subscription(customer: pay_customers(:stripe), pause_behavior: "void", pause_starts_at: 1.day.from_now)
     subscriptions = Pay::Subscription.active
     assert_includes subscriptions, subscription
   end
 
   test "active scope includes Stripe paused keep_as_draft subscription" do
-    subscription = create_stripe_subscription(pause_behavior: "keep_as_draft")
+    subscription = create_subscription(customer: pay_customers(:stripe), pause_behavior: "keep_as_draft")
     subscriptions = Pay::Subscription.active
     assert_includes subscriptions, subscription
   end
 
   test "active scope includes Stripe paused mark_uncollectible subscription" do
-    subscription = create_stripe_subscription(pause_behavior: "mark_uncollectible")
+    subscription = create_subscription(customer: pay_customers(:stripe), pause_behavior: "mark_uncollectible")
     subscriptions = Pay::Subscription.active
     assert_includes subscriptions, subscription
   end
 
   test "active scope does not include Stripe paused subscription" do
-    subscription = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.ago)
+    subscription = create_subscription(customer: pay_customers(:stripe), pause_behavior: "void", pause_starts_at: 1.day.ago)
     subscriptions = Pay::Subscription.active
     refute_includes subscriptions, subscription
   end
 
   test "active scope does not include Paddle paused subscriptions" do
-    subscription = create_paddle_subscription(status: "paused")
+    subscription = create_subscription(customer: pay_customers(:paddle_classic), status: "paused")
     subscriptions = Pay::Subscription.active
     refute_includes subscriptions, subscription
   end
 
   test "active scope with multiple paused subscriptions from various processors" do
     active_subscription = create_subscription
-    paused_subscription1 = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.ago)
-    paused_subscription2 = create_paddle_subscription(status: "paused")
+    paused_subscription1 = create_subscription(customer: pay_customers(:stripe), pause_behavior: "void", pause_starts_at: 1.day.ago)
+    paused_subscription2 = create_subscription(customer: pay_customers(:paddle_classic), status: "paused")
 
     subscriptions = Pay::Subscription.active
 
@@ -185,19 +185,19 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "paused scope includes Stripe paused subscription" do
-    subscription = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.ago)
+    subscription = create_subscription(customer: pay_customers(:stripe), pause_behavior: "void", pause_starts_at: 1.day.ago)
     subscriptions = Pay::Subscription.paused
     assert_includes subscriptions, subscription
   end
 
   test "paused scope does not include future Stripe paused subscription" do
-    subscription = create_stripe_subscription(pause_behavior: "void", pause_starts_at: 1.day.from_now)
+    subscription = create_subscription(customer: pay_customers(:stripe), pause_behavior: "void", pause_starts_at: 1.day.from_now)
     subscriptions = Pay::Subscription.paused
     refute_includes subscriptions, subscription
   end
 
   test "paused scope includes Paddle paused subscription" do
-    subscription = create_paddle_subscription(status: "paused")
+    subscription = create_subscription(customer: pay_customers(:paddle_classic), status: "paused")
     subscriptions = Pay::Subscription.paused
     assert_includes subscriptions, subscription
   end
@@ -341,11 +341,6 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
     end
   end
 
-  test "api_record" do
-    @subscription.stubs(:api_record).returns(:result)
-    assert_equal :result, @subscription.api_record
-  end
-
   test "can swap plans" do
     @subscription.swap("small-annual")
     assert_equal "small-annual", @subscription.processor_plan
@@ -422,7 +417,7 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "can be associated with a payment method" do
-    assert_equal pay_payment_methods(:one), pay_subscriptions(:stripe).payment_method
+    assert_equal pay_payment_methods(:stripe), pay_subscriptions(:stripe).payment_method
   end
 
   test "payment method association is optional" do
@@ -431,39 +426,14 @@ class Pay::Subscription::Test < ActiveSupport::TestCase
 
   private
 
-  def create_subscription(options = {})
-    defaults = {
+  def create_subscription(customer: @pay_customer, **attributes)
+    customer.subscriptions.create!(
       name: "default",
       processor_id: rand(1..999_999_999),
       processor_plan: "default",
       quantity: "1",
-      status: :active
-    }
-
-    @pay_customer.subscriptions.create! defaults.merge(options)
-  end
-
-  def create_stripe_subscription(options = {})
-    defaults = {
-      name: "default",
-      processor_id: rand(1..999_999_999),
-      processor_plan: "default",
-      quantity: "1",
-      status: :active
-    }
-
-    pay_customers(:stripe).subscriptions.create! defaults.merge(options)
-  end
-
-  def create_paddle_subscription(options = {})
-    defaults = {
-      name: "default",
-      processor_id: rand(1..999_999_999),
-      processor_plan: "default",
-      quantity: "1",
-      status: :active
-    }
-
-    pay_customers(:paddle_classic).subscriptions.create! defaults.merge(options)
+      status: :active,
+      **attributes
+    )
   end
 end

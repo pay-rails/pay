@@ -20,17 +20,11 @@ class Pay::Braintree::PaymentMethodTest < ActiveSupport::TestCase
       default: false
     )
 
-    # Mock the gateway method and Braintree API call
-    result = Struct.new(:success?).new(true)
-    mock_gateway = mock("gateway")
-    mock_customer_gateway = mock("customer_gateway")
-
-    pm2.stubs(:gateway).returns(mock_gateway)
-    mock_gateway.expects(:customer).returns(mock_customer_gateway)
-    mock_customer_gateway.expects(:update).with(
+    # Mock the Braintree API call
+    mock_customer_gateway(pm2).expects(:update).with(
       @pay_customer.processor_id,
       default_payment_method_token: "pm_new"
-    ).returns(result)
+    ).returns(braintree_result(success: true))
 
     # Make pm2 the default
     pm2.make_default!
@@ -62,13 +56,7 @@ class Pay::Braintree::PaymentMethodTest < ActiveSupport::TestCase
     pm3 = @pay_customer.payment_methods.create!(processor_id: "pm_3", payment_method_type: "card", default: false)
 
     # Mock Braintree API call
-    result = Struct.new(:success?).new(true)
-    mock_gateway = mock("gateway")
-    mock_customer_gateway = mock("customer_gateway")
-
-    pm3.stubs(:gateway).returns(mock_gateway)
-    mock_gateway.stubs(:customer).returns(mock_customer_gateway)
-    mock_customer_gateway.stubs(:update).returns(result)
+    mock_customer_gateway(pm3).stubs(:update).returns(braintree_result(success: true))
 
     # Make pm3 the default
     pm3.make_default!
@@ -90,13 +78,7 @@ class Pay::Braintree::PaymentMethodTest < ActiveSupport::TestCase
     )
 
     # Mock Braintree API failure
-    result = Struct.new(:success?).new(false)
-    mock_gateway = mock("gateway")
-    mock_customer_gateway = mock("customer_gateway")
-
-    pm.stubs(:gateway).returns(mock_gateway)
-    mock_gateway.stubs(:customer).returns(mock_customer_gateway)
-    mock_customer_gateway.stubs(:update).returns(result)
+    mock_customer_gateway(pm).stubs(:update).returns(braintree_result(success: false))
 
     # Should raise error
     assert_raises(Pay::Braintree::Error) do
@@ -106,5 +88,18 @@ class Pay::Braintree::PaymentMethodTest < ActiveSupport::TestCase
     # Verify database was not updated
     pm.reload
     refute pm.default?
+  end
+
+  private
+
+  # Replaces the payment method's Braintree gateway so no API calls are made
+  def mock_customer_gateway(payment_method)
+    mock("customer_gateway").tap do |customer_gateway|
+      payment_method.stubs(:gateway).returns(stub(customer: customer_gateway))
+    end
+  end
+
+  def braintree_result(success:)
+    Struct.new(:success?).new(success)
   end
 end

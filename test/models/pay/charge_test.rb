@@ -1,8 +1,22 @@
 require "test_helper"
 
-class Pay::Charge::Test < ActiveSupport::TestCase
+class Pay::ChargeTest < ActiveSupport::TestCase
   test "owner" do
     assert_equal users(:stripe), pay_charges(:stripe).owner
+  end
+
+  test "processor predicates" do
+    assert pay_customers(:stripe).charges.new.stripe?
+    refute pay_customers(:braintree).charges.new.stripe?
+
+    assert pay_customers(:braintree).charges.new.braintree?
+    refute pay_customers(:stripe).charges.new.braintree?
+
+    assert pay_customers(:paddle_classic).charges.new.paddle_classic?
+    refute pay_customers(:stripe).charges.new.paddle_classic?
+
+    assert pay_customers(:fake).charges.new.fake_processor?
+    refute pay_customers(:stripe).charges.new.fake_processor?
   end
 
   test "charge processor ID is unique per Pay::Customer" do
@@ -95,12 +109,12 @@ class Pay::Charge::Test < ActiveSupport::TestCase
   end
 
   test "renders receipts" do
-    charge = pay_charges(:fake_processor)
+    charge = pay_charges(:fake)
     assert charge.receipt
   end
 
   test "renders invoices" do
-    charge = pay_charges(:fake_processor)
+    charge = pay_charges(:fake)
     assert charge.invoice
   end
 end

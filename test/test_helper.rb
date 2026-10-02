@@ -2,21 +2,22 @@
 ENV["RAILS_ENV"] = "test"
 
 # Configure all the payment providers for testing
+# VCR replaces every occurrence of these values in cassettes, so fake credentials must be distinctive strings
 ENV["STRIPE_PRIVATE_KEY"] ||= "sk_test_fake"
 ENV["STRIPE_SIGNING_SECRET"] ||= "whsec_x"
 
 # Paddle Classic configuration
 require "openssl"
 require "base64"
-paddle_public_key = OpenSSL::PKey::RSA.new(File.read("test/fixtures/files/paddle_classic/verification/paddle_public_key.pem"))
+paddle_public_key = OpenSSL::PKey::RSA.new(File.read(File.expand_path("fixtures/files/paddle_classic/verification/paddle_public_key.pem", __dir__)))
 ENV["PADDLE_CLASSIC_PUBLIC_KEY_BASE64"] = Base64.encode64(paddle_public_key.to_der)
 ENV["PADDLE_CLASSIC_ENVIRONMENT"] ||= "sandbox"
-ENV["PADDLE_CLASSIC_VENDOR_ID"] ||= "1"
-ENV["PADDLE_CLASSIC_VENDOR_AUTH_CODE"] ||= "x"
+ENV["PADDLE_CLASSIC_VENDOR_ID"] ||= "paddle_classic_vendor_id"
+ENV["PADDLE_CLASSIC_VENDOR_AUTH_CODE"] ||= "paddle_classic_vendor_auth_code"
 
 ENV["PADDLE_BILLING_ENVIRONMENT"] ||= "sandbox"
 ENV["PADDLE_BILLING_SELLER_ID"] ||= "111"
-ENV["PADDLE_BILLING_API_KEY"] ||= "secret"
+ENV["PADDLE_BILLING_API_KEY"] ||= "paddle_billing_api_key"
 
 require "braintree"
 require "stripe"
@@ -30,11 +31,12 @@ require "minitest/mock"
 require "mocha/minitest"
 
 require_relative "support/braintree"
+require_relative "support/engine_integration_test"
 require_relative "support/stripe"
 require_relative "support/vcr"
 require_relative "support/payment_method_tests"
 
-# Uncomment to view the stacktrace for debugging tests
+# Show the full stacktrace for debugging tests
 Rails.backtrace_cleaner.remove_silencers!
 
 # Filter out Minitest backtrace while allowing backtrace from other libraries
@@ -65,8 +67,12 @@ class ActiveSupport::TestCase
     Pay.braintree_gateway.webhook_notification.parse(raw["bt_signature"], raw["bt_payload"])
   end
 
-  def paddle_billing_event(name)
-    ActiveSupport::InheritableOptions.new json_fixture("paddle_billing/#{name}").deep_symbolize_keys
+  def lemon_squeezy_event(name, overrides: {})
+    Pay::Webhook.new(processor: :lemon_squeezy, event: json_fixture("lemon_squeezy/#{name}").deep_merge(overrides)).rehydrated_event
+  end
+
+  def paddle_billing_event(name, overrides: {})
+    Pay::Webhook.new(processor: :paddle_billing, event: json_fixture("paddle_billing/#{name}").deep_merge(overrides)).rehydrated_event
   end
 
   def paddle_classic_event(name, overrides: {})
@@ -82,5 +88,15 @@ class ActiveSupport::TestCase
     travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
       yield
     end
+  end
+
+  # Sets environment variables for the block and restores the original environment afterwards.
+  # A nil value removes the variable.
+  def with_env(values)
+    original_env = ENV.to_hash
+    ENV.update(values)
+    yield
+  ensure
+    ENV.replace(original_env)
   end
 end

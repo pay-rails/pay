@@ -5,7 +5,7 @@ class Pay::Braintree::Webhooks::SubscriptionChargedSuccessfullyTest < ActiveSupp
     @event = braintree_event "subscription_charged_successfully"
   end
 
-  test "it sets ends_at on the subscription" do
+  test "braintree creates a charge associated with the subscription" do
     pay_customer = pay_customers(:braintree)
     pay_customer.update(processor_id: @event.subscription.transactions.first.customer_details.id)
 

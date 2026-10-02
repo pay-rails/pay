@@ -82,6 +82,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
     payment_processor = users(:none).payment_processor
     assert payment_processor
     assert_equal "fake_processor", payment_processor.processor
+  ensure
     User.pay_default_payment_processor = original_value
   end
 

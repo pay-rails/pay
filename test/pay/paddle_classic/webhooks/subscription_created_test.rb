@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::PaddleClassic::Webhooks::SubscriptionCreatedTest < ActiveSupport::TestCase
   setup do
-    @data = paddle_classic_event("subscription_created")
+    @event = paddle_classic_event("subscription_created")
     @user = users(:paddle_classic)
   end
 
@@ -14,29 +14,29 @@ class Pay::PaddleClassic::Webhooks::SubscriptionCreatedTest < ActiveSupport::Tes
 
   test "a subscription is created" do
     assert_difference "Pay::Subscription.count" do
-      @data.passthrough = Pay::PaddleClassic.passthrough(owner: @user)
-      Pay::PaddleClassic::Webhooks::SubscriptionCreated.new.call(@data)
+      @event.passthrough = Pay::PaddleClassic.passthrough(owner: @user)
+      Pay::PaddleClassic::Webhooks::SubscriptionCreated.new.call(@event)
     end
 
     @user.reload
 
     assert_equal "paddle_classic", @user.payment_processor.processor
-    assert_equal @data.user_id, @user.payment_processor.processor_id
+    assert_equal @event.user_id, @user.payment_processor.processor_id
 
     subscription = Pay::Subscription.last
-    assert_equal @data.quantity.to_i, subscription.quantity
-    assert_equal @data.subscription_plan_id, subscription.processor_plan
-    assert_equal @data.update_url, subscription.paddle_update_url
-    assert_equal @data.cancel_url, subscription.paddle_cancel_url
-    assert_equal Time.zone.parse(@data.next_bill_date), subscription.trial_ends_at
+    assert_equal @event.quantity.to_i, subscription.quantity
+    assert_equal @event.subscription_plan_id, subscription.processor_plan
+    assert_equal @event.update_url, subscription.paddle_update_url
+    assert_equal @event.cancel_url, subscription.paddle_cancel_url
+    assert_equal Time.zone.parse(@event.next_bill_date), subscription.trial_ends_at
     assert_nil subscription.ends_at
   end
 
   test "a subscription isn't created if no corresponding owner can be found" do
-    @data.passthrough = "does-not-exist"
+    @event.passthrough = "does-not-exist"
 
     assert_no_difference "Pay::Subscription.count" do
-      Pay::PaddleClassic::Webhooks::SubscriptionCreated.new.call(@data)
+      Pay::PaddleClassic::Webhooks::SubscriptionCreated.new.call(@event)
     end
   end
 end

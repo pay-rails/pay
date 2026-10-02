@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::LemonSqueezy::Subscription::Test < ActiveSupport::TestCase
+class Pay::LemonSqueezy::SubscriptionTest < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:lemon_squeezy)
   end
@@ -64,8 +64,7 @@ class Pay::LemonSqueezy::Subscription::Test < ActiveSupport::TestCase
   private
 
   def sync_lemon_squeezy_subscription(attributes)
-    json = json_fixture("lemon_squeezy/subscription_created").deep_merge("data" => {"attributes" => attributes})
-    object = Pay::LemonSqueezy.construct_from_webhook_event(json)
+    object = lemon_squeezy_event("subscription_created", overrides: {"data" => {"attributes" => attributes}})
     @pay_customer.update!(processor_id: object.customer_id)
     Pay::LemonSqueezy::Subscription.sync(object.id, object: object)
   end

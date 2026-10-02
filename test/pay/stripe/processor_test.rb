@@ -2,20 +2,12 @@ require "test_helper"
 
 class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
   test "finds API keys from env" do
-    old_env = ENV.to_hash
-    ENV.update(
-      "STRIPE_PUBLIC_KEY" => "public",
-      "STRIPE_PRIVATE_KEY" => "private",
-      "STRIPE_SIGNING_SECRET" => "secret",
-      "STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS" => "false"
-    )
-
-    assert_equal "public", Pay::Stripe.public_key
-    assert_equal "private", Pay::Stripe.private_key
-    assert_equal "secret", Pay::Stripe.signing_secret
-    assert_equal false, Pay::Stripe.webhook_receive_test_events
-  ensure
-    ENV.update(old_env)
+    with_env("STRIPE_PUBLIC_KEY" => "public", "STRIPE_PRIVATE_KEY" => "private", "STRIPE_SIGNING_SECRET" => "secret", "STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS" => "false") do
+      assert_equal "public", Pay::Stripe.public_key
+      assert_equal "private", Pay::Stripe.private_key
+      assert_equal "secret", Pay::Stripe.signing_secret
+      assert_equal false, Pay::Stripe.webhook_receive_test_events
+    end
   end
 
   test "setup uses Pay's configured API key when Stripe is not configured" do
@@ -43,36 +35,27 @@ class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
   end
 
   test "setup leaves stripe_context unset with regular account keys" do
-    old_env = ENV.to_hash
-    ENV.delete("STRIPE_CONTEXT")
-    ::Stripe.config.stripe_context = nil
+    with_env("STRIPE_CONTEXT" => nil) do
+      ::Stripe.config.stripe_context = nil
 
-    Pay::Stripe.setup
-    assert_nil ::Stripe.config.stripe_context
-  ensure
-    ENV.update(old_env)
+      Pay::Stripe.setup
+      assert_nil ::Stripe.config.stripe_context
+    end
   end
 
   test "setup applies the context credential for Stripe Organizations API keys" do
-    old_env = ENV.to_hash
-    ENV.update("STRIPE_CONTEXT" => "acct_123")
-
-    Pay::Stripe.setup
-    assert_equal "acct_123", ::Stripe.config.stripe_context.to_s
+    with_env("STRIPE_CONTEXT" => "acct_123") do
+      Pay::Stripe.setup
+      assert_equal "acct_123", ::Stripe.config.stripe_context.to_s
+    end
   ensure
-    ENV.update(old_env)
     ::Stripe.config.stripe_context = nil
   end
 
   test "webhook_receive_test_events default to true" do
-    old_env = ENV.to_hash
-    ENV.update(
-      "STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS" => nil
-    )
-
-    assert_equal true, Pay::Stripe.webhook_receive_test_events
-  ensure
-    ENV.update(old_env)
+    with_env("STRIPE_WEBHOOK_RECEIVE_TEST_EVENTS" => nil) do
+      assert_equal true, Pay::Stripe.webhook_receive_test_events
+    end
   end
 
   test "can generate a client_reference_id for a model" do

@@ -56,7 +56,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "stripe performing multiple refunds increments total refund amount" do
     @pay_customer.update(processor_id: nil)
-    @pay_customer.update_payment_method payment_method
+    @pay_customer.update_payment_method "pm_card_visa"
     charge = @pay_customer.charge(30_00)
     charge.refund!(10_00)
     charge.refund!(5_00)
@@ -88,7 +88,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync stripe invoice discounts and coupons" do
     @pay_customer.update(processor_id: nil)
-    @pay_customer.update_payment_method payment_method
+    @pay_customer.update_payment_method "pm_card_visa"
     invoice = ::Stripe::Invoice.create(customer: @pay_customer.processor_id)
     ::Stripe::InvoiceItem.create(customer: @pay_customer.processor_id, invoice: invoice.id, amount: 1900, discounts: [{coupon: "sirmAxRi"}])
     invoice.pay
@@ -113,9 +113,28 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     pay_charge.sync!
   end
 
-  private
+  test "stripe can capture an authorized charge" do
+    @pay_customer.update(processor_id: nil)
+    @pay_customer.update_payment_method "pm_card_visa"
+    charge = @pay_customer.authorize(29_00)
+    assert_equal 0, charge.amount_captured
 
-  def payment_method
-    @payment_method ||= "pm_card_visa"
+    charge = charge.capture
+    assert charge.captured?
+    assert_equal 29_00, charge.amount_captured
+  end
+
+  test "stripe can issue credit note for a refund for Stripe tax" do
+    @pay_customer.update(processor_id: nil)
+    @pay_customer.update_payment_method "pm_card_visa"
+    pay_subscription = @pay_customer.subscribe(name: "default", plan: "small-monthly")
+    # InvoicePayments aren't created immediately, so we must wait until they're available to create a Credit Note
+    # Pay::Stripe::Error: (Status 400) (Request req_t6t14FGEokRygN) You can only create a refund if the invoice has a charge associated with it.
+    sleep 1 if VCR.current_cassette.recording?
+    pay_subscription.charges.last.refund!(5_00)
+    pay_subscription.api_record = nil
+    invoice = pay_subscription.api_record.latest_invoice
+    assert_equal 5_00, invoice.post_payment_credit_notes_amount
+    assert_equal 5_00, pay_subscription.charges.last.amount_refunded
   end
 end
