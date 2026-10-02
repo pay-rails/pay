@@ -128,8 +128,6 @@ module Pay
       end
 
       # Pauses the subscription at the end of the current billing period
-      #
-      # The subscription stays active until then, the same as when Paddle syncs the scheduled pause
       def pause
         response = ::Paddle::Subscription.pause(id: processor_id)
         update!(status: response.status, pause_starts_at: response.scheduled_change.effective_at)
@@ -147,7 +145,6 @@ module Pay
         end
 
         # Paddle Billing API only allows "resuming" subscriptions when they are paused
-        # So cancel the scheduled change if it is in the future
         if will_pause?
           remove_scheduled_pause
         else

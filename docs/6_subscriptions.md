@@ -363,6 +363,14 @@ Paddle will pause payments at the end of the period. The status remains `active`
 @user.payment_processor.subscription.pause
 ```
 
+##### Pause a Paddle Billing Subscription
+
+Paddle pauses the subscription at the end of the billing period. It is `paused?` right away and stays `active?` until the pause starts. Resuming or canceling before then removes the scheduled pause.
+
+```ruby
+@user.payment_processor.subscription.pause
+```
+
 ##### Pause a Lemon Squeezy Subscription
 
 The subscription is paused immediately and is no longer active. Options are passed through to Lemon Squeezy.
