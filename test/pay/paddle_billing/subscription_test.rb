@@ -76,11 +76,7 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
 
   test "paddle billing sync of a scheduled pause matches pausing locally" do
     pause_starts_at = 10.days.from_now.change(usec: 0)
-    json = json_fixture("paddle_billing/subscription.created").deep_merge("data" => {
-      "customer_id" => @pay_customer.processor_id,
-      "scheduled_change" => {"action" => "pause", "effective_at" => pause_starts_at.iso8601, "resume_at" => nil}
-    })
-    object = Pay::Webhook.new(processor: :paddle_billing, event: json).rehydrated_event
+    object = paddle_billing_subscription_event("scheduled_change" => {"action" => "pause", "effective_at" => pause_starts_at.iso8601, "resume_at" => nil})
 
     pay_subscription = Pay::PaddleBilling::Subscription.sync(object.id, object: object)
 
@@ -93,10 +89,7 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "paddle billing sync of a paused subscription is paused and not active" do
-    json = json_fixture("paddle_billing/subscription.created").deep_merge("data" => {
-      "customer_id" => @pay_customer.processor_id, "status" => "paused", "paused_at" => 1.day.ago.iso8601
-    })
-    object = Pay::Webhook.new(processor: :paddle_billing, event: json).rehydrated_event
+    object = paddle_billing_subscription_event("status" => "paused", "paused_at" => 1.day.ago.iso8601)
 
     pay_subscription = Pay::PaddleBilling::Subscription.sync(object.id, object: object)
 
@@ -150,6 +143,21 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
     assert pay_subscription.active?
   end
 
+  test "paddle billing cancel_now! with a scheduled pause removes the pause and cancels immediately" do
+    pay_subscription = pay_subscriptions(:paddle_billing)
+    pay_subscription.update!(pause_starts_at: 10.days.from_now)
+    ::Paddle::Subscription.expects(:update).with(id: pay_subscription.processor_id, scheduled_change: nil)
+    ::Paddle::Subscription.expects(:cancel).with(id: pay_subscription.processor_id, effective_from: "immediately").returns(
+      ::Paddle::Subscription.new(status: "canceled", scheduled_change: nil)
+    )
+
+    pay_subscription.cancel_now!
+
+    assert_equal "canceled", pay_subscription.status
+    assert_nil pay_subscription.pause_starts_at
+    refute pay_subscription.active?
+  end
+
   test "paddle billing cancel of a paused subscription cancels immediately" do
     pay_subscription = pay_subscriptions(:paddle_billing)
     pay_subscription.update!(status: "paused", pause_starts_at: 1.day.ago)
@@ -167,5 +175,12 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
     assert_equal "paddle_billing", Pay::PaddleBilling::Subscription.pay_processor
     assert_equal "lemon_squeezy", Pay::LemonSqueezy::Charge.pay_processor
     assert_equal "stripe", Pay::Stripe::PaymentMethod.pay_processor
+  end
+
+  private
+
+  def paddle_billing_subscription_event(**data)
+    json = json_fixture("paddle_billing/subscription.created").deep_merge("data" => data.stringify_keys.merge("customer_id" => @pay_customer.processor_id))
+    Pay::Webhook.new(processor: :paddle_billing, event: json).rehydrated_event
   end
 end

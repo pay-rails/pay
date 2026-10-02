@@ -76,15 +76,11 @@ module Pay
       end
 
       # If a subscription is paused, cancel immediately
-      # Otherwise, cancel at period end
+      # Otherwise, cancel at period end. A scheduled pause is removed first
       def cancel(**options)
         return if canceled?
 
-        # Paddle rejects changes to a subscription with a scheduled change, so remove a scheduled pause first
-        if paused? && on_grace_period?
-          ::Paddle::Subscription.update(id: processor_id, scheduled_change: nil)
-          update!(pause_starts_at: nil)
-        end
+        remove_scheduled_pause if will_pause?
 
         response = ::Paddle::Subscription.cancel(
           id: processor_id,
@@ -123,7 +119,11 @@ module Pay
       # A subscription could be set to cancel or pause in the future
       # It is considered on grace period until the cancel or pause time begins
       def on_grace_period?
-        (canceled? && Time.current < ends_at) || (paused? && pause_starts_at? && Time.current < pause_starts_at)
+        (canceled? && ends_at.future?) || will_pause?
+      end
+
+      def will_pause?
+        pause_starts_at? && pause_starts_at.future?
       end
 
       # Paddle keeps the status `active` until a scheduled pause starts, so check pause_starts_at as well
@@ -152,8 +152,8 @@ module Pay
 
         # Paddle Billing API only allows "resuming" subscriptions when they are paused
         # So cancel the scheduled change if it is in the future
-        if paused? && pause_starts_at? && Time.current < pause_starts_at
-          ::Paddle::Subscription.update(id: processor_id, scheduled_change: nil)
+        if will_pause?
+          remove_scheduled_pause
         else
           ::Paddle::Subscription.resume(id: processor_id, effective_from: "immediately")
         end
@@ -177,6 +177,14 @@ module Pay
           proration_billing_mode: options.delete(:proration_billing_mode) || "prorated_immediately"
         )
         update(processor_plan: plan, ends_at: nil, status: :active)
+      end
+
+      private
+
+      # Paddle rejects changes to a subscription with a scheduled change
+      def remove_scheduled_pause
+        ::Paddle::Subscription.update(id: processor_id, scheduled_change: nil)
+        update!(pause_starts_at: nil)
       end
     end
   end
