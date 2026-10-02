@@ -206,8 +206,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe resume with paused status resumes the subscription" do
-    pay_subscription = pay_subscriptions(:stripe)
-    pay_subscription.update!(status: "paused")
+    pay_subscription = paused_stripe_subscription
     ::Stripe::Subscription.expects(:update).never
     ::Stripe::PaymentIntent.expects(:retrieve).never
     ::Stripe::Subscription.expects(:resume).with("sub_1", has_key(:expand), anything).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
@@ -220,18 +219,16 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe resume with paused status passes options to Stripe" do
-    pay_subscription = pay_subscriptions(:stripe)
-    pay_subscription.update!(status: "paused")
+    pay_subscription = paused_stripe_subscription
     ::Stripe::Subscription.expects(:resume).with("sub_1", has_entry(billing_cycle_anchor: "unchanged"), anything).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
 
     pay_subscription.resume(billing_cycle_anchor: "unchanged")
   end
 
   test "stripe resume with paused status raises when the invoice needs a payment method" do
-    pay_subscription = pay_subscriptions(:stripe)
-    pay_subscription.update!(status: "paused")
-    ::Stripe::Subscription.expects(:resume).returns(fake_paused_stripe_subscription_with_payment)
-    ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1", anything).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "requires_payment_method"))
+    pay_subscription = paused_stripe_subscription
+    ::Stripe::Subscription.expects(:resume).returns(fake_stripe_subscription(id: "sub_1", status: "paused", latest_invoice: fake_stripe_open_invoice(payment_intent: "pi_1")))
+    ::Stripe::PaymentIntent.expects(:retrieve).with({id: "pi_1"}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "requires_payment_method"))
 
     assert_raises(Pay::InvalidPaymentMethod) { pay_subscription.resume }
 
@@ -240,10 +237,9 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe resume with paused status raises when the invoice needs authentication" do
-    pay_subscription = pay_subscriptions(:stripe)
-    pay_subscription.update!(status: "paused")
-    ::Stripe::Subscription.expects(:resume).returns(fake_paused_stripe_subscription_with_payment)
-    ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1", anything).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "requires_action"))
+    pay_subscription = paused_stripe_subscription
+    ::Stripe::Subscription.expects(:resume).returns(fake_stripe_subscription(id: "sub_1", status: "paused", latest_invoice: fake_stripe_open_invoice(payment_intent: "pi_1")))
+    ::Stripe::PaymentIntent.expects(:retrieve).with({id: "pi_1"}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "requires_action"))
 
     exception = assert_raises(Pay::ActionRequired) { pay_subscription.resume }
 
@@ -252,10 +248,9 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe resume with paused status stays paused while the payment is processing" do
-    pay_subscription = pay_subscriptions(:stripe)
-    pay_subscription.update!(status: "paused")
-    ::Stripe::Subscription.expects(:resume).returns(fake_paused_stripe_subscription_with_payment)
-    ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1", anything).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "processing"))
+    pay_subscription = paused_stripe_subscription
+    ::Stripe::Subscription.expects(:resume).returns(fake_stripe_subscription(id: "sub_1", status: "paused", latest_invoice: fake_stripe_open_invoice(payment_intent: "pi_1")))
+    ::Stripe::PaymentIntent.expects(:retrieve).with({id: "pi_1"}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "processing"))
 
     assert pay_subscription.resume
 
@@ -575,12 +570,8 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   private
 
-  def fake_paused_stripe_subscription_with_payment
-    fake_stripe_subscription(id: "sub_1", status: "paused", latest_invoice: {
-      id: "in_1001",
-      status: "open",
-      payments: {object: "list", has_more: false, data: [{id: "inpay_1", object: "invoice_payment", status: "open", payment: {type: "payment_intent", payment_intent: "pi_1"}}]}
-    })
+  def paused_stripe_subscription
+    pay_subscriptions(:stripe).tap { |pay_subscription| pay_subscription.update!(status: "paused") }
   end
 
   def fake_stripe_open_invoice(payment_intent:)

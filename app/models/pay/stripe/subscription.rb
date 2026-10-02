@@ -216,10 +216,8 @@ module Pay
         pause_starts_at? && Time.current < pause_starts_at
       end
 
-      # Stripe sets the status to `paused` when a trial ends without a payment method
-      # Pausing collection with `void` leaves the status unchanged, so check pause_behavior as well
       def paused?
-        status == "paused" || pause_behavior == "void"
+        status_paused? || pause_behavior_void?
       end
 
       # Pauses a Stripe subscription
@@ -278,10 +276,10 @@ module Pay
       # https://docs.stripe.com/api/subscriptions/resume
       def resume(**options)
         unless resumable?
-          raise Error, "You can only resume subscriptions within their grace period."
+          raise Error, "You can only resume subscriptions that are paused or within their grace period."
         end
 
-        if status == "paused"
+        if status_paused?
           @api_record = ::Stripe::Subscription.resume(processor_id, options.merge(expand_options), stripe_options)
         elsif paused?
           unpause
@@ -292,14 +290,11 @@ module Pay
           }.merge(expand_options),
             stripe_options)
         end
-        updated = update(ends_at: nil, status: @api_record.status)
+        update(ends_at: nil, status: @api_record.status)
 
-        # Validate the resumption payment and handle SCA if the subscription is still paused
-        if status == "paused" && (payment_intent_id = @api_record.latest_invoice&.payments&.first&.payment&.payment_intent)
-          Pay::Payment.from_id(payment_intent_id, stripe_account: stripe_account).validate
-        end
-
-        updated
+        # Stripe resumes successfully even when the payment fails, leaving the subscription paused
+        validate_latest_payment if status_paused?
+        true
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -322,9 +317,7 @@ module Pay
         )
 
         # Validate that swap was successful and handle SCA if needed
-        if (payment_intent_id = @api_record.latest_invoice.payments.first&.payment&.payment_intent)
-          Pay::Payment.from_id(payment_intent_id, stripe_account: stripe_account).validate
-        end
+        validate_latest_payment
 
         sync!(object: @api_record)
       rescue ::Stripe::StripeError => e
@@ -387,6 +380,23 @@ module Pay
       end
 
       private
+
+      # Stripe sets the status to `paused` when a trial ends without a payment method
+      def status_paused?
+        status == "paused"
+      end
+
+      # Pausing collection with `void` leaves the status unchanged
+      def pause_behavior_void?
+        pause_behavior == "void"
+      end
+
+      # Raises Pay::InvalidPaymentMethod or Pay::ActionRequired if the latest invoice's payment is incomplete
+      def validate_latest_payment
+        if (payment_intent = latest_payment)
+          Pay::Payment.new(payment_intent, stripe_account: stripe_account).validate
+        end
+      end
 
       # Options for Stripe requests
       def stripe_options
