@@ -1,0 +1,224 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/customers
+    body:
+      encoding: UTF-8
+      string: email=stripe%40example.org&name=Stripe+User&expand[0]=tax&expand[1]=invoice_credit_balance
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/19.6.2 PayRails/11.7.2 (https://github.com/pay-rails/pay)
+        AIAgent/claude_code
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_X4W5JEkCAsL0pf","request_duration_ms":92}}'
+      Idempotency-Key:
+      - e5204957-e2f6-4103-b79d-9930cb663c3e
+      Stripe-Version:
+      - 2026-08-26.dahlia
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"11.7.2"},"bindings_version":"19.6.2","lang":"ruby","lang_version":"4.0.6
+        p0 (2026-07-14)","engine":"ruby","platform":"arm64-darwin23","telemetry_id":"b096a2ebfc9a8899e46fbbd061887f81","ai_agent":"claude_code"}'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Sun, 20 Sep 2026 16:31:34 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '832'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=TgxcrIFEKqIuB-KGh_Amqvovw16p8Vrs7DTB7dvbweHbTg6GXX4o6fm-zZRqn8_xxwsH0IGcj-xi0-ov;
+        report-to csp
+      Idempotency-Key:
+      - e5204957-e2f6-4103-b79d-9930cb663c3e
+      Original-Request:
+      - req_XN5XYlCPY556BS
+      Report-To:
+      - '{"group":"csp","max_age":8640,"endpoints":[{"url":"https://q.stripe.com/csp-report-v2?q=TgxcrIFEKqIuB-KGh_Amqvovw16p8Vrs7DTB7dvbweHbTg6GXX4o6fm-zZRqn8_xxwsH0IGcj-xi0-ov&t=1"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - csp="https://q.stripe.com/csp-report-v2?q=TgxcrIFEKqIuB-KGh_Amqvovw16p8Vrs7DTB7dvbweHbTg6GXX4o6fm-zZRqn8_xxwsH0IGcj-xi0-ov&t=1"
+      Request-Id:
+      - req_XN5XYlCPY556BS
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - 2026-08-26.dahlia
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - 3c3
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      X-Stripe-Routing-Context-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id": "cus_VIOREaNtWaFRzs",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": 1789921894,
+          "currency": null,
+          "customer_account": null,
+          "default_source": null,
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": "stripe@example.org",
+          "invoice_credit_balance": {},
+          "invoice_prefix": "KCGXS6DR",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": null,
+            "footer": null,
+            "rendering_options": null
+          },
+          "livemode": false,
+          "metadata": {},
+          "name": "Stripe User",
+          "next_invoice_sequence": 1,
+          "phone": null,
+          "preferred_locales": [],
+          "shipping": null,
+          "tax": {
+            "automatic_tax": "unrecognized_location",
+            "ip_address": null,
+            "location": null,
+            "provider": "stripe"
+          },
+          "tax_exempt": "none",
+          "test_clock": null
+        }
+  recorded_at: Sun, 20 Sep 2026 16:31:34 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/payment_intents
+    body:
+      encoding: UTF-8
+      string: amount=0&currency=usd&customer=cus_VIOREaNtWaFRzs&expand[0]=latest_charge.balance_transaction&expand[1]=latest_charge.payment_intent&expand[2]=latest_charge.refunds.data.balance_transaction&return_url=http%3A%2F%2Flocalhost%3A3000%2F&confirm=true
+    headers:
+      User-Agent:
+      - Stripe/v1 RubyBindings/19.6.2 PayRails/11.7.2 (https://github.com/pay-rails/pay)
+        AIAgent/claude_code
+      Authorization:
+      - Bearer <STRIPE_PRIVATE_KEY>
+      X-Stripe-Client-Telemetry:
+      - '{"last_request_metrics":{"request_id":"req_XN5XYlCPY556BS","request_duration_ms":228}}'
+      Idempotency-Key:
+      - 6074900f-8f1d-43fc-9641-d72cf1db7913
+      Stripe-Version:
+      - 2026-08-26.dahlia
+      X-Stripe-Client-User-Agent:
+      - '{"application":{"name":"PayRails","partner_id":"pp_partner_IqhY0UExnJYLxg","url":"https://github.com/pay-rails/pay","version":"11.7.2"},"bindings_version":"19.6.2","lang":"ruby","lang_version":"4.0.6
+        p0 (2026-07-14)","engine":"ruby","platform":"arm64-darwin23","telemetry_id":"b096a2ebfc9a8899e46fbbd061887f81","ai_agent":"claude_code"}'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Sun, 20 Sep 2026 16:31:34 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '689'
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, HEAD, PUT, PATCH, POST, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - no-cache, no-store
+      Content-Security-Policy:
+      - base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
+        img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src
+        'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=TgxcrIFEKqIuB-KGh_Amqvovw16p8Vrs7DTB7dvbweHbTg6GXX4o6fm-zZRqn8_xxwsH0IGcj-xi0-ov;
+        report-to csp
+      Idempotency-Key:
+      - 6074900f-8f1d-43fc-9641-d72cf1db7913
+      Original-Request:
+      - req_JRhqZwSICfJx9o
+      Report-To:
+      - '{"group":"csp","max_age":8640,"endpoints":[{"url":"https://q.stripe.com/csp-report-v2?q=TgxcrIFEKqIuB-KGh_Amqvovw16p8Vrs7DTB7dvbweHbTg6GXX4o6fm-zZRqn8_xxwsH0IGcj-xi0-ov&t=1"}],"include_subdomains":true}'
+      Reporting-Endpoints:
+      - csp="https://q.stripe.com/csp-report-v2?q=TgxcrIFEKqIuB-KGh_Amqvovw16p8Vrs7DTB7dvbweHbTg6GXX4o6fm-zZRqn8_xxwsH0IGcj-xi0-ov&t=1"
+      Request-Id:
+      - req_JRhqZwSICfJx9o
+      Stripe-Version:
+      - 2026-08-26.dahlia
+      Vary:
+      - Origin
+      X-Stripe-Priority-Routing-Enabled:
+      - 'true'
+      X-Wc:
+      - 3c3
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required,
+        X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      X-Stripe-Routing-Context-Priority-Tier:
+      - api-testmode
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "error": {
+            "code": "parameter_invalid_integer",
+            "doc_url": "https://stripe.com/docs/error-codes/parameter-invalid-integer",
+            "message": "The amount must be greater than or equal to the minimum charge amount allowed for your account and the currency set (https://docs.stripe.com/currencies#minimum-and-maximum-charge-amounts).  If you want to save a Payment Method for future use without an immediate payment, use a Setup Intent instead: https://docs.stripe.com/payments/setup-intents",
+            "param": "amount",
+            "request_log_url": "https://dashboard.stripe.com/acct_1E4bfnKXBGcbgpbZ/test/workbench/logs?object=req_JRhqZwSICfJx9o",
+            "type": "invalid_request_error"
+          }
+        }
+  recorded_at: Sun, 20 Sep 2026 16:31:34 GMT
+recorded_with: VCR 6.4.0
