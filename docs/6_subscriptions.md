@@ -319,9 +319,12 @@ This will make an API call to the processor to get the record.
 
 ## Paused Subscriptions
 
-Stripe and Paddle allow you to pause subscriptions. These subscriptions are considered to be active. This allows the subscriptions
-to be displayed to your users so they can resume the subscription when ready. You will need to check if the subscription is
-paused if you wish to limit any feature access within your application.
+Stripe, Paddle and Lemon Squeezy allow you to pause subscriptions. Braintree does not.
+
+A subscription with a `paused` status is not `active?`. Use `paused?` to find these subscriptions and display them to your users so
+they can resume when ready.
+
+Stripe is the exception, because pausing collection leaves the status unchanged. See the behaviors below for which ones stay active.
 
 #### Checking if a Subscription is Paused
 
@@ -329,16 +332,16 @@ paused if you wish to limit any feature access within your application.
 @user.payment_processor.subscription.paused? #=> true or false
 ```
 
-#### Pause a Subscription (Stripe and Paddle only)
+#### Pause a Subscription (Stripe, Paddle and Lemon Squeezy only)
 
 ##### Pause a Stripe Subscription
 
 Stripe subscriptions have several behaviors.
-* `behavior: void` will put the subscription on a grace period until the end of the current period.
-* `behavior: keep_as_draft` will pause the subscription invoices but the subscription is still active. Use this to delay payments until later.
-* `behavior: mark_uncollectible` will pause the subscription invoices but the subscription is still active. Use this to provide free access temporarily.
+* `behavior: void` will put the subscription on a grace period until the end of the current period. It is `paused?` right away and stops being `active?` when the period ends.
+* `behavior: keep_as_draft` will pause the subscription invoices but the subscription is still active and is not `paused?`. Use this to delay payments until later.
+* `behavior: mark_uncollectible` will pause the subscription invoices but the subscription is still active and is not `paused?`. Use this to provide free access temporarily.
 
-Calling pause with no arguments will set `behavior: "mark_uncollectible"` by default.
+Calling pause with no arguments will set `behavior: "void"` by default.
 
 ```ruby
 @user.payment_processor.subscription.pause
@@ -360,11 +363,31 @@ Paddle will pause payments at the end of the period. The status remains `active`
 @user.payment_processor.subscription.pause
 ```
 
+##### Pause a Lemon Squeezy Subscription
+
+The subscription is paused immediately and is no longer active. Options are passed through to Lemon Squeezy.
+
+```ruby
+@user.payment_processor.subscription.pause
+```
+
 #### Resuming a Paused Subscription
 
 ```ruby
 @user.payment_processor.subscription.resume
 ```
+
+##### Stripe trials that end without a payment method
+
+Stripe sets a subscription's status to `paused` when its trial ends without a payment method and `trial_settings: {end_behavior: {missing_payment_method: "pause"}}` is set. These subscriptions are `paused?` and not `active?`.
+
+Once the customer has added a payment method, `resume` calls Stripe's [resume endpoint](https://docs.stripe.com/api/subscriptions/resume). Stripe bills the customer immediately and the subscription stays paused until that invoice is paid. Options are passed through to Stripe:
+
+```ruby
+@user.payment_processor.subscription.resume(billing_cycle_anchor: "unchanged")
+```
+
+If that payment needs a payment method or authentication, the subscription stays paused and `resume` raises `Pay::InvalidPaymentMethod` or `Pay::ActionRequired`, the same as `subscribe` and `swap`.
 
 ## Manually syncing subscriptions
 
