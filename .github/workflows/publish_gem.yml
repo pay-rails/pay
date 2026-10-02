@@ -32,8 +32,11 @@ jobs:
         run: |
           sed -i 's/".*"/"${{ inputs.version }}"/' lib/pay/version.rb
           bundle config set --local deployment 'false'
-          bundle
-          bundle exec appraisal
+          # Only the lockfiles need the new version, so resolve without installing anything
+          bundle lock
+          for gemfile in gemfiles/*.gemfile; do
+            BUNDLE_GEMFILE=$gemfile bundle lock
+          done
           git config user.name 'GitHub Actions'
           git config user.email github-actions@github.com
           git add Gemfile.lock gemfiles lib
