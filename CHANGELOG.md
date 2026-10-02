@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Fix the SCA confirmation page for SetupIntents. It raised on the missing `amount` and confirmed with `confirmPayment`; it now uses `stripe.confirmSetup` with setup-specific copy (`pay.setup_intent.*` translations)
+* Fix the SCA confirmation page for SetupIntents. It raised on the missing `amount` and confirmed with `confirmPayment`; it now uses `stripe.confirmSetup` with setup-specific copy. If you translate Pay's `pay.*` keys into other languages, add the new `pay.setup_intent.*` keys from `config/locales/en.yml` to your locale files
 
 ### 12.1.1
 
