@@ -387,6 +387,8 @@ Once the customer has added a payment method, `resume` calls Stripe's [resume en
 @user.payment_processor.subscription.resume(billing_cycle_anchor: "unchanged")
 ```
 
+If that payment needs a payment method or authentication, the subscription stays paused and `resume` raises `Pay::InvalidPaymentMethod` or `Pay::ActionRequired`, the same as `subscribe` and `swap`.
+
 ## Manually syncing subscriptions
 
 In general, you don't need to use these methods as Pay's webhooks will keep you all your subscriptions in sync automatically.

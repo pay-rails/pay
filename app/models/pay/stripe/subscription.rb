@@ -271,6 +271,7 @@ module Pay
       # Resumes a subscription that is on its grace period or paused
       #
       # Subscriptions with a `paused` status are billed immediately and stay paused until that invoice is paid
+      # Raises Pay::InvalidPaymentMethod or Pay::ActionRequired if that payment needs a payment method or authentication
       #
       # resume(billing_cycle_anchor: "unchanged")
       #
@@ -291,7 +292,14 @@ module Pay
           }.merge(expand_options),
             stripe_options)
         end
-        update(ends_at: nil, status: @api_record.status)
+        updated = update(ends_at: nil, status: @api_record.status)
+
+        # Validate the resumption payment and handle SCA if the subscription is still paused
+        if status == "paused" && (payment_intent_id = @api_record.latest_invoice&.payments&.first&.payment&.payment_intent)
+          Pay::Payment.from_id(payment_intent_id, stripe_account: stripe_account).validate
+        end
+
+        updated
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
