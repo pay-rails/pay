@@ -16,6 +16,7 @@ module Pay
       assert_response :success
       assert_includes response.body, %(data-payment-intent-public-key-value="#{Pay::Stripe.public_key}")
       assert_includes response.body, %(data-payment-intent-stripe-account-value="")
+      assert_includes response.body, %(data-payment-intent-setup-intent-value="false")
       refute_includes response.body[response.body.index("<script")..], "<%"
     end
 
@@ -26,6 +27,17 @@ module Pay
 
       assert_response :success
       assert_includes response.body, %(data-payment-intent-stripe-account-value="acct_123")
+    end
+
+    test "shows a setup intent" do
+      setup_intent = ::Stripe::SetupIntent.construct_from(id: "seti_123", object: "setup_intent", status: "requires_action", client_secret: "seti_123_secret", customer: "cus_123")
+      ::Stripe::SetupIntent.expects(:retrieve).with("seti_123", {}).returns(setup_intent)
+
+      get payment_path("seti_123")
+
+      assert_response :success
+      assert_includes response.body, %(data-payment-intent-setup-intent-value="true")
+      assert_includes response.body, I18n.t("pay.setup_intent.requires_action.header")
     end
 
     test "back link keeps a same-site path with its query string" do

@@ -82,7 +82,8 @@ function setupStripe() {
     // Updating a card or subscribing with a trial (using a SetupIntent)
     } else if (setupIntentId) {
       stripe.confirmCardSetup(setupIntentId, {
-        payment_method: data.payment_method_data
+        payment_method: data.payment_method_data,
+        return_url: window.location.href
       }).then((result) => {
         if (result.error) {
           displayError.textContent = result.error.message
