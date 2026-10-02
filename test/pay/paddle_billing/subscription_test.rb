@@ -132,10 +132,11 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
     assert pay_subscription.active?
   end
 
-  test "paddle billing cancel with a scheduled pause cancels at the end of the period" do
+  test "paddle billing cancel with a scheduled pause removes the pause and cancels at the end of the period" do
     pay_subscription = pay_subscriptions(:paddle_billing)
     pay_subscription.update!(pause_starts_at: 10.days.from_now)
     ends_at = 10.days.from_now.change(usec: 0)
+    ::Paddle::Subscription.expects(:update).with(id: pay_subscription.processor_id, scheduled_change: nil)
     ::Paddle::Subscription.expects(:cancel).with(id: pay_subscription.processor_id, effective_from: "next_billing_period").returns(
       ::Paddle::Subscription.new(status: "active", scheduled_change: {action: "cancel", effective_at: ends_at.iso8601})
     )
@@ -143,11 +144,16 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
     pay_subscription.cancel
 
     assert_equal ends_at, pay_subscription.ends_at
+    assert_nil pay_subscription.pause_starts_at
+    refute pay_subscription.paused?
+    assert pay_subscription.on_grace_period?
+    assert pay_subscription.active?
   end
 
   test "paddle billing cancel of a paused subscription cancels immediately" do
     pay_subscription = pay_subscriptions(:paddle_billing)
     pay_subscription.update!(status: "paused", pause_starts_at: 1.day.ago)
+    ::Paddle::Subscription.expects(:update).never
     ::Paddle::Subscription.expects(:cancel).with(id: pay_subscription.processor_id, effective_from: "immediately").returns(
       ::Paddle::Subscription.new(status: "canceled", scheduled_change: nil)
     )

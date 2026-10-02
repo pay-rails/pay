@@ -76,13 +76,19 @@ module Pay
       end
 
       # If a subscription is paused, cancel immediately
-      # Otherwise, cancel at period end, including when a pause is scheduled but has not started
+      # Otherwise, cancel at period end
       def cancel(**options)
         return if canceled?
 
+        # Paddle rejects changes to a subscription with a scheduled change, so remove a scheduled pause first
+        if paused? && on_grace_period?
+          ::Paddle::Subscription.update(id: processor_id, scheduled_change: nil)
+          update!(pause_starts_at: nil)
+        end
+
         response = ::Paddle::Subscription.cancel(
           id: processor_id,
-          effective_from: options.fetch(:effective_from, (paused? && !on_grace_period?) ? "immediately" : "next_billing_period")
+          effective_from: options.fetch(:effective_from, paused? ? "immediately" : "next_billing_period")
         )
         update(
           status: response.status,

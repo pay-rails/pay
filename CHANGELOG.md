@@ -3,7 +3,7 @@
 ### Unreleased
 
 * Fix the SCA confirmation page for SetupIntents. It raised on the missing `amount` and confirmed with `confirmPayment`; it now uses `stripe.confirmSetup` with setup-specific copy. If you translate Pay's `pay.*` keys into other languages, add the new `pay.setup_intent.*` keys from `config/locales/en.yml` to your locale files
-* Paddle Billing subscriptions with a scheduled pause stay `active?` until the pause starts. `pause` no longer sets the status to `paused` right away, and `paused?` is true whenever a pause is scheduled or in effect, so a pause synced from Paddle can be resumed. `cancel` during a scheduled pause now cancels at the end of the period instead of immediately
+* Paddle Billing subscriptions with a scheduled pause stay `active?` until the pause starts. `pause` no longer sets the status to `paused` right away, and `paused?` is true whenever a pause is scheduled or in effect, so a pause synced from Paddle can be resumed. `cancel` during a scheduled pause removes the pause and cancels at the end of the period, where Paddle previously rejected it or Pay cancelled immediately
 
 ### 12.1.1
 
