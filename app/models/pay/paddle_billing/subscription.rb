@@ -39,8 +39,6 @@ module Pay
             pay_customer.payment_methods.destroy_all
           when "trialing"
             attributes[:trial_ends_at] = Time.parse(subscription.next_billed_at) if subscription.next_billed_at
-          when "paused"
-            attributes[:pause_starts_at] = Time.parse(subscription.paused_at) if subscription.paused_at
           when "active", "past_due"
             attributes[:trial_ends_at] = nil
             attributes[:pause_starts_at] = nil
@@ -96,8 +94,6 @@ module Pay
 
       def cancel_now!(**options)
         cancel(**options.merge(effective_from: "immediately"))
-      rescue ::Paddle::Error => e
-        raise Pay::PaddleBilling::Error, e
       end
 
       def change_quantity(quantity, **options)
