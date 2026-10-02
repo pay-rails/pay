@@ -8,16 +8,14 @@ VCR.configure do |c|
   c.filter_sensitive_data("<VENDOR_AUTH_CODE>") { ENV["PADDLE_CLASSIC_VENDOR_AUTH_CODE"] }
   c.filter_sensitive_data("<STRIPE_PRIVATE_KEY>") { Pay::Stripe.private_key }
   c.filter_sensitive_data("<BRAINTREE_PRIVATE_KEY>") { Pay::Braintree.private_key }
-  c.filter_sensitive_data("<PADDLE_PRIVATE_KEY>") { Pay::PaddleClassic.vendor_auth_code }
   c.filter_sensitive_data("<PADDLE_API_KEY>") { Pay::PaddleBilling.api_key }
   c.filter_sensitive_data("<LEMON_SQUEEZY_API_KEY>") { Pay::LemonSqueezy.api_key }
-  #  c.default_cassette_options = {re_record_interval: 1.week} # Re-record every week
 end
 
 class ActiveSupport::TestCase
   setup do
-    # Test filenames are case sensitive in CI
-    VCR.insert_cassette name # , re_record_interval: 6.months
+    # Recorded requests a test no longer makes fail the test, so stale cassettes get noticed
+    VCR.insert_cassette vcr_cassette_name, allow_unused_http_interactions: false
   end
 
   teardown do
@@ -27,6 +25,13 @@ class ActiveSupport::TestCase
     puts
     puts "Unused HTTP requests in cassette: #{cassette.file}"
     raise
+  end
+
+  private
+
+  # Cassettes are stored per test class, like test/vcr_cassettes/pay/stripe/customer_test/stripe_can_create_a_charge.yml
+  def vcr_cassette_name
+    "#{self.class.name.underscore}/#{name.delete_prefix("test_")}"
   end
 end
 

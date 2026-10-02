@@ -7,7 +7,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree cancel" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       @pay_customer.subscribe(trial_period_days: 0)
       @subscription = @pay_customer.subscription
       @subscription.cancel
@@ -29,7 +29,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree resume on grace period" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       @pay_customer.subscribe(trial_period_days: 14)
       @subscription = @pay_customer.subscription
       @subscription.cancel
@@ -43,7 +43,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree cancel_now on trial" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       @pay_customer.subscribe(trial_period_days: 14)
       pay_subscription = @pay_customer.subscription
       pay_subscription.cancel_now!
@@ -94,7 +94,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree sync subscription with trial" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
       processor_id = pay_subscription.processor_id
 
@@ -124,7 +124,7 @@ class Pay::Braintree::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "braintree sync canceled subscription with trial" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       travel 1.minute
       pay_subscription = @pay_customer.subscribe(plan: "default", trial_period_days: 14)
       processor_id = pay_subscription.processor_id

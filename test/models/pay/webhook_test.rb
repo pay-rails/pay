@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::Webhook::Test < ActiveSupport::TestCase
+class Pay::WebhookTest < ActiveSupport::TestCase
   test "rehydrates a Paddle Classic event" do
     pay_webhook = Pay::Webhook.create processor: :paddle_classic, event_type: :example, event: json_fixture("paddle_classic/subscription_payment_succeeded")
     event = pay_webhook.rehydrated_event

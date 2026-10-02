@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::WebhookDelegatorTest < ActiveSupport::TestCase
+class Pay::Webhooks::DelegatorTest < ActiveSupport::TestCase
   class TestEventProcessor
     attr_accessor :success
 

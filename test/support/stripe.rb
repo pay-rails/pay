@@ -80,7 +80,8 @@ class ActiveSupport::TestCase
     })
   end
 
-  def fake_stripe_subscription(**values)
+  # Stripe reports the billing period on the subscription items, so current_period_end is applied to the default item
+  def fake_stripe_subscription(current_period_end: 1488987924, **values)
     values.reverse_merge!(
       id: "123",
       object: "subscription",
@@ -116,7 +117,7 @@ class ActiveSupport::TestCase
             object: "subscription_item",
             billing_threshold: nil,
             created: 1638904425,
-            current_period_end: 1488987924,
+            current_period_end: current_period_end,
             current_period_start: 1486568724,
             metadata: {},
             price: {
@@ -151,8 +152,40 @@ class ActiveSupport::TestCase
   end
 
   # Creates a Pay::Stripe::Subscription record for webhook tests to look up
-  def create_stripe_subscription(processor_id:, customer: pay_customers(:stripe), trial_ends_at: nil)
-    customer.subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active", trial_ends_at: trial_ends_at)
+  def create_stripe_subscription(processor_id:, customer: pay_customers(:stripe), **attributes)
+    customer.subscriptions.create!(processor_id: processor_id, name: "default", processor_plan: "some-plan", status: "active", **attributes)
+  end
+
+  def fake_stripe_price(interval: "month", **values)
+    values.reverse_merge!(
+      id: "price_1234",
+      object: "price",
+      active: true,
+      billing_scheme: "per_unit",
+      created: 1673394102,
+      currency: "usd",
+      custom_unit_amount: nil,
+      livemode: false,
+      lookup_key: nil,
+      metadata: {},
+      nickname: nil,
+      product: "prod_1234",
+      recurring: {
+        aggregate_usage: nil,
+        interval: interval,
+        interval_count: 1,
+        meter: nil,
+        trial_period_days: nil,
+        usage_type: "licensed"
+      },
+      tax_behavior: "exclusive",
+      tiers_mode: nil,
+      transform_quantity: nil,
+      type: "recurring",
+      unit_amount: 1900,
+      unit_amount_decimal: "1900"
+    )
+    ::Stripe::Price.construct_from(values)
   end
 
   def fake_stripe_invoice_payment(**values)

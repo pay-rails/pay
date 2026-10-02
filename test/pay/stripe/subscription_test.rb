@@ -22,9 +22,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe change subscription quantity" do
-    @pay_customer.update(processor_id: nil)
-    @pay_customer.update_payment_method "pm_card_visa"
-    subscription = @pay_customer.subscribe(name: "default", plan: "default")
+    subscription = subscribe
     subscription.change_quantity(5)
     stripe_subscription = subscription.api_record
     assert_equal 5, stripe_subscription.items.first.quantity
@@ -51,11 +49,52 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal 2, pay_subscription.reload.quantity
   end
 
+  test "stripe can swap a subscription" do
+    subscription = subscribe(plan: "small-monthly")
+    subscription.swap("small-annual")
+    assert_equal "default", subscription.name
+    assert_equal "small-annual", subscription.processor_plan
+  end
+
+  test "stripe can swap a subscription and reset billing cycle" do
+    subscription = subscribe(plan: "small-monthly")
+    subscription.swap("small-annual", billing_cycle_anchor: "now")
+    assert_equal "default", subscription.name
+    assert_equal "small-annual", subscription.processor_plan
+  end
+
+  test "stripe can swap and invoice a subscription" do
+    subscription = subscribe(plan: "small-monthly")
+    subscription.swap_and_invoice("small-annual")
+    assert_equal "default", subscription.name
+    assert_equal "small-annual", subscription.processor_plan
+  end
+
+  test "stripe can pause and resume a subscription" do
+    travel_to_cassette do
+      pay_subscription = subscribe(plan: "small-monthly")
+
+      pay_subscription.pause(behavior: "void", resumes_at: 1.month.from_now.to_i)
+      assert pay_subscription.paused?
+      assert_equal "void", pay_subscription.pause_behavior
+      assert pay_subscription.pause_resumes_at > 21.days.from_now
+
+      # Ensure Stripe record is paused
+      assert_equal "void", pay_subscription.api_record.pause_collection.behavior
+
+      pay_subscription.resume
+      refute pay_subscription.paused?
+      assert_nil pay_subscription.pause_behavior
+      assert_nil pay_subscription.pause_resumes_at
+
+      # Ensure Stripe record is unpaused
+      assert_nil pay_subscription.api_record.pause_collection
+    end
+  end
+
   test "cancel_now when scheduled for cancellation" do
     travel_to_cassette do
-      @pay_customer.update(processor_id: nil)
-      @pay_customer.update_payment_method "pm_card_visa"
-      subscription = @pay_customer.subscribe(name: "default", plan: "default")
+      subscription = subscribe
       subscription.cancel
       assert subscription.active?
       assert subscription.ends_at?
@@ -69,9 +108,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "cancel_now when on trial" do
     travel_to_cassette do
-      @pay_customer.update(processor_id: nil)
-      @pay_customer.update_payment_method "pm_card_visa"
-      subscription = @pay_customer.subscribe(name: "default", plan: "default", trial_period_days: 14)
+      subscription = subscribe(trial_period_days: 14)
       assert subscription.active?
       assert subscription.on_trial?
       subscription.cancel_now!
@@ -153,7 +190,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal 1488987924, pay_subscription.trial_ends_at.to_i
   end
 
-  test "sync stripe subscription does not set trial_ends_at when subscription canceled after trial end" do
+  test "sync stripe subscription keeps trial_ends_at when subscription canceled after trial end" do
     fake_subscription = fake_stripe_subscription(trial_end: 1488987924, ended_at: 1650479887)
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_subscription)
     assert_equal 1488987924, pay_subscription.trial_ends_at.to_i
@@ -175,9 +212,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "stripe resume on grace period" do
     travel_to_cassette do
-      @pay_customer.update(processor_id: nil)
-      @pay_customer.update_payment_method "pm_card_visa"
-      subscription = @pay_customer.subscribe(name: "default", plan: "default")
+      subscription = subscribe
       subscription.cancel
       assert_not_nil subscription.ends_at
       subscription.resume
@@ -307,7 +342,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     refute pay_subscription.metered
   end
 
-  test ".with_metered_items returns all subscriptions that have a metered billing subscription item associated" do
+  test ".metered returns all subscriptions that have a metered billing subscription item associated" do
     assert_equal [pay_subscriptions(:stripe_with_items)], Pay::Subscription.metered.to_a
   end
 
@@ -324,66 +359,22 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "stripe pause_behavior void sets pause_starts_at" do
     freeze_time
-    # First sync the subscription, then sync as paused
-    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
-    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "void", resumes_at: nil}, items: {
-      object: "list",
-      data: [
-        {
-          id: "si_KjcLsWCXBgVRuU",
-          object: "subscription_item",
-          created: 1638904425,
-          current_period_end: 1.day.from_now,
-          metadata: {},
-          price: {
-            id: "large-monthly"
-          },
-          quantity: 1
-        }
-      ],
-      has_more: false,
-      total_count: 1,
-      url: "/v1/subscription_items?subscription=sub_1K496iKXBGcbgpbZSrTl9uTg"
-    }))
-    assert_equal pay_subscription.pause_starts_at, 1.day.from_now
+    pay_subscription = sync_paused_subscription(behavior: "void", current_period_end: 1.day.from_now)
+    assert_equal 1.day.from_now, pay_subscription.pause_starts_at
   end
 
   test "stripe pause_behavior mark_uncollectible does not set pause_starts_at" do
-    # First sync the subscription, then sync as paused
-    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
-    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "mark_uncollectible", resumes_at: nil}, current_period_end: 1.day.from_now))
+    pay_subscription = sync_paused_subscription(behavior: "mark_uncollectible", current_period_end: 1.day.from_now)
     assert_nil pay_subscription.pause_starts_at
   end
 
   test "stripe pause_behavior keep_as_draft does not set pause_starts_at" do
-    # First sync the subscription, then sync as paused
-    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
-    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "keep_as_draft", resumes_at: nil}, current_period_end: 1.day.from_now))
+    pay_subscription = sync_paused_subscription(behavior: "keep_as_draft", current_period_end: 1.day.from_now)
     assert_nil pay_subscription.pause_starts_at
   end
 
   test "stripe pause_behavior void grace period" do
-    # First sync the subscription, then sync as paused
-    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
-    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "void", resumes_at: nil}, items: {
-      object: "list",
-      data: [
-        {
-          id: "si_KjcLsWCXBgVRuU",
-          object: "subscription_item",
-          created: 1638904425,
-          current_period_end: 1.day.from_now,
-          metadata: {},
-          price: {
-            id: "large-monthly"
-          },
-          quantity: 1
-        }
-      ],
-      has_more: false,
-      total_count: 1,
-      url: "/v1/subscription_items?subscription=sub_1K496iKXBGcbgpbZSrTl9uTg"
-    }))
+    pay_subscription = sync_paused_subscription(behavior: "void", current_period_end: 1.day.from_now)
     assert pay_subscription.will_pause?
     refute pay_subscription.pause_active?
     assert pay_subscription.on_grace_period?
@@ -391,49 +382,41 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "stripe pause_behavior void after grace period" do
-    # First sync the subscription, then sync as paused
-    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
-    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "void", resumes_at: nil}, current_period_end: 1.day.ago))
+    pay_subscription = sync_paused_subscription(behavior: "void", current_period_end: 1.day.ago)
     refute pay_subscription.will_pause?
     assert pay_subscription.pause_active?
     refute pay_subscription.on_grace_period?
     refute pay_subscription.active?
   end
 
-  test "stripe pause_behavior mark_uncollectible after grace period" do
-    # First sync the subscription, then sync as paused
-    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
-    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "mark_uncollectible", resumes_at: nil}, current_period_end: 1.day.from_now))
+  test "stripe pause_behavior mark_uncollectible has no grace period and stays active" do
+    pay_subscription = sync_paused_subscription(behavior: "mark_uncollectible", current_period_end: 1.day.from_now)
     refute pay_subscription.on_grace_period?
     assert pay_subscription.active?
   end
 
-  test "stripe pause_behavior keep_as_draft after grace period" do
-    # First sync the subscription, then sync as paused
-    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
-    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: "keep_as_draft", resumes_at: nil}, current_period_end: 1.day.from_now))
+  test "stripe pause_behavior keep_as_draft has no grace period and stays active" do
+    pay_subscription = sync_paused_subscription(behavior: "keep_as_draft", current_period_end: 1.day.from_now)
     refute pay_subscription.on_grace_period?
     assert pay_subscription.active?
   end
 
   test "stripe subscription syncs payment method association if string" do
-    payment_method = pay_payment_methods(:one)
+    payment_method = pay_payment_methods(:stripe)
     Pay::Stripe::PaymentMethod.stubs(:sync).returns(payment_method)
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: "pm_1000"))
     assert_equal payment_method, pay_subscription.payment_method
   end
 
   test "stripe subscription syncs payment method association if object" do
-    payment_method = pay_payment_methods(:one)
+    payment_method = pay_payment_methods(:stripe)
     Pay::Stripe::PaymentMethod.stubs(:sync).returns(payment_method)
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: fake_stripe_payment_method(id: "pm_1000")))
     assert_equal payment_method, pay_subscription.payment_method
   end
 
   test "stripe change subscription default payment method" do
-    @pay_customer.update(processor_id: nil)
-    @pay_customer.update_payment_method "pm_card_visa"
-    subscription = @pay_customer.subscribe(name: "default", plan: "default")
+    subscription = subscribe
 
     payment_method = ::Stripe::PaymentMethod.attach("pm_card_discover", {customer: @pay_customer.processor_id})
     subscription.update_payment_method payment_method.id
@@ -482,7 +465,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "stripe sync passes the customer's stripe_account to the payment method sync" do
     @pay_customer.update!(stripe_account: "acct_123")
-    Pay::Stripe::PaymentMethod.expects(:sync).with("pm_1000", stripe_account: "acct_123").returns(pay_payment_methods(:one))
+    Pay::Stripe::PaymentMethod.expects(:sync).with("pm_1000", stripe_account: "acct_123").returns(pay_payment_methods(:stripe))
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: "pm_1000"))
     assert_equal "acct_123", pay_subscription.stripe_account
   end
@@ -569,6 +552,19 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   end
 
   private
+
+  # Creates a new Stripe customer with a card and subscribes them through the API
+  def subscribe(plan: "default", **options)
+    @pay_customer.update(processor_id: nil)
+    @pay_customer.update_payment_method "pm_card_visa"
+    @pay_customer.subscribe(name: "default", plan: plan, **options)
+  end
+
+  # Syncs the subscription and then syncs it again as paused
+  def sync_paused_subscription(behavior:, current_period_end:)
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
+    Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: behavior, resumes_at: nil}, current_period_end: current_period_end))
+  end
 
   def paused_stripe_subscription
     pay_subscriptions(:stripe).tap { |pay_subscription| pay_subscription.update!(status: "paused") }

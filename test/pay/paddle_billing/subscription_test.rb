@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
+class Pay::PaddleBilling::SubscriptionTest < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:paddle_billing)
   end
@@ -26,8 +26,7 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
 
   test "paddle billing sync of a canceled subscription removes the customer's payment methods" do
     @pay_customer.payment_methods.create!(processor_id: "pm_paddle", payment_method_type: "card")
-    json = json_fixture("paddle_billing/subscription.created").deep_merge("data" => {"status" => "canceled", "customer_id" => @pay_customer.processor_id})
-    object = Pay::Webhook.new(processor: :paddle_billing, event: json).rehydrated_event
+    object = paddle_billing_subscription_event("status" => "canceled")
 
     subscription = Pay::PaddleBilling::Subscription.sync(object.id, object: object)
 
@@ -36,8 +35,7 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "paddle billing sync retries with a fresh read after a stale lookup" do
-    json = json_fixture("paddle_billing/subscription.created").deep_merge("data" => {"customer_id" => @pay_customer.processor_id})
-    object = Pay::Webhook.new(processor: :paddle_billing, event: json).rehydrated_event
+    object = paddle_billing_subscription_event
     existing = @pay_customer.subscriptions.create!(processor_id: object.id, name: "default", processor_plan: "default", status: "active")
     Pay::PaddleBilling::Subscription.stubs(:find_by).returns(nil).then.returns(existing)
     ::Paddle::Subscription.expects(:retrieve).with(id: object.id).twice.returns(object)
@@ -180,7 +178,6 @@ class Pay::PaddleBilling::Subscription::Test < ActiveSupport::TestCase
   private
 
   def paddle_billing_subscription_event(**data)
-    json = json_fixture("paddle_billing/subscription.created").deep_merge("data" => data.stringify_keys.merge("customer_id" => @pay_customer.processor_id))
-    Pay::Webhook.new(processor: :paddle_billing, event: json).rehydrated_event
+    paddle_billing_event("subscription.created", overrides: {"data" => data.stringify_keys.merge("customer_id" => @pay_customer.processor_id)})
   end
 end

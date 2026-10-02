@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::Test < ActiveSupport::TestCase
+class PayTest < ActiveSupport::TestCase
   test "supports receipts 2 and 3" do
     assert Pay::Engine.version_matches?(required: Pay::Engine::RECEIPTS_VERSION, current: "2.4.0")
     assert Pay::Engine.version_matches?(required: Pay::Engine::RECEIPTS_VERSION, current: "3.0.0")
@@ -18,14 +18,6 @@ class Pay::Test < ActiveSupport::TestCase
 
   test "parent_mailer config" do
     assert_equal "Pay::ApplicationMailer", Pay.parent_mailer
-  end
-
-  test "mailer config" do
-    Pay.mailer = "Pay::ApplicationMailer"
-    assert_equal Pay::ApplicationMailer, Pay.mailer
-
-    Pay.mailer = "Pay::UserMailer"
-    assert_equal Pay::UserMailer, Pay.mailer
   end
 
   test "mailer is resolved on every call so a reloaded class is picked up" do
@@ -50,40 +42,24 @@ class Pay::Test < ActiveSupport::TestCase
     end
   end
 
-  test "can disable all emails with a boolean" do
-    original_send_email_value = Pay.send_emails
+  {"boolean" => false, "lambda" => -> { false }}.each do |type, value|
+    test "can disable all emails with a #{type}" do
+      original_send_email_value = Pay.send_emails
 
-    Pay.emails.keys.each do |mail_action|
-      Pay.emails.stub mail_action, true do
-        assert Pay.send_email?(mail_action)
+      Pay.emails.keys.each do |mail_action|
+        Pay.emails.stub mail_action, true do
+          assert Pay.send_email?(mail_action)
+        end
       end
-    end
 
-    Pay.send_emails = false
+      Pay.send_emails = value
 
-    Pay.emails.keys.each do |mail_action|
-      refute Pay.send_email?(mail_action)
-    end
-  ensure
-    Pay.send_emails = original_send_email_value
-  end
-
-  test "can disable all emails with a lambda" do
-    original_send_email_value = Pay.send_emails
-
-    Pay.emails.keys.each do |mail_action|
-      Pay.emails.stub mail_action, true do
-        assert Pay.send_email?(mail_action)
+      Pay.emails.keys.each do |mail_action|
+        refute Pay.send_email?(mail_action)
       end
+    ensure
+      Pay.send_emails = original_send_email_value
     end
-
-    Pay.send_emails = -> { false }
-
-    Pay.emails.keys.each do |mail_action|
-      refute Pay.send_email?(mail_action)
-    end
-  ensure
-    Pay.send_emails = original_send_email_value
   end
 
   test "can configure email options with a boolean" do
@@ -107,13 +83,13 @@ class Pay::Test < ActiveSupport::TestCase
     end
   end
 
-  test "can retrieve Pay::UserMail as default mailer" do
-    assert_equal Pay.mailer, Pay::UserMailer
+  test "mailer defaults to Pay::UserMailer" do
+    assert_equal Pay::UserMailer, Pay.mailer
   end
 
-  test "can configure mailer and retrieve correct class" do
+  test "mailer can be configured with a class name" do
     Pay.mailer = "ApplicationMailer"
-    assert_equal Pay.mailer, ApplicationMailer
+    assert_equal ApplicationMailer, Pay.mailer
   ensure
     Pay.mailer = "Pay::UserMailer" # clean up for other tests
   end

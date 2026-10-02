@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::FakeProcessor::Subscription::Test < ActiveSupport::TestCase
+class Pay::FakeProcessor::SubscriptionTest < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:fake)
     @subscription = @pay_customer.subscribe

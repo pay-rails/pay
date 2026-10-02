@@ -7,7 +7,7 @@ class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
 
   test "removes default payment method if default payment method set to null" do
     event = stripe_event("customer.updated")
-    Pay::Stripe::Customer.any_instance.expects(:api_record).returns(::Stripe::Customer.construct_from(invoice_credit_balance: Stripe::Util.convert_to_stripe_object({usd: 12345}), invoice_settings: Stripe::Util.convert_to_stripe_object({default_payment_method: nil}), currency: "usd"))
+    expect_stripe_customer_lookup
     assert_not_nil @pay_customer.default_payment_method
     Pay::Stripe::Webhooks::CustomerUpdated.new.call(event)
     @pay_customer.reload
@@ -22,10 +22,20 @@ class Pay::Stripe::Webhooks::CustomerUpdatedTest < ActiveSupport::TestCase
 
   test "stripe invoice credit balance is updated" do
     event = stripe_event("customer.updated")
-    Pay::Stripe::Customer.any_instance.expects(:api_record).returns(::Stripe::Customer.construct_from(invoice_credit_balance: Stripe::Util.convert_to_stripe_object({usd: 12345}), invoice_settings: Stripe::Util.convert_to_stripe_object({default_payment_method: nil}), currency: "usd"))
+    expect_stripe_customer_lookup
     Pay::Stripe::Webhooks::CustomerUpdated.new.call(event)
     @pay_customer.reload
     assert_equal "usd", @pay_customer.currency
     assert_equal 12345, @pay_customer.invoice_credit_balance["usd"]
+  end
+
+  private
+
+  def expect_stripe_customer_lookup
+    Pay::Stripe::Customer.any_instance.expects(:api_record).returns(::Stripe::Customer.construct_from(
+      invoice_credit_balance: Stripe::Util.convert_to_stripe_object({usd: 12345}),
+      invoice_settings: Stripe::Util.convert_to_stripe_object({default_payment_method: nil}),
+      currency: "usd"
+    ))
   end
 end

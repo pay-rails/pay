@@ -6,7 +6,7 @@ class Pay::Stripe::Webhooks::PaymentMethodUpdatedTest < ActiveSupport::TestCase
   end
 
   test "updates payment method in database" do
-    payment_method = pay_payment_methods(:one)
+    payment_method = pay_payment_methods(:stripe)
 
     # Spoof Stripe PaymentMethod lookup
     fake_payment_method = ::Stripe::PaymentMethod.construct_from(id: payment_method.processor_id, customer: "cus_1234", type: "card", card: Stripe::Util.convert_to_stripe_object({brand: "Visa", last4: "4242", exp_month: "01", exp_year: "2034"}))

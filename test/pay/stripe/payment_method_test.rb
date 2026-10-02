@@ -112,7 +112,7 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
   end
 
   test "Stripe detach sends the connected account as options" do
-    payment_method = pay_payment_methods(:one)
+    payment_method = pay_payment_methods(:stripe)
     payment_method.customer.update!(stripe_account: "acct_123")
     ::Stripe::PaymentMethod.expects(:detach).with("pm_1000", {}, {stripe_account: "acct_123"})
 

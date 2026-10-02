@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
+class Pay::PaddleClassic::SubscriptionTest < ActiveSupport::TestCase
   setup do
     @pay_customer = pay_customers(:paddle_classic)
   end
@@ -61,7 +61,7 @@ class Pay::PaddleClassic::Subscription::Test < ActiveSupport::TestCase
   end
 
   test "paddle classic resume on paused state" do
-    travel_to(VCR.current_cassette&.originally_recorded_at || Time.current) do
+    travel_to_cassette do
       subscription = @pay_customer.subscription
       subscription.update!(status: :trialing, trial_ends_at: 3.days.from_now)
       subscription.pause

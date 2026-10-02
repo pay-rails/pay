@@ -1,8 +1,6 @@
 require "test_helper"
 
-class Pay::Billable::SyncCustomer::Test < ActiveSupport::TestCase
-  include ActiveJob::TestHelper
-
+class Pay::Billable::SyncCustomerTest < ActiveSupport::TestCase
   test "customer sync only on updating customer email" do
     assert_no_enqueued_jobs do
       User.create(email: "test@example.com")
