@@ -6,6 +6,11 @@ class Pay::Payment::Test < ActiveSupport::TestCase
     assert_equal "$12.34", Pay::Payment.new(fake_payment_intent).amount_with_currency
   end
 
+  test "amount_with_currency is nil for a setup intent" do
+    setup_intent = ::Stripe::SetupIntent.construct_from(id: "seti_123", object: "setup_intent")
+    assert_nil Pay::Payment.new(setup_intent).amount_with_currency
+  end
+
   test "from_id retrieves a payment intent on the connected account" do
     payment_intent = ::Stripe::PaymentIntent.construct_from(id: "pi_123", object: "payment_intent", status: "succeeded")
     ::Stripe::PaymentIntent.expects(:retrieve).with("pi_123", {stripe_account: "acct_123"}).returns(payment_intent)

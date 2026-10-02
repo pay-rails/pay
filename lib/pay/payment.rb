@@ -19,6 +19,10 @@ module Pay
       @stripe_account = stripe_account
     end
 
+    def setup_intent?
+      intent.is_a?(::Stripe::SetupIntent)
+    end
+
     def requires_payment_method?
       status == "requires_payment_method"
     end
@@ -35,7 +39,9 @@ module Pay
       status == "succeeded"
     end
 
+    # SetupIntents save a payment method for later and have no amount
     def amount_with_currency
+      return if setup_intent?
       Pay::Currency.format(amount, currency: currency)
     end
 

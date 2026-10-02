@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Fix the SCA confirmation page for SetupIntents. It raised on the missing `amount` and confirmed with `confirmPayment`; it now uses `stripe.confirmSetup` with setup-specific copy (`pay.setup_intent.*` translations)
+
 ### 12.1.1
 
 * **Security:** Paddle Billing and Lemon Squeezy webhooks now reject every request with a 400 when no signing secret is configured. In 12.0.0 and 12.1.0 a missing or blank secret was used as an empty HMAC key, so anyone could forge webhook events (GHSA-5p37-w3f3-55pm, GHSA-6mr3-672j-v5hf)
