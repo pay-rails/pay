@@ -39,6 +39,3 @@ gem "importmap-rails"
 gem "sprockets-rails"
 gem "stimulus-rails"
 gem "turbo-rails"
-
-# Minitest has breaking changes
-gem "minitest", "< 6.0.0"

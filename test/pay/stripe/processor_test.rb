@@ -83,9 +83,8 @@ class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
   end
 
   test "env ignores Stripe credentials when not defined" do
-    Rails.stub(:application, nil) do
-      assert_nil Pay::Stripe.send(:credentials)
-    end
+    Rails.stubs(:application).returns(nil)
+    assert_nil Pay::Stripe.send(:credentials)
   end
 
   test "sync_checkout_session retries with an increasing delay" do

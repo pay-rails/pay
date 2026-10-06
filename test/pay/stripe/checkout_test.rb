@@ -35,10 +35,9 @@ class Pay::Stripe::CheckoutTest < ActiveSupport::TestCase
     # This should raise:
     # ArgumentError: Missing host to link to! Please provide the :host parameter, set default_url_options[:host], or set :only_path to true
 
-    Rails.application.config.action_mailer.stub :default_url_options, nil do
-      assert_raises ArgumentError do
-        @pay_customer.checkout(mode: "setup")
-      end
+    Rails.application.config.action_mailer.stubs(:default_url_options).returns(nil)
+    assert_raises ArgumentError do
+      @pay_customer.checkout(mode: "setup")
     end
   end
 end

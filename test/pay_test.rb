@@ -47,9 +47,8 @@ class PayTest < ActiveSupport::TestCase
       original_send_email_value = Pay.send_emails
 
       Pay.emails.keys.each do |mail_action|
-        Pay.emails.stub mail_action, true do
-          assert Pay.send_email?(mail_action)
-        end
+        Pay.emails.stubs(mail_action).returns(true)
+        assert Pay.send_email?(mail_action)
       end
 
       Pay.send_emails = value
@@ -63,14 +62,12 @@ class PayTest < ActiveSupport::TestCase
   end
 
   test "can configure email options with a boolean" do
-    Pay.emails.stub :subscription_renewing, true do
-      assert Pay.send_email?(:subscription_renewing)
-      assert Pay.send_email?(:subscription_renewing, "dummy_subscription")
-    end
+    Pay.emails.stubs(:subscription_renewing).returns(true)
+    assert Pay.send_email?(:subscription_renewing)
+    assert Pay.send_email?(:subscription_renewing, "dummy_subscription")
 
-    Pay.emails.stub :subscription_renewing, false do
-      refute Pay.send_email?(:subscription_renewing)
-    end
+    Pay.emails.stubs(:subscription_renewing).returns(false)
+    refute Pay.send_email?(:subscription_renewing)
   end
 
   test "can configure email options with a lambda" do
@@ -78,9 +75,8 @@ class PayTest < ActiveSupport::TestCase
 
     custom_lambda = ->(subscription) { assert_equal pay_subscription, subscription }
 
-    Pay.emails.stub :subscription_renewing, -> { custom_lambda } do
-      Pay.send_email?(:subscription_renewing, pay_subscription)
-    end
+    Pay.emails.stubs(:subscription_renewing).returns(custom_lambda)
+    Pay.send_email?(:subscription_renewing, pay_subscription)
   end
 
   test "mailer defaults to Pay::UserMailer" do
