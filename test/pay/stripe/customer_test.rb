@@ -297,6 +297,12 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
     @pay_customer.create_meter_event(:api_request, payload: {value: 1})
   end
 
+  test "stripe terminal_charge creates a card_present payment intent for manual capture" do
+    @pay_customer.update!(processor_id: "cus_1234")
+    ::Stripe::PaymentIntent.expects(:create).with(has_entries(amount: 10_00, customer: "cus_1234", allowed_payment_method_types: ["card_present"], capture_method: "manual"), anything)
+    @pay_customer.terminal_charge(10_00)
+  end
+
   test "stripe retry_past_due_subscriptions! pays open invoices of past_due subscriptions" do
     @pay_customer.update!(processor_id: "cus_1234")
     pay_subscriptions(:stripe).update!(status: :past_due)

@@ -10,7 +10,7 @@ Add these lines to your application's Gemfile:
 gem "pay", "~> 11.5"
 
 # To use Stripe, also include:
-gem "stripe", "~> 19.0"
+gem "stripe", "~> 20.0"
 
 # To use Braintree + PayPal, also include:
 gem "braintree", "~> 4.35"

@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* Upgrade to Stripe 20 (API version `2026-09-30.endive`). Update your Gemfile to `gem "stripe", "~> 20.0"`. Stripe 20 removes `payment_method_types` from Checkout Session, PaymentIntent and SetupIntent creation, so if you pass it to `checkout`, `charge`, `authorize` or `create_setup_intent`, rename it to `allowed_payment_method_types`. `terminal_charge` now sends `allowed_payment_method_types` for you
+* `swap(billing_cycle_anchor: "now")` keeps working on Stripe 20, which expects `billing_cycle_anchor: {type: "now"}` on subscription updates. Pay converts the string form for you
+
 ### 12.2.0
 
 * Fix the SCA confirmation page for SetupIntents. It raised on the missing `amount` and confirmed with `confirmPayment`; it now uses `stripe.confirmSetup` with setup-specific copy. If you translate Pay's `pay.*` keys into other languages, add the new `pay.setup_intent.*` keys from `config/locales/en.yml` to your locale files

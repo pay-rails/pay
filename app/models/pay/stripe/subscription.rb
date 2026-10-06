@@ -305,6 +305,11 @@ module Pay
         prorate = options.delete(:prorate) { true }
         proration_behavior = options.delete(:proration_behavior) || (prorate ? "always_invoice" : "none")
 
+        # Stripe 20 takes billing_cycle_anchor as {type: "now"} on updates, so convert the old "now" / "unchanged" form
+        if options[:billing_cycle_anchor].is_a?(String) || options[:billing_cycle_anchor].is_a?(Symbol)
+          options[:billing_cycle_anchor] = {type: options[:billing_cycle_anchor].to_s}
+        end
+
         @api_record = ::Stripe::Subscription.update(
           processor_id,
           {
