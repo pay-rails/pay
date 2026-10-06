@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 12.3.0
+
 * Upgrade to Stripe 20 (API version `2026-09-30.endive`). Update your Gemfile to `gem "stripe", "~> 20.0"`. Stripe 20 removes `payment_method_types` from Checkout Session, PaymentIntent and SetupIntent creation, so if you pass it to `checkout`, `charge`, `authorize` or `create_setup_intent`, rename it to `allowed_payment_method_types`. `terminal_charge` now sends `allowed_payment_method_types` for you
 * `swap(billing_cycle_anchor: "now")` keeps working on Stripe 20, which expects `billing_cycle_anchor: {type: "now"}` on subscription updates. Pay converts the string form for you
 * Paddle Billing and Paddle Classic now require the paddle gem 3.x, which requires Ruby 3.3+. Update your Gemfile to `gem "paddle", "~> 3.0"`. If your app calls the paddle gem directly, see its [3.0 breaking changes](https://github.com/deanpcmad/paddle/blob/main/CHANGELOG.md). Paddle 3 no longer installs `ostruct`; if your app or another gem (such as braintree) relies on it, add `gem "ostruct"` to your Gemfile
