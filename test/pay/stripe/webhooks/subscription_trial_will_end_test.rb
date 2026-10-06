@@ -23,13 +23,12 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
   test "trial subscription ending soon customer should not receive trial will end email if setting is disabled" do
     ::Stripe::Subscription.expects(:retrieve).returns(@trial_will_end_event.data.object)
 
-    Pay.emails.stub(:subscription_trial_will_end, false) do
-      travel_to trial_start_date do
-        create_stripe_subscription(processor_id: @trial_will_end_event.data.object.items.data.first.subscription, trial_ends_at: 3.days.from_now)
-        Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_will_end_event)
+    Pay.emails.stubs(:subscription_trial_will_end).returns(false)
+    travel_to trial_start_date do
+      create_stripe_subscription(processor_id: @trial_will_end_event.data.object.items.data.first.subscription, trial_ends_at: 3.days.from_now)
+      Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_will_end_event)
 
-        assert_enqueued_emails 0
-      end
+      assert_enqueued_emails 0
     end
   end
 
@@ -46,12 +45,11 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
   test "trial subscription ended immediately customer should not receive trial ended email if setting is disabled" do
     ::Stripe::Subscription.expects(:retrieve).returns(@trial_ended_event.data.object)
 
-    Pay.emails.stub(:subscription_trial_ended, false) do
-      create_stripe_subscription(processor_id: @trial_ended_event.data.object.items.data.first.subscription, trial_ends_at: Time.current)
-      Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_ended_event)
+    Pay.emails.stubs(:subscription_trial_ended).returns(false)
+    create_stripe_subscription(processor_id: @trial_ended_event.data.object.items.data.first.subscription, trial_ends_at: Time.current)
+    Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_ended_event)
 
-      assert_enqueued_emails 0
-    end
+    assert_enqueued_emails 0
   end
 
   test "sync! is called with stripe_account" do

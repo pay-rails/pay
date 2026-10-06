@@ -11,15 +11,13 @@ class Pay::UserMailerTest < ActionMailer::TestCase
   end
 
   test "from address with Pay.support_email" do
-    Pay.stub :support_email, "pay@test.org" do
-      assert_equal "pay@test.org", Pay::ApplicationMailer.default_from_address
-    end
+    Pay.stubs(:support_email).returns("pay@test.org")
+    assert_equal "pay@test.org", Pay::ApplicationMailer.default_from_address
   end
 
   test "from address fallback to ::ApplicationMailer.default_params" do
-    Pay.stub :support_email, nil do
-      assert_equal "from@example.com", Pay::ApplicationMailer.default_from_address
-    end
+    Pay.stubs(:support_email).returns(nil)
+    assert_equal "from@example.com", Pay::ApplicationMailer.default_from_address
   end
 
   test "receipt" do
@@ -30,10 +28,9 @@ class Pay::UserMailerTest < ActionMailer::TestCase
   end
 
   test "render receipt with missing support email" do
-    Pay.stub :support_email, nil do
-      assert_nothing_raised do
-        @charge.receipt
-      end
+    Pay.stubs(:support_email).returns(nil)
+    assert_nothing_raised do
+      @charge.receipt
     end
   end
 

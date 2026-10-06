@@ -6,18 +6,15 @@ class Pay::AdapterTest < ActiveSupport::TestCase
   end
 
   test "jsonb for postgres" do
-    Pay::Adapter.stub(:current_adapter, "postgresql") do
-      assert_equal :jsonb, Pay::Adapter.json_column_type
-    end
+    Pay::Adapter.stubs(:current_adapter).returns("postgresql")
+    assert_equal :jsonb, Pay::Adapter.json_column_type
   end
 
   test "json for other databases" do
-    Pay::Adapter.stub(:current_adapter, "mysql2") do
-      assert_equal :json, Pay::Adapter.json_column_type
-    end
+    Pay::Adapter.stubs(:current_adapter).returns("mysql2")
+    assert_equal :json, Pay::Adapter.json_column_type
 
-    Pay::Adapter.stub(:current_adapter, "sqlite3") do
-      assert_equal :json, Pay::Adapter.json_column_type
-    end
+    Pay::Adapter.stubs(:current_adapter).returns("sqlite3")
+    assert_equal :json, Pay::Adapter.json_column_type
   end
 end
