@@ -19,8 +19,8 @@ class Pay::PaddleBilling::SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "paddle billing can swap plans" do
-    @pay_customer.subscription.swap("pri_01h7qfsc8apejhjgqqx50rghdz")
-    assert_equal "pri_01h7qfsc8apejhjgqqx50rghdz", @pay_customer.subscription.api_record.items.first.price.id
+    @pay_customer.subscription.swap("pri_01hdhgfz095acjty3988zjyz03")
+    assert_equal "pri_01hdhgfz095acjty3988zjyz03", @pay_customer.subscription.api_record.items.first.price.id
     assert_equal "active", @pay_customer.subscription.status
   end
 
@@ -121,6 +121,13 @@ class Pay::PaddleBilling::SubscriptionTest < ActiveSupport::TestCase
     assert_equal "active", pay_subscription.status
     refute pay_subscription.paused?
     assert pay_subscription.active?
+  end
+
+  test "paddle billing wraps Paddle API errors in Pay::PaddleBilling::Error" do
+    pay_subscription = pay_subscriptions(:paddle_billing)
+    ::Paddle::Subscription.expects(:pause).raises(::Paddle::Errors::BadRequestError.new({"error" => {"code" => "subscription_locked", "detail" => "Subscription is locked"}}, 400))
+    error = assert_raises(Pay::PaddleBilling::Error) { pay_subscription.pause }
+    assert_equal "Error 400: Subscription is locked 'subscription_locked'", error.message
   end
 
   test "paddle billing cancel with a scheduled pause removes the pause and cancels at the end of the period" do

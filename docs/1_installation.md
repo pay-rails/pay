@@ -16,7 +16,7 @@ gem "stripe", "~> 20.0"
 gem "braintree", "~> 4.35"
 
 # To use Paddle Billing or Paddle Classic, also include:
-gem "paddle", "~> 2.9"
+gem "paddle", "~> 3.0"
 
 # To use Lemon Squeezy, also include:
 gem "lemonsqueezy", "~> 1.1"

@@ -88,7 +88,7 @@ module Pay
           status: response.status,
           ends_at: response.scheduled_change&.effective_at || Time.current
         )
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::ErrorGenerator => e
         raise Pay::PaddleBilling::Error, e
       end
 
@@ -108,7 +108,7 @@ module Pay
           proration_billing_mode: options.delete(:proration_billing_mode) || "prorated_immediately"
         )
         update(quantity: quantity)
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::ErrorGenerator => e
         raise Pay::PaddleBilling::Error, e
       end
 
@@ -131,7 +131,7 @@ module Pay
       def pause
         response = ::Paddle::Subscription.pause(id: processor_id)
         update!(status: response.status, pause_starts_at: response.scheduled_change.effective_at)
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::ErrorGenerator => e
         raise Pay::PaddleBilling::Error, e
       end
 
@@ -152,7 +152,7 @@ module Pay
         end
 
         update(ends_at: nil, status: :active, pause_starts_at: nil)
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::ErrorGenerator => e
         raise Pay::PaddleBilling::Error, e
       end
 

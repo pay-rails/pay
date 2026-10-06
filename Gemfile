@@ -18,8 +18,10 @@ gem "vcr"
 gem "webmock"
 
 gem "braintree", ">= 2.92.0"
+# braintree requires ostruct without depending on it, and paddle 3 no longer installs it
+gem "ostruct"
 gem "lemonsqueezy", "~> 1.0"
-gem "paddle", "~> 2.6"
+gem "paddle", "~> 3.0"
 gem "stripe", "~> 20.0"
 
 gem "receipts", "~> 3.0"

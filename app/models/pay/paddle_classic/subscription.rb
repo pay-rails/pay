@@ -54,7 +54,7 @@ module Pay
 
       def api_record(**options)
         PaddleClassic.client.users.list(subscription_id: processor_id).data.try(:first)
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::Classic::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -78,7 +78,7 @@ module Pay
 
         # Remove payment methods since customer cannot be reused after cancelling
         Pay::PaymentMethod.where(customer_id: customer_id).destroy_all
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::Classic::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -90,7 +90,7 @@ module Pay
 
         # Remove payment methods since customer cannot be reused after cancelling
         Pay::PaymentMethod.where(customer_id: customer_id).destroy_all
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::Classic::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -111,7 +111,7 @@ module Pay
       def pause
         response = PaddleClassic.client.users.pause(subscription_id: processor_id)
         update(status: :paused, pause_starts_at: Time.zone.parse(response.dig(:next_payment, :date)))
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::Classic::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -126,7 +126,7 @@ module Pay
 
         PaddleClassic.client.users.unpause(subscription_id: processor_id)
         update(ends_at: nil, status: :active, pause_starts_at: nil)
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::Classic::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
@@ -138,7 +138,7 @@ module Pay
         PaddleClassic.client.users.update(subscription_id: processor_id, **attributes)
 
         update(processor_plan: plan, ends_at: nil, status: :active)
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::Classic::Error => e
         raise Pay::PaddleClassic::Error, e
       end
     end

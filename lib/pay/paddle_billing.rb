@@ -14,11 +14,13 @@ module Pay
 
     extend Env
 
+    REQUIRED_VERSION = "~> 3"
+
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_billing) && defined?(::Paddle)
 
-      Pay::Engine.version_matches?(required: "~> 2.5",
-        current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 2.5")
+      Pay::Engine.version_matches?(required: REQUIRED_VERSION,
+        current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version #{REQUIRED_VERSION}")
     end
 
     def self.setup

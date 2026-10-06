@@ -30,7 +30,7 @@ module Pay
         charge = charges.find_or_initialize_by(processor_id: response[:invoice_id])
         charge.update(attributes)
         charge
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::Classic::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 
