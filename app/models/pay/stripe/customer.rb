@@ -133,7 +133,7 @@ module Pay
 
       # Used for creating Stripe Terminal charges
       def terminal_charge(amount, options = {})
-        create_payment_intent(amount, options.merge(payment_method_types: ["card_present"], capture_method: "manual"))
+        create_payment_intent(amount, options.merge(allowed_payment_method_types: ["card_present"], capture_method: "manual"))
       end
 
       def create_setup_intent(options = {})
