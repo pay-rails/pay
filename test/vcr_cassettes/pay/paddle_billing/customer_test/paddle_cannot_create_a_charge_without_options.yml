@@ -5,14 +5,14 @@ http_interactions:
     uri: https://sandbox-api.paddle.com/transactions
     body:
       encoding: UTF-8
-      string: '{"items":null,"customer_id":"ctm_123"}'
+      string: '{"items":null,"customer_id":"ctm_0123"}'
     headers:
       User-Agent:
-      - paddle/v2.1.2 (github.com/deanpcmad/paddle)
-      Paddle-Version:
-      - '1'
+      - paddle/v3.0 (github.com/d34ndev/paddle)
       Authorization:
       - Bearer <PADDLE_API_KEY>
+      Paddle-Version:
+      - '1'
       Content-Type:
       - application/json
       Accept-Encoding:
@@ -21,30 +21,62 @@ http_interactions:
       - "*/*"
   response:
     status:
-      code: 403
-      message: Forbidden
+      code: 400
+      message: Bad Request
     headers:
       Date:
-      - Thu, 26 Oct 2023 17:34:34 GMT
+      - Tue, 06 Oct 2026 20:15:04 GMT
       Content-Type:
       - application/json
-      Transfer-Encoding:
-      - chunked
+      Content-Length:
+      - '546'
       Connection:
       - keep-alive
+      Set-Cookie:
+      - __cf_bm=IodE3ImuUaIrhUIHfczAAY6QfoNS5X_4bOu0_K876F8-1791317704.114281-1.0.1.1-._xpdR31CpH.kjNwmj8KG58nmBa4Xe_FCQ2EoJSbwLstcuKxTtzEATJiwcnAWwQTPStIf9d1eVnaIwy1h.alLlCadVmNa9UuodH84U6FtaxV6ZSHuMBxNEzAiGYsCg.7;
+        HttpOnly; SameSite=None; Secure; Path=/; Domain=paddle.com; Expires=Tue, 06
+        Oct 2026 20:45:04 GMT
+      Cache-Control:
+      - no-store, max-age=0
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'; base-uri 'none'
+      Cross-Origin-Embedder-Policy:
+      - require-corp
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Cross-Origin-Resource-Policy:
+      - same-site
+      Permissions-Policy:
+      - accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),display-capture=(),document-domain=(),encrypted-media=(),fullscreen=(),gamepad=(),geolocation=(),gyroscope=(),layout-animations=(self),legacy-image-formats=(self),magnetometer=(),microphone=(),midi=(),oversized-images=(self),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),speaker-selection=(),sync-xhr=(self),unoptimized-images=(self),unsized-media=(self),usb=(),web-share=(),xr-spatial-tracking=()
+      Pragma:
+      - no-cache
+      Referrer-Policy:
+      - no-referrer
+      Request-Id:
+      - ed7253a8-51ec-4de3-b50b-bc54e62534e4
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Robots-Tag:
+      - noindex, nofollow
       Cf-Cache-Status:
       - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=ro9SJd.2WwPxORJyhChEJXPtyIE.Xyyb_kXRyJPm_iI-1698341674-0-AeGxurUgVEKu2eyc5cTfLs9JMBk8AhqdQRfk4vceIU0xGJt76hu2LYjBRZ379z6LbTtMGE/CrM8elNKoljeCuiw=;
-        path=/; expires=Thu, 26-Oct-23 18:04:34 GMT; domain=.paddle.com; HttpOnly;
-        Secure; SameSite=None
       Server:
       - cloudflare
       Cf-Ray:
-      - 81c47365fd674164-LHR
+      - a4675602b9392c05-ATL
     body:
-      encoding: ASCII-8BIT
-      string: '{"error":{"type":"request_error","code":"forbidden","detail":"You are
-        not permitted to perform this request","documentation_url":"https://developer.paddle.com/v1/errors/shared/forbidden"},"meta":{"request_id":"4634f702-c9c0-47ee-91dc-0b38b9bc9c35"}}'
-  recorded_at: Thu, 26 Oct 2023 17:34:34 GMT
-recorded_with: VCR 6.2.0
+      encoding: UTF-8
+      string: '{"error":{"type":"request_error","code":"bad_request","detail":"Invalid
+        request.","documentation_url":"https://developer.paddle.com/v1/errors/shared/bad_request","errors":[{"field":"customer_id","message":"Must
+        validate at least one schema (anyOf)"},{"field":"customer_id","message":"Does
+        not match pattern ''^ctm_[a-z\\d]{26}$''"},{"field":"customer_id","message":"Invalid
+        type. Expected: null, given: string"},{"field":"items","message":"Invalid
+        type. Expected: array, given: null"}]},"meta":{"request_id":"ed7253a8-51ec-4de3-b50b-bc54e62534e4"}}'
+  recorded_at: Tue, 06 Oct 2026 20:15:04 GMT
+recorded_with: VCR 6.4.0

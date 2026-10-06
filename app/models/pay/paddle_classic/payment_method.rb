@@ -13,7 +13,7 @@ module Pay
 
         payment_method.update!(attributes)
         payment_method
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::Classic::Error => e
         raise Pay::PaddleClassic::Error, e
       end
 

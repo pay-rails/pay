@@ -40,6 +40,12 @@ class Pay::PaddleClassic::SubscriptionTest < ActiveSupport::TestCase
     assert_equal "canceled", subscription.status
   end
 
+  test "paddle classic wraps Paddle API errors in Pay::PaddleClassic::Error" do
+    ::Paddle::Classic::UsersResource.any_instance.expects(:cancel).raises(::Paddle::Classic::Error, "Error 400: Your request was malformed.")
+    error = assert_raises(Pay::PaddleClassic::Error) { @pay_customer.subscription.cancel_now! }
+    assert_equal "Error 400: Your request was malformed.", error.message
+  end
+
   test "paddle classic processor subscription" do
     assert_equal @pay_customer.subscription.api_record.class, Paddle::Classic::User
     assert_equal "active", @pay_customer.subscription.status

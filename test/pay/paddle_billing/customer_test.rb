@@ -6,7 +6,8 @@ class Pay::PaddleBilling::CustomerTest < ActiveSupport::TestCase
   end
 
   test "paddle cannot create a charge without options" do
-    assert_raises(Paddle::Errors::ForbiddenError) { @pay_customer.charge(1000) }
+    error = assert_raises(Pay::PaddleBilling::Error) { @pay_customer.charge(1000) }
+    assert_kind_of Paddle::ErrorGenerator, error.cause
   end
 
   test "paddle billing subscribe is not supported" do

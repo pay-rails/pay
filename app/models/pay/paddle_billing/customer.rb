@@ -27,7 +27,7 @@ module Pay
           update!(processor_id: pc.id)
           pc
         end
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::ErrorGenerator => e
         raise Pay::PaddleBilling::Error, e
       end
 
@@ -55,7 +55,7 @@ module Pay
         charge = charges.find_or_initialize_by(processor_id: transaction.id)
         charge.update(attrs)
         charge
-      rescue ::Paddle::Error => e
+      rescue ::Paddle::ErrorGenerator => e
         raise Pay::PaddleBilling::Error, e
       end
 
