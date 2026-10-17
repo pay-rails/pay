@@ -44,6 +44,11 @@ class Pay::SubscriptionTest < ActiveSupport::TestCase
     refute pay_subscriptions(:stripe).fake_processor?
   end
 
+  test "processor scopes" do
+    assert_includes Pay::Subscription.stripe, pay_subscriptions(:stripe)
+    refute_includes Pay::Subscription.stripe, pay_subscriptions(:braintree)
+  end
+
   test "a paused subscription is paused, not active and not canceled on every processor that pauses by status" do
     %i[paddle_billing paddle_classic lemon_squeezy].each do |processor|
       subscription = pay_subscriptions(processor)

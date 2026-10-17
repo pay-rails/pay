@@ -19,6 +19,11 @@ class Pay::ChargeTest < ActiveSupport::TestCase
     refute pay_customers(:stripe).charges.new.fake_processor?
   end
 
+  test "processor scopes" do
+    assert_includes Pay::Charge.stripe, pay_charges(:stripe)
+    refute_includes Pay::Charge.stripe, pay_charges(:braintree)
+  end
+
   test "charge processor ID is unique per Pay::Customer" do
     user = users(:stripe)
     user.payment_processor.charges.create!(amount: 1, processor_id: "1")

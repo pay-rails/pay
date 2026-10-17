@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pay
   class Subscription < Pay::ApplicationRecord
     # Associations
@@ -34,9 +36,11 @@ module Pay
 
     # Helper methods for payment processors
     %w[braintree stripe paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
-      define_method :"#{processor_name}?" do
-        customer.processor == processor_name
-      end
+      class_eval <<~RUBY, __FILE__, __LINE__ + 1
+        def #{processor_name}?
+          customer.processor == "#{processor_name}"
+        end
+      RUBY
 
       scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
     end
