@@ -18,7 +18,8 @@ module Pay
 
     extend Env
 
-    REQUIRED_VERSION = "~> 3"
+    REQUIRED_VERSION = "~> 3".freeze
+    CREDENTIALS = %i[vendor_id vendor_auth_code environment public_key public_key_file public_key_base64].freeze
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_classic) && defined?(::Paddle)
@@ -27,8 +28,17 @@ module Pay
         current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version #{REQUIRED_VERSION}")
     end
 
+    # The client memoizes a Faraday connection, which can't be shared, so each non-main Ractor builds its own
     def self.client
-      @client ||= Paddle::Classic::Client.new(
+      if Pay.non_main_ractor?
+        ::Ractor.current[:pay_paddle_classic_client] ||= new_client
+      else
+        @client ||= new_client
+      end
+    end
+
+    def self.new_client
+      Paddle::Classic::Client.new(
         vendor_id: vendor_id,
         vendor_auth_code: vendor_auth_code,
         sandbox: environment != "production"

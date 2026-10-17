@@ -28,11 +28,15 @@ module Pay
 
     extend Env
 
-    REQUIRED_VERSION = "~> 20"
+    REQUIRED_VERSION = "~> 20".freeze
+    CREDENTIALS = %i[public_key private_key context signing_secret webhook_receive_test_events].freeze
 
     # A list of database model names that include Pay
     # Used for safely looking up models with client_reference_id
-    mattr_accessor :model_names, default: Set.new
+    class << self
+      attr_accessor :model_names
+    end
+    self.model_names = Set.new
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)

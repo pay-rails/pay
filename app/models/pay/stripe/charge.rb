@@ -3,7 +3,7 @@ module Pay
     class Charge < Pay::Charge
       extend Pay::Sync
 
-      EXPAND = ["balance_transaction", "payment_intent", "refunds.data.balance_transaction"]
+      EXPAND = Pay.make_shareable(["balance_transaction", "payment_intent", "refunds.data.balance_transaction"])
 
       delegate :amount_captured, :payment_intent, to: :stripe_object, allow_nil: true
 

@@ -4,11 +4,16 @@ module Pay
   class Engine < ::Rails::Engine
     engine_name "pay"
 
+    # Rails main runs this from Rails::Application#ractorize! before it shares the application with Ractors
+    ActiveSupport.on_load(:before_ractorize) { Pay.make_shareable! }
+
     initializer "pay.processors" do |app|
       if Pay.automount_routes
-        app.routes.append do
-          mount Pay::Engine, at: Pay.routes_path, as: "pay"
-        end
+        # Rails runs the block with instance_exec on the route mapper, so its self is irrelevant. Left as it is,
+        # the self would be this engine instance, which stops Rails from sharing the application with Ractors.
+        mount_pay = proc { mount Pay::Engine, at: Pay.routes_path, as: "pay" }
+        mount_pay = ::Ractor.shareable_proc(self: nil, &mount_pay) if defined?(::Ractor) && ::Ractor.respond_to?(:shareable_proc)
+        app.routes.append(&mount_pay)
       end
 
       # Include the pay attributes for ActiveRecord models
@@ -21,7 +26,7 @@ module Pay
       app.deprecators[:pay] = Pay.deprecator if app.respond_to?(:deprecators)
     end
 
-    RECEIPTS_VERSION = [">= 2", "< 4"]
+    RECEIPTS_VERSION = [">= 2", "< 4"].freeze
 
     initializer "pay.receipts" do
       if defined?(::Receipts::VERSION)
@@ -56,7 +61,7 @@ module Pay
 
     # Determines if a gem version matches requirements
     # Used for verifying that dependencies are correct
-    def version_matches?(current:, required:)
+    def self.version_matches?(current:, required:)
       Gem::Dependency.new("gem", required).match? "gem", current
     end
   end

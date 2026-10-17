@@ -38,6 +38,8 @@ module Pay
 
     extend Env
 
+    CREDENTIALS = %i[public_key private_key merchant_id environment].freeze
+
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:braintree) && defined?(::Braintree)
 
@@ -45,7 +47,11 @@ module Pay
     end
 
     def self.setup
-      Pay.braintree_gateway = ::Braintree::Gateway.new(
+      Pay.braintree_gateway = new_gateway
+    end
+
+    def self.new_gateway
+      ::Braintree::Gateway.new(
         environment: environment.to_sym,
         merchant_id: merchant_id,
         public_key: public_key,

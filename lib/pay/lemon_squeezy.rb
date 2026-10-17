@@ -15,6 +15,8 @@ module Pay
 
     extend Env
 
+    CREDENTIALS = %i[api_key store_id signing_secret].freeze
+
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:lemon_squeezy) && defined?(::LemonSqueezy)
 

@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Pay's configuration, processor credentials, constants and lazily built values can be read from a Ractor once `Pay.make_shareable!` has run, which Rails main does automatically from its `before_ractorize` hook when an app calls the experimental `Rails.application.ractorize!`. Configuration is frozen from then on. Callable options such as `config.emails.subscription_renewing` and `config.mail_to` are re-created with `nil` as `self` and can't capture local variables. Each Ractor builds its own Paddle Classic client and Braintree gateway, so a gateway assigned to `Pay.braintree_gateway` by hand isn't used inside Ractors. The processor gems still keep global state a Ractor can't read (the braintree gem can't even build a gateway there yet), so API calls and webhook verification from a Ractor depend on them. `Pay::Attributes` now stores the `pay_customer` options with `class_attribute` instead of `cattr_accessor`
 * The processor scopes and predicates (`Pay::Charge.stripe`, `charge.stripe?`, and the same on `Pay::Customer` and `Pay::Subscription`) no longer stop Rails' experimental `Rails.application.ractorize!` from booting, and the predicates can be called from a Ractor. Other Pay methods and configuration still can't be used from a Ractor. Rails also can't mount an engine from `routes.append` after `ractorize!` has frozen the engine's routes, so set `config.automount_routes = false` and add `mount Pay::Engine, at: "/pay", as: "pay"` to your routes
 
 ### 12.3.0

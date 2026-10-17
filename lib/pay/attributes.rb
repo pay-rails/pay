@@ -8,9 +8,7 @@ module Pay
       extend ActiveSupport::Concern
 
       included do
-        cattr_accessor :pay_default_payment_processor
-        cattr_accessor :pay_stripe_customer_attributes
-        cattr_accessor :pay_braintree_customer_attributes
+        class_attribute :pay_default_payment_processor, :pay_stripe_customer_attributes, :pay_braintree_customer_attributes
 
         has_many :pay_customers, class_name: "Pay::Customer", as: :owner, inverse_of: :owner
         has_many :pay_charges, through: :pay_customers, class_name: "Pay::Charge", source: :charges

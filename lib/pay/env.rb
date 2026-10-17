@@ -1,5 +1,13 @@
 module Pay
   module Env
+    # Resolves this processor's credentials (its CREDENTIALS constant) once and serves them from a frozen hash from
+    # then on, so a Ractor never has to read ENV or Rails credentials. Pay.make_shareable! calls this before Rails
+    # shares the application with Ractors.
+    def freeze_credentials!
+      scope = name.demodulize.underscore.to_sym
+      @frozen_credentials = Pay.make_shareable(self::CREDENTIALS.to_h { |key| [key, find_value_by_name(scope, key)] })
+    end
+
     private
 
     # Search for environment variables
@@ -19,6 +27,8 @@ module Pay
     #   Rails.application.credentials.dig(:production, :stripe, :private_key)
     #   Rails.application.credentials.dig(:stripe, :private_key)
     def find_value_by_name(scope, name)
+      return @frozen_credentials.fetch(name) if @frozen_credentials
+
       ENV["#{scope.upcase}_#{name.upcase}"] ||
         credentials&.dig(env, scope, name) ||
         credentials&.dig(scope, name)

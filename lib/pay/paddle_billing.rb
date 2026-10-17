@@ -14,7 +14,8 @@ module Pay
 
     extend Env
 
-    REQUIRED_VERSION = "~> 3"
+    REQUIRED_VERSION = "~> 3".freeze
+    CREDENTIALS = %i[environment client_token api_key signing_secret].freeze
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_billing) && defined?(::Paddle)
