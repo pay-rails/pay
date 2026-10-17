@@ -162,16 +162,14 @@ class Pay::CustomerTest < ActiveSupport::TestCase
   end
 
   test "processor predicates can be called from a Ractor" do
-    skip "Ractor#value requires Ruby 4.0+" unless defined?(Ractor) && Ractor.method_defined?(:value)
-
-    result = Ractor.new do
+    result = in_ractor do
       # Records can't be built inside a Ractor without Rails' ractorize!, so stub the attribute
       customer = Pay::Customer.allocate
       def customer.processor
         "stripe"
       end
       [customer.stripe?, customer.braintree?]
-    end.value
+    end
 
     assert_equal [true, false], result
   end

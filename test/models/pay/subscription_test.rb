@@ -49,6 +49,19 @@ class Pay::SubscriptionTest < ActiveSupport::TestCase
     refute_includes Pay::Subscription.stripe, pay_subscriptions(:braintree)
   end
 
+  test "processor predicates can be called from a Ractor" do
+    result = in_ractor do
+      # Records can't be built inside a Ractor without Rails' ractorize!, so stub the association
+      subscription = Pay::Subscription.allocate
+      def subscription.customer
+        Struct.new(:processor).new("stripe")
+      end
+      [subscription.stripe?, subscription.braintree?]
+    end
+
+    assert_equal [true, false], result
+  end
+
   test "a paused subscription is paused, not active and not canceled on every processor that pauses by status" do
     %i[paddle_billing paddle_classic lemon_squeezy].each do |processor|
       subscription = pay_subscriptions(processor)

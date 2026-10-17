@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* The processor scopes and predicates (`Pay::Charge.stripe`, `charge.stripe?`, and the same on `Pay::Customer` and `Pay::Subscription`) can now be used from a Ractor, for apps trying Rails' experimental `Rails.application.ractorize!`
+* The processor scopes and predicates (`Pay::Charge.stripe`, `charge.stripe?`, and the same on `Pay::Customer` and `Pay::Subscription`) no longer stop Rails' experimental `Rails.application.ractorize!` from booting, and the predicates can be called from a Ractor. Other Pay methods and configuration still can't be used from a Ractor. Rails also can't mount an engine from `routes.append` after `ractorize!` has frozen the engine's routes, so set `config.automount_routes = false` and add `mount Pay::Engine, at: "/pay", as: "pay"` to your routes
 
 ### 12.3.0
 
