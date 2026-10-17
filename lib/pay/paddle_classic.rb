@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pay
   module PaddleClassic
     class Error < Pay::Error
@@ -20,7 +22,7 @@ module Pay
 
     credential :vendor_id, :vendor_auth_code, :environment, :public_key, :public_key_file, :public_key_base64
 
-    REQUIRED_VERSION = "~> 3".freeze
+    REQUIRED_VERSION = "~> 3"
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_classic) && defined?(::Paddle)
@@ -31,7 +33,7 @@ module Pay
 
     # The client memoizes a Faraday connection, which can't be shared, so each non-main Ractor builds its own
     def self.client
-      if Pay.main_ractor?
+      if ::Ractor.current == ::Ractor.main
         @client ||= new_client
       else
         ::Ractor.current[:pay_paddle_classic_client] ||= new_client

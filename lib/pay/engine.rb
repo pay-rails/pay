@@ -9,8 +9,7 @@ module Pay
 
     initializer "pay.processors" do |app|
       if Pay.automount_routes
-        # Rails runs the block with instance_exec on the route mapper, so its self is irrelevant. Left as it is,
-        # the self would be this engine instance, which stops Rails from sharing the application with Ractors.
+        # Rails instance_execs this on the route mapper, so it loses its self here: an engine instance can't be shared with Ractors
         app.routes.append(&Pay.shareable_callable(proc { mount Pay::Engine, at: Pay.routes_path, as: "pay" }))
       end
 

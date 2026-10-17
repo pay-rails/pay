@@ -47,11 +47,7 @@ module Pay
     end
 
     def self.setup
-      Pay.braintree_gateway = new_gateway
-    end
-
-    def self.new_gateway
-      ::Braintree::Gateway.new(
+      Pay.braintree_gateway = ::Braintree::Gateway.new(
         environment: environment.to_sym,
         merchant_id: merchant_id,
         public_key: public_key,

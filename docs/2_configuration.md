@@ -192,9 +192,9 @@ Rails main has an experimental `Rails.application.ractorize!` that serves reques
 A few things to know when you try it:
 
 - Callable options such as `config.emails.subscription_renewing`, `config.send_emails` and `config.mail_to` are re-created with `nil` as `self` so they can be shared. They can read constants and their arguments but can't capture local variables from the initializer.
-- Each Ractor builds its own Paddle Classic client and Braintree gateway. A gateway you assign to `Pay.braintree_gateway` yourself is only used on the main Ractor.
+- Each Ractor builds its own Paddle Classic client, because the client holds a connection that can't be shared.
 - Rails can't mount an engine from `routes.append` once the engine's routes are frozen, so set `config.automount_routes = false` and add `mount Pay::Engine, at: "/pay", as: "pay"` to your `config/routes.rb`.
-- The processor gems (stripe, braintree, paddle, lemonsqueezy) keep global state a Ractor can't read, and the braintree gem can't build a gateway in a Ractor at all yet. API calls and webhook signature checks from a Ractor depend on those gems. Webhook processing itself runs in background jobs on the main Ractor and isn't affected.
+- The processor gems (stripe, braintree, paddle, lemonsqueezy) keep global state a Ractor can't read, and the braintree gem can't build a gateway in a Ractor at all yet, so `Pay.braintree_gateway` can't be used there either. API calls and webhook signature checks from a Ractor depend on those gems. Webhook processing itself runs in background jobs on the main Ractor and isn't affected.
 
 ## Next
 

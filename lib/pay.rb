@@ -43,14 +43,16 @@ module Pay
     attr_accessor :default_product_name, :default_plan_name
     attr_accessor :enabled_processors
     attr_accessor :send_emails, :emails
-    attr_writer :mailer, :braintree_gateway
+    attr_writer :mailer
+    attr_accessor :braintree_gateway
     attr_accessor :parent_mailer, :mail_arguments, :mail_to
   end
 
   self.model_parent_class = "ApplicationRecord"
 
   def self.support_email=(value)
-    @support_email = value.is_a?(::Mail::Address) ? value : ::Mail::Address.new(value)
+    address = value.is_a?(::Mail::Address) ? value : ::Mail::Address.new(value)
+    @support_email = address.tap(&:display_name) # memoized now, so the address still works once frozen
   end
 
   self.automount_routes = true
@@ -77,16 +79,6 @@ module Pay
   # Resolved on every call rather than memoized, so code reloading in development returns the current class
   def self.mailer
     @mailer.constantize
-  end
-
-  # The gateway assigned by Pay::Braintree.setup or by the app. A gateway holds a logger, which can't be deep-frozen,
-  # so instead of sharing this one each non-main Ractor builds its own from the same credentials.
-  def self.braintree_gateway
-    if main_ractor?
-      @braintree_gateway
-    else
-      ::Ractor.current[:pay_braintree_gateway] ||= Pay::Braintree.new_gateway
-    end
   end
 
   def self.deprecator
@@ -136,19 +128,16 @@ module Pay
     end
   end
 
-  # Deep-freezes an object so every Ractor can read it. Without Ractor support (JRuby) it is only frozen.
+  # Deep-freezes an object so every Ractor can read it
   def self.make_shareable(object)
-    defined?(::Ractor) ? ::Ractor.make_shareable(object) : object.freeze
-  end
-
-  def self.main_ractor?
-    !defined?(::Ractor) || ::Ractor.current == ::Ractor.main
+    ::Ractor.make_shareable(object)
   end
 
   # Ruby 4.0 can re-create a proc with a different self. Earlier Rubies have Ractor without that.
   def self.shareable_procs?
-    defined?(::Ractor) && ::Ractor.respond_to?(:shareable_proc)
+    ::Ractor.respond_to?(:shareable_proc)
   end
+  private_class_method :shareable_procs?
 
   # A proc written in an initializer has the initializer's `main` object as self, which can't be shared, so it is
   # re-created with nil as self. Procs Pay runs with instance_exec get their self replaced anyway. Anything that
@@ -166,7 +155,7 @@ module Pay
 
     share_callable_options
     share_customer_model_options
-    [Stripe, Braintree, PaddleBilling, PaddleClassic, LemonSqueezy].each(&:freeze_credentials!)
+    [Stripe, Braintree, PaddleBilling, PaddleClassic, LemonSqueezy].each(&:freeze_credentials)
     make_shareable shareable_configuration
   end
 
@@ -186,10 +175,8 @@ module Pay
     end
   end
 
-  # Everything a Ractor may read, with the lazily built values warmed first
+  # Everything a Ractor may read
   def self.shareable_configuration
-    support_email&.display_name # Mail::Address memoizes it on first use
-
     [
       model_parent_class, application_name, business_address, business_name, business_logo, support_email,
       automount_routes, routes_path, default_product_name, default_plan_name, enabled_processors,

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pay
   module PaddleBilling
     class Error < Pay::Error
@@ -16,7 +18,7 @@ module Pay
 
     credential :environment, :client_token, :api_key, :signing_secret
 
-    REQUIRED_VERSION = "~> 3".freeze
+    REQUIRED_VERSION = "~> 3"
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_billing) && defined?(::Paddle)

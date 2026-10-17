@@ -3,9 +3,6 @@ require "test_helper"
 # Pay.make_shareable! freezes the configuration for the rest of the process, so every test here runs it in the
 # forked child that in_ractor creates, never in the test process itself.
 class Pay::MakeShareableTest < ActiveSupport::TestCase
-  # Reading a class_attribute from a Ractor also needs Rails main, which defines its readers without closures
-  RAILS_MAIN = Rails.gem_version >= Gem::Version.new("8.2.0.alpha")
-
   test "configuration can be read from a Ractor" do
     result = in_ractor(prepare: -> { Pay.make_shareable! }) do
       [
@@ -94,9 +91,15 @@ class Pay::MakeShareableTest < ActiveSupport::TestCase
   end
 
   test "pay_customer options can be read from a Ractor on Rails main" do
-    skip "class_attribute readers are only shareable on Rails main" unless RAILS_MAIN
+    # Earlier Rails define class_attribute readers with closures, which a Ractor can't call
+    skip "needs Rails main" unless Rails.gem_version >= Gem::Version.new("8.2.0.alpha")
 
-    result = in_ractor(prepare: -> { User.name && Pay.make_shareable! }) do
+    prepare = lambda do
+      User.name # Loaded here because a Ractor can't autoload
+      Pay.make_shareable!
+    end
+
+    result = in_ractor(prepare: prepare) do
       [User.pay_default_payment_processor, User.pay_stripe_customer_attributes, User.pay_braintree_customer_attributes]
     end
 

@@ -13,14 +13,18 @@ module Pay
 
       readers = Module.new
       names.each do |name|
-        readers.module_eval("def #{name}; find_value_by_name(:#{name}); end", __FILE__, __LINE__)
+        readers.module_eval <<~RUBY, __FILE__, __LINE__ + 1
+          def #{name}
+            find_value_by_name(:#{name})
+          end
+        RUBY
       end
       extend readers
     end
 
     # Resolves every declared credential once and serves the frozen values from then on, so a Ractor never has to
     # read ENV or the Rails credentials. Pay.make_shareable! calls this before Rails shares the application.
-    def freeze_credentials!
+    def freeze_credentials
       @frozen_credentials = Pay.make_shareable(credential_names.to_h { |name| [name, find_value_by_name(name)] })
     end
 
@@ -48,7 +52,7 @@ module Pay
 
     # Pay::PaddleBilling reads :paddle_billing credentials
     def credential_scope
-      name.demodulize.underscore.to_sym
+      @credential_scope ||= name.demodulize.underscore.to_sym
     end
 
     def env

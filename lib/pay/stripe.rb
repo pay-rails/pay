@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pay
   module Stripe
     class Error < Pay::Error
@@ -32,7 +34,7 @@ module Pay
     # Organizations API key. https://docs.stripe.com/keys/organization-api-keys
     credential :public_key, :private_key, :context, :signing_secret, :webhook_receive_test_events
 
-    REQUIRED_VERSION = "~> 20".freeze
+    REQUIRED_VERSION = "~> 20"
 
     # A list of database model names that include Pay
     # Used for safely looking up models with client_reference_id
