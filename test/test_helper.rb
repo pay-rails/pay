@@ -100,19 +100,21 @@ class ActiveSupport::TestCase
   end
 
   # Runs the block in a Ractor and returns its result. Skips on Rubies without Ractor#value (before 4.0).
+  # `prepare` runs first, on the main Ractor of the child process, for setup such as Pay.make_shareable!.
   #
   # The Ractor runs in a forked child process. Creating a Ractor switches the Ruby process into multi-Ractor
   # mode for the rest of its life, and Ruby 4.0 still segfaults now and then in that mode, so the process that
   # runs the rest of the suite must never create one. The result (or the error) is marshalled back over a pipe.
-  def in_ractor(&block)
+  def in_ractor(prepare: nil, &block)
     skip "Ractor#value requires Ruby 4.0+" unless defined?(Ractor) && Ractor.method_defined?(:value)
     skip "in_ractor requires fork" unless Process.respond_to?(:fork)
 
-    reader, writer = IO.pipe
+    reader, writer = IO.pipe(binmode: true) # Marshal output is binary
     pid = fork do
       reader.close
       Warning[:experimental] = false # Ruby warns on every Ractor.new that the API is experimental
       result = begin
+        prepare&.call
         {value: Ractor.new(&block).value}
       rescue Exception => e # rubocop:disable Lint/RescueException -- report Ractor::IsolationError and friends as a test failure
         cause = e.cause ? " (cause: #{e.cause.class}: #{e.cause.message})" : ""

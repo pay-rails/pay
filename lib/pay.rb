@@ -29,71 +29,66 @@ module Pay
     autoload :SyncCustomer, "pay/billable/sync_customer"
   end
 
-  mattr_accessor :braintree_gateway
+  # Configuration is kept in instance variables on this module rather than in class variables (mattr_accessor),
+  # because Ruby forbids reading class variables from a non-main Ractor. Pay.make_shareable! deep-freezes these
+  # values before Rails shares the application with Ractors.
+  class << self
+    attr_accessor :model_parent_class
 
-  mattr_accessor :model_parent_class
-  @@model_parent_class = "ApplicationRecord"
+    # Business details for receipts
+    attr_accessor :application_name, :business_address, :business_name, :business_logo
+    attr_reader :support_email
 
-  # Business details for receipts
-  mattr_accessor :application_name
-  mattr_accessor :business_address
-  mattr_accessor :business_name
-  mattr_accessor :business_logo
-  mattr_reader :support_email
-
-  def self.support_email=(value)
-    @@support_email = value.is_a?(::Mail::Address) ? value : ::Mail::Address.new(value)
+    attr_accessor :automount_routes, :routes_path
+    attr_accessor :default_product_name, :default_plan_name
+    attr_accessor :enabled_processors
+    attr_accessor :send_emails, :emails
+    attr_writer :mailer
+    attr_accessor :braintree_gateway
+    attr_accessor :parent_mailer, :mail_arguments, :mail_to
   end
 
-  mattr_accessor :automount_routes
-  @@automount_routes = true
+  self.model_parent_class = "ApplicationRecord"
 
-  mattr_accessor :default_product_name
-  @@default_product_name = "default"
+  def self.support_email=(value)
+    address = value.is_a?(::Mail::Address) ? value : ::Mail::Address.new(value)
+    @support_email = address.tap(&:display_name) # memoized now, so the address still works once frozen
+  end
 
-  mattr_accessor :default_plan_name
-  @@default_plan_name = "default"
+  self.automount_routes = true
+  self.default_product_name = "default"
+  self.default_plan_name = "default"
+  self.routes_path = "/pay"
+  self.enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic, :lemon_squeezy]
+  self.send_emails = true
 
-  mattr_accessor :routes_path
-  @@routes_path = "/pay"
-
-  mattr_accessor :enabled_processors
-  @@enabled_processors = [:stripe, :braintree, :paddle_billing, :paddle_classic, :lemon_squeezy]
-
-  mattr_accessor :send_emails
-  @@send_emails = true
-
-  mattr_accessor :emails
-  @@emails = ActiveSupport::OrderedOptions.new
-  @@emails.payment_action_required = true
-  @@emails.payment_failed = true
-  @@emails.receipt = true
-  @@emails.refund = true
+  self.emails = ActiveSupport::OrderedOptions.new
+  emails.payment_action_required = true
+  emails.payment_failed = true
+  emails.receipt = true
+  emails.refund = true
   # This only applies to Stripe, therefor we supply the second argument of price
-  @@emails.subscription_renewing = ->(pay_subscription, price) {
+  emails.subscription_renewing = ->(pay_subscription, price) {
     (price&.type == "recurring") && (price.recurring&.interval == "year")
   }
-  @@emails.subscription_trial_will_end = true
-  @@emails.subscription_trial_ended = true
+  emails.subscription_trial_will_end = true
+  emails.subscription_trial_ended = true
 
-  mattr_writer :mailer
-  @@mailer = "Pay::UserMailer"
+  self.mailer = "Pay::UserMailer"
 
   # Resolved on every call rather than memoized, so code reloading in development returns the current class
   def self.mailer
-    @@mailer.constantize
+    @mailer.constantize
   end
 
   def self.deprecator
     @deprecator ||= ActiveSupport::Deprecation.new("13.0", "Pay")
   end
 
-  mattr_accessor :parent_mailer
-  @@parent_mailer = "Pay::ApplicationMailer"
+  self.parent_mailer = "Pay::ApplicationMailer"
 
   # Should return a hash of arguments for the `mail` call in UserMailer
-  mattr_accessor :mail_arguments
-  @@mail_arguments = -> {
+  self.mail_arguments = -> {
     {
       to: instance_exec(&Pay.mail_to),
       subject: default_i18n_subject(application: Pay.application_name)
@@ -101,8 +96,7 @@ module Pay
   }
 
   # Should return String or Array of email recipients
-  mattr_accessor :mail_to
-  @@mail_to = -> {
+  self.mail_to = -> {
     if ::ActionMailer::Base.respond_to?(:email_address_with_name)
       ::ActionMailer::Base.email_address_with_name(params[:pay_customer].email, params[:pay_customer].customer_name)
     else
@@ -134,13 +128,71 @@ module Pay
     end
   end
 
-  SYNC_HANDLERS = {
+  # Deep-freezes an object so every Ractor can read it
+  def self.make_shareable(object)
+    ::Ractor.make_shareable(object)
+  end
+
+  # Ruby 4.0 can re-create a proc with a different self. Earlier Rubies have Ractor without that.
+  def self.shareable_procs?
+    ::Ractor.respond_to?(:shareable_proc)
+  end
+  private_class_method :shareable_procs?
+
+  # A proc written in an initializer has the initializer's `main` object as self, which can't be shared, so it is
+  # re-created with nil as self. Procs Pay runs with instance_exec get their self replaced anyway. Anything that
+  # isn't a proc, or any proc on a Ruby that can't do this, is returned as it is.
+  def self.shareable_callable(callable)
+    return callable unless shareable_procs? && callable.is_a?(Proc)
+
+    callable.lambda? ? ::Ractor.shareable_lambda(self: nil, &callable) : ::Ractor.shareable_proc(self: nil, &callable)
+  end
+
+  # Prepares Pay for Rails' experimental Rails.application.ractorize!, which Rails runs from its before_ractorize
+  # load hook (see Pay::Engine). Configuration and credentials can't change afterwards.
+  def self.make_shareable!
+    return unless shareable_procs?
+
+    share_callable_options
+    share_customer_model_options
+    [Stripe, Braintree, PaddleBilling, PaddleClassic, LemonSqueezy].each(&:freeze_credentials)
+    make_shareable shareable_configuration
+  end
+
+  def self.share_callable_options
+    self.send_emails = shareable_callable(send_emails)
+    self.mail_to = shareable_callable(mail_to)
+    self.mail_arguments = shareable_callable(mail_arguments)
+    emails.transform_values! { |option| shareable_callable(option) }
+  end
+
+  def self.share_customer_model_options
+    customer_models = ActiveRecord::Base.descendants.select { |model| model.include?(Pay::Attributes::CustomerExtension) }
+    customer_models.each do |model|
+      model.pay_stripe_customer_attributes = shareable_callable(model.pay_stripe_customer_attributes)
+      model.pay_braintree_customer_attributes = shareable_callable(model.pay_braintree_customer_attributes)
+      make_shareable [model.pay_default_payment_processor, model.pay_stripe_customer_attributes, model.pay_braintree_customer_attributes]
+    end
+  end
+
+  # Everything a Ractor may read
+  def self.shareable_configuration
+    [
+      model_parent_class, application_name, business_address, business_name, business_logo, support_email,
+      automount_routes, routes_path, default_product_name, default_plan_name, enabled_processors,
+      send_emails, emails, @mailer, parent_mailer, mail_arguments, mail_to,
+      Stripe.model_names, Currency.all, Webhooks.delegator, deprecator
+    ]
+  end
+  private_class_method :share_callable_options, :share_customer_model_options, :shareable_configuration
+
+  SYNC_HANDLERS = make_shareable({
     lemon_squeezy_order_id: ->(param) { Pay::LemonSqueezy.sync_order(param) },
     paddle_billing_transaction_id: ->(param) { Pay::PaddleBilling.sync_transaction(param) },
     stripe_checkout_session_id: ->(param) { Pay::Stripe.sync_checkout_session(param) },
     transaction_id: ->(param) { Pay::PaddleBilling.sync_transaction(param) },
     session_id: ->(param) { Pay::Stripe.sync_checkout_session(param) }
-  }
+  })
 
   def self.sync(params)
     SYNC_HANDLERS.each do |param_name, handler|

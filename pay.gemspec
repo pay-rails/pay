@@ -22,5 +22,7 @@ Gem::Specification.new do |spec|
     "README.md"
   ]
 
+  spec.required_ruby_version = ">= 3.0"
+
   spec.add_dependency "rails", ">= 7.0.0"
 end

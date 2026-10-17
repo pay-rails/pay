@@ -4,7 +4,7 @@ module Pay
       extend Pay::Sync
 
       # Lemon Squeezy statuses that Pay spells differently
-      STATUSES = {"on_trial" => "trialing", "cancelled" => "canceled"}.freeze
+      STATUSES = Pay.make_shareable({"on_trial" => "trialing", "cancelled" => "canceled"})
 
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         sync_with_retries do

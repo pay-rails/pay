@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pay
   module PaddleClassic
     class Error < Pay::Error
@@ -18,6 +20,8 @@ module Pay
 
     extend Env
 
+    credential :vendor_id, :vendor_auth_code, :environment, :public_key, :public_key_file, :public_key_base64
+
     REQUIRED_VERSION = "~> 3"
 
     def self.enabled?
@@ -27,36 +31,25 @@ module Pay
         current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version #{REQUIRED_VERSION}")
     end
 
+    # The client memoizes a Faraday connection, which can't be shared, so each non-main Ractor builds its own
     def self.client
-      @client ||= Paddle::Classic::Client.new(
+      if ::Ractor.current == ::Ractor.main
+        @client ||= new_client
+      else
+        ::Ractor.current[:pay_paddle_classic_client] ||= new_client
+      end
+    end
+
+    def self.new_client
+      Paddle::Classic::Client.new(
         vendor_id: vendor_id,
         vendor_auth_code: vendor_auth_code,
         sandbox: environment != "production"
       )
     end
 
-    def self.vendor_id
-      find_value_by_name(:paddle_classic, :vendor_id)
-    end
-
-    def self.vendor_auth_code
-      find_value_by_name(:paddle_classic, :vendor_auth_code)
-    end
-
     def self.environment
-      find_value_by_name(:paddle_classic, :environment) || "production"
-    end
-
-    def self.public_key
-      find_value_by_name(:paddle_classic, :public_key)
-    end
-
-    def self.public_key_file
-      find_value_by_name(:paddle_classic, :public_key_file)
-    end
-
-    def self.public_key_base64
-      find_value_by_name(:paddle_classic, :public_key_base64)
+      super || "production"
     end
 
     def self.passthrough(owner:, **options)
