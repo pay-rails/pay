@@ -28,8 +28,11 @@ module Pay
 
     extend Env
 
+    # context is optional: the account (acct_...) that API requests act on when private_key is a Stripe
+    # Organizations API key. https://docs.stripe.com/keys/organization-api-keys
+    credential :public_key, :private_key, :context, :signing_secret, :webhook_receive_test_events
+
     REQUIRED_VERSION = "~> 20".freeze
-    CREDENTIALS = %i[public_key private_key context signing_secret webhook_receive_test_events].freeze
 
     # A list of database model names that include Pay
     # Used for safely looking up models with client_reference_id
@@ -65,28 +68,8 @@ module Pay
       ::Stripe.max_network_retries = 2
     end
 
-    def self.public_key
-      find_value_by_name(:stripe, :public_key)
-    end
-
-    def self.private_key
-      find_value_by_name(:stripe, :private_key)
-    end
-
-    # Optional. The account (acct_...) that API requests should act on when
-    # using a Stripe Organizations API key. Resolved like every other Stripe
-    # credential: ENV["STRIPE_CONTEXT"], then env-scoped, then unscoped
-    # Rails credentials.
-    def self.context
-      find_value_by_name(:stripe, :context)
-    end
-
-    def self.signing_secret
-      find_value_by_name(:stripe, :signing_secret)
-    end
-
     def self.webhook_receive_test_events
-      value = find_value_by_name(:stripe, :webhook_receive_test_events)
+      value = super
       value.blank? || ActiveModel::Type::Boolean.new.cast(value)
     end
 

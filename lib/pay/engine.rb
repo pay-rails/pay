@@ -11,9 +11,7 @@ module Pay
       if Pay.automount_routes
         # Rails runs the block with instance_exec on the route mapper, so its self is irrelevant. Left as it is,
         # the self would be this engine instance, which stops Rails from sharing the application with Ractors.
-        mount_pay = proc { mount Pay::Engine, at: Pay.routes_path, as: "pay" }
-        mount_pay = ::Ractor.shareable_proc(self: nil, &mount_pay) if defined?(::Ractor) && ::Ractor.respond_to?(:shareable_proc)
-        app.routes.append(&mount_pay)
+        app.routes.append(&Pay.shareable_callable(proc { mount Pay::Engine, at: Pay.routes_path, as: "pay" }))
       end
 
       # Include the pay attributes for ActiveRecord models

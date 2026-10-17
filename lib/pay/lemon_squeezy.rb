@@ -15,7 +15,7 @@ module Pay
 
     extend Env
 
-    CREDENTIALS = %i[api_key store_id signing_secret].freeze
+    credential :api_key, :store_id, :signing_secret
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:lemon_squeezy) && defined?(::LemonSqueezy)
@@ -25,18 +25,6 @@ module Pay
 
     def self.setup
       ::LemonSqueezy.config.api_key = api_key
-    end
-
-    def self.api_key
-      find_value_by_name(:lemon_squeezy, :api_key)
-    end
-
-    def self.store_id
-      find_value_by_name(:lemon_squeezy, :store_id)
-    end
-
-    def self.signing_secret
-      find_value_by_name(:lemon_squeezy, :signing_secret)
     end
 
     def self.passthrough(owner:, **options)

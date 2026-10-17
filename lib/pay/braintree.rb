@@ -38,7 +38,7 @@ module Pay
 
     extend Env
 
-    CREDENTIALS = %i[public_key private_key merchant_id environment].freeze
+    credential :public_key, :private_key, :merchant_id, :environment
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:braintree) && defined?(::Braintree)
@@ -59,20 +59,8 @@ module Pay
       )
     end
 
-    def self.public_key
-      find_value_by_name(:braintree, :public_key)
-    end
-
-    def self.private_key
-      find_value_by_name(:braintree, :private_key)
-    end
-
-    def self.merchant_id
-      find_value_by_name(:braintree, :merchant_id)
-    end
-
     def self.environment
-      find_value_by_name(:braintree, :environment) || "sandbox"
+      super || "sandbox"
     end
 
     def self.configure_webhooks

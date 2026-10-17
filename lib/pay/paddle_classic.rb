@@ -18,8 +18,9 @@ module Pay
 
     extend Env
 
+    credential :vendor_id, :vendor_auth_code, :environment, :public_key, :public_key_file, :public_key_base64
+
     REQUIRED_VERSION = "~> 3".freeze
-    CREDENTIALS = %i[vendor_id vendor_auth_code environment public_key public_key_file public_key_base64].freeze
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_classic) && defined?(::Paddle)
@@ -30,10 +31,10 @@ module Pay
 
     # The client memoizes a Faraday connection, which can't be shared, so each non-main Ractor builds its own
     def self.client
-      if Pay.non_main_ractor?
-        ::Ractor.current[:pay_paddle_classic_client] ||= new_client
-      else
+      if Pay.main_ractor?
         @client ||= new_client
+      else
+        ::Ractor.current[:pay_paddle_classic_client] ||= new_client
       end
     end
 
@@ -45,28 +46,8 @@ module Pay
       )
     end
 
-    def self.vendor_id
-      find_value_by_name(:paddle_classic, :vendor_id)
-    end
-
-    def self.vendor_auth_code
-      find_value_by_name(:paddle_classic, :vendor_auth_code)
-    end
-
     def self.environment
-      find_value_by_name(:paddle_classic, :environment) || "production"
-    end
-
-    def self.public_key
-      find_value_by_name(:paddle_classic, :public_key)
-    end
-
-    def self.public_key_file
-      find_value_by_name(:paddle_classic, :public_key_file)
-    end
-
-    def self.public_key_base64
-      find_value_by_name(:paddle_classic, :public_key_base64)
+      super || "production"
     end
 
     def self.passthrough(owner:, **options)

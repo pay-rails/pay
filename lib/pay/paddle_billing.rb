@@ -14,8 +14,9 @@ module Pay
 
     extend Env
 
+    credential :environment, :client_token, :api_key, :signing_secret
+
     REQUIRED_VERSION = "~> 3".freeze
-    CREDENTIALS = %i[environment client_token api_key signing_secret].freeze
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle_billing) && defined?(::Paddle)
@@ -30,19 +31,7 @@ module Pay
     end
 
     def self.environment
-      find_value_by_name(:paddle_billing, :environment) || "production"
-    end
-
-    def self.client_token
-      find_value_by_name(:paddle_billing, :client_token)
-    end
-
-    def self.api_key
-      find_value_by_name(:paddle_billing, :api_key)
-    end
-
-    def self.signing_secret
-      find_value_by_name(:paddle_billing, :signing_secret)
+      super || "production"
     end
 
     def self.configure_webhooks

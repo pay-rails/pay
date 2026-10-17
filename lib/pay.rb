@@ -82,10 +82,10 @@ module Pay
   # The gateway assigned by Pay::Braintree.setup or by the app. A gateway holds a logger, which can't be deep-frozen,
   # so instead of sharing this one each non-main Ractor builds its own from the same credentials.
   def self.braintree_gateway
-    if non_main_ractor?
-      ::Ractor.current[:pay_braintree_gateway] ||= Pay::Braintree.new_gateway
-    else
+    if main_ractor?
       @braintree_gateway
+    else
+      ::Ractor.current[:pay_braintree_gateway] ||= Pay::Braintree.new_gateway
     end
   end
 
@@ -141,50 +141,63 @@ module Pay
     defined?(::Ractor) ? ::Ractor.make_shareable(object) : object.freeze
   end
 
-  def self.non_main_ractor?
-    defined?(::Ractor) && ::Ractor.current != ::Ractor.main
+  def self.main_ractor?
+    !defined?(::Ractor) || ::Ractor.current == ::Ractor.main
+  end
+
+  # Ruby 4.0 can re-create a proc with a different self. Earlier Rubies have Ractor without that.
+  def self.shareable_procs?
+    defined?(::Ractor) && ::Ractor.respond_to?(:shareable_proc)
+  end
+
+  # A proc written in an initializer has the initializer's `main` object as self, which can't be shared, so it is
+  # re-created with nil as self. Procs Pay runs with instance_exec get their self replaced anyway. Anything that
+  # isn't a proc, or any proc on a Ruby that can't do this, is returned as it is.
+  def self.shareable_callable(callable)
+    return callable unless shareable_procs? && callable.is_a?(Proc)
+
+    callable.lambda? ? ::Ractor.shareable_lambda(self: nil, &callable) : ::Ractor.shareable_proc(self: nil, &callable)
   end
 
   # Prepares Pay for Rails' experimental Rails.application.ractorize!, which Rails runs from its before_ractorize
-  # load hook (see Pay::Engine): resolves the processor credentials, rebinds callable options so they can be shared,
-  # warms lazily built values and deep-freezes all of it. Configuration can't change afterwards.
+  # load hook (see Pay::Engine). Configuration and credentials can't change afterwards.
   def self.make_shareable!
-    return unless defined?(::Ractor)
+    return unless shareable_procs?
 
+    share_callable_options
+    share_customer_model_options
+    [Stripe, Braintree, PaddleBilling, PaddleClassic, LemonSqueezy].each(&:freeze_credentials!)
+    make_shareable shareable_configuration
+  end
+
+  def self.share_callable_options
     self.send_emails = shareable_callable(send_emails)
     self.mail_to = shareable_callable(mail_to)
     self.mail_arguments = shareable_callable(mail_arguments)
     emails.transform_values! { |option| shareable_callable(option) }
+  end
 
-    # Mail::Address memoizes its display name on first use
-    support_email&.display_name
-
-    [Stripe, Braintree, PaddleBilling, PaddleClassic, LemonSqueezy].each(&:freeze_credentials!)
-
+  def self.share_customer_model_options
     customer_models = ActiveRecord::Base.descendants.select { |model| model.include?(Pay::Attributes::CustomerExtension) }
     customer_models.each do |model|
       model.pay_stripe_customer_attributes = shareable_callable(model.pay_stripe_customer_attributes)
       model.pay_braintree_customer_attributes = shareable_callable(model.pay_braintree_customer_attributes)
       make_shareable [model.pay_default_payment_processor, model.pay_stripe_customer_attributes, model.pay_braintree_customer_attributes]
     end
+  end
 
-    make_shareable [
+  # Everything a Ractor may read, with the lazily built values warmed first
+  def self.shareable_configuration
+    support_email&.display_name # Mail::Address memoizes it on first use
+
+    [
       model_parent_class, application_name, business_address, business_name, business_logo, support_email,
       automount_routes, routes_path, default_product_name, default_plan_name, enabled_processors,
       send_emails, emails, @mailer, parent_mailer, mail_arguments, mail_to,
       Stripe.model_names, Currency.all, Webhooks.delegator, deprecator
     ]
   end
-
-  # A lambda written in an initializer has the initializer's `main` object as self, which can't be shared, so it is
-  # re-created with nil as self. Lambdas Pay runs with instance_exec get their self replaced anyway. Options that
-  # aren't callable are returned as they are.
-  def self.shareable_callable(option)
-    return option unless option.is_a?(Proc)
-
-    option.lambda? ? ::Ractor.shareable_lambda(self: nil, &option) : ::Ractor.shareable_proc(self: nil, &option)
-  end
-  private_class_method :shareable_callable
+  private_class_method :share_callable_options, :share_customer_model_options, :shareable_configuration
 
   SYNC_HANDLERS = make_shareable({
     lemon_squeezy_order_id: ->(param) { Pay::LemonSqueezy.sync_order(param) },
