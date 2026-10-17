@@ -48,6 +48,8 @@ class Pay::MakeShareableTest < ActiveSupport::TestCase
   end
 
   test "processor credentials are resolved before sharing and can be read from a Ractor" do
+    stripe_private_key = ENV.fetch("STRIPE_PRIVATE_KEY") # CI sets the real test key, so it isn't a literal here
+
     result = in_ractor(prepare: -> { Pay.make_shareable! }) do
       [
         Pay::Stripe.private_key,
@@ -60,7 +62,7 @@ class Pay::MakeShareableTest < ActiveSupport::TestCase
       ]
     end
 
-    assert_equal ["sk_test_fake", "whsec_x", true, "zyfwpztymjqdcc5g", "sandbox", "paddle_classic_vendor_id", nil], result
+    assert_equal [stripe_private_key, "whsec_x", true, "zyfwpztymjqdcc5g", "sandbox", "paddle_classic_vendor_id", nil], result
   end
 
   test "each Ractor builds its own Paddle Classic client" do
