@@ -98,4 +98,40 @@ class ActiveSupport::TestCase
   ensure
     ENV.replace(original_env)
   end
+
+  # Runs the block in a Ractor and returns its result. Skips on Rubies without Ractor#value (before 4.0).
+  #
+  # The Ractor runs in a forked child process. Creating a Ractor switches the Ruby process into multi-Ractor
+  # mode for the rest of its life, and Ruby 4.0 still segfaults now and then in that mode, so the process that
+  # runs the rest of the suite must never create one. The result (or the error) is marshalled back over a pipe.
+  def in_ractor(&block)
+    skip "Ractor#value requires Ruby 4.0+" unless defined?(Ractor) && Ractor.method_defined?(:value)
+    skip "in_ractor requires fork" unless Process.respond_to?(:fork)
+
+    reader, writer = IO.pipe
+    pid = fork do
+      reader.close
+      Warning[:experimental] = false # Ruby warns on every Ractor.new that the API is experimental
+      result = begin
+        {value: Ractor.new(&block).value}
+      rescue Exception => e # rubocop:disable Lint/RescueException -- report Ractor::IsolationError and friends as a test failure
+        cause = e.cause ? " (cause: #{e.cause.class}: #{e.cause.message})" : ""
+        {error: "#{e.class}: #{e.message}#{cause}"}
+      end
+      writer.write Marshal.dump(result)
+      writer.close
+      exit!(0)
+    end
+
+    writer.close
+    output = reader.read
+    Process.wait(pid)
+    flunk "Ractor child exited without a result" if output.empty?
+
+    result = Marshal.load(output)
+    flunk result[:error] if result.key?(:error)
+    result[:value]
+  ensure
+    reader&.close
+  end
 end

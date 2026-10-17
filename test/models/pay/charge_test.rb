@@ -19,6 +19,24 @@ class Pay::ChargeTest < ActiveSupport::TestCase
     refute pay_customers(:stripe).charges.new.fake_processor?
   end
 
+  test "processor scopes" do
+    assert_includes Pay::Charge.stripe, pay_charges(:stripe)
+    refute_includes Pay::Charge.stripe, pay_charges(:braintree)
+  end
+
+  test "processor predicates can be called from a Ractor" do
+    result = in_ractor do
+      # Records can't be built inside a Ractor without Rails' ractorize!, so stub the association
+      charge = Pay::Charge.allocate
+      def charge.customer
+        Struct.new(:processor).new("stripe")
+      end
+      [charge.stripe?, charge.braintree?]
+    end
+
+    assert_equal [true, false], result
+  end
+
   test "charge processor ID is unique per Pay::Customer" do
     user = users(:stripe)
     user.payment_processor.charges.create!(amount: 1, processor_id: "1")

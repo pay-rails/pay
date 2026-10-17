@@ -151,6 +151,29 @@ class Pay::CustomerTest < ActiveSupport::TestCase
     assert pay_customers(:deleted).deleted?
   end
 
+  test "processor predicates" do
+    assert pay_customers(:stripe).stripe?
+    refute pay_customers(:braintree).stripe?
+  end
+
+  test "processor scopes" do
+    assert_includes Pay::Customer.stripe, pay_customers(:stripe)
+    refute_includes Pay::Customer.stripe, pay_customers(:braintree)
+  end
+
+  test "processor predicates can be called from a Ractor" do
+    result = in_ractor do
+      # Records can't be built inside a Ractor without Rails' ractorize!, so stub the attribute
+      customer = Pay::Customer.allocate
+      def customer.processor
+        "stripe"
+      end
+      [customer.stripe?, customer.braintree?]
+    end
+
+    assert_equal [true, false], result
+  end
+
   test "update_api_record with a promotion code" do
     pay_customer = pay_customers(:fake)
     assert pay_customer.update_api_record(promotion_code: "promo_xxx123")

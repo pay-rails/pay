@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* The processor scopes and predicates (`Pay::Charge.stripe`, `charge.stripe?`, and the same on `Pay::Customer` and `Pay::Subscription`) no longer stop Rails' experimental `Rails.application.ractorize!` from booting, and the predicates can be called from a Ractor. Other Pay methods and configuration still can't be used from a Ractor. Rails also can't mount an engine from `routes.append` after `ractorize!` has frozen the engine's routes, so set `config.automount_routes = false` and add `mount Pay::Engine, at: "/pay", as: "pay"` to your routes
+
 ### 12.3.0
 
 * Upgrade to Stripe 20 (API version `2026-09-30.endive`). Update your Gemfile to `gem "stripe", "~> 20.0"`. Stripe 20 removes `payment_method_types` from Checkout Session, PaymentIntent and SetupIntent creation, so if you pass it to `checkout`, `charge`, `authorize` or `create_setup_intent`, rename it to `allowed_payment_method_types`. `terminal_charge` now sends `allowed_payment_method_types` for you

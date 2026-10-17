@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pay
   class Customer < Pay::ApplicationRecord
     belongs_to :owner, polymorphic: true
@@ -21,11 +23,16 @@ module Pay
     delegate :email, to: :owner, allow_nil: true
 
     %w[stripe braintree paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
-      scope processor_name, -> { where(processor: processor_name) }
+      # Everything is inlined into the generated source so the scope lambda captures no variables,
+      # which lets Rails make it Ractor-shareable, and the predicate is a plain method rather than a
+      # closure, which lets a non-main Ractor call it.
+      class_eval <<~RUBY, __FILE__, __LINE__ + 1
+        scope :#{processor_name}, -> { where(processor: "#{processor_name}") }
 
-      define_method :"#{processor_name}?" do
-        processor == processor_name
-      end
+        def #{processor_name}?
+          processor == "#{processor_name}"
+        end
+      RUBY
     end
 
     def update_payment_method(payment_method_id)

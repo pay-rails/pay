@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pay
   class Charge < Pay::ApplicationRecord
     # Associations
@@ -30,11 +32,16 @@ module Pay
 
     # Helpers for payment processors
     %w[braintree stripe paddle_billing paddle_classic lemon_squeezy fake_processor].each do |processor_name|
-      define_method :"#{processor_name}?" do
-        customer.processor == processor_name
-      end
+      # Everything is inlined into the generated source so the scope lambda captures no variables,
+      # which lets Rails make it Ractor-shareable, and the predicate is a plain method rather than a
+      # closure, which lets a non-main Ractor call it.
+      class_eval <<~RUBY, __FILE__, __LINE__ + 1
+        scope :#{processor_name}, -> { joins(:customer).where(pay_customers: {processor: "#{processor_name}"}) }
 
-      scope processor_name, -> { joins(:customer).where(pay_customers: {processor: processor_name}) }
+        def #{processor_name}?
+          customer.processor == "#{processor_name}"
+        end
+      RUBY
     end
 
     def self.find_by_processor_and_id(processor, processor_id)
