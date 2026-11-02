@@ -3,6 +3,7 @@
 ### Unreleased
 
 * The receipt email now attaches the invoice PDF alongside the receipt PDF. Set `config.attach_invoice_to_receipt = false` to keep sending the receipt PDF alone
+* `Pay::UserMailer` runs a `:pay_user_mailer` load hook, so an initializer can customize it with `ActiveSupport.on_load(:pay_user_mailer)`. The configuration docs now show how to subclass it with `config.mailer` without losing Pay's templates and subjects
 * Pay's configuration, credentials and constants can be read from a Ractor. `Pay.make_shareable!` freezes them, and Rails main runs it from its `before_ractorize` hook when an app calls the experimental `Rails.application.ractorize!`. See the Ractors section of the configuration docs for what to expect. The `pay_customer` options are stored with `class_attribute` instead of `cattr_accessor`. Pay now requires Ruby 3.0 or newer
 * The processor scopes and predicates (`Pay::Charge.stripe`, `charge.stripe?`, and the same on `Pay::Customer` and `Pay::Subscription`) no longer stop Rails' experimental `Rails.application.ractorize!` from booting, and the predicates can be called from a Ractor. Other Pay methods and configuration still can't be used from a Ractor. Rails also can't mount an engine from `routes.append` after `ractorize!` has frozen the engine's routes, so set `config.automount_routes = false` and add `mount Pay::Engine, at: "/pay", as: "pay"` to your routes
 
