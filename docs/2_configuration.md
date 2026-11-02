@@ -146,6 +146,15 @@ Pay.setup do |config|
   # By default emails are sent via Pay::UserMailer which inherits from Pay::ApplicationMailer. Instead, you may wish to inherit from ApplicationMailer, or use a different mailer entirely.
   config.parent_mailer = "ApplicationMailer"
   config.mailer = "MyCustomPayMailer"
+  # A subclass needs Pay's mailer_name to find Pay's templates and subject translations:
+  #
+  #   class MyCustomPayMailer < Pay::UserMailer
+  #     self.mailer_name = "pay/user_mailer"
+  #   end
+  #
+  # Or change Pay::UserMailer in place from an initializer:
+  #
+  #   ActiveSupport.on_load(:pay_user_mailer) { layout "billing" }
 
   # All emails can be configured independently as to whether to be sent or not. The values can be set to true, false or a custom lambda to set up more involved logic. The Pay defaults are show below and can be modified as needed.
   config.emails.payment_action_required = true
