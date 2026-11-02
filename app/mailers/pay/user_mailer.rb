@@ -1,8 +1,11 @@
 module Pay
   class UserMailer < Pay.parent_mailer.constantize
     def receipt
-      if params[:pay_charge].respond_to? :receipt
-        attachments[params[:pay_charge].receipt_filename] = params[:pay_charge].receipt
+      pay_charge = params[:pay_charge]
+
+      if pay_charge.respond_to? :receipt
+        attachments[pay_charge.receipt_filename] = pay_charge.receipt
+        attachments[pay_charge.invoice_filename] = pay_charge.invoice
       end
 
       mail mail_arguments
