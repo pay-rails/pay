@@ -5,7 +5,7 @@ module Pay
 
       if pay_charge.respond_to? :receipt
         attachments[pay_charge.receipt_filename] = pay_charge.receipt
-        attachments[pay_charge.invoice_filename] = pay_charge.invoice if Pay.resolve_option(Pay.attach_invoice_to_receipt, pay_charge)
+        attachments[pay_charge.invoice_filename] = pay_charge.invoice if Pay.attach_invoice_to_receipt
       end
 
       mail mail_arguments

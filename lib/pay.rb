@@ -73,8 +73,6 @@ module Pay
   }
   emails.subscription_trial_will_end = true
   emails.subscription_trial_ended = true
-
-  # Whether the receipt email also attaches the invoice PDF. Accepts true, false or a lambda that receives the Pay::Charge
   self.attach_invoice_to_receipt = true
 
   self.mailer = "Pay::UserMailer"
@@ -164,7 +162,6 @@ module Pay
 
   def self.share_callable_options
     self.send_emails = shareable_callable(send_emails)
-    self.attach_invoice_to_receipt = shareable_callable(attach_invoice_to_receipt)
     self.mail_to = shareable_callable(mail_to)
     self.mail_arguments = shareable_callable(mail_arguments)
     emails.transform_values! { |option| shareable_callable(option) }

@@ -120,8 +120,6 @@ When enabled, the following emails will be sent when:
 - A subscription trial is about to end
 - A subscription trial has ended
 
-The receipt email attaches the receipt and invoice PDFs when the `receipts` gem is installed. Set `attach_invoice_to_receipt` to `false` to send the receipt PDF alone.
-
 ## Configuration
 
 Need to make some changes to how Pay is used? You can create an initializer `config/initializers/pay.rb`
@@ -161,7 +159,7 @@ Pay.setup do |config|
   config.emails.subscription_trial_will_end = true
   config.emails.subscription_trial_ended = true
 
-  # The receipt email attaches the receipt PDF and, by default, the invoice PDF. Set this to false, or to a lambda that receives the Pay::Charge, to leave the invoice out.
+  # The receipt email attaches the receipt PDF and the invoice PDF. Set this to false to leave the invoice out.
   config.attach_invoice_to_receipt = true
 
   # Customize who receives emails. Useful when adding additional recipients other than the Pay::Customer. This defaults to the pay customer's email address.
