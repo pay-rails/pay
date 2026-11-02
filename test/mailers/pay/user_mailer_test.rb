@@ -44,6 +44,20 @@ class Pay::UserMailerTest < ActionMailer::TestCase
     end
   end
 
+  test "attaches only the receipt PDF when attach_invoice_to_receipt is false" do
+    Pay.stubs(:attach_invoice_to_receipt).returns(false)
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).receipt
+
+    assert_equal [@charge.receipt_filename], email.attachments.map(&:filename)
+  end
+
+  test "attach_invoice_to_receipt can be a lambda that receives the charge" do
+    Pay.stubs(:attach_invoice_to_receipt).returns(->(pay_charge) { pay_charge.amount > 100_00 })
+    email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).receipt
+
+    assert_equal [@charge.receipt_filename], email.attachments.map(&:filename)
+  end
+
   test "refund" do
     email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).refund
 
