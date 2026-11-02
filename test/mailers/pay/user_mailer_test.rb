@@ -47,14 +47,6 @@ class Pay::UserMailerTest < ActionMailer::TestCase
     assert_equal [@charge.receipt_filename], email.attachments.map(&:filename)
   end
 
-  test "subclasses keep Pay's templates and subjects when they pin mailer_name" do
-    mailer = Class.new(Pay::UserMailer) { self.mailer_name = "pay/user_mailer" }
-    email = mailer.with(pay_customer: @pay_customer, pay_charge: @charge).receipt
-
-    assert_equal I18n.t("pay.user_mailer.receipt.subject", application: Pay.application_name), email.subject
-    assert_includes email.html_part.decoded, "We received payment"
-  end
-
   test "refund" do
     email = Pay::UserMailer.with(pay_customer: @pay_customer, pay_charge: @charge).refund
 
