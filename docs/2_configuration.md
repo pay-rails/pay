@@ -159,6 +159,9 @@ Pay.setup do |config|
   config.emails.subscription_trial_will_end = true
   config.emails.subscription_trial_ended = true
 
+  # The receipt email attaches the receipt PDF and the invoice PDF. Set this to false to leave the invoice out.
+  config.attach_invoice_to_receipt = true
+
   # Customize who receives emails. Useful when adding additional recipients other than the Pay::Customer. This defaults to the pay customer's email address.
   # config.mail_to = -> { "#{params[:pay_customer].customer_name} <#{params[:pay_customer].email}>" }
 

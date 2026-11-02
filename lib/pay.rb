@@ -42,7 +42,7 @@ module Pay
     attr_accessor :automount_routes, :routes_path
     attr_accessor :default_product_name, :default_plan_name
     attr_accessor :enabled_processors
-    attr_accessor :send_emails, :emails
+    attr_accessor :send_emails, :emails, :attach_invoice_to_receipt
     attr_writer :mailer
     attr_accessor :braintree_gateway
     attr_accessor :parent_mailer, :mail_arguments, :mail_to
@@ -73,6 +73,7 @@ module Pay
   }
   emails.subscription_trial_will_end = true
   emails.subscription_trial_ended = true
+  self.attach_invoice_to_receipt = true
 
   self.mailer = "Pay::UserMailer"
 
@@ -180,7 +181,7 @@ module Pay
     [
       model_parent_class, application_name, business_address, business_name, business_logo, support_email,
       automount_routes, routes_path, default_product_name, default_plan_name, enabled_processors,
-      send_emails, emails, @mailer, parent_mailer, mail_arguments, mail_to,
+      send_emails, emails, attach_invoice_to_receipt, @mailer, parent_mailer, mail_arguments, mail_to,
       Stripe.model_names, Currency.all, Webhooks.delegator, deprecator
     ]
   end
