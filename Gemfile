@@ -22,7 +22,7 @@ gem "braintree", ">= 2.92.0"
 gem "ostruct"
 gem "lemonsqueezy", "~> 1.0"
 gem "paddle", "~> 3.0"
-gem "stripe", "~> 20.0"
+gem "stripe", "~> 21.0"
 
 gem "receipts", "~> 3.0"
 

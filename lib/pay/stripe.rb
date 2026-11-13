@@ -34,7 +34,7 @@ module Pay
     # Organizations API key. https://docs.stripe.com/keys/organization-api-keys
     credential :public_key, :private_key, :context, :signing_secret, :webhook_receive_test_events
 
-    REQUIRED_VERSION = "~> 20"
+    REQUIRED_VERSION = "~> 21"
 
     # A list of database model names that include Pay
     # Used for safely looking up models with client_reference_id
