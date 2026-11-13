@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 12.5.0
+
 * Upgrade to Stripe 21 (API version `2026-10-28.endive`). Update your Gemfile to `gem "stripe", "~> 21.0"`. Stripe 21 no longer keeps API keys in Marshal or YAML dumps of Stripe objects, so if your app caches or serializes them that way, call `reattach_api_key` on the restored object before making requests with it. Pay stores Stripe objects as JSON and isn't affected
 
 ### 12.4.0
