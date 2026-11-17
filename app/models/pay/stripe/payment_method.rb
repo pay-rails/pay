@@ -5,7 +5,7 @@ module Pay
 
       # Syncs a PaymentIntent's payment method to the database
       def self.sync_payment_intent(id, stripe_account: nil)
-        payment_intent = ::Stripe::PaymentIntent.retrieve({id: id, expand: ["payment_method"]}, {stripe_account: stripe_account}.compact)
+        payment_intent = ::Stripe::PaymentIntent.retrieve({id: id, expand: ["payment_method"]}, Pay::Stripe.request_options(stripe_account: stripe_account))
         payment_method = payment_intent.payment_method
         return unless payment_method
         Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
@@ -15,7 +15,7 @@ module Pay
 
       # Syncs a SetupIntent's payment method to the database
       def self.sync_setup_intent(id, stripe_account: nil)
-        setup_intent = ::Stripe::SetupIntent.retrieve({id: id, expand: ["payment_method"]}, {stripe_account: stripe_account}.compact)
+        setup_intent = ::Stripe::SetupIntent.retrieve({id: id, expand: ["payment_method"]}, Pay::Stripe.request_options(stripe_account: stripe_account))
         payment_method = setup_intent.payment_method
         return unless payment_method
         Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
@@ -26,7 +26,7 @@ module Pay
       # Syncs PaymentMethod objects from Stripe
       def self.sync(id, object: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          payment_method = object || ::Stripe::PaymentMethod.retrieve(id, {stripe_account: stripe_account}.compact)
+          payment_method = object || ::Stripe::PaymentMethod.retrieve(id, Pay::Stripe.request_options(stripe_account: stripe_account))
           return unless (pay_customer = find_pay_customer(payment_method.customer))
           stripe_account ||= pay_customer.stripe_account
 
@@ -82,7 +82,7 @@ module Pay
 
       # Options for Stripe requests
       def stripe_options
-        {stripe_account: customer.stripe_account}.compact
+        Pay::Stripe.request_options(stripe_account: customer.stripe_account)
       end
     end
   end

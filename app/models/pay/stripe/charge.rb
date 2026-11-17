@@ -11,7 +11,7 @@ module Pay
       store_accessor :data, :stripe_receipt_url
 
       def self.sync_payment_intent(id, stripe_account: nil)
-        payment_intent = ::Stripe::PaymentIntent.retrieve({id: id}, {stripe_account: stripe_account}.compact)
+        payment_intent = ::Stripe::PaymentIntent.retrieve({id: id}, Pay::Stripe.request_options(stripe_account: stripe_account))
         sync(payment_intent.latest_charge, stripe_account: stripe_account)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -19,7 +19,7 @@ module Pay
 
       def self.sync(charge_id, object: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          charge = object || ::Stripe::Charge.retrieve({id: charge_id, expand: EXPAND}, {stripe_account: stripe_account}.compact)
+          charge = object || ::Stripe::Charge.retrieve({id: charge_id, expand: EXPAND}, Pay::Stripe.request_options(stripe_account: stripe_account))
           return unless (pay_customer = find_pay_customer(charge.customer))
           stripe_account ||= pay_customer.stripe_account
 
@@ -44,9 +44,9 @@ module Pay
 
           # Associate charge with subscription if we can
           if charge.payment_intent.present?
-            invoice_payments = ::Stripe::InvoicePayment.list({payment: {type: :payment_intent, payment_intent: charge.payment_intent}, status: :paid}, {stripe_account: stripe_account}.compact)
+            invoice_payments = ::Stripe::InvoicePayment.list({payment: {type: :payment_intent, payment_intent: charge.payment_intent}, status: :paid}, Pay::Stripe.request_options(stripe_account: stripe_account))
             if invoice_payments.any?
-              invoice = ::Stripe::Invoice.retrieve({id: invoice_payments.first.invoice, expand: ["total_discount_amounts.discount.source.coupon"]}, {stripe_account: stripe_account}.compact)
+              invoice = ::Stripe::Invoice.retrieve({id: invoice_payments.first.invoice, expand: ["total_discount_amounts.discount.source.coupon"]}, Pay::Stripe.request_options(stripe_account: stripe_account))
               attrs[:stripe_invoice] = invoice.to_hash
               attrs[:subtotal] = invoice.subtotal
               attrs[:tax] = invoice.total - invoice.total_excluding_tax.to_i
@@ -143,7 +143,7 @@ module Pay
 
       # Options for Stripe requests
       def stripe_options
-        {stripe_account: stripe_account}.compact
+        Pay::Stripe.request_options(stripe_account: stripe_account)
       end
     end
   end

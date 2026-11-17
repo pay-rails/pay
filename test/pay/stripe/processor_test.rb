@@ -116,4 +116,24 @@ class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
       assert_equal :synced, Pay::Stripe::Subscription.sync_from_checkout_session("cs_1", stripe_account: "acct_1")
     end
   end
+
+  test "sync calls on a connected account also use the scoped API key" do
+    ::Stripe::PaymentIntent.expects(:retrieve).with({id: "pi_1"}, {api_key: "sk_other_platform", stripe_account: "acct_1"}).raises(::Stripe::InvalidRequestError.new("missing", nil))
+
+    Pay::Stripe.with_request_options(api_key: "sk_other_platform") do
+      assert_raises(Pay::Stripe::Error) { Pay::Stripe::Charge.sync_payment_intent("pi_1", stripe_account: "acct_1") }
+    end
+  end
+
+  test "with_request_options restores the previous options even when the block raises" do
+    Pay::Stripe.with_request_options(api_key: "sk_outer") do
+      assert_raises(RuntimeError) do
+        Pay::Stripe.with_request_options(api_key: "sk_inner") { raise "boom" }
+      end
+      assert_equal({api_key: "sk_outer"}, Pay::Stripe.request_options)
+    end
+
+    # Otherwise a key could leak into later requests served by the same thread
+    assert_equal({}, Pay::Stripe.request_options)
+  end
 end

@@ -2,7 +2,7 @@ module Pay
   module Stripe
     class Merchant < Pay::Merchant
       def create_account(**options)
-        stripe_account = ::Stripe::Account.create(options)
+        stripe_account = ::Stripe::Account.create(options, Pay::Stripe.request_options)
         update(processor_id: stripe_account.id)
         stripe_account
       rescue ::Stripe::StripeError => e
@@ -10,7 +10,7 @@ module Pay
       end
 
       def account
-        ::Stripe::Account.retrieve(processor_id)
+        ::Stripe::Account.retrieve(processor_id, Pay::Stripe.request_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -21,14 +21,14 @@ module Pay
           refresh_url: refresh_url,
           return_url: return_url,
           type: type
-        }.merge(options))
+        }.merge(options), Pay::Stripe.request_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       # A single-use login link for Express accounts to access their Stripe dashboard
       def login_link(**options)
-        ::Stripe::Account.create_login_link(processor_id, options)
+        ::Stripe::Account.create_login_link(processor_id, options, Pay::Stripe.request_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -40,7 +40,7 @@ module Pay
           amount: amount,
           currency: currency,
           destination: processor_id
-        }.merge(options))
+        }.merge(options), Pay::Stripe.request_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end

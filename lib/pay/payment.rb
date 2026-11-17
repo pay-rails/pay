@@ -7,7 +7,7 @@ module Pay
     delegate :id, :amount, :client_secret, :currency, :customer, :status, :confirm, to: :intent
 
     def self.from_id(id, stripe_account: nil)
-      options = {stripe_account: stripe_account}.compact
+      options = Pay::Stripe.request_options(stripe_account: stripe_account)
       intent = id.start_with?("seti_") ? ::Stripe::SetupIntent.retrieve(id, options) : ::Stripe::PaymentIntent.retrieve(id, options)
       new(intent, stripe_account: stripe_account)
     rescue ::Stripe::StripeError => e

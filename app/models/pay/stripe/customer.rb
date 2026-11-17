@@ -280,7 +280,7 @@ module Pay
 
       # Options for Stripe requests
       def stripe_options
-        {stripe_account: stripe_account}.compact
+        Pay::Stripe.request_options(stripe_account: stripe_account)
       end
 
       # Includes the `session_id` param for Stripe Checkout with existing params (and makes sure the curly braces aren't escaped)

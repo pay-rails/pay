@@ -12,7 +12,7 @@ module Pay
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          subscription = object || ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), {stripe_account: stripe_account}.compact)
+          subscription = object || ::Stripe::Subscription.retrieve({id: subscription_id}.merge(expand_options), Pay::Stripe.request_options(stripe_account: stripe_account))
           return unless (pay_customer = find_pay_customer(subscription.customer))
           stripe_account ||= pay_customer.stripe_account
 
@@ -138,7 +138,7 @@ module Pay
       end
 
       def api_record(**options)
-        @api_record ||= ::Stripe::Subscription.retrieve(options.with_defaults(id: processor_id).merge(expand_options), {stripe_account: stripe_account}.compact)
+        @api_record ||= ::Stripe::Subscription.retrieve(options.with_defaults(id: processor_id).merge(expand_options), Pay::Stripe.request_options(stripe_account: stripe_account))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -405,7 +405,7 @@ module Pay
 
       # Options for Stripe requests
       def stripe_options
-        {stripe_account: stripe_account}.compact
+        Pay::Stripe.request_options(stripe_account: stripe_account)
       end
 
       def expand_options

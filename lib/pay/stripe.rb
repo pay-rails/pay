@@ -43,6 +43,27 @@ module Pay
     end
     self.model_names = Set.new
 
+    # Applies Stripe request options (such as api_key) to every Stripe API call Pay makes inside the block.
+    # Useful for apps that use more than one Stripe account.
+    #
+    #   Pay::Stripe.with_request_options(api_key: "sk_...") { pay_customer.charge(1000) }
+    def self.with_request_options(**options)
+      previous = ActiveSupport::IsolatedExecutionState[:pay_stripe_request_options]
+      ActiveSupport::IsolatedExecutionState[:pay_stripe_request_options] = current_request_options.merge(options)
+      yield
+    ensure
+      ActiveSupport::IsolatedExecutionState[:pay_stripe_request_options] = previous
+    end
+
+    def self.current_request_options
+      ActiveSupport::IsolatedExecutionState[:pay_stripe_request_options] || {}
+    end
+
+    # Options for Stripe requests: any scoped request options, plus the connected account if given
+    def self.request_options(stripe_account: nil)
+      current_request_options.merge({stripe_account: stripe_account}.compact)
+    end
+
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
 
@@ -155,7 +176,7 @@ module Pay
 
     # Subscriptions aren't always immediately associated, so we want to retry by default
     def self.sync_checkout_session(session_id, stripe_account: nil, try: 0, retries: 5)
-      checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id, expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)
+      checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id, expand: ["payment_intent.latest_charge"]}, Pay::Stripe.request_options(stripe_account: stripe_account))
       case checkout_session.mode
       when "payment"
         if (id = checkout_session.payment_intent.try(:latest_charge)&.id)
