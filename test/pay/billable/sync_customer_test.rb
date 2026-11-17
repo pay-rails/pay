@@ -38,4 +38,10 @@ class Pay::Billable::SyncCustomerTest < ActiveSupport::TestCase
       user.update(email: "test@test.com")
     end
   end
+
+  test "does not sync deleted customers" do
+    assert_no_enqueued_jobs only: Pay::CustomerSyncJob do
+      users(:deleted_customer).update(email: "test@test.com")
+    end
+  end
 end
