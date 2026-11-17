@@ -126,7 +126,7 @@ module Pay
 
       def stripe_invoice
         if (value = data.dig("stripe_invoice"))
-          ::Stripe::Invoice.construct_from(value)
+          Pay::Stripe.construct_from(::Stripe::Invoice, value, customer: customer, stripe_account: stripe_account)
         end
       end
 

@@ -130,7 +130,7 @@ module Pay
 
       def stripe_object
         sync! if object.nil?
-        ::Stripe::Subscription.construct_from(object)
+        Pay::Stripe.construct_from(::Stripe::Subscription, object, customer: customer, stripe_account: stripe_account)
       end
 
       def sync!(**options)

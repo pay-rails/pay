@@ -55,14 +55,14 @@ Accept `**` so Pay can pass more context later without breaking your callable.
 * Most webhooks, which start from an ID too. Pay doesn't record which Stripe account a webhook came from, so for these `client_options` has to work out the account itself, for example from `Current` set in your own wrapper around `Pay::Webhooks::ProcessJob`.
 * `Pay::Stripe.sync_checkout_session`, `Pay::Payment.from_id` without `customer:`, and `Pay::Stripe::Merchant` (Connect platform) calls.
 
-Objects Pay fetches keep the API key they were fetched with, so later calls on them go to the same account.
+Objects Pay fetches keep the API key they were fetched with, so later calls on them go to the same account. So do the objects Pay rebuilds from its database or a webhook, like `subscription.stripe_object`, the invoice on a charge's receipt and webhook events, so paging through their lists works too.
 
 A few things to keep in mind:
 
 * Pay sets the [Connect](/docs/marketplaces/stripe_connect.md) account itself from the customer, charge or subscription, so `client_options` can't return `stripe_account`. Pay raises an `ArgumentError` if it does.
 * If your global configuration uses an [organization API key](#organization-api-keys-optional) with `context`, return `stripe_context: nil` alongside a regular account key so the `Stripe-Context` header isn't sent with it.
 * `client_options` runs for every request, and some Pay methods make several. Cache anything slow to look up, for example in `Current`.
-* Stripe objects Pay rebuilds from its database (like `subscription.stripe_object`) aren't tied to a client, so requests made from them, such as paging through `subscription_items`, use your global configuration.
+* `charge.stripe_object` is only rebuilt for reading its attributes, so it doesn't call `client_options`, and requests made from it use your global configuration.
 * `client_options` only covers API requests. Pay's [SCA confirmation page](4_sca.md) uses `Pay::Stripe.public_key`, so copy its views with `bin/rails generate pay:views` and swap in the publishable key that matches the API key.
 
 ### Signing secrets
