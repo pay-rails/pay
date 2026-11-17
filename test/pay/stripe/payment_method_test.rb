@@ -49,8 +49,7 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
     # Mock Stripe API call
     ::Stripe::CustomerService.any_instance.expects(:update).with(
       @pay_customer.processor_id,
-      {invoice_settings: {default_payment_method: "pm_new"}},
-      {}
+      {invoice_settings: {default_payment_method: "pm_new"}}
     ).returns(true)
 
     # Make pm2 the default
@@ -106,7 +105,8 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
 
   test "Stripe sync_payment_intent passes the stripe_account through" do
     payment_intent = ::Stripe::PaymentIntent.construct_from(id: "pi_123", object: "payment_intent", payment_method: fake_stripe_payment_method)
-    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123", {expand: ["payment_method"]}, {stripe_account: "acct_123"}).returns(payment_intent)
+    expect_stripe_client(stripe_account: "acct_123")
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123", {expand: ["payment_method"]}).returns(payment_intent)
     Pay::Stripe::PaymentMethod.expects(:sync).with("pm_123", object: payment_intent.payment_method, stripe_account: "acct_123")
     Pay::Stripe::PaymentMethod.sync_payment_intent("pi_123", stripe_account: "acct_123")
   end
@@ -114,7 +114,8 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
   test "Stripe detach sends the connected account as options" do
     payment_method = pay_payment_methods(:stripe)
     payment_method.customer.update!(stripe_account: "acct_123")
-    ::Stripe::PaymentMethodService.any_instance.expects(:detach).with("pm_1000", {}, {stripe_account: "acct_123"})
+    expect_stripe_client(stripe_account: "acct_123")
+    ::Stripe::PaymentMethodService.any_instance.expects(:detach).with("pm_1000")
 
     payment_method.detach
   end

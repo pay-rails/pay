@@ -43,26 +43,28 @@ module Pay
     end
     self.model_names = Set.new
 
-    # An optional callable returning the Stripe::StripeClient Pay should use, for apps with more than one Stripe account.
-    # Returning nil falls back to the default client.
+    # An optional callable returning Stripe::StripeClient options (api_key:, stripe_version:, etc.) for apps with more
+    # than one Stripe account. They're merged over the global Stripe configuration; returning nil uses it unchanged.
     #
-    #   Pay::Stripe.client_resolver = -> { Stripe::StripeClient.new(Current.account.stripe_api_key) if Current.account }
+    #   Pay::Stripe.client_options = -> { {api_key: Current.account.stripe_api_key} if Current.account }
     class << self
-      attr_accessor :client_resolver
+      attr_accessor :client_options
     end
 
-    # The Stripe::StripeClient used for every Stripe API request Pay makes.
-    # Building a client is cheap, so one is created per call instead of being shared across threads and Ractors.
-    def self.client
-      client_resolver&.call || default_client
+    # The Stripe::StripeClient for a Stripe API request, acting on the given Connect account if there is one.
+    # Building a client is cheap, so one is created per request instead of being shared across threads and Ractors.
+    def self.client(stripe_account: nil)
+      options = default_client_options.merge(client_options&.call || {})
+      options[:stripe_account] = stripe_account if stripe_account
+      ::Stripe::StripeClient.new(options.delete(:api_key), **options)
     end
 
     # StripeClient doesn't read the global client options (API base, version, etc.) itself, so copy them over
-    # so the default client sends the same requests the legacy class methods did.
-    def self.default_client
+    # so requests match what the legacy class methods sent.
+    def self.default_client_options
       config = ::Stripe.config
-      ::Stripe::StripeClient.new(
-        config.api_key,
+      {
+        api_key: config.api_key,
         stripe_account: config.stripe_account,
         stripe_context: config.stripe_context,
         stripe_version: config.api_version,
@@ -71,9 +73,9 @@ module Pay
         connect_base: config.connect_base,
         meter_events_base: config.meter_events_base,
         client_id: config.client_id
-      )
+      }
     end
-    private_class_method :default_client
+    private_class_method :default_client_options
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
@@ -187,7 +189,7 @@ module Pay
 
     # Subscriptions aren't always immediately associated, so we want to retry by default
     def self.sync_checkout_session(session_id, stripe_account: nil, try: 0, retries: 5)
-      checkout_session = Pay::Stripe.client.v1.checkout.sessions.retrieve(session_id, {expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)
+      checkout_session = Pay::Stripe.client(stripe_account: stripe_account).v1.checkout.sessions.retrieve(session_id, {expand: ["payment_intent.latest_charge"]})
       case checkout_session.mode
       when "payment"
         if (id = checkout_session.payment_intent.try(:latest_charge)&.id)

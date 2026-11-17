@@ -5,7 +5,7 @@ module Pay
 
       # Syncs a PaymentIntent's payment method to the database
       def self.sync_payment_intent(id, stripe_account: nil)
-        payment_intent = Pay::Stripe.client.v1.payment_intents.retrieve(id, {expand: ["payment_method"]}, {stripe_account: stripe_account}.compact)
+        payment_intent = Pay::Stripe.client(stripe_account: stripe_account).v1.payment_intents.retrieve(id, {expand: ["payment_method"]})
         payment_method = payment_intent.payment_method
         return unless payment_method
         Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
@@ -15,7 +15,7 @@ module Pay
 
       # Syncs a SetupIntent's payment method to the database
       def self.sync_setup_intent(id, stripe_account: nil)
-        setup_intent = Pay::Stripe.client.v1.setup_intents.retrieve(id, {expand: ["payment_method"]}, {stripe_account: stripe_account}.compact)
+        setup_intent = Pay::Stripe.client(stripe_account: stripe_account).v1.setup_intents.retrieve(id, {expand: ["payment_method"]})
         payment_method = setup_intent.payment_method
         return unless payment_method
         Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
@@ -26,7 +26,7 @@ module Pay
       # Syncs PaymentMethod objects from Stripe
       def self.sync(id, object: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          payment_method = object || Pay::Stripe.client.v1.payment_methods.retrieve(id, {}, {stripe_account: stripe_account}.compact)
+          payment_method = object || Pay::Stripe.client(stripe_account: stripe_account).v1.payment_methods.retrieve(id)
           return unless (pay_customer = find_pay_customer(payment_method.customer))
           stripe_account ||= pay_customer.stripe_account
 
@@ -63,7 +63,7 @@ module Pay
       def make_default!
         return if default?
 
-        Pay::Stripe.client.v1.customers.update(customer.processor_id, {invoice_settings: {default_payment_method: processor_id}}, stripe_options)
+        stripe_client.v1.customers.update(customer.processor_id, {invoice_settings: {default_payment_method: processor_id}})
 
         customer.payment_methods.update_all(default: false)
         update!(default: true)
@@ -73,16 +73,15 @@ module Pay
 
       # Remove payment method
       def detach
-        Pay::Stripe.client.v1.payment_methods.detach(processor_id, {}, stripe_options)
+        stripe_client.v1.payment_methods.detach(processor_id)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       private
 
-      # Options for Stripe requests
-      def stripe_options
-        {stripe_account: customer.stripe_account}.compact
+      def stripe_client
+        Pay::Stripe.client(stripe_account: customer.stripe_account)
       end
     end
   end

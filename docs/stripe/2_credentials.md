@@ -27,20 +27,20 @@ Note: publishable keys and webhook signing secrets remain per-account (organizat
 
 ### Multiple Stripe accounts (optional)
 
-Pay makes every Stripe API request through a [`Stripe::StripeClient`](https://github.com/stripe/stripe-ruby#usage), which you can get with `Pay::Stripe.client`. By default it uses your global Stripe configuration (`Stripe.api_key`, `Stripe.api_base`, `Stripe.api_version`, and so on).
+Pay makes every Stripe API request through a [`Stripe::StripeClient`](https://github.com/stripe/stripe-ruby#usage), which you can get with `Pay::Stripe.client` (or `Pay::Stripe.client(stripe_account: "acct_...")` for a Connect account). By default it uses your global Stripe configuration (`Stripe.api_key`, `Stripe.api_base`, `Stripe.api_version`, and so on).
 
-If your app uses more than one Stripe account (not [Connect](/docs/marketplaces/stripe_connect.md) accounts, which Pay handles with `stripe_account`), set `Pay::Stripe.client_resolver` to return the client Pay should use. It's called for every request, so it can read whatever your app uses to track the current account:
+If your app uses more than one Stripe account (not [Connect](/docs/marketplaces/stripe_connect.md) accounts, which Pay handles itself), set `Pay::Stripe.client_options` to return the [`StripeClient` options](https://github.com/stripe/stripe-ruby#per-request-configuration) Pay should use. They're merged over your global configuration. It's called for every request, so it can read whatever your app uses to track the current account:
 
 ```ruby
 # config/initializers/pay.rb
-Pay::Stripe.client_resolver = -> {
-  Stripe::StripeClient.new(Current.account.stripe_api_key) if Current.account
+Pay::Stripe.client_options = -> {
+  {api_key: Current.account.stripe_api_key} if Current.account
 }
 ```
 
-Return `nil` to fall back to the default client. Objects Pay fetches with a client keep using that client's API key, so later calls on them go to the same account.
+Return `nil` to use the global configuration unchanged. Objects Pay fetches keep the API key they were fetched with, so later calls on them go to the same account. Pay still sets the Connect account for customers, charges and subscriptions that have one, overriding any `stripe_account` you return.
 
-Pay doesn't record which account a customer or webhook belongs to, so your resolver also has to return the right client in background jobs, including `Pay::Webhooks::ProcessJob`.
+Pay doesn't record which account a customer or webhook belongs to, so `client_options` also has to return the right options in background jobs, including `Pay::Webhooks::ProcessJob`.
 
 ### Signing secrets
 

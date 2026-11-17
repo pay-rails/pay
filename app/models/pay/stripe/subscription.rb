@@ -12,7 +12,7 @@ module Pay
 
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          subscription = object || Pay::Stripe.client.v1.subscriptions.retrieve(subscription_id, expand_options, {stripe_account: stripe_account}.compact)
+          subscription = object || Pay::Stripe.client(stripe_account: stripe_account).v1.subscriptions.retrieve(subscription_id, expand_options)
           return unless (pay_customer = find_pay_customer(subscription.customer))
           stripe_account ||= pay_customer.stripe_account
 
@@ -138,7 +138,7 @@ module Pay
       end
 
       def api_record(id: processor_id, **options)
-        @api_record ||= Pay::Stripe.client.v1.subscriptions.retrieve(id, options.merge(expand_options), stripe_options)
+        @api_record ||= stripe_client.v1.subscriptions.retrieve(id, options.merge(expand_options))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -151,7 +151,7 @@ module Pay
       # Sets the default_payment_method on a subscription
       # Pass an empty string to unset
       def update_payment_method(id)
-        @api_record = Pay::Stripe.client.v1.subscriptions.update(processor_id, {default_payment_method: id}.merge(expand_options), stripe_options)
+        @api_record = stripe_client.v1.subscriptions.update(processor_id, {default_payment_method: id}.merge(expand_options))
         update(payment_method_id: @api_record.default_payment_method&.id)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -167,7 +167,7 @@ module Pay
         if past_due? && options.fetch(:past_due_cancel_now, true)
           cancel_now!
         else
-          @api_record = Pay::Stripe.client.v1.subscriptions.update(processor_id, {cancel_at_period_end: true}.merge(expand_options), stripe_options)
+          @api_record = stripe_client.v1.subscriptions.update(processor_id, {cancel_at_period_end: true}.merge(expand_options))
           update(ends_at: Time.at(@api_record.cancel_at))
         end
       rescue ::Stripe::StripeError => e
@@ -181,7 +181,7 @@ module Pay
       def cancel_now!(**options)
         return if canceled? && ends_at.past?
 
-        @api_record = Pay::Stripe.client.v1.subscriptions.cancel(processor_id, options.merge(expand_options), stripe_options)
+        @api_record = stripe_client.v1.subscriptions.cancel(processor_id, options.merge(expand_options))
         update(
           trial_ends_at: (@api_record.trial_end ? Time.at(@api_record.trial_end) : nil),
           ends_at: Time.at(@api_record.ended_at),
@@ -197,7 +197,7 @@ module Pay
       # (Stripe no longer accepts a top-level quantity on the subscription itself)
       def change_quantity(quantity, **options)
         subscription_item_id = options.delete(:subscription_item_id) || subscription_items.first.id
-        Pay::Stripe.client.v1.subscription_items.update(subscription_item_id, options.merge(quantity: quantity), stripe_options)
+        stripe_client.v1.subscription_items.update(subscription_item_id, options.merge(quantity: quantity))
         @api_record = nil
         update(quantity: quantity)
       rescue ::Stripe::StripeError => e
@@ -237,7 +237,7 @@ module Pay
       # https://docs.stripe.com/billing/subscriptions/pause-payment
       def pause(**options)
         attributes = {pause_collection: options.reverse_merge(behavior: "void")}
-        @api_record = Pay::Stripe.client.v1.subscriptions.update(processor_id, attributes.merge(expand_options), stripe_options)
+        @api_record = stripe_client.v1.subscriptions.update(processor_id, attributes.merge(expand_options))
         behavior = @api_record.pause_collection&.behavior
         update(
           pause_behavior: behavior,
@@ -252,7 +252,7 @@ module Pay
       #
       # https://docs.stripe.com/billing/subscriptions/pause-payment#unpausing
       def unpause
-        @api_record = Pay::Stripe.client.v1.subscriptions.update(processor_id, {pause_collection: ""}.merge(expand_options), stripe_options)
+        @api_record = stripe_client.v1.subscriptions.update(processor_id, {pause_collection: ""}.merge(expand_options))
         update(
           pause_behavior: nil,
           pause_resumes_at: nil,
@@ -280,15 +280,14 @@ module Pay
         end
 
         if status_paused?
-          @api_record = Pay::Stripe.client.v1.subscriptions.resume(processor_id, options.merge(expand_options), stripe_options)
+          @api_record = stripe_client.v1.subscriptions.resume(processor_id, options.merge(expand_options))
         elsif paused?
           unpause
         else
-          @api_record = Pay::Stripe.client.v1.subscriptions.update(processor_id, {
+          @api_record = stripe_client.v1.subscriptions.update(processor_id, {
             trial_end: (on_trial? ? trial_ends_at.to_i : "now"),
             cancel_at_period_end: false
-          }.merge(expand_options),
-            stripe_options)
+          }.merge(expand_options))
         end
         update(ends_at: nil, status: @api_record.status)
 
@@ -310,15 +309,14 @@ module Pay
           options[:billing_cycle_anchor] = {type: options[:billing_cycle_anchor].to_s}
         end
 
-        @api_record = Pay::Stripe.client.v1.subscriptions.update(
+        @api_record = stripe_client.v1.subscriptions.update(
           processor_id,
           {
             cancel_at_period_end: false,
             items: [{id: subscription_items.first.id, plan: plan, quantity: quantity}],
             proration_behavior: proration_behavior,
             trial_end: (on_trial? ? trial_ends_at.to_i : "now")
-          }.merge(expand_options).merge(options),
-          stripe_options
+          }.merge(expand_options).merge(options)
         )
 
         # Validate that swap was successful and handle SCA if needed
@@ -341,7 +339,7 @@ module Pay
       end
 
       def preview_invoice(**options)
-        Pay::Stripe.client.v1.invoices.create_preview(options.merge(subscription: processor_id), stripe_options)
+        stripe_client.v1.invoices.create_preview(options.merge(subscription: processor_id))
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -349,15 +347,15 @@ module Pay
       # Retries the latest invoice for a Past Due subscription and attempts to pay it
       def retry_failed_payment(payment_intent_id: nil)
         payment_intent_id ||= api_record.latest_invoice.payments.first.payment.payment_intent
-        payment_intent = Pay::Stripe.client.v1.payment_intents.retrieve(payment_intent_id, {}, stripe_options)
+        payment_intent = stripe_client.v1.payment_intents.retrieve(payment_intent_id)
 
         payment_intent = if payment_intent.status == "requires_payment_method"
           payment_method = customer.default_payment_method
           raise Pay::Stripe::Error, "no default payment method to retry the payment with" if payment_method.nil?
 
-          Pay::Stripe.client.v1.payment_intents.confirm(payment_intent_id, {payment_method: payment_method.processor_id}, stripe_options)
+          stripe_client.v1.payment_intents.confirm(payment_intent_id, {payment_method: payment_method.processor_id})
         else
-          Pay::Stripe.client.v1.payment_intents.confirm(payment_intent_id, {}, stripe_options)
+          stripe_client.v1.payment_intents.confirm(payment_intent_id)
         end
         Pay::Payment.new(payment_intent).validate
       rescue ::Stripe::StripeError => e
@@ -368,7 +366,7 @@ module Pay
       #
       # Invoices no longer expose a `payment_intent` directly, so the PaymentIntent is looked up through the invoice's payments
       def pay_open_invoices
-        Pay::Stripe.client.v1.invoices.list({subscription: processor_id, status: :open, expand: ["data.payments"]}, stripe_options).auto_paging_each do |invoice|
+        stripe_client.v1.invoices.list({subscription: processor_id, status: :open, expand: ["data.payments"]}).auto_paging_each do |invoice|
           payment_intent_id = invoice.payments.first&.payment&.payment_intent
           retry_failed_payment(payment_intent_id: payment_intent_id) if payment_intent_id
         end
@@ -379,7 +377,7 @@ module Pay
       # Returns the Stripe::PaymentIntent for the latest invoice, if there is one
       def latest_payment
         payment_intent_id = api_record.latest_invoice&.payments&.first&.payment&.payment_intent
-        Pay::Stripe.client.v1.payment_intents.retrieve(payment_intent_id, {}, stripe_options) if payment_intent_id
+        stripe_client.v1.payment_intents.retrieve(payment_intent_id) if payment_intent_id
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -403,9 +401,8 @@ module Pay
         end
       end
 
-      # Options for Stripe requests
-      def stripe_options
-        {stripe_account: stripe_account}.compact
+      def stripe_client
+        Pay::Stripe.client(stripe_account: stripe_account)
       end
 
       def expand_options

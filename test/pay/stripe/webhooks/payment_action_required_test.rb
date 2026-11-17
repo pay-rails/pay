@@ -56,7 +56,8 @@ class Pay::Stripe::Webhooks::PaymentActionRequiredTest < ActiveSupport::TestCase
   test "looks up the invoice payment on the connected account" do
     event = stripe_event("invoice.payment_action_required", account: "acct_123")
     sync_subscription(event, status: :past_due)
-    ::Stripe::InvoicePaymentService.any_instance.expects(:list).with({invoice: event.data.object.id, status: :open}, {stripe_account: "acct_123"}).returns(::Stripe::ListObject.construct_from(object: "list", data: []))
+    expect_stripe_client(stripe_account: "acct_123")
+    ::Stripe::InvoicePaymentService.any_instance.expects(:list).with({invoice: event.data.object.id, status: :open}).returns(::Stripe::ListObject.construct_from(object: "list", data: []))
 
     assert_no_enqueued_jobs do
       Pay::Stripe::Webhooks::PaymentActionRequired.new.call(event)

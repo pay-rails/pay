@@ -8,7 +8,7 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
   end
 
   teardown do
-    Pay::Stripe.client_resolver = nil
+    Pay::Stripe.client_options = nil
   end
 
   test "client uses the global Stripe API key and context by default" do
@@ -32,8 +32,8 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
     assert_equal "pi_1", Pay::Payment.from_id("pi_1").id
   end
 
-  test "client_resolver supplies the client, and objects it returns keep using that client's API key" do
-    Pay::Stripe.client_resolver = -> { ::Stripe::StripeClient.new("sk_test_other_platform") }
+  test "client_options override the global configuration, and objects keep using that API key" do
+    Pay::Stripe.client_options = -> { {api_key: "sk_test_other_platform"} }
 
     create = stub_request(:post, "https://api.stripe.com/v1/invoices")
       .with(headers: {"Authorization" => "Bearer sk_test_other_platform"})
@@ -54,5 +54,35 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
       .to_return(body: {id: "pi_1", object: "payment_intent", status: "succeeded"}.to_json)
 
     assert_equal "acct_123", Pay::Payment.from_id("pi_1", stripe_account: "acct_123").stripe_account
+  end
+
+  test "objects keep the connected account for later calls" do
+    pay_customer = pay_customers(:stripe)
+    pay_customer.update!(stripe_account: "acct_123")
+
+    create = stub_request(:post, "https://api.stripe.com/v1/invoices")
+      .with(headers: {"Stripe-Account" => "acct_123"})
+      .to_return(body: {id: "in_1", object: "invoice", status: "draft"}.to_json)
+    pay = stub_request(:post, "https://api.stripe.com/v1/invoices/in_1/pay")
+      .with(headers: {"Stripe-Account" => "acct_123"})
+      .to_return(body: {id: "in_1", object: "invoice", status: "paid"}.to_json)
+
+    assert_equal "paid", pay_customer.invoice!.status
+    assert_requested create
+    assert_requested pay
+  end
+
+  test "the record's connected account takes precedence over client_options" do
+    Pay::Stripe.client_options = -> { {stripe_account: "acct_default"} }
+
+    stub_request(:get, "https://api.stripe.com/v1/payment_intents/pi_1")
+      .with(headers: {"Stripe-Account" => "acct_123"})
+      .to_return(body: {id: "pi_1", object: "payment_intent", status: "succeeded"}.to_json)
+    stub_request(:get, "https://api.stripe.com/v1/payment_intents/pi_2")
+      .with(headers: {"Stripe-Account" => "acct_default"})
+      .to_return(body: {id: "pi_2", object: "payment_intent", status: "succeeded"}.to_json)
+
+    assert_equal "pi_1", Pay::Payment.from_id("pi_1", stripe_account: "acct_123").id
+    assert_equal "pi_2", Pay::Payment.from_id("pi_2").id
   end
 end

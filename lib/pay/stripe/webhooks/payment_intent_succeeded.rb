@@ -9,7 +9,7 @@ module Pay
 
         def call(event)
           object = event.data.object
-          payment_intent = Pay::Stripe.client.v1.payment_intents.retrieve(object.id, {}, {stripe_account: event.try(:account)}.compact)
+          payment_intent = Pay::Stripe.client(stripe_account: event.try(:account)).v1.payment_intents.retrieve(object.id)
           Pay::Stripe::Charge.sync(payment_intent.latest_charge, stripe_account: event.try(:account))
         end
       end
