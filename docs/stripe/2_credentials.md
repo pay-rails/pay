@@ -27,7 +27,7 @@ Note: publishable keys and webhook signing secrets remain per-account (organizat
 
 ### Multiple Stripe accounts (optional)
 
-Pay makes every Stripe API request through a [`Stripe::StripeClient`](https://github.com/stripe/stripe-ruby#usage), which you can get with `Pay::Stripe.client` (or `Pay::Stripe.client(stripe_account: "acct_...")` for a Connect account). By default it uses your global Stripe configuration (`Stripe.api_key`, `Stripe.api_base`, `Stripe.api_version`, and so on).
+Pay makes every Stripe API request through a [`Stripe::StripeClient`](https://github.com/stripe/stripe-ruby#usage), which you can get with `Pay::Stripe.client`. For a Connect account, pass `{stripe_account: "acct_..."}` as the request options, like `Pay::Stripe.client.v1.customers.retrieve("cus_...", {}, {stripe_account: "acct_..."})`. By default it uses your global Stripe configuration (`Stripe.api_key`, `Stripe.api_base`, `Stripe.api_version`, and so on).
 
 If your app uses more than one Stripe account (not [Connect](/docs/marketplaces/stripe_connect.md) accounts, which Pay handles itself), set `Pay::Stripe.client_options` to return the [`StripeClient` options](https://github.com/stripe/stripe-ruby#per-request-configuration) Pay should use. They're merged over your global configuration, and returning `nil` uses it unchanged. It's called for every request, so it can read whatever your app uses to track the current account:
 

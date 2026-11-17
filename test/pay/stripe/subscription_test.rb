@@ -33,7 +33,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = pay_subscriptions(:stripe)
     pay_subscription.update!(object: fake_stripe_subscription(id: "sub_1").to_hash)
     ::Stripe::SubscriptionService.any_instance.expects(:update).never
-    ::Stripe::SubscriptionItemService.any_instance.expects(:update).with("si_1", {quantity: 3}).returns(::Stripe::SubscriptionItem.construct_from(id: "si_1", object: "subscription_item", quantity: 3))
+    ::Stripe::SubscriptionItemService.any_instance.expects(:update).with("si_1", {quantity: 3}, {}).returns(::Stripe::SubscriptionItem.construct_from(id: "si_1", object: "subscription_item", quantity: 3))
 
     pay_subscription.change_quantity(3)
 
@@ -42,7 +42,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "stripe change subscription quantity accepts a subscription_item_id" do
     pay_subscription = pay_subscriptions(:stripe)
-    ::Stripe::SubscriptionItemService.any_instance.expects(:update).with("si_other", {quantity: 2, proration_behavior: "none"}).returns(::Stripe::SubscriptionItem.construct_from(id: "si_other", object: "subscription_item", quantity: 2))
+    ::Stripe::SubscriptionItemService.any_instance.expects(:update).with("si_other", {quantity: 2, proration_behavior: "none"}, {}).returns(::Stripe::SubscriptionItem.construct_from(id: "si_other", object: "subscription_item", quantity: 2))
 
     pay_subscription.change_quantity(2, subscription_item_id: "si_other", proration_behavior: "none")
 
@@ -244,7 +244,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = paused_stripe_subscription
     ::Stripe::SubscriptionService.any_instance.expects(:update).never
     ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).never
-    ::Stripe::SubscriptionService.any_instance.expects(:resume).with("sub_1", has_key(:expand)).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
+    ::Stripe::SubscriptionService.any_instance.expects(:resume).with("sub_1", has_key(:expand), anything).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
 
     assert pay_subscription.resume
 
@@ -255,7 +255,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "stripe resume with paused status passes options to Stripe" do
     pay_subscription = paused_stripe_subscription
-    ::Stripe::SubscriptionService.any_instance.expects(:resume).with("sub_1", has_entry(billing_cycle_anchor: "unchanged")).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
+    ::Stripe::SubscriptionService.any_instance.expects(:resume).with("sub_1", has_entry(billing_cycle_anchor: "unchanged"), anything).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
 
     pay_subscription.resume(billing_cycle_anchor: "unchanged")
   end
@@ -263,7 +263,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe resume with paused status raises when the invoice needs a payment method" do
     pay_subscription = paused_stripe_subscription
     ::Stripe::SubscriptionService.any_instance.expects(:resume).returns(fake_stripe_subscription(id: "sub_1", status: "paused", latest_invoice: fake_stripe_open_invoice(payment_intent: "pi_1")))
-    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_1").returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "requires_payment_method"))
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_1", {}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "requires_payment_method"))
 
     assert_raises(Pay::InvalidPaymentMethod) { pay_subscription.resume }
 
@@ -274,7 +274,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe resume with paused status raises when the invoice needs authentication" do
     pay_subscription = paused_stripe_subscription
     ::Stripe::SubscriptionService.any_instance.expects(:resume).returns(fake_stripe_subscription(id: "sub_1", status: "paused", latest_invoice: fake_stripe_open_invoice(payment_intent: "pi_1")))
-    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_1").returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "requires_action"))
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_1", {}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "requires_action"))
 
     exception = assert_raises(Pay::ActionRequired) { pay_subscription.resume }
 
@@ -285,7 +285,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe resume with paused status stays paused while the payment is processing" do
     pay_subscription = paused_stripe_subscription
     ::Stripe::SubscriptionService.any_instance.expects(:resume).returns(fake_stripe_subscription(id: "sub_1", status: "paused", latest_invoice: fake_stripe_open_invoice(payment_intent: "pi_1")))
-    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_1").returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "processing"))
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_1", {}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "processing"))
 
     assert pay_subscription.resume
 
@@ -431,8 +431,8 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe pay_open_invoices pays the payment intent from each open invoice's payments" do
     pay_subscription = pay_subscriptions(:stripe)
     ::Stripe::InvoiceService.any_instance.stubs(:list).returns(::Stripe::ListObject.construct_from(object: "list", has_more: false, data: [fake_stripe_open_invoice(payment_intent: "pi_1000")]))
-    ::Stripe::PaymentIntentService.any_instance.stubs(:retrieve).with("pi_1000").returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "requires_confirmation"))
-    ::Stripe::PaymentIntentService.any_instance.expects(:confirm).with("pi_1000").returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded"))
+    ::Stripe::PaymentIntentService.any_instance.stubs(:retrieve).with("pi_1000", {}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "requires_confirmation"))
+    ::Stripe::PaymentIntentService.any_instance.expects(:confirm).with("pi_1000", {}, {}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded"))
 
     pay_subscription.pay_open_invoices
   end
@@ -450,7 +450,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = pay_subscriptions(:stripe)
     pay_subscription.api_record = fake_stripe_subscription(latest_invoice: fake_stripe_open_invoice(payment_intent: "pi_1000"))
     payment_intent = ::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded")
-    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_1000").returns(payment_intent)
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_1000", {}, {}).returns(payment_intent)
 
     assert_equal payment_intent, pay_subscription.latest_payment
   end
@@ -527,8 +527,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = pay_subscriptions(:stripe)
     pay_subscription.update!(stripe_account: "acct_123")
     ::Stripe::PaymentIntentService.any_instance.stubs(:retrieve).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "requires_confirmation"))
-    expect_stripe_client(stripe_account: "acct_123")
-    ::Stripe::PaymentIntentService.any_instance.expects(:confirm).with("pi_1000").returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded"))
+    ::Stripe::PaymentIntentService.any_instance.expects(:confirm).with("pi_1000", {}, {stripe_account: "acct_123"}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", object: "payment_intent", status: "succeeded"))
 
     pay_subscription.retry_failed_payment(payment_intent_id: "pi_1000")
   end
@@ -536,7 +535,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe swap does not forward prorate to Stripe" do
     pay_subscription = pay_subscriptions(:stripe)
     pay_subscription.update!(object: fake_stripe_subscription(id: "sub_1").to_hash)
-    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", Not(has_key(:prorate)) & has_entry(proration_behavior: "none")).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", Not(has_key(:prorate)) & has_entry(proration_behavior: "none"), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
 
     pay_subscription.swap("price_new", prorate: false)
   end

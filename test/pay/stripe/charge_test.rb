@@ -102,8 +102,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync uses the customer's stripe_account for invoice lookups when none is given" do
     @pay_customer.update!(stripe_account: "acct_123")
-    expect_stripe_client(stripe_account: "acct_123")
-    ::Stripe::InvoicePaymentService.any_instance.expects(:list).with(anything).returns(::Stripe::ListObject.construct_from(object: :list, data: []))
+    ::Stripe::InvoicePaymentService.any_instance.expects(:list).with(anything, {stripe_account: "acct_123"}).returns(::Stripe::ListObject.construct_from(object: :list, data: []))
     pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge)
     assert_equal "acct_123", pay_charge.stripe_account
   end

@@ -54,11 +54,14 @@ module Pay
       attr_accessor :client_options
     end
 
-    # The Stripe::StripeClient for a Stripe API request, acting on the given Connect account if there is one.
-    # Building a client is cheap, so one is created per request instead of being shared across threads and Ractors.
-    def self.client(stripe_account: nil, customer: nil)
+    # The Stripe::StripeClient for a Stripe API request. Building a client is cheap, so one is created per request
+    # instead of being shared across threads and Ractors.
+    #
+    # Pay passes the Connect account with each request ({stripe_account: "acct_..."}) rather than setting it on the
+    # client: stripe-ruby keeps one HTTP connection pool per client configuration, so a client per connected account
+    # would open a new connection for every account.
+    def self.client(customer: nil)
       options = default_client_options.merge(app_client_options(customer) || {})
-      options[:stripe_account] = stripe_account if stripe_account
       ::Stripe::StripeClient.new(options.delete(:api_key), **options)
     end
 
@@ -210,7 +213,7 @@ module Pay
 
     # Subscriptions aren't always immediately associated, so we want to retry by default
     def self.sync_checkout_session(session_id, stripe_account: nil, try: 0, retries: 5)
-      checkout_session = Pay::Stripe.client(stripe_account: stripe_account).v1.checkout.sessions.retrieve(session_id, {expand: ["payment_intent.latest_charge"]})
+      checkout_session = Pay::Stripe.client.v1.checkout.sessions.retrieve(session_id, {expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)
       case checkout_session.mode
       when "payment"
         if (id = checkout_session.payment_intent.try(:latest_charge)&.id)

@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::PaymentsControllerTest < EngineIntegrationTest
   test "shows a payment on the platform account" do
-    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123").returns(fake_payment_intent)
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123", {}, {}).returns(fake_payment_intent)
 
     get payment_path("pi_123")
 
@@ -14,8 +14,7 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
   end
 
   test "shows a payment on a connected account" do
-    expect_stripe_client(stripe_account: "acct_123")
-    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123").returns(fake_payment_intent)
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123", {}, {stripe_account: "acct_123"}).returns(fake_payment_intent)
 
     get payment_path("pi_123", stripe_account: "acct_123")
 
@@ -25,7 +24,7 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
 
   test "shows a setup intent" do
     setup_intent = ::Stripe::SetupIntent.construct_from(id: "seti_123", object: "setup_intent", status: "requires_action", client_secret: "seti_123_secret", customer: "cus_123")
-    ::Stripe::SetupIntentService.any_instance.expects(:retrieve).with("seti_123").returns(setup_intent)
+    ::Stripe::SetupIntentService.any_instance.expects(:retrieve).with("seti_123", {}, {}).returns(setup_intent)
 
     get payment_path("seti_123")
 

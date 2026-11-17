@@ -11,7 +11,7 @@ module Pay
       store_accessor :data, :stripe_receipt_url
 
       def self.sync_payment_intent(id, stripe_account: nil, customer: nil)
-        payment_intent = Pay::Stripe.client(stripe_account: stripe_account, customer: customer).v1.payment_intents.retrieve(id)
+        payment_intent = Pay::Stripe.client(customer: customer).v1.payment_intents.retrieve(id, {}, {stripe_account: stripe_account}.compact)
         sync(payment_intent.latest_charge, stripe_account: stripe_account, customer: customer)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -19,7 +19,7 @@ module Pay
 
       def self.sync(charge_id, object: nil, stripe_account: nil, customer: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          charge = object || Pay::Stripe.client(stripe_account: stripe_account, customer: customer).v1.charges.retrieve(charge_id, {expand: EXPAND})
+          charge = object || Pay::Stripe.client(customer: customer).v1.charges.retrieve(charge_id, {expand: EXPAND}, {stripe_account: stripe_account}.compact)
           return unless (pay_customer = find_pay_customer(charge.customer))
           stripe_account ||= pay_customer.stripe_account
 
@@ -44,9 +44,9 @@ module Pay
 
           # Associate charge with subscription if we can
           if charge.payment_intent.present?
-            invoice_payments = Pay::Stripe.client(stripe_account: stripe_account, customer: pay_customer).v1.invoice_payments.list({payment: {type: :payment_intent, payment_intent: charge.payment_intent}, status: :paid})
+            invoice_payments = Pay::Stripe.client(customer: pay_customer).v1.invoice_payments.list({payment: {type: :payment_intent, payment_intent: charge.payment_intent}, status: :paid}, {stripe_account: stripe_account}.compact)
             if invoice_payments.any?
-              invoice = Pay::Stripe.client(stripe_account: stripe_account, customer: pay_customer).v1.invoices.retrieve(invoice_payments.first.invoice, {expand: ["total_discount_amounts.discount.source.coupon"]})
+              invoice = Pay::Stripe.client(customer: pay_customer).v1.invoices.retrieve(invoice_payments.first.invoice, {expand: ["total_discount_amounts.discount.source.coupon"]}, {stripe_account: stripe_account}.compact)
               attrs[:stripe_invoice] = invoice.to_hash
               attrs[:subtotal] = invoice.subtotal
               attrs[:tax] = invoice.total - invoice.total_excluding_tax.to_i
@@ -69,7 +69,7 @@ module Pay
       end
 
       def api_record
-        stripe_client.v1.charges.retrieve(processor_id, {expand: EXPAND})
+        stripe_client.v1.charges.retrieve(processor_id, {expand: EXPAND}, stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -91,7 +91,7 @@ module Pay
           lines = [{type: :custom_line_item, description: description, quantity: 1, unit_amount: amount_to_refund}]
           credit_note!(**options.merge(refund_amount: amount_to_refund, lines: lines))
         else
-          stripe_client.v1.refunds.create(options.merge(charge: processor_id, amount: amount_to_refund))
+          stripe_client.v1.refunds.create(options.merge(charge: processor_id, amount: amount_to_refund), stripe_options)
         end
         update!(amount_refunded: amount_refunded + amount_to_refund)
       rescue ::Stripe::StripeError => e
@@ -102,7 +102,7 @@ module Pay
       def credit_note!(**options)
         raise Pay::Stripe::Error, "no Stripe Invoice on Pay::Charge" if stripe_invoice.blank?
 
-        stripe_client.v1.credit_notes.create({invoice: stripe_invoice.id}.merge(options))
+        stripe_client.v1.credit_notes.create({invoice: stripe_invoice.id}.merge(options), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -114,7 +114,7 @@ module Pay
       def capture(**options)
         raise Pay::Stripe::Error, "no payment_intent on charge" unless payment_intent.present?
         payment_intent_id = payment_intent.is_a?(::Stripe::PaymentIntent) ? payment_intent.id : payment_intent
-        stripe_client.v1.payment_intents.capture(payment_intent_id, options)
+        stripe_client.v1.payment_intents.capture(payment_intent_id, options, stripe_options)
         self.class.sync(processor_id, stripe_account: stripe_account, customer: customer)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -142,7 +142,11 @@ module Pay
       private
 
       def stripe_client
-        Pay::Stripe.client(stripe_account: stripe_account, customer: customer)
+        Pay::Stripe.client(customer: customer)
+      end
+
+      def stripe_options
+        {stripe_account: stripe_account}.compact
       end
     end
   end

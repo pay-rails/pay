@@ -1,12 +1,6 @@
 class ActiveSupport::TestCase
   private
 
-  # Asserts that Pay's Stripe requests are made on the given Connect account.
-  # Returns a real client, so stubs on the Stripe services (e.g. Stripe::CustomerService.any_instance) still apply.
-  def expect_stripe_client(stripe_account:)
-    Pay::Stripe.expects(:client).with(has_entry(stripe_account: stripe_account)).at_least_once.returns(::Stripe::StripeClient.new("sk_test_fake"))
-  end
-
   def fake_stripe_payment_method(**values)
     values.reverse_merge!(
       id: "pm_123",

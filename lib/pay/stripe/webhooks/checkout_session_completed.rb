@@ -9,7 +9,7 @@ module Pay
           # Instead, we can sync the payment intent or subscription during this event to ensure they're in the database
 
           if (payment_intent_id = event.data.object.payment_intent)
-            payment_intent = Pay::Stripe.client(stripe_account: event.try(:account)).v1.payment_intents.retrieve(payment_intent_id)
+            payment_intent = Pay::Stripe.client.v1.payment_intents.retrieve(payment_intent_id, {}, {stripe_account: event.try(:account)}.compact)
             Pay::Stripe::Charge.sync(payment_intent.latest_charge, stripe_account: event.try(:account)) if payment_intent.latest_charge
           end
 
