@@ -73,18 +73,11 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
     assert_requested pay
   end
 
-  test "the record's connected account takes precedence over client_options" do
-    Pay::Stripe.client_options = ->(**) { {stripe_account: "acct_default"} }
+  test "client_options can't set the Connect account" do
+    Pay::Stripe.client_options = -> { {stripe_account: "acct_default"} }
 
-    stub_request(:get, "https://api.stripe.com/v1/payment_intents/pi_1")
-      .with(headers: {"Stripe-Account" => "acct_123"})
-      .to_return(body: {id: "pi_1", object: "payment_intent", status: "succeeded"}.to_json)
-    stub_request(:get, "https://api.stripe.com/v1/payment_intents/pi_2")
-      .with(headers: {"Stripe-Account" => "acct_default"})
-      .to_return(body: {id: "pi_2", object: "payment_intent", status: "succeeded"}.to_json)
-
-    assert_equal "pi_1", Pay::Payment.from_id("pi_1", stripe_account: "acct_123").id
-    assert_equal "pi_2", Pay::Payment.from_id("pi_2").id
+    error = assert_raises(ArgumentError) { pay_merchants(:stripe).transfer(amount: 1_00) }
+    assert_match "can't set stripe_account", error.message
   end
 
   test "client_options receives the customer, so background jobs use that customer's API key" do

@@ -165,6 +165,7 @@ module Pay
     self.mail_to = shareable_callable(mail_to)
     self.mail_arguments = shareable_callable(mail_arguments)
     emails.transform_values! { |option| shareable_callable(option) }
+    Stripe.client_options = shareable_callable(Stripe.client_options)
   end
 
   def self.share_customer_model_options
@@ -182,7 +183,7 @@ module Pay
       model_parent_class, application_name, business_address, business_name, business_logo, support_email,
       automount_routes, routes_path, default_product_name, default_plan_name, enabled_processors,
       send_emails, emails, attach_invoice_to_receipt, @mailer, parent_mailer, mail_arguments, mail_to,
-      Stripe.model_names, Currency.all, Webhooks.delegator, deprecator
+      Stripe.model_names, Stripe.client_options, Currency.all, Webhooks.delegator, deprecator
     ]
   end
   private_class_method :share_callable_options, :share_customer_model_options, :shareable_configuration

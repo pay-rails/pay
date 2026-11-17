@@ -45,6 +45,7 @@ module Pay
 
     # An optional callable returning Stripe::StripeClient options (api_key:, stripe_version:, etc.) for apps with more
     # than one Stripe account. They're merged over the global Stripe configuration; returning nil uses it unchanged.
+    # Pay sets the Connect account itself, so the options can't include stripe_account.
     # A callable that takes keywords is passed the Pay::Customer the request is for, which is nil when Pay doesn't know it yet.
     #
     #   Pay::Stripe.client_options = -> { {api_key: Current.brand.stripe_api_key} if Current.brand }
@@ -64,11 +65,18 @@ module Pay
     def self.app_client_options(customer)
       return unless client_options
 
-      if client_options.respond_to?(:arity) && client_options.arity.zero?
+      options = if client_options.respond_to?(:arity) && client_options.arity.zero?
         client_options.call
       else
         client_options.call(customer: customer)
       end
+
+      # Otherwise platform requests, like Merchant transfers, would be sent as the connected account
+      if options&.key?(:stripe_account)
+        raise ArgumentError, "Pay::Stripe.client_options can't set stripe_account. Pay sets the Connect account from the customer, charge or subscription."
+      end
+
+      options
     end
     private_class_method :app_client_options
 
