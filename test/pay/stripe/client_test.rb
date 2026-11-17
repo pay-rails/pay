@@ -33,7 +33,8 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
   end
 
   test "client_options override the global configuration, and objects keep using that API key" do
-    Pay::Stripe.client_options = ->(**) { {api_key: "sk_test_other_platform"} }
+    # A callable that takes no arguments isn't passed the customer
+    Pay::Stripe.client_options = -> { {api_key: "sk_test_other_platform"} }
 
     create = stub_request(:post, "https://api.stripe.com/v1/invoices")
       .with(headers: {"Authorization" => "Bearer sk_test_other_platform"})

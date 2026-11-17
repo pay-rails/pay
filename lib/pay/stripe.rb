@@ -45,9 +45,10 @@ module Pay
 
     # An optional callable returning Stripe::StripeClient options (api_key:, stripe_version:, etc.) for apps with more
     # than one Stripe account. They're merged over the global Stripe configuration; returning nil uses it unchanged.
-    # It's called with the Pay::Customer the request is for, which is nil when Pay doesn't know it yet.
+    # A callable that takes keywords is passed the Pay::Customer the request is for, which is nil when Pay doesn't know it yet.
     #
-    #   Pay::Stripe.client_options = ->(customer: nil, **) { {api_key: customer.owner.brand.stripe_api_key} if customer }
+    #   Pay::Stripe.client_options = -> { {api_key: Current.brand.stripe_api_key} if Current.brand }
+    #   Pay::Stripe.client_options = ->(customer: nil, **) { ... }
     class << self
       attr_accessor :client_options
     end
@@ -55,10 +56,22 @@ module Pay
     # The Stripe::StripeClient for a Stripe API request, acting on the given Connect account if there is one.
     # Building a client is cheap, so one is created per request instead of being shared across threads and Ractors.
     def self.client(stripe_account: nil, customer: nil)
-      options = default_client_options.merge(client_options&.call(customer: customer) || {})
+      options = default_client_options.merge(app_client_options(customer) || {})
       options[:stripe_account] = stripe_account if stripe_account
       ::Stripe::StripeClient.new(options.delete(:api_key), **options)
     end
+
+    def self.app_client_options(customer)
+      return unless client_options
+
+      # Callables that take no arguments (-> { ... }) aren't passed the customer
+      if client_options.respond_to?(:arity) && client_options.arity.zero?
+        client_options.call
+      else
+        client_options.call(customer: customer)
+      end
+    end
+    private_class_method :app_client_options
 
     # StripeClient doesn't read the global client options (API base, version, etc.) itself, so copy them over
     # so requests match what the legacy class methods sent.

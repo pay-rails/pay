@@ -29,21 +29,27 @@ Note: publishable keys and webhook signing secrets remain per-account (organizat
 
 Pay makes every Stripe API request through a [`Stripe::StripeClient`](https://github.com/stripe/stripe-ruby#usage), which you can get with `Pay::Stripe.client` (or `Pay::Stripe.client(stripe_account: "acct_...")` for a Connect account). By default it uses your global Stripe configuration (`Stripe.api_key`, `Stripe.api_base`, `Stripe.api_version`, and so on).
 
-If your app uses more than one Stripe account (not [Connect](/docs/marketplaces/stripe_connect.md) accounts, which Pay handles itself), set `Pay::Stripe.client_options` to return the [`StripeClient` options](https://github.com/stripe/stripe-ruby#per-request-configuration) Pay should use. They're merged over your global configuration.
-
-It's called for every request with the `Pay::Customer` the request is for, so you can look up the account from the customer's owner:
+If your app uses more than one Stripe account (not [Connect](/docs/marketplaces/stripe_connect.md) accounts, which Pay handles itself), set `Pay::Stripe.client_options` to return the [`StripeClient` options](https://github.com/stripe/stripe-ruby#per-request-configuration) Pay should use. They're merged over your global configuration, and returning `nil` uses it unchanged. It's called for every request, so it can read whatever your app uses to track the current account:
 
 ```ruby
 # config/initializers/pay.rb
+Pay::Stripe.client_options = -> {
+  {api_key: Current.brand.stripe_api_key} if Current.brand
+}
+```
+
+That works anywhere your app sets `Current.brand`. Background jobs don't have it unless you set it there yourself, so Pay can also pass the `Pay::Customer` the request is for. Accept keyword arguments to get it, and keep `Current` as the fallback:
+
+```ruby
 Pay::Stripe.client_options = ->(customer: nil, **) {
   brand = customer&.owner&.brand || Current.brand
   {api_key: brand.stripe_api_key} if brand
 }
 ```
 
-Accept `**` so Pay can pass more context later without breaking your callable. Return `nil` to use the global configuration unchanged.
+Accept `**` so Pay can pass more context later without breaking your callable.
 
-`customer` is set for calls on a customer, charge, subscription or payment method (`charge`, `subscribe`, `sync!`, `cancel`, `refund!` and so on), including those made in background jobs like `Pay::CustomerSyncJob`. It's `nil` when Pay doesn't know the customer yet:
+`customer` is set for calls on a customer, charge, subscription or payment method (`charge`, `subscribe`, `sync!`, `cancel`, `refund!` and so on), including those made in background jobs like `Pay::CustomerSyncJob`. It's `nil` when Pay doesn't know the customer yet, which is why the fallback matters:
 
 * Syncs that start from an ID, like `Pay::Stripe::Charge.sync("ch_123")`, fetch the object before Pay can look up its customer. Requests after the lookup get the customer.
 * Most webhooks, which start from an ID too. Pay doesn't record which Stripe account a webhook came from, so for these `client_options` has to work out the account itself, for example from `Current` set in your own wrapper around `Pay::Webhooks::ProcessJob`.
