@@ -58,7 +58,7 @@ const { error } = await stripe.handleNextAction({ clientSecret })
 
 When a subscription renewal needs authentication, Stripe sends the `invoice.payment_action_required` webhook and Pay emails the customer a link to the confirmation page. You can turn this off with `config.emails.payment_action_required`.
 
-A one-off charge made while the customer is away, for example from a background job, has no invoice, so Pay doesn't send an email. If it needs authentication, let the customer know yourself and link them to `pay.payment_url(payment_intent_id)`, where they can authenticate or use a different payment method.
+A one-off charge made while the customer is away, for example from a background job, has no invoice, so Pay doesn't send an email. If it needs authentication, let the customer know yourself and link them to `pay.payment_url(payment_intent_id)` (with `stripe_account:` for a payment on a Stripe Connect account), where they can authenticate or use a different payment method.
 
 ## Customizing the confirmation page
 
