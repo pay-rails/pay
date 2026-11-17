@@ -2,7 +2,11 @@
 
 ### Unreleased
 
-* Pay makes Stripe API requests through a `Stripe::StripeClient` (`Pay::Stripe.client`) instead of stripe-ruby's legacy class methods like `Stripe::Customer.retrieve`, which Stripe plans to deprecate. Apps that use more than one Stripe account can set `Pay::Stripe.client_options` to choose the API key and other client options; it's called with the `Pay::Customer` the request is for, when Pay knows it. The Stripe sync methods (`Pay::Stripe::Charge.sync`, `Pay::Stripe::Subscription.sync`, `Pay::Stripe::PaymentMethod.sync` and the `sync_payment_intent`/`sync_setup_intent` helpers) and `Pay::Payment.from_id` accept an optional `customer:` for this. If your tests stub Stripe class methods for calls Pay makes (for example `Stripe::Customer.expects(:retrieve)`), stub the service instead (`Stripe::CustomerService.any_instance.expects(:retrieve)`). Calls now pass the ID as the first argument rather than in the params hash.
+* Drop Rails 7.0 support. Pay now requires Rails 7.1 or higher
+* Skip deleted Pay::Customers when syncing customer details
+* Enqueue customer sync jobs in bulk with `ActiveJob.perform_all_later`
+* Rename `enqeue_customer_sync_job` callback to `enqueue_customer_sync_job`. Update any `skip_callback` calls that reference the old name
+* Pay makes Stripe API requests through a `Stripe::StripeClient` (`Pay::Stripe.client`) instead of stripe-ruby's legacy class methods like `Stripe::Customer.retrieve`, which Stripe plans to deprecate. Apps that use more than one Stripe account can set `Pay::Stripe.client_options` to choose the API key and other client options; it's called with the `Pay::Customer` the request is for, when Pay knows it. The Stripe sync methods (`Pay::Stripe::Charge.sync`, `Pay::Stripe::Subscription.sync`, `Pay::Stripe::PaymentMethod.sync` and the `sync_payment_intent`/`sync_setup_intent` helpers) and `Pay::Payment.from_id` accept an optional `customer:` for this. If your tests stub Stripe class methods for calls Pay makes (for example `Stripe::Customer.expects(:retrieve)`), stub the service instead (`Stripe::CustomerService.any_instance.expects(:retrieve)`). Calls now pass the ID as the first argument rather than in the params hash. See the [UPGRADE guide](./UPGRADE.md#stripe-client-migration).
 
 ### 12.5.0
 

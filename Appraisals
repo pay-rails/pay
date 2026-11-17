@@ -1,22 +1,3 @@
-appraise "rails-7.0" do
-  gem "rails", "~> 7.0.0"
-  gem "sqlite3", "~> 1.4"
-
-  # Rails::LineFiltering#run passes arguments minitest 6 no longer accepts
-  gem "minitest", "< 6"
-
-  # json 3.0 removed the quirks_mode option still passed by Rails < 8.1
-  gem "json", "< 3"
-
-  # Ruby 3.4+
-  gem "benchmark"
-  gem "drb"
-  gem "mutex_m"
-
-  # Fixes uninitialized constant ActiveSupport::LoggerThreadSafeLevel::Logger (NameError)
-  gem "concurrent-ruby", "< 1.3.5"
-end
-
 appraise "rails-7.1" do
   gem "rails", "~> 7.1.0"
   gem "sqlite3", "~> 1.4"

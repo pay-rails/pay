@@ -20,7 +20,7 @@ module Pay
     end
 
     initializer "pay.deprecator" do |app|
-      app.deprecators[:pay] = Pay.deprecator if app.respond_to?(:deprecators)
+      app.deprecators[:pay] = Pay.deprecator
     end
 
     RECEIPTS_VERSION = [">= 2", "< 4"].freeze

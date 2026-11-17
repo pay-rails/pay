@@ -130,8 +130,9 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
   test "stripe email updates on change" do
     # Must already have a processor ID
     @pay_customer.api_record # Sets customer ID
-    Pay::CustomerSyncJob.expects(:perform_later).with(@pay_customer.id)
-    @user.update(email: "mynewemail@example.org")
+    assert_enqueued_with(job: Pay::CustomerSyncJob, args: [@pay_customer.id]) do
+      @user.update(email: "mynewemail@example.org")
+    end
   end
 
   test "stripe handles exception when creating a subscription" do
