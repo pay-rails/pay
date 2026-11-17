@@ -63,7 +63,7 @@ A few things to keep in mind:
 * If your global configuration uses an [organization API key](#organization-api-keys-optional) with `context`, return `stripe_context: nil` alongside a regular account key so the `Stripe-Context` header isn't sent with it.
 * `client_options` runs for every request, and some Pay methods make several. Cache anything slow to look up, for example in `Current`.
 * Stripe objects Pay rebuilds from its database (like `subscription.stripe_object`) aren't tied to a client, so requests made from them, such as paging through `subscription_items`, use your global configuration.
-* `client_options` only covers API requests. Pay's [SCA confirmation page](4_sca.md#stripe-sca-confirm-page) uses `Pay::Stripe.public_key`, so copy its views with `bin/rails generate pay:views` and swap in the publishable key that matches the API key.
+* `client_options` only covers API requests. Pay's [SCA confirmation page](4_sca.md) uses `Pay::Stripe.public_key`, so copy its views with `bin/rails generate pay:views` and swap in the publishable key that matches the API key.
 
 ### Signing secrets
 
