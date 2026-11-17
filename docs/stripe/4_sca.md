@@ -68,7 +68,7 @@ To change the confirmation page, copy Pay's views into your app and edit `app/vi
 bin/rails generate pay:views
 ```
 
-The page initializes Stripe.js with `Pay::Stripe.public_key`. If your app uses more than one Stripe account, change it to the publishable key for the payment's account.
+The page initializes Stripe.js with `Pay::Stripe.public_key`. If your app uses more than one Stripe account, change it to the publishable key that matches the API key. For Connect payments, keep the platform's key: the page passes the connected account as `stripeAccount`.
 
 If your app has a Content Security Policy, add these domains to your `content_security_policy.rb` for the default page:
 
