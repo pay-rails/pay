@@ -4,7 +4,7 @@
 
 [![Build Status](https://github.com/pay-rails/pay/workflows/Tests/badge.svg)](https://github.com/pay-rails/pay/actions) [![Gem Version](https://badge.fury.io/rb/pay.svg)](https://badge.fury.io/rb/pay) <img src="docs/images/stripe_partner_badge.svg" height="26px">
 
-Pay is a payments engine for Ruby on Rails 6.0 and higher.
+Pay is a payments engine for Ruby on Rails 7.1 and higher.
 
 > [!TIP]
 > Check out [Jumpstart](https://jumpstartrails.com) for Rails Starter Kit with Pay already integrated!

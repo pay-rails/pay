@@ -41,7 +41,6 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
     assert_select "a[href=?]", "/billing?tab=invoices"
   end
 
-  # One request per test: on Rails 7.0 the engine routes don't survive a second request in the same test
   test "back link falls back to root for an external URL" do
     ::Stripe::PaymentIntent.stubs(:retrieve).returns(fake_payment_intent)
 
