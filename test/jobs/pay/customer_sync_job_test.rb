@@ -3,7 +3,7 @@ require "test_helper"
 module Pay
   class CustomerSyncJobTest < ActiveJob::TestCase
     test "sync customer with stripe" do
-      ::Stripe::Customer.expects(:update)
+      ::Stripe::CustomerService.any_instance.expects(:update)
       Pay::CustomerSyncJob.perform_now(pay_customers(:stripe).id)
     end
 

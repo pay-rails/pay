@@ -10,7 +10,7 @@ class Pay::Stripe::Webhooks::PaymentActionRequiredTest < ActiveSupport::TestCase
 
   test "it sends an email" do
     sync_subscription(@event, status: :past_due)
-    ::Stripe::InvoicePayment.expects(:list).returns(::Stripe::ListObject.construct_from(
+    ::Stripe::InvoicePaymentService.any_instance.expects(:list).returns(::Stripe::ListObject.construct_from(
       {
         object: "list",
         data: [
@@ -56,7 +56,7 @@ class Pay::Stripe::Webhooks::PaymentActionRequiredTest < ActiveSupport::TestCase
   test "looks up the invoice payment on the connected account" do
     event = stripe_event("invoice.payment_action_required", account: "acct_123")
     sync_subscription(event, status: :past_due)
-    ::Stripe::InvoicePayment.expects(:list).with({invoice: event.data.object.id, status: :open}, {stripe_account: "acct_123"}).returns(::Stripe::ListObject.construct_from(object: "list", data: []))
+    ::Stripe::InvoicePaymentService.any_instance.expects(:list).with({invoice: event.data.object.id, status: :open}, {stripe_account: "acct_123"}).returns(::Stripe::ListObject.construct_from(object: "list", data: []))
 
     assert_no_enqueued_jobs do
       Pay::Stripe::Webhooks::PaymentActionRequired.new.call(event)
@@ -66,7 +66,7 @@ class Pay::Stripe::Webhooks::PaymentActionRequiredTest < ActiveSupport::TestCase
   test "passes the connected account to the email" do
     event = stripe_event("invoice.payment_action_required", account: "acct_123")
     sync_subscription(event, status: :past_due)
-    ::Stripe::InvoicePayment.stubs(:list).returns(::Stripe::ListObject.construct_from(object: "list", data: [{id: "inpay_1234", object: "invoice_payment", status: "open", payment: {type: "payment_intent", payment_intent: "pi_1234"}}]))
+    ::Stripe::InvoicePaymentService.any_instance.stubs(:list).returns(::Stripe::ListObject.construct_from(object: "list", data: [{id: "inpay_1234", object: "invoice_payment", status: "open", payment: {type: "payment_intent", payment_intent: "pi_1234"}}]))
 
     mailer = mock
     mailer.expects(:payment_action_required).returns(stub(deliver_later: true))

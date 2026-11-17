@@ -2,7 +2,7 @@ module Pay
   module Stripe
     class Merchant < Pay::Merchant
       def create_account(**options)
-        stripe_account = ::Stripe::Account.create(options)
+        stripe_account = Pay::Stripe.client.v1.accounts.create(options)
         update(processor_id: stripe_account.id)
         stripe_account
       rescue ::Stripe::StripeError => e
@@ -10,13 +10,13 @@ module Pay
       end
 
       def account
-        ::Stripe::Account.retrieve(processor_id)
+        Pay::Stripe.client.v1.accounts.retrieve(processor_id)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       def account_link(refresh_url:, return_url:, type: "account_onboarding", **options)
-        ::Stripe::AccountLink.create({
+        Pay::Stripe.client.v1.account_links.create({
           account: processor_id,
           refresh_url: refresh_url,
           return_url: return_url,
@@ -28,7 +28,7 @@ module Pay
 
       # A single-use login link for Express accounts to access their Stripe dashboard
       def login_link(**options)
-        ::Stripe::Account.create_login_link(processor_id, options)
+        Pay::Stripe.client.v1.accounts.login_links.create(processor_id, options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -36,7 +36,7 @@ module Pay
       # Transfer money from the platform to this connected account
       # https://stripe.com/docs/connect/charges-transfers#transfer-availability
       def transfer(amount:, currency: "usd", **options)
-        ::Stripe::Transfer.create({
+        Pay::Stripe.client.v1.transfers.create({
           amount: amount,
           currency: currency,
           destination: processor_id

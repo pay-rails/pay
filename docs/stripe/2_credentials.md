@@ -25,6 +25,23 @@ stripe:
 
 Note: publishable keys and webhook signing secrets remain per-account (organizations can't accept client-side payments), so `public_key` and `signing_secret` stay as they are.
 
+### Multiple Stripe accounts (optional)
+
+Pay makes every Stripe API request through a [`Stripe::StripeClient`](https://github.com/stripe/stripe-ruby#usage), which you can get with `Pay::Stripe.client`. By default it uses `Stripe.api_key`.
+
+If your app uses more than one Stripe account (not [Connect](/docs/marketplaces/stripe_connect.md) accounts, which Pay handles with `stripe_account`), set `Pay::Stripe.client_resolver` to return the client Pay should use. It's called for every request, so it can read whatever your app uses to track the current account:
+
+```ruby
+# config/initializers/pay.rb
+Pay::Stripe.client_resolver = -> {
+  Stripe::StripeClient.new(Current.account.stripe_api_key) if Current.account
+}
+```
+
+Return `nil` to fall back to the default client. Objects Pay fetches with a client keep using that client's API key, so later calls on them go to the same account.
+
+Pay doesn't record which account a customer or webhook belongs to, so your resolver also has to return the right client in background jobs, including `Pay::Webhooks::ProcessJob`.
+
 ### Signing secrets
 
 Webhooks use signing secrets to verify the webhook was sent by Stripe. Check out [Webhooks](/docs/stripe/5_webhooks.md#enable-stripe-webhooks) doc for detailed instructions on where/how to get these.

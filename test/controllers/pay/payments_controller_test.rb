@@ -2,7 +2,7 @@ require "test_helper"
 
 class Pay::PaymentsControllerTest < EngineIntegrationTest
   test "shows a payment on the platform account" do
-    ::Stripe::PaymentIntent.expects(:retrieve).with("pi_123", {}).returns(fake_payment_intent)
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123", {}, {}).returns(fake_payment_intent)
 
     get payment_path("pi_123")
 
@@ -14,7 +14,7 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
   end
 
   test "shows a payment on a connected account" do
-    ::Stripe::PaymentIntent.expects(:retrieve).with("pi_123", {stripe_account: "acct_123"}).returns(fake_payment_intent)
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123", {}, {stripe_account: "acct_123"}).returns(fake_payment_intent)
 
     get payment_path("pi_123", stripe_account: "acct_123")
 
@@ -24,7 +24,7 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
 
   test "shows a setup intent" do
     setup_intent = ::Stripe::SetupIntent.construct_from(id: "seti_123", object: "setup_intent", status: "requires_action", client_secret: "seti_123_secret", customer: "cus_123")
-    ::Stripe::SetupIntent.expects(:retrieve).with("seti_123", {}).returns(setup_intent)
+    ::Stripe::SetupIntentService.any_instance.expects(:retrieve).with("seti_123", {}, {}).returns(setup_intent)
 
     get payment_path("seti_123")
 
@@ -34,7 +34,7 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
   end
 
   test "back link keeps a same-site path with its query string" do
-    ::Stripe::PaymentIntent.stubs(:retrieve).returns(fake_payment_intent)
+    ::Stripe::PaymentIntentService.any_instance.stubs(:retrieve).returns(fake_payment_intent)
 
     get payment_path("pi_123", back: "/billing?tab=invoices")
 
@@ -43,7 +43,7 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
 
   # One request per test: on Rails 7.0 the engine routes don't survive a second request in the same test
   test "back link falls back to root for an external URL" do
-    ::Stripe::PaymentIntent.stubs(:retrieve).returns(fake_payment_intent)
+    ::Stripe::PaymentIntentService.any_instance.stubs(:retrieve).returns(fake_payment_intent)
 
     get payment_path("pi_123", back: "https://evil.example.com/phish")
 
@@ -51,7 +51,7 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
   end
 
   test "back link falls back to root for a malformed URL" do
-    ::Stripe::PaymentIntent.stubs(:retrieve).returns(fake_payment_intent)
+    ::Stripe::PaymentIntentService.any_instance.stubs(:retrieve).returns(fake_payment_intent)
 
     get payment_path("pi_123", back: "http://[bad")
 
@@ -60,7 +60,7 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
   end
 
   test "redirects with the Stripe error message when the payment cannot be found" do
-    ::Stripe::PaymentIntent.stubs(:retrieve).raises(::Stripe::InvalidRequestError.new("No such payment_intent: 'pi_missing'", "id"))
+    ::Stripe::PaymentIntentService.any_instance.stubs(:retrieve).raises(::Stripe::InvalidRequestError.new("No such payment_intent: 'pi_missing'", "id"))
 
     get payment_path("pi_missing")
 

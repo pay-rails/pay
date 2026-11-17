@@ -6,14 +6,14 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
   end
 
   test "Stripe sync returns Pay::PaymentMethod" do
-    ::Stripe::Customer.stubs(:retrieve).returns(::Stripe::Customer.construct_from(invoice_settings: {default_payment_method: nil}))
+    ::Stripe::CustomerService.any_instance.stubs(:retrieve).returns(::Stripe::Customer.construct_from(invoice_settings: {default_payment_method: nil}))
     pay_payment_method = Pay::Stripe::PaymentMethod.sync("pm_123", object: fake_stripe_payment_method)
     assert pay_payment_method.is_a?(Pay::PaymentMethod)
     refute pay_payment_method.default?
   end
 
   test "Stripe sync sets default if payment method is default in invoice settings" do
-    ::Stripe::Customer.stubs(:retrieve).returns(::Stripe::Customer.construct_from(invoice_settings: {default_payment_method: "pm_123"}))
+    ::Stripe::CustomerService.any_instance.stubs(:retrieve).returns(::Stripe::Customer.construct_from(invoice_settings: {default_payment_method: "pm_123"}))
     pay_payment_method = Pay::Stripe::PaymentMethod.sync("pm_123", object: fake_stripe_payment_method)
     assert pay_payment_method.default?
   end
@@ -47,7 +47,7 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
     )
 
     # Mock Stripe API call
-    ::Stripe::Customer.expects(:update).with(
+    ::Stripe::CustomerService.any_instance.expects(:update).with(
       @pay_customer.processor_id,
       {invoice_settings: {default_payment_method: "pm_new"}},
       {}
@@ -71,7 +71,7 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
     )
 
     # Should not call Stripe API
-    ::Stripe::Customer.expects(:update).never
+    ::Stripe::CustomerService.any_instance.expects(:update).never
 
     pm.make_default!
   end
@@ -83,7 +83,7 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
     pm3 = @pay_customer.payment_methods.create!(processor_id: "pm_3", payment_method_type: "card", default: false)
 
     # Mock Stripe API call
-    ::Stripe::Customer.stubs(:update).returns(true)
+    ::Stripe::CustomerService.any_instance.stubs(:update).returns(true)
 
     # Make pm3 the default
     pm3.make_default!
@@ -99,14 +99,14 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
 
   test "Stripe sync records the customer's stripe_account when none is given" do
     @pay_customer.update!(stripe_account: "acct_123")
-    ::Stripe::Customer.stubs(:retrieve).returns(::Stripe::Customer.construct_from(invoice_settings: {default_payment_method: nil}))
+    ::Stripe::CustomerService.any_instance.stubs(:retrieve).returns(::Stripe::Customer.construct_from(invoice_settings: {default_payment_method: nil}))
     pay_payment_method = Pay::Stripe::PaymentMethod.sync("pm_123", object: fake_stripe_payment_method)
     assert_equal "acct_123", pay_payment_method.stripe_account
   end
 
   test "Stripe sync_payment_intent passes the stripe_account through" do
     payment_intent = ::Stripe::PaymentIntent.construct_from(id: "pi_123", object: "payment_intent", payment_method: fake_stripe_payment_method)
-    ::Stripe::PaymentIntent.expects(:retrieve).with({id: "pi_123", expand: ["payment_method"]}, {stripe_account: "acct_123"}).returns(payment_intent)
+    ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123", {expand: ["payment_method"]}, {stripe_account: "acct_123"}).returns(payment_intent)
     Pay::Stripe::PaymentMethod.expects(:sync).with("pm_123", object: payment_intent.payment_method, stripe_account: "acct_123")
     Pay::Stripe::PaymentMethod.sync_payment_intent("pi_123", stripe_account: "acct_123")
   end
@@ -114,7 +114,7 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
   test "Stripe detach sends the connected account as options" do
     payment_method = pay_payment_methods(:stripe)
     payment_method.customer.update!(stripe_account: "acct_123")
-    ::Stripe::PaymentMethod.expects(:detach).with("pm_1000", {}, {stripe_account: "acct_123"})
+    ::Stripe::PaymentMethodService.any_instance.expects(:detach).with("pm_1000", {}, {stripe_account: "acct_123"})
 
     payment_method.detach
   end

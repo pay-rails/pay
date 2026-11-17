@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Pay makes Stripe API requests through a `Stripe::StripeClient` (`Pay::Stripe.client`) instead of stripe-ruby's legacy class methods like `Stripe::Customer.retrieve`, which Stripe plans to deprecate. Apps that use more than one Stripe account can set `Pay::Stripe.client_resolver` to choose the client. If your tests stub Stripe class methods for calls Pay makes (for example `Stripe::Customer.expects(:retrieve)`), stub the service instead (`Stripe::CustomerService.any_instance.expects(:retrieve)`), and note that `retrieve` now takes the ID as its first argument rather than in the params hash
+
 ### 12.5.0
 
 * Upgrade to Stripe 21 (API version `2026-10-28.endive`). Update your Gemfile to `gem "stripe", "~> 21.0"`. Stripe 21 no longer keeps API keys in Marshal or YAML dumps of Stripe objects, so if your app caches or serializes them that way, call `reattach_api_key` on the restored object before making requests with it. Pay stores Stripe objects as JSON and isn't affected

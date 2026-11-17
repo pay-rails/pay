@@ -25,7 +25,7 @@ class User < ActiveRecord
 
   def reconcile_stripe_customer
     # Find all customers with the same email address
-    stripe_customers = ::Stripe::Customer.list(email: self.email)["data"]
+    stripe_customers = Pay::Stripe.client.v1.customers.list({email: email}).data
 
     # If there is more than one existing customer or no existing customer,
     # do nothing, otherwise add the customer as the default payment processor
@@ -45,7 +45,7 @@ class User < ActiveRecord
 
   def reconcile_stripe_customers
     # Find all customers with the same email address
-    Stripe::Customer.list(email: self.email).auto_paging_each do |customer|
+    Pay::Stripe.client.v1.customers.list({email: email}).auto_paging_each do |customer|
       # Create the pay customer, associating it to the current user
       Pay::Customer.create(owner: self, processor: "stripe", processor_id: customer["id"])
     end
@@ -61,5 +61,5 @@ To backfill active subscriptions and the charges associated with those subscript
 An equivalent method to backfilling charges not associated with subscriptions is not currently implemented within Pay, however `Pay::Charge`s can be created manually by the application such as in the example below.
 
 ```ruby
-Stripe::Charge.list.auto_paging_each { |charge| Pay::Stripe::Charge.sync(charge.id) }
+Pay::Stripe.client.v1.charges.list.auto_paging_each { |charge| Pay::Stripe::Charge.sync(charge.id) }
 ```

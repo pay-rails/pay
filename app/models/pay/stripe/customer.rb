@@ -26,9 +26,9 @@ module Pay
       def api_record(expand: ["tax", "invoice_credit_balance"])
         with_lock do
           if processor_id?
-            ::Stripe::Customer.retrieve({id: processor_id, expand: expand}, stripe_options)
+            Pay::Stripe.client.v1.customers.retrieve(processor_id, {expand: expand}, stripe_options)
           else
-            ::Stripe::Customer.create(api_record_attributes.merge(expand: expand), stripe_options).tap do |customer|
+            Pay::Stripe.client.v1.customers.create(api_record_attributes.merge(expand: expand), stripe_options).tap do |customer|
               update!(processor_id: customer.id, stripe_account: stripe_account)
             end
           end
@@ -38,7 +38,7 @@ module Pay
       end
 
       def update_api_record(**attributes)
-        ::Stripe::Customer.update(stripe_customer_id, api_record_attributes.merge(attributes), stripe_options)
+        Pay::Stripe.client.v1.customers.update(stripe_customer_id, api_record_attributes.merge(attributes), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -66,7 +66,7 @@ module Pay
         opts[:customer] = stripe_customer_id
 
         # Create subscription on Stripe
-        stripe_sub = ::Stripe::Subscription.create(opts.merge(Pay::Stripe::Subscription.expand_options), stripe_options)
+        stripe_sub = Pay::Stripe.client.v1.subscriptions.create(opts.merge(Pay::Stripe::Subscription.expand_options), stripe_options)
 
         # Save Pay::Subscription
         subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name)
@@ -83,10 +83,10 @@ module Pay
       end
 
       def add_payment_method(payment_method_id, default: false)
-        payment_method = ::Stripe::PaymentMethod.attach(payment_method_id, {customer: stripe_customer_id}, stripe_options)
+        payment_method = Pay::Stripe.client.v1.payment_methods.attach(payment_method_id, {customer: stripe_customer_id}, stripe_options)
 
         if default
-          ::Stripe::Customer.update(stripe_customer_id, {
+          Pay::Stripe.client.v1.customers.update(stripe_customer_id, {
             invoice_settings: {
               default_payment_method: payment_method.id
             }
@@ -126,7 +126,7 @@ module Pay
           return_url: root_url
         }.merge(options)
 
-        ::Stripe::PaymentIntent.create(args, stripe_options)
+        Pay::Stripe.client.v1.payment_intents.create(args, stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -137,19 +137,19 @@ module Pay
       end
 
       def create_setup_intent(options = {})
-        ::Stripe::SetupIntent.create({customer: stripe_customer_id, usage: :off_session}.merge(options), stripe_options)
+        Pay::Stripe.client.v1.setup_intents.create({customer: stripe_customer_id, usage: :off_session}.merge(options), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       def invoice!(options = {})
-        ::Stripe::Invoice.create(options.merge(customer: stripe_customer_id), stripe_options).pay
+        Pay::Stripe.client.v1.invoices.create(options.merge(customer: stripe_customer_id), stripe_options).pay
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       def preview_invoice(**options)
-        ::Stripe::Invoice.create_preview(options.merge(customer: stripe_customer_id), stripe_options)
+        Pay::Stripe.client.v1.invoices.create_preview(options.merge(customer: stripe_customer_id), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -157,7 +157,7 @@ module Pay
       # Syncs a customer's subscriptions from Stripe to the database.
       # Note that by default canceled subscriptions are NOT returned by Stripe. In order to include them, use `sync_subscriptions(status: "all")`.
       def sync_subscriptions(**options)
-        subscriptions = ::Stripe::Subscription.list(options.with_defaults(customer: processor_id), stripe_options)
+        subscriptions = Pay::Stripe.client.v1.subscriptions.list(options.with_defaults(customer: processor_id), stripe_options)
         subscriptions.map do |subscription|
           Pay::Stripe::Subscription.sync(subscription.id, stripe_account: stripe_account)
         end
@@ -207,7 +207,7 @@ module Pay
           }
         end
 
-        ::Stripe::Checkout::Session.create(args.merge(options), stripe_options)
+        Pay::Stripe.client.v1.checkout.sessions.create(args.merge(options), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -236,14 +236,14 @@ module Pay
           customer: stripe_customer_id,
           return_url: options.delete(:return_url) || root_url
         }
-        ::Stripe::BillingPortal::Session.create(args.merge(options), stripe_options)
+        Pay::Stripe.client.v1.billing_portal.sessions.create(args.merge(options), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       def customer_session(**options)
         args = {customer: stripe_customer_id}
-        ::Stripe::CustomerSession.create(args.merge(options), stripe_options)
+        Pay::Stripe.client.v1.customer_sessions.create(args.merge(options), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -263,7 +263,7 @@ module Pay
       # create_meter_event(:api_request, value: 1)
       # create_meter_event(:api_request, token: 7)
       def create_meter_event(event_name, payload: {}, **options)
-        ::Stripe::Billing::MeterEvent.create({
+        Pay::Stripe.client.v1.billing.meter_events.create({
           event_name: event_name,
           payload: {stripe_customer_id: stripe_customer_id}.merge(payload)
         }.merge(options), stripe_options)

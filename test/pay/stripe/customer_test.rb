@@ -279,41 +279,41 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
 
   test "stripe sync_subscriptions" do
     @pay_customer.processor_id = "test_id"
-    ::Stripe::Subscription.expects(:list).with({customer: @pay_customer.processor_id}, {}).returns([])
+    ::Stripe::SubscriptionService.any_instance.expects(:list).with({customer: @pay_customer.processor_id}, {}).returns([])
     @pay_customer.sync_subscriptions
   end
 
   test "stripe sync_subscriptions passes the stripe_account through" do
     @pay_customer.update!(processor_id: "cus_1234", stripe_account: "acct_123")
     subscriptions = ::Stripe::ListObject.construct_from(object: "list", has_more: false, data: [{id: "sub_1", object: "subscription"}])
-    ::Stripe::Subscription.expects(:list).with({customer: "cus_1234"}, {stripe_account: "acct_123"}).returns(subscriptions)
+    ::Stripe::SubscriptionService.any_instance.expects(:list).with({customer: "cus_1234"}, {stripe_account: "acct_123"}).returns(subscriptions)
     Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: "acct_123")
     @pay_customer.sync_subscriptions
   end
 
   test "stripe create_meter_event sends the request to the connected account" do
     @pay_customer.update!(processor_id: "cus_1234", stripe_account: "acct_123")
-    ::Stripe::Billing::MeterEvent.expects(:create).with({event_name: :api_request, payload: {stripe_customer_id: "cus_1234", value: 1}}, {stripe_account: "acct_123"})
+    ::Stripe::Billing::MeterEventService.any_instance.expects(:create).with({event_name: :api_request, payload: {stripe_customer_id: "cus_1234", value: 1}}, {stripe_account: "acct_123"})
     @pay_customer.create_meter_event(:api_request, payload: {value: 1})
   end
 
   test "stripe terminal_charge creates a card_present payment intent for manual capture" do
     @pay_customer.update!(processor_id: "cus_1234")
-    ::Stripe::PaymentIntent.expects(:create).with(has_entries(amount: 10_00, customer: "cus_1234", allowed_payment_method_types: ["card_present"], capture_method: "manual"), anything)
+    ::Stripe::PaymentIntentService.any_instance.expects(:create).with(has_entries(amount: 10_00, customer: "cus_1234", allowed_payment_method_types: ["card_present"], capture_method: "manual"), anything)
     @pay_customer.terminal_charge(10_00)
   end
 
   test "stripe retry_past_due_subscriptions! pays open invoices of past_due subscriptions" do
     @pay_customer.update!(processor_id: "cus_1234")
     pay_subscriptions(:stripe).update!(status: :past_due)
-    ::Stripe::Invoice.expects(:list).with({subscription: "sub_1", status: :open, expand: ["data.payments"]}, {}).returns(::Stripe::ListObject.construct_from(object: "list", has_more: false, data: []))
+    ::Stripe::InvoiceService.any_instance.expects(:list).with({subscription: "sub_1", status: :open, expand: ["data.payments"]}, {}).returns(::Stripe::ListObject.construct_from(object: "list", has_more: false, data: []))
 
     @pay_customer.retry_past_due_subscriptions!
   end
 
   test "stripe checkout wraps Stripe errors in Pay::Stripe::Error" do
     @pay_customer.update!(processor_id: "cus_1234")
-    ::Stripe::Checkout::Session.stubs(:create).raises(::Stripe::InvalidRequestError.new("Invalid price", "line_items"))
+    ::Stripe::Checkout::SessionService.any_instance.stubs(:create).raises(::Stripe::InvalidRequestError.new("Invalid price", "line_items"))
     assert_raises(Pay::Stripe::Error) { @pay_customer.checkout(mode: "payment", line_items: "price_missing") }
   end
 end

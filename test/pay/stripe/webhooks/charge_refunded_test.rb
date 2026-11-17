@@ -8,8 +8,8 @@ class Pay::Stripe::Webhooks::ChargeRefundedTest < ActiveSupport::TestCase
   end
 
   test "a charge is updated with refunded amount" do
-    ::Stripe::Charge.expects(:retrieve).returns(@event.data.object)
-    ::Stripe::InvoicePayment.expects(:list).returns([])
+    ::Stripe::ChargeService.any_instance.expects(:retrieve).returns(@event.data.object)
+    ::Stripe::InvoicePaymentService.any_instance.expects(:list).returns([])
 
     assert_enqueued_jobs 1 do
       Pay::Stripe::Webhooks::ChargeRefunded.new.call(@event)

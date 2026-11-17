@@ -43,6 +43,20 @@ module Pay
     end
     self.model_names = Set.new
 
+    # Optional callable returning the Stripe::StripeClient that Pay should use.
+    # Useful for apps with more than one Stripe account:
+    #
+    #   Pay::Stripe.client_resolver = -> { Stripe::StripeClient.new(Current.stripe_api_key) }
+    class << self
+      attr_accessor :client_resolver
+    end
+
+    # The Stripe::StripeClient used for every Stripe API request Pay makes.
+    # Building a client is cheap, so one is created per call instead of being shared across threads and Ractors.
+    def self.client
+      client_resolver&.call || ::Stripe::StripeClient.new(::Stripe.api_key, stripe_context: ::Stripe.config.stripe_context)
+    end
+
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
 
@@ -155,7 +169,7 @@ module Pay
 
     # Subscriptions aren't always immediately associated, so we want to retry by default
     def self.sync_checkout_session(session_id, stripe_account: nil, try: 0, retries: 5)
-      checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id, expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)
+      checkout_session = Pay::Stripe.client.v1.checkout.sessions.retrieve(session_id, {expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)
       case checkout_session.mode
       when "payment"
         if (id = checkout_session.payment_intent.try(:latest_charge)&.id)
