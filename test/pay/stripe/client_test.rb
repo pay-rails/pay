@@ -123,7 +123,10 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
 
   test "syncs that start from an ID pass no customer for the first request" do
     customers = []
-    Pay::Stripe.client_options = ->(customer: nil, **) { customers << customer and nil }
+    Pay::Stripe.client_options = ->(customer: nil, **) {
+      customers << customer
+      nil
+    }
 
     stub_request(:get, %r{\Ahttps://api.stripe.com/v1/charges/ch_123})
       .to_return(status: 404, body: {error: {message: "No such charge"}}.to_json)
