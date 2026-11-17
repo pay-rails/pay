@@ -38,15 +38,18 @@ module Pay
 
     # A list of database model names that include Pay
     # Used for safely looking up models with client_reference_id
-    #
-    # client_resolver is an optional callable returning the Stripe::StripeClient that Pay should use.
-    # Useful for apps with more than one Stripe account:
-    #
-    #   Pay::Stripe.client_resolver = -> { Stripe::StripeClient.new(Current.stripe_api_key) }
     class << self
-      attr_accessor :model_names, :client_resolver
+      attr_accessor :model_names
     end
     self.model_names = Set.new
+
+    # An optional callable returning the Stripe::StripeClient Pay should use, for apps with more than one Stripe account.
+    # Returning nil falls back to the default client.
+    #
+    #   Pay::Stripe.client_resolver = -> { Stripe::StripeClient.new(Current.account.stripe_api_key) if Current.account }
+    class << self
+      attr_accessor :client_resolver
+    end
 
     # The Stripe::StripeClient used for every Stripe API request Pay makes.
     # Building a client is cheap, so one is created per call instead of being shared across threads and Ractors.
