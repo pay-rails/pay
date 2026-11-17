@@ -48,7 +48,7 @@ module Pay
         args = {confirm: true, payment_method: default_payment_method&.processor_id}.merge(options)
         payment_intent = create_payment_intent(amount, args)
 
-        Pay::Payment.new(payment_intent).validate
+        Pay::Payment.new(payment_intent, stripe_account: stripe_account).validate
 
         charge = payment_intent.latest_charge
         Pay::Stripe::Charge.sync(charge.id, object: charge, stripe_account: stripe_account, customer: self)

@@ -45,6 +45,15 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
       exception.message
   end
 
+  test "stripe action required error keeps the Connect account for the confirmation page" do
+    @pay_customer.update!(processor_id: "cus_1234", stripe_account: "acct_123")
+    ::Stripe::PaymentIntentService.any_instance.expects(:create).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1", status: "requires_action"))
+
+    exception = assert_raises(Pay::ActionRequired) { @pay_customer.charge(2900) }
+
+    assert_equal "acct_123", exception.payment.stripe_account
+  end
+
   test "stripe can create a subscription" do
     travel_to_cassette do
       # We select the subscription by newest created_at, so we want to make sure existing subscriptions are in the past

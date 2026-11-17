@@ -488,6 +488,17 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal "trialing", pay_subscription.status
   end
 
+  test "stripe retry_failed_payment action required error keeps the Connect account" do
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.update!(stripe_account: "acct_123")
+    ::Stripe::PaymentIntentService.any_instance.stubs(:retrieve).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", status: "requires_confirmation"))
+    ::Stripe::PaymentIntentService.any_instance.expects(:confirm).with("pi_1000", {}, {stripe_account: "acct_123"}).returns(::Stripe::PaymentIntent.construct_from(id: "pi_1000", status: "requires_action"))
+
+    exception = assert_raises(Pay::ActionRequired) { pay_subscription.retry_failed_payment(payment_intent_id: "pi_1000") }
+
+    assert_equal "acct_123", exception.payment.stripe_account
+  end
+
   test "stripe retry_failed_payment raises a clear error without a default payment method" do
     pay_subscription = pay_subscriptions(:stripe)
     pay_subscription.customer.payment_methods.update_all(default: false)

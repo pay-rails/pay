@@ -357,7 +357,7 @@ module Pay
         else
           stripe_client.v1.payment_intents.confirm(payment_intent_id, {}, stripe_options)
         end
-        Pay::Payment.new(payment_intent).validate
+        Pay::Payment.new(payment_intent, stripe_account: stripe_account).validate
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
