@@ -465,7 +465,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "stripe sync passes the customer's stripe_account to the payment method sync" do
     @pay_customer.update!(stripe_account: "acct_123")
-    Pay::Stripe::PaymentMethod.expects(:sync).with("pm_1000", stripe_account: "acct_123").returns(pay_payment_methods(:stripe))
+    Pay::Stripe::PaymentMethod.expects(:sync).with("pm_1000", stripe_account: "acct_123", customer: @pay_customer).returns(pay_payment_methods(:stripe))
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: "pm_1000"))
     assert_equal "acct_123", pay_subscription.stripe_account
   end
@@ -473,7 +473,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe sync! defaults to the subscription's stripe_account" do
     pay_subscription = pay_subscriptions(:stripe)
     pay_subscription.update!(stripe_account: "acct_123")
-    Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: "acct_123")
+    Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: "acct_123", customer: pay_subscription.customer)
     pay_subscription.sync!
   end
 

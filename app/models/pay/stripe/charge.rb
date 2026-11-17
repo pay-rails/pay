@@ -10,16 +10,16 @@ module Pay
       store_accessor :data, :stripe_invoice
       store_accessor :data, :stripe_receipt_url
 
-      def self.sync_payment_intent(id, stripe_account: nil)
-        payment_intent = Pay::Stripe.client(stripe_account: stripe_account).v1.payment_intents.retrieve(id)
-        sync(payment_intent.latest_charge, stripe_account: stripe_account)
+      def self.sync_payment_intent(id, stripe_account: nil, customer: nil)
+        payment_intent = Pay::Stripe.client(stripe_account: stripe_account, customer: customer).v1.payment_intents.retrieve(id)
+        sync(payment_intent.latest_charge, stripe_account: stripe_account, customer: customer)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
-      def self.sync(charge_id, object: nil, stripe_account: nil, retries: 1)
+      def self.sync(charge_id, object: nil, stripe_account: nil, customer: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          charge = object || Pay::Stripe.client(stripe_account: stripe_account).v1.charges.retrieve(charge_id, {expand: EXPAND})
+          charge = object || Pay::Stripe.client(stripe_account: stripe_account, customer: customer).v1.charges.retrieve(charge_id, {expand: EXPAND})
           return unless (pay_customer = find_pay_customer(charge.customer))
           stripe_account ||= pay_customer.stripe_account
 
@@ -44,9 +44,9 @@ module Pay
 
           # Associate charge with subscription if we can
           if charge.payment_intent.present?
-            invoice_payments = Pay::Stripe.client(stripe_account: stripe_account).v1.invoice_payments.list({payment: {type: :payment_intent, payment_intent: charge.payment_intent}, status: :paid})
+            invoice_payments = Pay::Stripe.client(stripe_account: stripe_account, customer: pay_customer).v1.invoice_payments.list({payment: {type: :payment_intent, payment_intent: charge.payment_intent}, status: :paid})
             if invoice_payments.any?
-              invoice = Pay::Stripe.client(stripe_account: stripe_account).v1.invoices.retrieve(invoice_payments.first.invoice, {expand: ["total_discount_amounts.discount.source.coupon"]})
+              invoice = Pay::Stripe.client(stripe_account: stripe_account, customer: pay_customer).v1.invoices.retrieve(invoice_payments.first.invoice, {expand: ["total_discount_amounts.discount.source.coupon"]})
               attrs[:stripe_invoice] = invoice.to_hash
               attrs[:subtotal] = invoice.subtotal
               attrs[:tax] = invoice.total - invoice.total_excluding_tax.to_i
@@ -115,7 +115,7 @@ module Pay
         raise Pay::Stripe::Error, "no payment_intent on charge" unless payment_intent.present?
         payment_intent_id = payment_intent.is_a?(::Stripe::PaymentIntent) ? payment_intent.id : payment_intent
         stripe_client.v1.payment_intents.capture(payment_intent_id, options)
-        self.class.sync(processor_id, stripe_account: stripe_account)
+        self.class.sync(processor_id, stripe_account: stripe_account, customer: customer)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -136,13 +136,13 @@ module Pay
       end
 
       def sync!(**options)
-        super(**options.with_defaults(stripe_account: stripe_account))
+        super(**options.with_defaults(stripe_account: stripe_account, customer: customer))
       end
 
       private
 
       def stripe_client
-        Pay::Stripe.client(stripe_account: stripe_account)
+        Pay::Stripe.client(stripe_account: stripe_account, customer: customer)
       end
     end
   end

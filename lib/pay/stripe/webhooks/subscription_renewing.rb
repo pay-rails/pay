@@ -15,7 +15,7 @@ module Pay
           return unless pay_subscription
 
           # Stripe subscription items all have the same interval
-          price = Pay::Stripe.client(stripe_account: event.try(:account)).v1.prices.retrieve(invoice.lines.first.pricing.price_details.price)
+          price = Pay::Stripe.client(stripe_account: event.try(:account), customer: pay_subscription.customer).v1.prices.retrieve(invoice.lines.first.pricing.price_details.price)
 
           # For collection_method=send_invoice, Stripe will send an email and next_payment_attempt will be null
           # https://docs.stripe.com/api/invoices/object#invoice_object-collection_method

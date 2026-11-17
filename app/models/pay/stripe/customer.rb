@@ -51,7 +51,7 @@ module Pay
         Pay::Payment.new(payment_intent).validate
 
         charge = payment_intent.latest_charge
-        Pay::Stripe::Charge.sync(charge.id, object: charge, stripe_account: stripe_account)
+        Pay::Stripe::Charge.sync(charge.id, object: charge, stripe_account: stripe_account, customer: self)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -69,12 +69,12 @@ module Pay
         stripe_sub = stripe_client.v1.subscriptions.create(opts.merge(Pay::Stripe::Subscription.expand_options))
 
         # Save Pay::Subscription
-        subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name)
+        subscription = Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub, name: name, customer: self)
 
         # No trial, payment method requires SCA
         if options[:payment_behavior].to_s != "default_incomplete" && subscription.incomplete?
           payment_intent_id = stripe_sub.latest_invoice.payments.first.payment.payment_intent
-          Pay::Payment.from_id(payment_intent_id, stripe_account: stripe_account).validate
+          Pay::Payment.from_id(payment_intent_id, stripe_account: stripe_account, customer: self).validate
         end
 
         subscription
@@ -159,7 +159,7 @@ module Pay
       def sync_subscriptions(**options)
         subscriptions = stripe_client.v1.subscriptions.list(options.with_defaults(customer: processor_id))
         subscriptions.map do |subscription|
-          Pay::Stripe::Subscription.sync(subscription.id, stripe_account: stripe_account)
+          Pay::Stripe::Subscription.sync(subscription.id, stripe_account: stripe_account, customer: self)
         end
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
@@ -279,7 +279,7 @@ module Pay
       end
 
       def stripe_client
-        Pay::Stripe.client(stripe_account: stripe_account)
+        Pay::Stripe.client(stripe_account: stripe_account, customer: self)
       end
 
       # Includes the `session_id` param for Stripe Checkout with existing params (and makes sure the curly braces aren't escaped)

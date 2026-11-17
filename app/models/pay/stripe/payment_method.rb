@@ -4,29 +4,29 @@ module Pay
       extend Pay::Sync
 
       # Syncs a PaymentIntent's payment method to the database
-      def self.sync_payment_intent(id, stripe_account: nil)
-        payment_intent = Pay::Stripe.client(stripe_account: stripe_account).v1.payment_intents.retrieve(id, {expand: ["payment_method"]})
+      def self.sync_payment_intent(id, stripe_account: nil, customer: nil)
+        payment_intent = Pay::Stripe.client(stripe_account: stripe_account, customer: customer).v1.payment_intents.retrieve(id, {expand: ["payment_method"]})
         payment_method = payment_intent.payment_method
         return unless payment_method
-        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
+        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account, customer: customer)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       # Syncs a SetupIntent's payment method to the database
-      def self.sync_setup_intent(id, stripe_account: nil)
-        setup_intent = Pay::Stripe.client(stripe_account: stripe_account).v1.setup_intents.retrieve(id, {expand: ["payment_method"]})
+      def self.sync_setup_intent(id, stripe_account: nil, customer: nil)
+        setup_intent = Pay::Stripe.client(stripe_account: stripe_account, customer: customer).v1.setup_intents.retrieve(id, {expand: ["payment_method"]})
         payment_method = setup_intent.payment_method
         return unless payment_method
-        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account)
+        Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account, customer: customer)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
 
       # Syncs PaymentMethod objects from Stripe
-      def self.sync(id, object: nil, stripe_account: nil, retries: 1)
+      def self.sync(id, object: nil, stripe_account: nil, customer: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          payment_method = object || Pay::Stripe.client(stripe_account: stripe_account).v1.payment_methods.retrieve(id)
+          payment_method = object || Pay::Stripe.client(stripe_account: stripe_account, customer: customer).v1.payment_methods.retrieve(id)
           return unless (pay_customer = find_pay_customer(payment_method.customer))
           stripe_account ||= pay_customer.stripe_account
 
@@ -81,7 +81,7 @@ module Pay
       private
 
       def stripe_client
-        Pay::Stripe.client(stripe_account: customer.stripe_account)
+        Pay::Stripe.client(stripe_account: customer.stripe_account, customer: customer)
       end
     end
   end

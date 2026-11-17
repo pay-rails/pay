@@ -33,7 +33,7 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
   end
 
   test "client_options override the global configuration, and objects keep using that API key" do
-    Pay::Stripe.client_options = -> { {api_key: "sk_test_other_platform"} }
+    Pay::Stripe.client_options = ->(**) { {api_key: "sk_test_other_platform"} }
 
     create = stub_request(:post, "https://api.stripe.com/v1/invoices")
       .with(headers: {"Authorization" => "Bearer sk_test_other_platform"})
@@ -73,7 +73,7 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
   end
 
   test "the record's connected account takes precedence over client_options" do
-    Pay::Stripe.client_options = -> { {stripe_account: "acct_default"} }
+    Pay::Stripe.client_options = ->(**) { {stripe_account: "acct_default"} }
 
     stub_request(:get, "https://api.stripe.com/v1/payment_intents/pi_1")
       .with(headers: {"Stripe-Account" => "acct_123"})
@@ -84,5 +84,57 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
 
     assert_equal "pi_1", Pay::Payment.from_id("pi_1", stripe_account: "acct_123").id
     assert_equal "pi_2", Pay::Payment.from_id("pi_2").id
+  end
+
+  test "client_options receives the customer, so background jobs use that customer's API key" do
+    use_api_key_per_customer
+
+    update = stub_request(:post, "https://api.stripe.com/v1/customers/cus_1234")
+      .with(headers: {"Authorization" => "Bearer sk_test_customer_#{pay_customers(:stripe).id}"})
+      .to_return(body: {id: "cus_1234", object: "customer"}.to_json)
+
+    Pay::CustomerSyncJob.perform_now(pay_customers(:stripe).id)
+    assert_requested update
+  end
+
+  test "sync! passes the record's customer to client_options for the first request" do
+    use_api_key_per_customer
+    pay_subscription = pay_subscriptions(:stripe)
+
+    retrieve = stub_request(:get, %r{\Ahttps://api.stripe.com/v1/subscriptions/sub_1})
+      .with(headers: {"Authorization" => "Bearer sk_test_customer_#{pay_subscription.customer.id}"})
+      .to_return(status: 404, body: {error: {message: "No such subscription"}}.to_json)
+
+    assert_raises(Pay::Stripe::Error) { pay_subscription.sync! }
+    assert_requested retrieve
+  end
+
+  test "syncs use the customer for requests after looking it up" do
+    use_api_key_per_customer
+
+    invoice_payments = stub_request(:get, %r{\Ahttps://api.stripe.com/v1/invoice_payments})
+      .with(headers: {"Authorization" => "Bearer sk_test_customer_#{pay_customers(:stripe).id}"})
+      .to_return(body: {object: "list", data: [], has_more: false}.to_json)
+
+    # The charge's customer (cus_1234) is only known once the charge has been fetched
+    Pay::Stripe::Charge.sync("ch_123", object: fake_stripe_charge)
+    assert_requested invoice_payments
+  end
+
+  test "syncs that start from an ID pass no customer for the first request" do
+    customers = []
+    Pay::Stripe.client_options = ->(customer: nil, **) { customers << customer and nil }
+
+    stub_request(:get, %r{\Ahttps://api.stripe.com/v1/charges/ch_123})
+      .to_return(status: 404, body: {error: {message: "No such charge"}}.to_json)
+
+    assert_raises(Pay::Stripe::Error) { Pay::Stripe::Charge.sync("ch_123") }
+    assert_equal [nil], customers
+  end
+
+  private
+
+  def use_api_key_per_customer
+    Pay::Stripe.client_options = ->(customer: nil, **) { {api_key: "sk_test_customer_#{customer.id}"} if customer }
   end
 end

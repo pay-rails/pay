@@ -288,7 +288,7 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
     subscriptions = ::Stripe::ListObject.construct_from(object: "list", has_more: false, data: [{id: "sub_1", object: "subscription"}])
     expect_stripe_client(stripe_account: "acct_123")
     ::Stripe::SubscriptionService.any_instance.expects(:list).with({customer: "cus_1234"}).returns(subscriptions)
-    Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: "acct_123")
+    Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: "acct_123", customer: @pay_customer)
     @pay_customer.sync_subscriptions
   end
 

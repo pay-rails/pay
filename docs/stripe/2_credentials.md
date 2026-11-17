@@ -29,18 +29,27 @@ Note: publishable keys and webhook signing secrets remain per-account (organizat
 
 Pay makes every Stripe API request through a [`Stripe::StripeClient`](https://github.com/stripe/stripe-ruby#usage), which you can get with `Pay::Stripe.client` (or `Pay::Stripe.client(stripe_account: "acct_...")` for a Connect account). By default it uses your global Stripe configuration (`Stripe.api_key`, `Stripe.api_base`, `Stripe.api_version`, and so on).
 
-If your app uses more than one Stripe account (not [Connect](/docs/marketplaces/stripe_connect.md) accounts, which Pay handles itself), set `Pay::Stripe.client_options` to return the [`StripeClient` options](https://github.com/stripe/stripe-ruby#per-request-configuration) Pay should use. They're merged over your global configuration. It's called for every request, so it can read whatever your app uses to track the current account:
+If your app uses more than one Stripe account (not [Connect](/docs/marketplaces/stripe_connect.md) accounts, which Pay handles itself), set `Pay::Stripe.client_options` to return the [`StripeClient` options](https://github.com/stripe/stripe-ruby#per-request-configuration) Pay should use. They're merged over your global configuration.
+
+It's called for every request with the `Pay::Customer` the request is for, so you can look up the account from the customer's owner:
 
 ```ruby
 # config/initializers/pay.rb
-Pay::Stripe.client_options = -> {
-  {api_key: Current.account.stripe_api_key} if Current.account
+Pay::Stripe.client_options = ->(customer: nil, **) {
+  brand = customer&.owner&.brand || Current.brand
+  {api_key: brand.stripe_api_key} if brand
 }
 ```
 
-Return `nil` to use the global configuration unchanged. Objects Pay fetches keep the API key they were fetched with, so later calls on them go to the same account. Pay still sets the Connect account for customers, charges and subscriptions that have one, overriding any `stripe_account` you return.
+Accept `**` so Pay can pass more context later without breaking your callable. Return `nil` to use the global configuration unchanged.
 
-Pay doesn't record which account a customer or webhook belongs to, so `client_options` also has to return the right options in background jobs, including `Pay::Webhooks::ProcessJob`.
+`customer` is set for calls on a customer, charge, subscription or payment method (`charge`, `subscribe`, `sync!`, `cancel`, `refund!` and so on), including those made in background jobs like `Pay::CustomerSyncJob`. It's `nil` when Pay doesn't know the customer yet:
+
+* Syncs that start from an ID, like `Pay::Stripe::Charge.sync("ch_123")`, fetch the object before Pay can look up its customer. Requests after the lookup get the customer.
+* Most webhooks, which start from an ID too. Pay doesn't record which Stripe account a webhook came from, so for these `client_options` has to work out the account itself, for example from `Current` set in your own wrapper around `Pay::Webhooks::ProcessJob`.
+* `Pay::Stripe.sync_checkout_session`, `Pay::Payment.from_id` without `customer:`, and `Pay::Stripe::Merchant` (Connect platform) calls.
+
+Objects Pay fetches keep the API key they were fetched with, so later calls on them go to the same account. Pay still sets the Connect account for customers, charges and subscriptions that have one, overriding any `stripe_account` you return.
 
 ### Signing secrets
 

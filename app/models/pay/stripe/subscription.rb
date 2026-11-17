@@ -10,9 +10,9 @@ module Pay
         Pay::Stripe.sync_checkout_session(session_id, stripe_account: stripe_account)
       end
 
-      def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, retries: 1)
+      def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, customer: nil, retries: 1)
         sync_with_retries(retries: retries) do
-          subscription = object || Pay::Stripe.client(stripe_account: stripe_account).v1.subscriptions.retrieve(subscription_id, expand_options)
+          subscription = object || Pay::Stripe.client(stripe_account: stripe_account, customer: customer).v1.subscriptions.retrieve(subscription_id, expand_options)
           return unless (pay_customer = find_pay_customer(subscription.customer))
           stripe_account ||= pay_customer.stripe_account
 
@@ -64,10 +64,10 @@ module Pay
           # Sync payment method if directly attached to subscription
           if subscription.default_payment_method
             if subscription.default_payment_method.is_a? String
-              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method, stripe_account: stripe_account)
+              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method, stripe_account: stripe_account, customer: pay_customer)
               attributes[:payment_method_id] = subscription.default_payment_method
             else
-              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method.id, object: subscription.default_payment_method, stripe_account: stripe_account)
+              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method.id, object: subscription.default_payment_method, stripe_account: stripe_account, customer: pay_customer)
               attributes[:payment_method_id] = subscription.default_payment_method.id
             end
           end
@@ -100,9 +100,9 @@ module Pay
 
               case invoice_payment.payment.type
               when "payment_intent"
-                Pay::Stripe::Charge.sync_payment_intent(invoice_payment.payment.payment_intent, stripe_account: stripe_account)
+                Pay::Stripe::Charge.sync_payment_intent(invoice_payment.payment.payment_intent, stripe_account: stripe_account, customer: pay_customer)
               when "charge"
-                Pay::Stripe::Charge.sync(invoice_payment.payment.charge, stripe_account: stripe_account)
+                Pay::Stripe::Charge.sync(invoice_payment.payment.charge, stripe_account: stripe_account, customer: pay_customer)
               end
             end
           end
@@ -134,7 +134,7 @@ module Pay
       end
 
       def sync!(**options)
-        super(**options.with_defaults(stripe_account: stripe_account))
+        super(**options.with_defaults(stripe_account: stripe_account, customer: customer))
       end
 
       def api_record(id: processor_id, **options)
@@ -402,7 +402,7 @@ module Pay
       end
 
       def stripe_client
-        Pay::Stripe.client(stripe_account: stripe_account)
+        Pay::Stripe.client(stripe_account: stripe_account, customer: customer)
       end
 
       def expand_options

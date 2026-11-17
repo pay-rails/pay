@@ -107,7 +107,7 @@ class Pay::Stripe::PaymentMethodTest < ActiveSupport::TestCase
     payment_intent = ::Stripe::PaymentIntent.construct_from(id: "pi_123", object: "payment_intent", payment_method: fake_stripe_payment_method)
     expect_stripe_client(stripe_account: "acct_123")
     ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).with("pi_123", {expand: ["payment_method"]}).returns(payment_intent)
-    Pay::Stripe::PaymentMethod.expects(:sync).with("pm_123", object: payment_intent.payment_method, stripe_account: "acct_123")
+    Pay::Stripe::PaymentMethod.expects(:sync).with("pm_123", object: payment_intent.payment_method, stripe_account: "acct_123", customer: nil)
     Pay::Stripe::PaymentMethod.sync_payment_intent("pi_123", stripe_account: "acct_123")
   end
 

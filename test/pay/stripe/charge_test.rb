@@ -110,7 +110,7 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
 
   test "sync! defaults to the charge's stripe_account" do
     pay_charge = @pay_customer.charges.create!(processor_id: "ch_123", amount: 19_00, stripe_account: "acct_123")
-    Pay::Stripe::Charge.expects(:sync).with("ch_123", stripe_account: "acct_123")
+    Pay::Stripe::Charge.expects(:sync).with("ch_123", stripe_account: "acct_123", customer: @pay_customer)
     pay_charge.sync!
   end
 

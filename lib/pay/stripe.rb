@@ -45,16 +45,17 @@ module Pay
 
     # An optional callable returning Stripe::StripeClient options (api_key:, stripe_version:, etc.) for apps with more
     # than one Stripe account. They're merged over the global Stripe configuration; returning nil uses it unchanged.
+    # It's called with the Pay::Customer the request is for, which is nil when Pay doesn't know it yet.
     #
-    #   Pay::Stripe.client_options = -> { {api_key: Current.account.stripe_api_key} if Current.account }
+    #   Pay::Stripe.client_options = ->(customer: nil, **) { {api_key: customer.owner.brand.stripe_api_key} if customer }
     class << self
       attr_accessor :client_options
     end
 
     # The Stripe::StripeClient for a Stripe API request, acting on the given Connect account if there is one.
     # Building a client is cheap, so one is created per request instead of being shared across threads and Ractors.
-    def self.client(stripe_account: nil)
-      options = default_client_options.merge(client_options&.call || {})
+    def self.client(stripe_account: nil, customer: nil)
+      options = default_client_options.merge(client_options&.call(customer: customer) || {})
       options[:stripe_account] = stripe_account if stripe_account
       ::Stripe::StripeClient.new(options.delete(:api_key), **options)
     end
