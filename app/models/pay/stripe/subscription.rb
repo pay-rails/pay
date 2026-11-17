@@ -138,7 +138,7 @@ module Pay
       end
 
       def api_record(**options)
-        @api_record ||= Pay::Stripe.client.v1.subscriptions.retrieve(options.fetch(:id, processor_id), options.except(:id).merge(expand_options), {stripe_account: stripe_account}.compact)
+        @api_record ||= Pay::Stripe.client.v1.subscriptions.retrieve(options.fetch(:id, processor_id), options.except(:id).merge(expand_options), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end

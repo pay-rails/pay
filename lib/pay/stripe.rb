@@ -38,24 +38,39 @@ module Pay
 
     # A list of database model names that include Pay
     # Used for safely looking up models with client_reference_id
-    class << self
-      attr_accessor :model_names
-    end
-    self.model_names = Set.new
-
-    # Optional callable returning the Stripe::StripeClient that Pay should use.
+    #
+    # client_resolver is an optional callable returning the Stripe::StripeClient that Pay should use.
     # Useful for apps with more than one Stripe account:
     #
     #   Pay::Stripe.client_resolver = -> { Stripe::StripeClient.new(Current.stripe_api_key) }
     class << self
-      attr_accessor :client_resolver
+      attr_accessor :model_names, :client_resolver
     end
+    self.model_names = Set.new
 
     # The Stripe::StripeClient used for every Stripe API request Pay makes.
     # Building a client is cheap, so one is created per call instead of being shared across threads and Ractors.
     def self.client
-      client_resolver&.call || ::Stripe::StripeClient.new(::Stripe.api_key, stripe_context: ::Stripe.config.stripe_context)
+      client_resolver&.call || default_client
     end
+
+    # StripeClient doesn't read the global client options (API base, version, etc.) itself, so copy them over
+    # so the default client sends the same requests the legacy class methods did.
+    def self.default_client
+      config = ::Stripe.config
+      ::Stripe::StripeClient.new(
+        config.api_key,
+        stripe_account: config.stripe_account,
+        stripe_context: config.stripe_context,
+        stripe_version: config.api_version,
+        api_base: config.api_base,
+        uploads_base: config.uploads_base,
+        connect_base: config.connect_base,
+        meter_events_base: config.meter_events_base,
+        client_id: config.client_id
+      )
+    end
+    private_class_method :default_client
 
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
