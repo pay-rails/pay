@@ -113,8 +113,9 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
   test "braintree email changed" do
     # Must already have a processor ID
     @pay_customer.update(processor_id: "fake")
-    Pay::CustomerSyncJob.expects(:perform_later).with(@pay_customer.id)
-    @pay_customer.owner.update(email: "mynewemail@example.org")
+    assert_enqueued_with(job: Pay::CustomerSyncJob, args: [@pay_customer.id]) do
+      @pay_customer.owner.update(email: "mynewemail@example.org")
+    end
   end
 
   test "braintree trial period options" do
