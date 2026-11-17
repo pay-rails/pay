@@ -13,10 +13,8 @@ module Pay
     end
 
     test "skips customers deleted after the job was enqueued" do
-      pay_customer = pay_customers(:stripe)
-      pay_customer.update!(deleted_at: Time.current)
       ::Stripe::Customer.expects(:update).never
-      Pay::CustomerSyncJob.perform_now(pay_customer.id)
+      Pay::CustomerSyncJob.perform_now(pay_customers(:deleted).id)
     end
 
     test "skips missing customers" do
