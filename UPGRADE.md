@@ -23,7 +23,7 @@ If your tests stub the Stripe class methods for requests Pay makes, those stubs 
 When a stub uses `.with`:
 
 * The ID is always the first argument. It's no longer included in the params hash.
-* Pay always passes the params and request options, even when they're empty, so stubs for calls like `retrieve` need `.with("pi_123", {}, {})`.
+* Pay passes the params and request options even when they're empty, so stubs for calls like `retrieve` need `.with("pi_123", {}, {})`. The exception is `Pay::Stripe::Merchant`, which passes no request options (for example `.with("acct_123")`).
 * For a Stripe Connect account, the request options are `{stripe_account: "acct_123"}`.
 
 Apps that use more than one Stripe account can now choose the API key per request with `Pay::Stripe.client_options`. See [Stripe credentials](docs/stripe/2_credentials.md#multiple-stripe-accounts-optional).
