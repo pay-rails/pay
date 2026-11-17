@@ -8,8 +8,8 @@ module Pay
 
     def self.from_id(id, stripe_account: nil, customer: nil)
       v1 = Pay::Stripe.client(customer: customer).v1
-      options = {stripe_account: stripe_account}.compact
-      intent = id.start_with?("seti_") ? v1.setup_intents.retrieve(id, {}, options) : v1.payment_intents.retrieve(id, {}, options)
+      service = id.start_with?("seti_") ? v1.setup_intents : v1.payment_intents
+      intent = service.retrieve(id, {}, {stripe_account: stripe_account}.compact)
       new(intent, stripe_account: stripe_account)
     rescue ::Stripe::StripeError => e
       raise Pay::Stripe::Error, e

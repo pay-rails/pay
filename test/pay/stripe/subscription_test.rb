@@ -244,7 +244,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = paused_stripe_subscription
     ::Stripe::SubscriptionService.any_instance.expects(:update).never
     ::Stripe::PaymentIntentService.any_instance.expects(:retrieve).never
-    ::Stripe::SubscriptionService.any_instance.expects(:resume).with("sub_1", has_key(:expand), anything).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
+    ::Stripe::SubscriptionService.any_instance.expects(:resume).with("sub_1", has_key(:expand), {}).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
 
     assert pay_subscription.resume
 
@@ -255,7 +255,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
   test "stripe resume with paused status passes options to Stripe" do
     pay_subscription = paused_stripe_subscription
-    ::Stripe::SubscriptionService.any_instance.expects(:resume).with("sub_1", has_entry(billing_cycle_anchor: "unchanged"), anything).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
+    ::Stripe::SubscriptionService.any_instance.expects(:resume).with("sub_1", has_entry(billing_cycle_anchor: "unchanged"), {}).returns(fake_stripe_subscription(id: "sub_1", status: "active"))
 
     pay_subscription.resume(billing_cycle_anchor: "unchanged")
   end

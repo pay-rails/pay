@@ -299,7 +299,7 @@ class Pay::Stripe::CustomerTest < ActiveSupport::TestCase
 
   test "stripe terminal_charge creates a card_present payment intent for manual capture" do
     @pay_customer.update!(processor_id: "cus_1234")
-    ::Stripe::PaymentIntentService.any_instance.expects(:create).with(has_entries(amount: 10_00, customer: "cus_1234", allowed_payment_method_types: ["card_present"], capture_method: "manual"), anything)
+    ::Stripe::PaymentIntentService.any_instance.expects(:create).with(has_entries(amount: 10_00, customer: "cus_1234", allowed_payment_method_types: ["card_present"], capture_method: "manual"), {})
     @pay_customer.terminal_charge(10_00)
   end
 
