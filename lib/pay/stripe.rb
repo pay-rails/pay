@@ -64,7 +64,6 @@ module Pay
     def self.app_client_options(customer)
       return unless client_options
 
-      # Callables that take no arguments (-> { ... }) aren't passed the customer
       if client_options.respond_to?(:arity) && client_options.arity.zero?
         client_options.call
       else

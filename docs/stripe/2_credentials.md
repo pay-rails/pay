@@ -38,7 +38,7 @@ Pay::Stripe.client_options = -> {
 }
 ```
 
-That works anywhere your app sets `Current.brand`. Background jobs don't have it unless you set it there yourself, so Pay can also pass the `Pay::Customer` the request is for. Accept keyword arguments to get it, and keep `Current` as the fallback:
+Background jobs don't have `Current.brand` unless you set it there yourself, so Pay can also pass the `Pay::Customer` the request is for. Accept keyword arguments to get it, and keep `Current` as the fallback:
 
 ```ruby
 Pay::Stripe.client_options = ->(customer: nil, **) {
