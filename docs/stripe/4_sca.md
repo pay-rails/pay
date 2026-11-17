@@ -30,8 +30,8 @@ def create
   redirect_to dashboard_path
 
 rescue Pay::ActionRequired, Pay::InvalidPaymentMethod => e
-  # stripe_account is only added to the URL for payments on a Stripe Connect account
-  # back is where the page links to when the customer is done
+  # stripe_account is nil (and left out of the URL) unless the payment is on a Stripe Connect account
+  # back is where the page's Back link goes
   redirect_to pay.payment_path(e.payment.id, stripe_account: e.payment.stripe_account, back: dashboard_path)
 
 rescue Pay::Error => e
@@ -52,7 +52,7 @@ const stripe = Stripe(publishableKey, stripeAccount ? { stripeAccount } : {})
 const { error } = await stripe.handleNextAction({ clientSecret })
 ```
 
-`handleNextAction` only completes authentication. If authentication fails, or for `Pay::InvalidPaymentMethod`, the customer needs to enter a new payment method, so you'll need the Payment Element too. Pay's confirmation page is a good starting point (see [Customizing the confirmation page](#customizing-the-confirmation-page)).
+`handleNextAction` only handles authentication. If it fails, or for `Pay::InvalidPaymentMethod`, the customer needs a new payment method, so you'll need the Payment Element too. Pay's confirmation page is a good starting point (see [Customizing the confirmation page](#customizing-the-confirmation-page)).
 
 ## Payments made while the customer is away
 
