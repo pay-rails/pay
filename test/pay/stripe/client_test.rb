@@ -222,6 +222,29 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
     assert_equal %w[il_1 il_2 il_3], pay_webhook.rehydrated_event.data.object.lines.auto_paging_each.map(&:id)
   end
 
+  test "webhook events page through lists with the customer's API key on the Connect account that sent them" do
+    use_api_key_per_customer
+    pay_customer = pay_customers(:stripe)
+    invoice = paged_list_owner("in_1", "invoice", :lines, "il").merge("customer" => pay_customer.processor_id)
+    event = {id: "evt_1", object: "event", account: "acct_123", type: "invoice.payment_failed", data: {object: invoice}}
+    pay_webhook = Pay::Webhook.new(processor: :stripe, event_type: "invoice.payment_failed", event: event.deep_stringify_keys)
+
+    stub_next_pages("/v1/invoices/in_1/lines", "il", headers: {"Authorization" => "Bearer sk_test_customer_#{pay_customer.id}", "Stripe-Account" => "acct_123"})
+
+    assert_equal %w[il_1 il_2 il_3], pay_webhook.rehydrated_event.data.object.lines.auto_paging_each.map(&:id)
+  end
+
+  test "customer webhook events page through lists with that customer's API key" do
+    use_api_key_per_customer
+    pay_customer = pay_customers(:stripe)
+    event = {id: "evt_1", object: "event", account: "acct_123", type: "customer.updated", data: {object: paged_list_owner(pay_customer.processor_id, "customer", :sources, "src")}}
+    pay_webhook = Pay::Webhook.new(processor: :stripe, event_type: "customer.updated", event: event.deep_stringify_keys)
+
+    stub_next_pages("/v1/customers/#{pay_customer.processor_id}/sources", "src", headers: {"Authorization" => "Bearer sk_test_customer_#{pay_customer.id}", "Stripe-Account" => "acct_123"})
+
+    assert_equal %w[src_1 src_2 src_3], pay_webhook.rehydrated_event.data.object.sources.auto_paging_each.map(&:id)
+  end
+
   private
 
   # A Stripe object with an embedded list that has more pages to fetch

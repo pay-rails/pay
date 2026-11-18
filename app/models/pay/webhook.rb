@@ -24,8 +24,8 @@ module Pay
       when "lemon_squeezy"
         Pay::LemonSqueezy.construct_from_webhook_event(event)
       when "stripe"
-        # Objects in the event make requests, like paging through a list, on the Connect account that sent it
-        Pay::Stripe.construct_from(::Stripe::Event, event, stripe_account: event["account"])
+        # Objects in the event make requests, like paging through a list, with the customer's API key on the Connect account that sent it
+        Pay::Stripe.construct_from(::Stripe::Event, event, customer: stripe_event_customer, stripe_account: event["account"])
       else
         event
       end
@@ -39,6 +39,14 @@ module Pay
       else # Assumed to be a primitive value
         obj
       end
+    end
+
+    private
+
+    # customer.* events carry the customer itself, other objects reference it
+    def stripe_event_customer
+      object = event.dig("data", "object") || {}
+      Pay::Stripe.find_pay_customer((object["object"] == "customer") ? object["id"] : object["customer"])
     end
   end
 end
