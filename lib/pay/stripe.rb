@@ -72,6 +72,14 @@ module Pay
       klass.construct_from(data, {api_key: app_client_options(customer)&.dig(:api_key), stripe_account: stripe_account}.compact)
     end
 
+    # Objects in the event make requests, like paging through a list, with the customer's API key on the Connect account that sent it
+    def self.construct_from_webhook_event(event)
+      # customer.* events carry the customer itself, other objects reference it
+      object = event.dig("data", "object") || {}
+      customer_id = (object["object"] == "customer") ? object["id"] : object["customer"]
+      construct_from(::Stripe::Event, event, customer: find_pay_customer(customer_id), stripe_account: event["account"])
+    end
+
     def self.app_client_options(customer)
       return unless client_options
 
