@@ -3,7 +3,7 @@ module Pay
     module Webhooks
       class SubscriptionUpdated
         def call(event)
-          Pay::Stripe::Subscription.sync(event.data.object.id, stripe_account: event.try(:account))
+          Pay::Stripe::Subscription.sync(event.data.object.id, stripe_account: event.try(:account), customer: Pay::Stripe.find_pay_customer(event.data.object.customer))
         end
       end
     end

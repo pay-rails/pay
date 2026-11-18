@@ -211,6 +211,12 @@ module Pay
       nil
     end
 
+    # The Pay::Customer for a Stripe customer ID, or nil when it's blank or Pay doesn't have it.
+    # Stripe customer IDs are unique across Stripe accounts, so this finds the customer whichever account sent a webhook.
+    def self.find_pay_customer(customer_id)
+      Pay::Stripe::Charge.find_pay_customer(customer_id)
+    end
+
     # Subscriptions aren't always immediately associated, so we want to retry by default
     def self.sync_checkout_session(session_id, stripe_account: nil, try: 0, retries: 5)
       checkout_session = Pay::Stripe.client.v1.checkout.sessions.retrieve(session_id, {expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)

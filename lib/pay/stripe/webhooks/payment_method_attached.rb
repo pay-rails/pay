@@ -4,7 +4,7 @@ module Pay
       class PaymentMethodAttached
         def call(event)
           object = event.data.object
-          Pay::Stripe::PaymentMethod.sync(object.id, stripe_account: event.try(:account))
+          Pay::Stripe::PaymentMethod.sync(object.id, stripe_account: event.try(:account), customer: Pay::Stripe.find_pay_customer(object.customer))
         end
       end
     end

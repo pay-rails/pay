@@ -50,7 +50,7 @@ class Pay::Stripe::Webhooks::InvoiceUpdatedTest < ActiveSupport::TestCase
     # Use the local object to stub the request
     Pay::Subscription.stubs(:find_by_processor_and_id).returns(@local_subscription)
 
-    Pay::Stripe::Subscription.expects(:sync).with(@subscription_id, stripe_account: nil).once
+    Pay::Stripe::Subscription.expects(:sync).with(@subscription_id, stripe_account: nil, customer: @local_subscription.customer).once
 
     Pay::Stripe::Webhooks::InvoiceUpdated.new.call(@event)
   end
@@ -66,7 +66,7 @@ class Pay::Stripe::Webhooks::InvoiceUpdatedTest < ActiveSupport::TestCase
   test "syncs when the latest_invoice is stored as a bare ID that matches" do
     @local_subscription.stubs(:stripe_object).returns(OpenStruct.new(latest_invoice: @invoice.id))
     Pay::Subscription.stubs(:find_by_processor_and_id).returns(@local_subscription)
-    Pay::Stripe::Subscription.expects(:sync).with(@subscription_id, stripe_account: nil).once
+    Pay::Stripe::Subscription.expects(:sync).with(@subscription_id, stripe_account: nil, customer: @local_subscription.customer).once
 
     Pay::Stripe::Webhooks::InvoiceUpdated.new.call(@event)
   end

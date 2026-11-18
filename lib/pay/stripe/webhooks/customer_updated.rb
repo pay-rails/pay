@@ -25,7 +25,7 @@ module Pay
 
           # Sync default card
           if (payment_method_id = stripe_customer.invoice_settings.default_payment_method)
-            Pay::Stripe::PaymentMethod.sync(payment_method_id, stripe_account: event.try(:account))
+            Pay::Stripe::PaymentMethod.sync(payment_method_id, stripe_account: event.try(:account), customer: pay_customer)
 
           else
             # No default payment method set
