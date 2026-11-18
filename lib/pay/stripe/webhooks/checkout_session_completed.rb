@@ -3,9 +3,8 @@ module Pay
     module Webhooks
       class CheckoutSessionCompleted
         def call(event)
-          locate_owner(event.data.object, stripe_account: event.try(:account))
-          # After locate_owner, which may have just created the Pay::Customer
-          customer = Pay::Stripe.find_pay_customer(event.data.object.customer)
+          # locate_owner returns the Pay::Customer it finds or creates for the session's owner
+          customer = locate_owner(event.data.object, stripe_account: event.try(:account)) || Pay::Stripe.find_pay_customer(event.data.object.customer)
 
           # By the time CheckoutSessionCompleted is fired, we probably missed the original events
           # Instead, we can sync the payment intent or subscription during this event to ensure they're in the database
