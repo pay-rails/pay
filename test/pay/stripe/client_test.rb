@@ -95,12 +95,9 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
     use_api_key_per_customer
     pay_subscription = pay_subscriptions(:stripe)
 
-    retrieve = stub_request(:get, %r{\Ahttps://api.stripe.com/v1/subscriptions/sub_1})
-      .with(headers: {"Authorization" => "Bearer sk_test_customer_#{pay_subscription.customer.id}"})
-      .to_return(status: 404, body: {error: {message: "No such subscription"}}.to_json)
-
-    assert_raises(Pay::Stripe::Error) { pay_subscription.sync! }
-    assert_requested retrieve
+    assert_first_request_uses_api_key "sk_test_customer_#{pay_subscription.customer.id}", "subscriptions/sub_1" do
+      pay_subscription.sync!
+    end
   end
 
   test "syncs use the customer for requests after looking it up" do
@@ -127,6 +124,73 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
 
     assert_raises(Pay::Stripe::Error) { Pay::Stripe::Charge.sync("ch_123") }
     assert_equal [nil], customers
+  end
+
+  test "charge webhooks pass the payload's customer to client_options for the first request" do
+    use_api_key_per_customer
+
+    assert_first_request_uses_api_key "sk_test_customer_#{pay_customers(:stripe).id}", "charges/ch_1234" do
+      Pay::Stripe::Webhooks::ChargeUpdated.new.call(stripe_event("charge.updated"))
+    end
+  end
+
+  test "subscription webhooks pass the payload's customer to client_options for the first request" do
+    use_api_key_per_customer
+    event = stripe_event("subscription.updated", overrides: {"object" => {"customer" => "cus_1234"}})
+
+    assert_first_request_uses_api_key "sk_test_customer_#{pay_customers(:stripe).id}", "subscriptions/sub_00000000000000" do
+      Pay::Stripe::Webhooks::SubscriptionUpdated.new.call(event)
+    end
+  end
+
+  test "payment method webhooks pass the payload's customer to client_options for the first request" do
+    use_api_key_per_customer
+
+    assert_first_request_uses_api_key "sk_test_customer_#{pay_customers(:stripe).id}", "payment_methods/card_1JN6Z1KXBGcbgpbZ2AZJOYEZ" do
+      Pay::Stripe::Webhooks::PaymentMethodAttached.new.call(stripe_event("payment_method.attached"))
+    end
+  end
+
+  test "payment intent webhooks pass the payload's customer to client_options for every request" do
+    use_api_key_per_customer
+    headers = {"Authorization" => "Bearer sk_test_customer_#{pay_customers(:stripe).id}"}
+    event = ::Stripe::Event.construct_from(data: {object: {id: "pi_1", object: "payment_intent", customer: "cus_1234"}})
+
+    payment_intent = stub_request(:get, "https://api.stripe.com/v1/payment_intents/pi_1")
+      .with(headers: headers)
+      .to_return(body: {id: "pi_1", object: "payment_intent", latest_charge: "ch_1"}.to_json)
+    charge = stub_request(:get, %r{\Ahttps://api.stripe.com/v1/charges/ch_1})
+      .with(headers: headers)
+      .to_return(status: 404, body: {error: {message: "No such charge"}}.to_json)
+
+    assert_raises(Pay::Stripe::Error) { Pay::Stripe::Webhooks::PaymentIntentSucceeded.new.call(event) }
+    assert_requested payment_intent
+    assert_requested charge
+  end
+
+  test "checkout session webhooks pass the customer they just created to client_options" do
+    use_api_key_per_customer
+    event = stripe_event("checkout.session.completed", overrides: {"object" => {"client_reference_id" => Pay::Stripe.to_client_reference_id(users(:none))}})
+    subscription_url = %r{\Ahttps://api.stripe.com/v1/subscriptions/sub_1LNkeSKXBGcbgpbZ7jMqOPSi}
+
+    stub_request(:get, subscription_url)
+      .to_return(status: 404, body: {error: {message: "No such subscription"}}.to_json)
+
+    assert_raises(Pay::Stripe::Error) { Pay::Stripe::Webhooks::CheckoutSessionCompleted.new.call(event) }
+
+    # The webhook creates this Pay::Customer, so its key is only known afterwards
+    pay_customer = users(:none).pay_customers.find_by!(processor_id: event.data.object.customer)
+    assert_requested :get, subscription_url, headers: {"Authorization" => "Bearer sk_test_customer_#{pay_customer.id}"}
+  end
+
+  test "webhooks for a customer Pay doesn't have use the global Stripe API key" do
+    use_api_key_per_customer
+    event = stripe_event("charge.succeeded")
+    assert_nil Pay::Stripe.find_pay_customer(event.data.object.customer)
+
+    assert_first_request_uses_api_key ::Stripe.api_key, "charges/ch_chargeid" do
+      Pay::Stripe::Webhooks::ChargeSucceeded.new.call(event)
+    end
   end
 
   test "invoices rebuilt for receipts page through lines with the customer's API key and Connect account" do
@@ -177,5 +241,15 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
 
   def use_api_key_per_customer
     Pay::Stripe.client_options = ->(customer: nil, **) { {api_key: "sk_test_customer_#{customer.id}"} if customer }
+  end
+
+  # A request sent with another API key doesn't match the stub, so WebMock fails the test
+  def assert_first_request_uses_api_key(api_key, path)
+    request = stub_request(:get, %r{\Ahttps://api.stripe.com/v1/#{path}})
+      .with(headers: {"Authorization" => "Bearer #{api_key}"})
+      .to_return(status: 404, body: {error: {message: "Not found"}}.to_json)
+
+    assert_raises(Pay::Stripe::Error) { yield }
+    assert_requested request
   end
 end

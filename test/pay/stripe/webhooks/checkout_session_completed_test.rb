@@ -40,7 +40,7 @@ class Pay::Stripe::Webhooks::CheckoutSessionCompletedTest < ActiveSupport::TestC
   test "associates the owner with the connected account from the event" do
     client_reference_id = Pay::Stripe.to_client_reference_id(users(:none))
     event = stripe_event("checkout.session.completed", overrides: {"object" => {"client_reference_id" => client_reference_id}}, account: "acct_123")
-    Pay::Stripe::Subscription.expects(:sync).with(event.data.object.subscription, stripe_account: "acct_123")
+    Pay::Stripe::Subscription.expects(:sync).with(event.data.object.subscription, stripe_account: "acct_123", customer: instance_of(Pay::Stripe::Customer))
     assert_difference "Pay::Customer.count" do
       Pay::Stripe::Webhooks::CheckoutSessionCompleted.new.call(event)
     end

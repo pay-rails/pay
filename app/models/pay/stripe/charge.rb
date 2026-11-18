@@ -20,7 +20,7 @@ module Pay
       def self.sync(charge_id, object: nil, stripe_account: nil, customer: nil, retries: 1)
         sync_with_retries(retries: retries) do
           charge = object || Pay::Stripe.client(customer: customer).v1.charges.retrieve(charge_id, {expand: EXPAND}, {stripe_account: stripe_account}.compact)
-          return unless (pay_customer = find_pay_customer(charge.customer))
+          return unless (pay_customer = find_pay_customer(charge.customer, customer: customer))
           stripe_account ||= pay_customer.stripe_account
 
           payment_method = charge.payment_method_details.try(charge.payment_method_details.type)
@@ -44,9 +44,10 @@ module Pay
 
           # Associate charge with subscription if we can
           if charge.payment_intent.present?
-            invoice_payments = Pay::Stripe.client(customer: pay_customer).v1.invoice_payments.list({payment: {type: :payment_intent, payment_intent: charge.payment_intent}, status: :paid}, {stripe_account: stripe_account}.compact)
+            client = Pay::Stripe.client(customer: pay_customer)
+            invoice_payments = client.v1.invoice_payments.list({payment: {type: :payment_intent, payment_intent: charge.payment_intent}, status: :paid}, {stripe_account: stripe_account}.compact)
             if invoice_payments.any?
-              invoice = Pay::Stripe.client(customer: pay_customer).v1.invoices.retrieve(invoice_payments.first.invoice, {expand: ["total_discount_amounts.discount.source.coupon"]}, {stripe_account: stripe_account}.compact)
+              invoice = client.v1.invoices.retrieve(invoice_payments.first.invoice, {expand: ["total_discount_amounts.discount.source.coupon"]}, {stripe_account: stripe_account}.compact)
               attrs[:stripe_invoice] = invoice.to_hash
               attrs[:subtotal] = invoice.subtotal
               attrs[:tax] = invoice.total - invoice.total_excluding_tax.to_i

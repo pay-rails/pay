@@ -5,7 +5,7 @@ module Pay
         def call(event)
           object = event.data.object
           if object.customer
-            Pay::Stripe::PaymentMethod.sync(object.id, stripe_account: event.try(:account))
+            Pay::Stripe::PaymentMethod.sync(object.id, stripe_account: event.try(:account), customer: Pay::Stripe.find_pay_customer(object.customer))
           else
             # If customer was removed, we should delete the payment method if it exists
             Pay::PaymentMethod.find_by_processor_and_id(:stripe, object.id)&.destroy

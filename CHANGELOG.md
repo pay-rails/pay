@@ -8,6 +8,7 @@
 * Rename `enqeue_customer_sync_job` callback to `enqueue_customer_sync_job`. Update any `skip_callback` calls that reference the old name
 * Pay makes Stripe API requests through a `Stripe::StripeClient` (`Pay::Stripe.client`) instead of stripe-ruby's legacy class methods like `Stripe::Customer.retrieve`, which Stripe plans to deprecate. Apps that use more than one Stripe account can set `Pay::Stripe.client_options` to choose the API key and other client options; it's called with the `Pay::Customer` the request is for, when Pay knows it. The Stripe sync methods (`Pay::Stripe::Charge.sync`, `Pay::Stripe::Subscription.sync`, `Pay::Stripe::PaymentMethod.sync` and the `sync_payment_intent`/`sync_setup_intent` helpers) and `Pay::Payment.from_id` accept an optional `customer:` for this. If your tests stub Stripe class methods for calls Pay makes, stub the service classes instead. See the [UPGRADE guide](./UPGRADE.md#stripe-client-migration).
 * Stripe objects Pay rebuilds from its database or a webhook (`subscription.stripe_object`, the invoice on a charge's receipt, and webhook events) keep the Connect account and the `client_options` API key. Paging through their lists, like a receipt's invoice lines, used to go to the platform account
+* Stripe webhooks pass the `Pay::Customer` from the event to `Pay::Stripe.client_options`, so apps with more than one Stripe account use the right API key for customers Pay knows
 
 ### 12.5.0
 

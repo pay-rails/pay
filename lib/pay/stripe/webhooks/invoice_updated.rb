@@ -26,7 +26,7 @@ module Pay
 
           # Compare the local invoice id to the event invoice id and sync if they are the same
           if latest_invoice_id.to_s == invoice.id.to_s
-            Pay::Stripe::Subscription.sync(subscription_id, stripe_account: event.try(:account))
+            Pay::Stripe::Subscription.sync(subscription_id, stripe_account: event.try(:account), customer: subscription.customer)
           end
         rescue ::Stripe::StripeError => e
           Rails.logger.error "Stripe Webhook Error (InvoiceUpdated): #{e.message}"

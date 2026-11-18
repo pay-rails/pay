@@ -27,7 +27,7 @@ module Pay
       def self.sync(id, object: nil, stripe_account: nil, customer: nil, retries: 1)
         sync_with_retries(retries: retries) do
           payment_method = object || Pay::Stripe.client(customer: customer).v1.payment_methods.retrieve(id, {}, {stripe_account: stripe_account}.compact)
-          return unless (pay_customer = find_pay_customer(payment_method.customer))
+          return unless (pay_customer = find_pay_customer(payment_method.customer, customer: customer))
           stripe_account ||= pay_customer.stripe_account
 
           default_payment_method_id = pay_customer.api_record.invoice_settings&.default_payment_method

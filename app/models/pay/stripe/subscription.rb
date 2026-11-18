@@ -13,7 +13,7 @@ module Pay
       def self.sync(subscription_id, object: nil, name: nil, stripe_account: nil, customer: nil, retries: 1)
         sync_with_retries(retries: retries) do
           subscription = object || Pay::Stripe.client(customer: customer).v1.subscriptions.retrieve(subscription_id, expand_options, {stripe_account: stripe_account}.compact)
-          return unless (pay_customer = find_pay_customer(subscription.customer))
+          return unless (pay_customer = find_pay_customer(subscription.customer, customer: customer))
           stripe_account ||= pay_customer.stripe_account
 
           attributes = {

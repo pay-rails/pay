@@ -19,6 +19,19 @@ class Pay::Stripe::ChargeTest < ActiveSupport::TestCase
     end
   end
 
+  test "sync uses the customer it's given instead of looking it up again" do
+    ::Stripe::InvoicePaymentService.any_instance.stubs(:list).returns([])
+    Pay::Customer.expects(:find_by).never
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge, customer: @pay_customer)
+    assert_equal @pay_customer, pay_charge.customer
+  end
+
+  test "sync looks up the charge's customer when it's given a different one" do
+    ::Stripe::InvoicePaymentService.any_instance.stubs(:list).returns([])
+    pay_charge = Pay::Stripe::Charge.sync("123", object: fake_stripe_charge, customer: pay_customers(:fake))
+    assert_equal @pay_customer, pay_charge.customer
+  end
+
   test "sync stripe charge ignores when customer is missing" do
     assert_no_difference "Pay::Charge.count" do
       Pay::Stripe::Charge.sync("123", object: fake_stripe_charge(customer: "missing"))
