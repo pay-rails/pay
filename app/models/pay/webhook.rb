@@ -24,8 +24,7 @@ module Pay
       when "lemon_squeezy"
         Pay::LemonSqueezy.construct_from_webhook_event(event)
       when "stripe"
-        # Objects in the event make requests, like paging through a list, on the Connect account that sent it
-        Pay::Stripe.construct_from(::Stripe::Event, event, stripe_account: event["account"])
+        Pay::Stripe.construct_from_webhook_event(event)
       else
         event
       end

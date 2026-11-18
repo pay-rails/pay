@@ -214,12 +214,32 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
   end
 
   test "webhook events page through lists on the Connect account that sent them" do
-    event = {id: "evt_1", object: "event", account: "acct_123", type: "invoice.paid", data: {object: paged_list_owner("in_1", "invoice", :lines, "il")}}
-    pay_webhook = Pay::Webhook.new(processor: :stripe, event_type: "invoice.paid", event: event.deep_stringify_keys)
+    pay_webhook = stripe_webhook("invoice.paid", paged_list_owner("in_1", "invoice", :lines, "il"))
 
     stub_next_pages("/v1/invoices/in_1/lines", "il", headers: {"Stripe-Account" => "acct_123"})
 
     assert_equal %w[il_1 il_2 il_3], pay_webhook.rehydrated_event.data.object.lines.auto_paging_each.map(&:id)
+  end
+
+  test "webhook events page through lists with the customer's API key on the Connect account that sent them" do
+    use_api_key_per_customer
+    pay_customer = pay_customers(:stripe)
+    invoice = paged_list_owner("in_1", "invoice", :lines, "il").merge("customer" => pay_customer.processor_id)
+    pay_webhook = stripe_webhook("invoice.payment_failed", invoice)
+
+    stub_next_pages("/v1/invoices/in_1/lines", "il", headers: {"Authorization" => "Bearer sk_test_customer_#{pay_customer.id}", "Stripe-Account" => "acct_123"})
+
+    assert_equal %w[il_1 il_2 il_3], pay_webhook.rehydrated_event.data.object.lines.auto_paging_each.map(&:id)
+  end
+
+  test "customer webhook events page through lists with that customer's API key" do
+    use_api_key_per_customer
+    pay_customer = pay_customers(:stripe)
+    pay_webhook = stripe_webhook("customer.updated", paged_list_owner(pay_customer.processor_id, "customer", :sources, "src"))
+
+    stub_next_pages("/v1/customers/#{pay_customer.processor_id}/sources", "src", headers: {"Authorization" => "Bearer sk_test_customer_#{pay_customer.id}", "Stripe-Account" => "acct_123"})
+
+    assert_equal %w[src_1 src_2 src_3], pay_webhook.rehydrated_event.data.object.sources.auto_paging_each.map(&:id)
   end
 
   private
@@ -228,6 +248,12 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
   def paged_list_owner(id, object, list, prefix)
     url = (list == :items) ? "/v1/subscription_items" : "/v1/#{object}s/#{id}/#{list}"
     {"id" => id, "object" => object, list.to_s => {"object" => "list", "url" => url, "has_more" => true, "data" => [{"id" => "#{prefix}_1"}]}}
+  end
+
+  # A webhook sent by the acct_123 Connect account
+  def stripe_webhook(type, object)
+    event = {"id" => "evt_1", "object" => "event", "account" => "acct_123", "type" => type, "data" => {"object" => object}}
+    Pay::Webhook.new(processor: :stripe, event_type: type, event: event)
   end
 
   # Stubs pages 2 and 3, so the test checks the options carry over more than one page
