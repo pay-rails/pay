@@ -64,6 +64,7 @@ A few things to keep in mind:
 * `client_options` runs for every request, and some Pay methods make several. Cache anything slow to look up, for example in `Current`.
 * Stripe objects Pay rebuilds from its database (like `subscription.stripe_object`) aren't tied to a client, so requests made from them, such as paging through `subscription_items`, use your global configuration.
 * `client_options` only covers API requests. Pay's [SCA confirmation page](4_sca.md) uses `Pay::Stripe.public_key`, so copy its views with `bin/rails generate pay:views` and swap in the publishable key that matches the API key.
+* Each Stripe account's webhook endpoint has its own signing secret. List them all under `signing_secret` in your Rails credentials, [as a YAML list](/docs/2_configuration.md#credentials), and Pay accepts a webhook that matches any of them. An `ENV` variable holds only one secret.
 
 ### Signing secrets
 
