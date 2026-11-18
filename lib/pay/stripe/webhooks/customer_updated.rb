@@ -4,7 +4,7 @@ module Pay
       class CustomerUpdated
         def call(event)
           object = event.data.object
-          pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.id)
+          pay_customer = Pay::Stripe.find_pay_customer(object.id)
 
           # Couldn't find user, we can skip
           return unless pay_customer.present?

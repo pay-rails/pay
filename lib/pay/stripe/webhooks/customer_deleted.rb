@@ -4,7 +4,7 @@ module Pay
       class CustomerDeleted
         def call(event)
           object = event.data.object
-          pay_customer = Pay::Customer.find_by(processor: :stripe, processor_id: object.id)
+          pay_customer = Pay::Stripe.find_pay_customer(object.id)
 
           # Skip processing if this customer is not in the database
           return unless pay_customer
