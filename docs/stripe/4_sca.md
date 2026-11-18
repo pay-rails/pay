@@ -1,57 +1,76 @@
 # Stripe Strong Customer Authentication (SCA)
 
-Our Stripe integration **requires** the use of Payment Method objects to correctly support Strong Customer Authentication with Stripe. If you've previously been using card tokens, you'll need to upgrade your Javascript integration.
+Some payments need the customer to authenticate, usually with 3D Secure, before they go through. How you handle that depends on where the payment is confirmed.
 
-Subscriptions that require SCA are marked as `incomplete` by default.
-Once payment is authenticated, Stripe will send a webhook updating the
-status of the subscription. You'll need to use the [Stripe CLI](https://github.com/stripe/stripe-cli) to forward
-webhooks to your application to make sure your subscriptions work
-correctly for SCA payments.
+Once a payment is authenticated, Stripe sends webhooks that update the charge or subscription in Pay. In development, use the [Stripe CLI](https://github.com/stripe/stripe-cli) to forward them to your app:
 
 ```bash
 stripe listen --forward-to localhost:3000/pay/webhooks/stripe
 ```
 
-You should use `stripe.confirmCardSetup` on the client to collect card information anytime you want to save the card and charge them later (adding a card, then charging them on the next page for example). Use `stripe.confirmCardPayment` if you'd like to charge the customer immediately (think checking out of a shopping cart).
+## Payments confirmed in the browser
 
-The Javascript also needs to have a PaymentIntent or SetupIntent created server-side and the ID passed into the Javascript to do this. That way it knows how to safely handle the card tokenization if it meets the SCA requirements.
+If customers pay with [Stripe Checkout](8_stripe_checkout.md), or your page confirms the payment with the [Payment Element](https://docs.stripe.com/payments/payment-element) using `stripe.confirmPayment` or `stripe.confirmSetup` (see [JavaScript](3_javascript.md)), Stripe.js handles authentication right there. This is what Stripe recommends, and you don't need anything else.
 
-## **SCA Payment Confirmations**
+## Payments confirmed on the server
 
-Sometimes you'll have a payment that requires extra authentication. In this case, Pay provides a webhook and action for handling these payments. It will automatically email the customer and provide a link with the PaymentIntent ID in the url where the customer will be asked to fill out their name and card number to confirm the payment. Once done, they'll be redirected back to your application.
+`charge`, `subscribe`, `swap`, `resume` and `retry_failed_payment` confirm the payment on the server. When it can't complete, Pay raises an error with the payment attached as `e.payment`:
 
-### Pay::ActionRequired
+* `Pay::ActionRequired` when the customer needs to authenticate
+* `Pay::InvalidPaymentMethod` when the customer needs to use a different payment method
 
-When a charge or subscription needs SCA confirmation, Pay will raise a `Pay::ActionRequired` error. You can use this to redirect to the SCA confirm page.
+### Pay's confirmation page
+
+Pay includes a page at `/pay/payments/:id` that finishes either case. It uses the Payment Element, so the customer can authenticate or enter a new payment method, and it works for PaymentIntents and SetupIntents (for example, a trial's payment method).
 
 ```ruby
 def create
-  @user.charge(10_00)
-  # or @user.subscribe(plan: "x")
+  @user.payment_processor.charge(10_00)
+  # or @user.payment_processor.subscribe(plan: "x")
+  redirect_to dashboard_path
 
-rescue Pay::ActionRequired => e
-  # Redirect to the Pay SCA confirmation page
-  # stripe_account is only added to the URL for payments on a Stripe Connect account
-  redirect_to pay.payment_path(e.payment.id, stripe_account: e.payment.stripe_account)
+rescue Pay::ActionRequired, Pay::InvalidPaymentMethod => e
+  # stripe_account is nil (and left out of the URL) unless the payment is on a Stripe Connect account
+  # back is where the page's Back link goes
+  redirect_to pay.payment_path(e.payment.id, stripe_account: e.payment.stripe_account, back: dashboard_path)
 
 rescue Pay::Error => e
-  # Display any other errors
   flash[:alert] = e.message
   render :new, status: :unprocessable_entity
 end
 ```
 
-### Stripe SCA Confirm Page
+For a payment on a Stripe Connect account, Pay looks up the intent on that account and initializes Stripe.js with `stripeAccount`.
 
-We provide a route for confirming Stripe SCA payments at `/pay/payments/:payment_intent_id`.
+### Your own page
 
-For payments on a Stripe Connect account, add the account as a query parameter: `/pay/payments/:payment_intent_id?stripe_account=acct_123`. Pay uses it to look up the PaymentIntent on the connected account and to initialize Stripe.js with `stripeAccount`. The `payment_action_required` email includes it automatically.
+To keep the customer on your page, send `e.payment.client_secret` to the browser and call [`stripe.handleNextAction`](https://docs.stripe.com/js/payment_intents/handle_next_action), which works for PaymentIntents and SetupIntents:
 
-If you'd like to change the views of the payment confirmation page, you can install the views using the generator and modify the template.
+```js
+// stripeAccount is only needed for payments on a Stripe Connect account
+const stripe = Stripe(publishableKey, stripeAccount ? { stripeAccount } : {})
+const { error } = await stripe.handleNextAction({ clientSecret })
+```
 
-[<img src="https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png?X-CloudApp-Visitor-Id=51470" alt="Stripe SCA Payment Confirmation" style="zoom: 25%;" />](https://d1jfzjx68gj8xs.cloudfront.net/items/2s3Z0J3Z3b1J1v2K2O1a/Screen%20Shot%202019-10-10%20at%2012.56.32%20PM.png)
+`handleNextAction` only handles authentication. If it fails, or for `Pay::InvalidPaymentMethod`, the customer needs a new payment method, so you'll need the Payment Element too. Pay's confirmation page is a good starting point (see [Customizing the confirmation page](#customizing-the-confirmation-page)).
 
-If you use the default views for payment confirmations, and also have a Content Security Policy in place for your application, make sure to add the following domains to their respective configurations in your `content_security_policy.rb` (otherwise these views won't load properly):
+## Payments made while the customer is away
+
+When a subscription renewal needs authentication, Stripe sends the `invoice.payment_action_required` webhook and Pay emails the customer a link to the confirmation page. You can turn this off with `config.emails.payment_action_required`.
+
+A one-off charge made while the customer is away, for example from a background job, has no invoice, so Pay doesn't send an email. If it needs authentication, let the customer know yourself and link them to `pay.payment_url(payment_intent_id)` (with `stripe_account:` for a payment on a Stripe Connect account), where they can authenticate or use a different payment method.
+
+## Customizing the confirmation page
+
+To change the confirmation page, copy Pay's views into your app and edit `app/views/pay/payments/show.html.erb`:
+
+```bash
+bin/rails generate pay:views
+```
+
+The page initializes Stripe.js with `Pay::Stripe.public_key`. If your app uses more than one Stripe account, change it to the publishable key that matches the API key. For Connect payments, keep the platform's key: the page passes the connected account as `stripeAccount`.
+
+If your app has a Content Security Policy, add these domains to your `content_security_policy.rb` for the default page:
 
 * `style_src`: `https://unpkg.com`
 * `script_src`: `https://unpkg.com` and `https://js.stripe.com`
