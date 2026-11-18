@@ -16,9 +16,13 @@ module Pay
       end
     end
 
-    # The Pay::Customer for this processor, or nil when the ID is blank or the customer isn't in the database
-    def find_pay_customer(processor_id)
-      Pay::Customer.find_by(processor: pay_processor, processor_id: processor_id) if processor_id.present?
+    # The Pay::Customer for this processor, or nil when the ID is blank or the customer isn't in the database.
+    # Returns the caller's customer without a query when it's the one the ID refers to.
+    def find_pay_customer(processor_id, customer: nil)
+      return if processor_id.blank?
+      return customer if customer&.processor_id == processor_id
+
+      Pay::Customer.find_by(processor: pay_processor, processor_id: processor_id)
     end
 
     # "stripe" for Pay::Stripe::Charge, "paddle_billing" for Pay::PaddleBilling::Subscription, and so on
