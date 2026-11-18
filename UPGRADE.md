@@ -2,7 +2,23 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
-## Unreleased
+## Pay 13.0
+
+### Rails 7.1 or newer
+
+Pay 13 requires Rails 7.1 or newer. Stay on Pay 12.5 until your app runs on Rails 7.1.
+
+### Renamed customer sync callback
+
+The `enqeue_customer_sync_job` callback is now `enqueue_customer_sync_job`. If your models skip it, update the name:
+
+```ruby
+# old
+skip_callback :commit, :after, :enqeue_customer_sync_job
+
+# new
+skip_callback :commit, :after, :enqueue_customer_sync_job
+```
 
 ### Stripe client migration
 
