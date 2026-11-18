@@ -65,6 +65,13 @@ module Pay
       ::Stripe::StripeClient.new(options.delete(:api_key), **options)
     end
 
+    # Rebuilds a Stripe object from JSON Pay stored or received in a webhook, with the customer's API key and the
+    # Connect account, so requests it makes (like paging through a list) go to the same account.
+    # Stripe objects only keep api_key and stripe_account; their requests use the global configuration for the rest.
+    def self.construct_from(klass, data, customer: nil, stripe_account: nil)
+      klass.construct_from(data, {api_key: app_client_options(customer)&.dig(:api_key), stripe_account: stripe_account}.compact)
+    end
+
     def self.app_client_options(customer)
       return unless client_options
 

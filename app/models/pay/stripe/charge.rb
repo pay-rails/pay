@@ -87,7 +87,7 @@ module Pay
       def refund!(amount_to_refund = nil, **options)
         amount_to_refund ||= amount
 
-        if stripe_invoice.present?
+        if data["stripe_invoice"].present?
           description = options.delete(:description) || I18n.t("pay.refund")
           lines = [{type: :custom_line_item, description: description, quantity: 1, unit_amount: amount_to_refund}]
           credit_note!(**options.merge(refund_amount: amount_to_refund, lines: lines))
@@ -101,9 +101,10 @@ module Pay
 
       # Adds a credit note to a Stripe Invoice
       def credit_note!(**options)
-        raise Pay::Stripe::Error, "no Stripe Invoice on Pay::Charge" if stripe_invoice.blank?
+        invoice_id = data.dig("stripe_invoice", "id")
+        raise Pay::Stripe::Error, "no Stripe Invoice on Pay::Charge" if invoice_id.blank?
 
-        stripe_client.v1.credit_notes.create({invoice: stripe_invoice.id}.merge(options), stripe_options)
+        stripe_client.v1.credit_notes.create({invoice: invoice_id}.merge(options), stripe_options)
       rescue ::Stripe::StripeError => e
         raise Pay::Stripe::Error, e
       end
@@ -127,7 +128,7 @@ module Pay
 
       def stripe_invoice
         if (value = data.dig("stripe_invoice"))
-          ::Stripe::Invoice.construct_from(value)
+          Pay::Stripe.construct_from(::Stripe::Invoice, value, customer: customer, stripe_account: stripe_account)
         end
       end
 

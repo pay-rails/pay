@@ -196,7 +196,51 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
     end
   end
 
+  test "invoices rebuilt for receipts page through lines with the customer's API key and Connect account" do
+    use_api_key_per_customer
+    charge = pay_charges(:stripe)
+    charge.update!(stripe_account: "acct_123", data: charge.data.merge("stripe_invoice" => paged_list_owner("in_1", "invoice", :lines, "il")))
+
+    stub_next_pages("/v1/invoices/in_1/lines", "il", headers: {"Authorization" => "Bearer sk_test_customer_#{charge.customer.id}", "Stripe-Account" => "acct_123"})
+
+    assert_equal %w[il_1 il_2 il_3], charge.stripe_invoice.lines.auto_paging_each.map(&:id)
+  end
+
+  test "subscriptions rebuilt from the database page through items with the customer's API key and Connect account" do
+    use_api_key_per_customer
+    pay_subscription = pay_subscriptions(:stripe)
+    pay_subscription.update!(stripe_account: "acct_123", object: paged_list_owner("sub_1", "subscription", :items, "si"))
+
+    stub_next_pages("/v1/subscription_items", "si", headers: {"Authorization" => "Bearer sk_test_customer_#{pay_subscription.customer.id}", "Stripe-Account" => "acct_123"})
+
+    assert_equal %w[si_1 si_2 si_3], pay_subscription.stripe_object.items.auto_paging_each.map(&:id)
+  end
+
+  test "webhook events page through lists on the Connect account that sent them" do
+    event = {id: "evt_1", object: "event", account: "acct_123", type: "invoice.paid", data: {object: paged_list_owner("in_1", "invoice", :lines, "il")}}
+    pay_webhook = Pay::Webhook.new(processor: :stripe, event_type: "invoice.paid", event: event.deep_stringify_keys)
+
+    stub_next_pages("/v1/invoices/in_1/lines", "il", headers: {"Stripe-Account" => "acct_123"})
+
+    assert_equal %w[il_1 il_2 il_3], pay_webhook.rehydrated_event.data.object.lines.auto_paging_each.map(&:id)
+  end
+
   private
+
+  # A Stripe object with an embedded list that has more pages to fetch
+  def paged_list_owner(id, object, list, prefix)
+    url = (list == :items) ? "/v1/subscription_items" : "/v1/#{object}s/#{id}/#{list}"
+    {"id" => id, "object" => object, list.to_s => {"object" => "list", "url" => url, "has_more" => true, "data" => [{"id" => "#{prefix}_1"}]}}
+  end
+
+  # Stubs pages 2 and 3, so the test checks the options carry over more than one page
+  def stub_next_pages(path, prefix, headers:)
+    [2, 3].each do |page|
+      stub_request(:get, "https://api.stripe.com#{path}")
+        .with(query: hash_including("starting_after" => "#{prefix}_#{page - 1}"), headers: headers)
+        .to_return(body: {object: "list", url: path, has_more: page < 3, data: [{id: "#{prefix}_#{page}"}]}.to_json)
+    end
+  end
 
   def use_api_key_per_customer
     Pay::Stripe.client_options = ->(customer: nil, **) { {api_key: "sk_test_customer_#{customer.id}"} if customer }
