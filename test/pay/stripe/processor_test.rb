@@ -90,7 +90,7 @@ class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
   test "sync_checkout_session retries with an increasing delay" do
     session = ::Stripe::Checkout::Session.construct_from(id: "cs_1", object: "checkout.session", mode: "subscription", subscription: "sub_1")
     error = ::Stripe::InvalidRequestError.new("No such subscription", "subscription")
-    ::Stripe::Checkout::Session.stubs(:retrieve).raises(error).then.raises(error).then.returns(session)
+    ::Stripe::Checkout::SessionService.any_instance.stubs(:retrieve).raises(error).then.raises(error).then.returns(session)
     Pay::Stripe::Subscription.expects(:sync).with("sub_1", stripe_account: nil).returns(:synced)
 
     delays = sequence("delays")
@@ -102,7 +102,7 @@ class Pay::Stripe::ProcessorTest < ActiveSupport::TestCase
 
   test "sync_checkout_session raises after exhausting retries" do
     error = ::Stripe::InvalidRequestError.new("No such checkout session", "id")
-    ::Stripe::Checkout::Session.stubs(:retrieve).raises(error)
+    ::Stripe::Checkout::SessionService.any_instance.stubs(:retrieve).raises(error)
     Pay::Stripe.stubs(:sleep)
 
     error = assert_raises(Pay::Stripe::Error) { Pay::Stripe.sync_checkout_session("cs_1", retries: 2) }

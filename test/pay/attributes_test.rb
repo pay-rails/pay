@@ -38,7 +38,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
   test "deleting user doesn't remove pay customers" do
     user = users(:stripe)
     object = stripe_event("subscription.deleted").data.object
-    ::Stripe::Subscription.stubs(:cancel).returns(object)
+    ::Stripe::SubscriptionService.any_instance.stubs(:cancel).returns(object)
     assert_no_difference "Pay::Customer.count" do
       user.destroy
     end
@@ -47,7 +47,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
   test "deleting user cancels subscriptions" do
     user = users(:stripe)
     object = stripe_event("subscription.deleted").data.object
-    ::Stripe::Subscription.stubs(:cancel).returns(object)
+    ::Stripe::SubscriptionService.any_instance.stubs(:cancel).returns(object)
     assert user.payment_processor.subscription.active?
     user.destroy
     refute user.payment_processor.subscription.active?
@@ -56,7 +56,7 @@ class Pay::AttributesTest < ActiveSupport::TestCase
   test "deleting user ignores canceled subscriptions" do
     user = users(:stripe)
     object = stripe_event("subscription.deleted").data.object
-    ::Stripe::Subscription.stubs(:cancel).returns(object)
+    ::Stripe::SubscriptionService.any_instance.stubs(:cancel).returns(object)
     user.payment_processor.subscription.cancel_now!
     refute user.payment_processor.subscription.active?
     user.destroy

@@ -25,6 +25,7 @@ class Pay::MakeShareableTest < ActiveSupport::TestCase
       Pay.send_emails = ->(*) { true }
       Pay.emails.subscription_renewing = ->(pay_subscription, price) { price == "year" }
       Pay.mail_to = -> { greeting }
+      Pay::Stripe.client_options = ->(customer: nil, **) { {api_key: "sk_test_#{customer}"} }
       Pay.make_shareable!
     end
 
@@ -37,11 +38,12 @@ class Pay::MakeShareableTest < ActiveSupport::TestCase
       [
         Pay.send_email?(:subscription_renewing, nil, "year"),
         Pay.send_email?(:subscription_renewing, nil, "month"),
-        mailer.instance_exec(&Pay.mail_to)
+        mailer.instance_exec(&Pay.mail_to),
+        Pay::Stripe.client_options.call(customer: "cus_1")
       ]
     end
 
-    assert_equal [true, false, "hello"], result
+    assert_equal [true, false, "hello", {api_key: "sk_test_cus_1"}], result
   end
 
   test "processor credentials are resolved before sharing and can be read from a Ractor" do

@@ -43,6 +43,64 @@ module Pay
     end
     self.model_names = Set.new
 
+    # An optional callable returning Stripe::StripeClient options (api_key:, stripe_version:, etc.) for apps with more
+    # than one Stripe account. They're merged over the global Stripe configuration; returning nil uses it unchanged.
+    # Pay sets the Connect account itself, so the options can't include stripe_account.
+    # A callable that takes keywords is passed the Pay::Customer the request is for, which is nil when Pay doesn't know it yet.
+    #
+    #   Pay::Stripe.client_options = -> { {api_key: Current.brand.stripe_api_key} if Current.brand }
+    #   Pay::Stripe.client_options = ->(customer: nil, **) { ... }
+    class << self
+      attr_accessor :client_options
+    end
+
+    # The Stripe::StripeClient for a Stripe API request. Building a client is cheap, so one is created per request
+    # instead of being shared across threads and Ractors.
+    #
+    # Pay passes the Connect account with each request ({stripe_account: "acct_..."}) rather than setting it on the
+    # client: stripe-ruby keeps one HTTP connection pool per client configuration, so a client per connected account
+    # would open a new connection for every account.
+    def self.client(customer: nil)
+      options = default_client_options.merge(app_client_options(customer) || {})
+      ::Stripe::StripeClient.new(options.delete(:api_key), **options)
+    end
+
+    def self.app_client_options(customer)
+      return unless client_options
+
+      options = if client_options.respond_to?(:arity) && client_options.arity.zero?
+        client_options.call
+      else
+        client_options.call(customer: customer)
+      end
+
+      # Otherwise platform requests, like Merchant transfers, would be sent as the connected account
+      if options&.key?(:stripe_account)
+        raise ArgumentError, "Pay::Stripe.client_options can't set stripe_account. Pay sets the Connect account from the customer, charge or subscription."
+      end
+
+      options
+    end
+    private_class_method :app_client_options
+
+    # StripeClient doesn't read the global client options (API base, version, etc.) itself, so copy them over
+    # so requests match what the legacy class methods sent.
+    def self.default_client_options
+      config = ::Stripe.config
+      {
+        api_key: config.api_key,
+        stripe_account: config.stripe_account,
+        stripe_context: config.stripe_context,
+        stripe_version: config.api_version,
+        api_base: config.api_base,
+        uploads_base: config.uploads_base,
+        connect_base: config.connect_base,
+        meter_events_base: config.meter_events_base,
+        client_id: config.client_id
+      }
+    end
+    private_class_method :default_client_options
+
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:stripe) && defined?(::Stripe)
 
@@ -155,7 +213,7 @@ module Pay
 
     # Subscriptions aren't always immediately associated, so we want to retry by default
     def self.sync_checkout_session(session_id, stripe_account: nil, try: 0, retries: 5)
-      checkout_session = ::Stripe::Checkout::Session.retrieve({id: session_id, expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)
+      checkout_session = Pay::Stripe.client.v1.checkout.sessions.retrieve(session_id, {expand: ["payment_intent.latest_charge"]}, {stripe_account: stripe_account}.compact)
       case checkout_session.mode
       when "payment"
         if (id = checkout_session.payment_intent.try(:latest_charge)&.id)

@@ -36,12 +36,12 @@ task migrate_to_meters: :environment do
   old_price = "price_1234"
   new_price = "price_5678"
 
-  ::Stripe::Subscription.list({price: old_price, expand: ["data.schedule"]}).auto_paging_each do |stripe_subscription|
+  Pay::Stripe.client.v1.subscriptions.list({price: old_price, expand: ["data.schedule"]}).auto_paging_each do |stripe_subscription|
     puts "Migrating #{stripe_subscription.id}..."
 
     # Create a subscription schedule if not present
     subscription_schedule = stripe_subscription.schedule
-    subscription_schedule ||= ::Stripe::SubscriptionSchedule.create({from_subscription: stripe_subscription.id})
+    subscription_schedule ||= Pay::Stripe.client.v1.subscription_schedules.create({from_subscription: stripe_subscription.id})
 
     # Keep all the existing phases
     phases = subscription_schedule.phases.map do |phase|
@@ -63,7 +63,7 @@ task migrate_to_meters: :environment do
     phases += [{items: [{price: new_price}]}]
 
     # Save to Stripe
-    ::Stripe::SubscriptionSchedule.update(subscription_schedule.id, {phases: phases})
+    Pay::Stripe.client.v1.subscription_schedules.update(subscription_schedule.id, {phases: phases})
 
     puts "Migrated #{stripe_subscription.id}"
   end

@@ -9,7 +9,7 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
   end
 
   test "trial subscription ending soon customer should receive trial will end email if setting is enabled" do
-    ::Stripe::Subscription.expects(:retrieve).returns(@trial_will_end_event.data.object)
+    ::Stripe::SubscriptionService.any_instance.expects(:retrieve).returns(@trial_will_end_event.data.object)
 
     travel_to trial_start_date do
       create_stripe_subscription(processor_id: @trial_will_end_event.data.object.items.data.first.subscription, trial_ends_at: 3.days.from_now)
@@ -21,7 +21,7 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
   end
 
   test "trial subscription ending soon customer should not receive trial will end email if setting is disabled" do
-    ::Stripe::Subscription.expects(:retrieve).returns(@trial_will_end_event.data.object)
+    ::Stripe::SubscriptionService.any_instance.expects(:retrieve).returns(@trial_will_end_event.data.object)
 
     Pay.emails.stubs(:subscription_trial_will_end).returns(false)
     travel_to trial_start_date do
@@ -33,7 +33,7 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
   end
 
   test "trial subscription ended immediately customer should receive trial ended email if setting is enabled" do
-    ::Stripe::Subscription.expects(:retrieve).returns(@trial_ended_event.data.object)
+    ::Stripe::SubscriptionService.any_instance.expects(:retrieve).returns(@trial_ended_event.data.object)
 
     create_stripe_subscription(processor_id: @trial_ended_event.data.object.items.data.first.subscription, trial_ends_at: Time.current)
     mailer = Pay::Stripe::Webhooks::SubscriptionTrialWillEnd.new.call(@trial_ended_event)
@@ -43,7 +43,7 @@ class Pay::Stripe::Webhooks::SubscriptionTrialWillEndTest < ActiveSupport::TestC
   end
 
   test "trial subscription ended immediately customer should not receive trial ended email if setting is disabled" do
-    ::Stripe::Subscription.expects(:retrieve).returns(@trial_ended_event.data.object)
+    ::Stripe::SubscriptionService.any_instance.expects(:retrieve).returns(@trial_ended_event.data.object)
 
     Pay.emails.stubs(:subscription_trial_ended).returns(false)
     create_stripe_subscription(processor_id: @trial_ended_event.data.object.items.data.first.subscription, trial_ends_at: Time.current)

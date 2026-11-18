@@ -19,7 +19,7 @@ def sync_default_payment_method(pay_customer, retries: 2)
       Pay::Braintree::PaymentMethod.sync(payment_method.token, object: payment_method) if payment_method
     when "stripe"
       payment_method_id = pay_customer.api_record.invoice_settings.default_payment_method
-      Pay::Stripe::PaymentMethod.sync(payment_method_id) if payment_method_id
+      Pay::Stripe::PaymentMethod.sync(payment_method_id, stripe_account: pay_customer.stripe_account, customer: pay_customer) if payment_method_id
     when "paddle_classic"
       Pay::PaddleClassic::PaymentMethod.sync(pay_customer: pay_customer)
     end

@@ -8,7 +8,7 @@ class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
   end
 
   test "yearly subscription should receive renewal email" do
-    ::Stripe::Price.expects(:retrieve).returns(fake_stripe_price(interval: "year"))
+    ::Stripe::PriceService.any_instance.expects(:retrieve).returns(fake_stripe_price(interval: "year"))
 
     create_stripe_subscription(processor_id: @event.data.object.parent.subscription_details.subscription)
     Pay::Stripe::Webhooks::SubscriptionRenewing.new.call(@event)
@@ -16,7 +16,7 @@ class Pay::Stripe::Webhooks::SubscriptionRenewingTest < ActiveSupport::TestCase
   end
 
   test "monthly subscription should not receive renewal email" do
-    ::Stripe::Price.expects(:retrieve).returns(fake_stripe_price(interval: "month"))
+    ::Stripe::PriceService.any_instance.expects(:retrieve).returns(fake_stripe_price(interval: "month"))
 
     create_stripe_subscription(processor_id: @event.data.object.parent.subscription_details.subscription)
     assert_no_enqueued_emails do

@@ -2,6 +2,32 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Unreleased
+
+### Stripe client migration
+
+Pay now makes Stripe requests through a `Stripe::StripeClient` (`Pay::Stripe.client.v1...`) instead of stripe-ruby's class methods like `Stripe::Customer.retrieve`. Your app's code doesn't need to change, and it can keep using the class methods itself.
+
+If your tests stub the Stripe class methods for requests Pay makes, those stubs no longer apply, and Pay sends the HTTP request instead. Stub the service class:
+
+```ruby
+# old
+::Stripe::Customer.expects(:update).returns(customer)
+::Stripe::Subscription.expects(:retrieve).with({id: "sub_123", expand: ["latest_invoice"]}, {}).returns(subscription)
+
+# new
+::Stripe::CustomerService.any_instance.expects(:update).returns(customer)
+::Stripe::SubscriptionService.any_instance.expects(:retrieve).with("sub_123", {expand: ["latest_invoice"]}, {}).returns(subscription)
+```
+
+When a stub uses `.with`:
+
+* The ID is always the first argument. It's no longer included in the params hash.
+* Pay passes the params and request options even when they're empty, so stubs for calls like `retrieve` need `.with("pi_123", {}, {})`. The exception is `Pay::Stripe::Merchant`, which passes no request options (for example `.with("acct_123")`).
+* For a Stripe Connect account, the request options are `{stripe_account: "acct_123"}`.
+
+Apps that use more than one Stripe account can now choose the API key per request with `Pay::Stripe.client_options`. See [Stripe credentials](docs/stripe/2_credentials.md#multiple-stripe-accounts-optional).
+
 ## Pay 12.0
 
 ### Removed methods

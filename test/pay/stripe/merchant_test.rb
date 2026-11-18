@@ -5,7 +5,7 @@ class Pay::Stripe::MerchantTest < ActiveSupport::TestCase
     merchant = pay_merchants(:stripe)
     merchant.update!(processor_id: "acct_123")
     login_link = ::Stripe::LoginLink.construct_from(object: "login_link", url: "https://connect.stripe.com/express/login")
-    ::Stripe::Account.expects(:create_login_link).with("acct_123", {expand: ["url"]}).returns(login_link)
+    ::Stripe::AccountLoginLinkService.any_instance.expects(:create).with("acct_123", {expand: ["url"]}).returns(login_link)
 
     assert_equal login_link, merchant.login_link(expand: ["url"])
   end

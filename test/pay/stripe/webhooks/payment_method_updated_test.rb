@@ -10,10 +10,10 @@ class Pay::Stripe::Webhooks::PaymentMethodUpdatedTest < ActiveSupport::TestCase
 
     # Spoof Stripe PaymentMethod lookup
     fake_payment_method = ::Stripe::PaymentMethod.construct_from(id: payment_method.processor_id, customer: "cus_1234", type: "card", card: Stripe::Util.convert_to_stripe_object({brand: "Visa", last4: "4242", exp_month: "01", exp_year: "2034"}))
-    ::Stripe::PaymentMethod.expects(:retrieve).returns(fake_payment_method)
+    ::Stripe::PaymentMethodService.any_instance.expects(:retrieve).returns(fake_payment_method)
 
     fake_customer = ::Stripe::Customer.construct_from(invoice_settings: Stripe::Util.convert_to_stripe_object({default_payment_method: nil}))
-    ::Stripe::Customer.expects(:retrieve).returns(fake_customer)
+    ::Stripe::CustomerService.any_instance.expects(:retrieve).returns(fake_customer)
 
     Pay::Stripe::Webhooks::PaymentMethodUpdated.new.call(@event)
 

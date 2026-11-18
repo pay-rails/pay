@@ -10,7 +10,7 @@ class Pay::Webhooks::StripeControllerTest < EngineIntegrationTest
     params = stripe_params(livemode: true)
     stripe_event = create_stripe_event(params)
 
-    ::Stripe::Charge.expects(:retrieve).returns(stripe_event.data.object)
+    ::Stripe::ChargeService.any_instance.expects(:retrieve).returns(stripe_event.data.object)
 
     pay_customer = pay_customers(:stripe)
     pay_customer.update(processor_id: stripe_event.data.object.customer)

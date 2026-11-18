@@ -3,7 +3,7 @@ require "test_helper"
 module Pay
   class CustomerSyncJobTest < ActiveJob::TestCase
     test "sync customer with stripe" do
-      ::Stripe::Customer.expects(:update)
+      ::Stripe::CustomerService.any_instance.expects(:update)
       Pay::CustomerSyncJob.perform_now(pay_customers(:stripe).id)
     end
 
@@ -13,7 +13,7 @@ module Pay
     end
 
     test "skips customers deleted after the job was enqueued" do
-      ::Stripe::Customer.expects(:update).never
+      ::Stripe::CustomerService.any_instance.expects(:update).never
       Pay::CustomerSyncJob.perform_now(pay_customers(:deleted).id)
     end
 
