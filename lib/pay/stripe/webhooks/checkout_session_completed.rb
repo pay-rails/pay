@@ -3,7 +3,6 @@ module Pay
     module Webhooks
       class CheckoutSessionCompleted
         def call(event)
-          # locate_owner returns the Pay::Customer it finds or creates for the session's owner
           customer = locate_owner(event.data.object, stripe_account: event.try(:account)) || Pay::Stripe.find_pay_customer(event.data.object.customer)
 
           # By the time CheckoutSessionCompleted is fired, we probably missed the original events
@@ -20,6 +19,7 @@ module Pay
         end
 
         # Associates the Stripe customer from the session with the record referenced by client_reference_id
+        # and returns its Pay::Customer
         #
         # Sessions in payment or setup mode don't always create a Stripe customer (for example Payment Links with
         # customer_creation: if_required), so skip those rather than clearing an existing processor_id
