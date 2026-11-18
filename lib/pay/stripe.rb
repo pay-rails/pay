@@ -214,7 +214,7 @@ module Pay
     # The Pay::Customer for a Stripe customer ID, or nil when it's blank or Pay doesn't have it.
     # Stripe customer IDs are unique across Stripe accounts, so this finds the customer whichever account sent a webhook.
     def self.find_pay_customer(customer_id)
-      Pay::Stripe::Charge.find_pay_customer(customer_id)
+      Pay::Customer.find_by(processor: :stripe, processor_id: customer_id) if customer_id.present?
     end
 
     # Subscriptions aren't always immediately associated, so we want to retry by default
