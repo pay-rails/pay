@@ -3,7 +3,8 @@ ENV["RAILS_ENV"] = "test"
 
 # Configure all the payment providers for testing
 # VCR replaces every occurrence of these values in cassettes, so fake credentials must be distinctive strings
-ENV["STRIPE_PRIVATE_KEY"] ||= "sk_test_fake"
+# CI passes secrets it doesn't have as empty strings, so treat blank like unset
+ENV["STRIPE_PRIVATE_KEY"] = "sk_test_fake" if ENV["STRIPE_PRIVATE_KEY"].to_s.empty?
 ENV["STRIPE_SIGNING_SECRET"] ||= "whsec_x"
 
 # Paddle Classic configuration
