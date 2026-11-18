@@ -95,12 +95,9 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
     use_api_key_per_customer
     pay_subscription = pay_subscriptions(:stripe)
 
-    retrieve = stub_request(:get, %r{\Ahttps://api.stripe.com/v1/subscriptions/sub_1})
-      .with(headers: {"Authorization" => "Bearer sk_test_customer_#{pay_subscription.customer.id}"})
-      .to_return(status: 404, body: {error: {message: "No such subscription"}}.to_json)
-
-    assert_raises(Pay::Stripe::Error) { pay_subscription.sync! }
-    assert_requested retrieve
+    assert_first_request_uses_api_key "sk_test_customer_#{pay_subscription.customer.id}", "subscriptions/sub_1" do
+      pay_subscription.sync!
+    end
   end
 
   test "syncs use the customer for requests after looking it up" do
@@ -189,7 +186,7 @@ class Pay::Stripe::ClientTest < ActiveSupport::TestCase
   test "webhooks for a customer Pay doesn't have use the global Stripe API key" do
     use_api_key_per_customer
     event = stripe_event("charge.succeeded")
-    assert_nil Pay::Customer.find_by(processor: :stripe, processor_id: event.data.object.customer)
+    assert_nil Pay::Stripe.find_pay_customer(event.data.object.customer)
 
     assert_first_request_uses_api_key ::Stripe.api_key, "charges/ch_chargeid" do
       Pay::Stripe::Webhooks::ChargeSucceeded.new.call(event)

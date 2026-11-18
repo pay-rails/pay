@@ -52,7 +52,7 @@ Accept `**` so Pay can pass more context later without breaking your callable.
 `customer` is set for calls on a customer, charge, subscription or payment method (`charge`, `subscribe`, `sync!`, `cancel`, `refund!` and so on), including those made in background jobs like `Pay::CustomerSyncJob`. It's `nil` when Pay doesn't know the customer yet, which is why the fallback matters:
 
 * Syncs that start from an ID, like `Pay::Stripe::Charge.sync("ch_123")`, fetch the object before Pay can look up its customer. Requests after the lookup get the customer.
-* Webhooks for a Stripe customer that isn't in Pay's database. Webhooks get the customer when Pay has it. Otherwise Pay can't tell which Stripe account sent the webhook, so `client_options` has to find the account itself. One way is to set `Current` in your own wrapper around `Pay::Webhooks::ProcessJob`.
+* Webhooks for a Stripe customer that isn't in Pay's database. Pay can't tell which Stripe account sent these, so `client_options` has to find the account itself. One way is to set `Current` in your own wrapper around `Pay::Webhooks::ProcessJob`.
 * `Pay::Stripe.sync_checkout_session`, `Pay::Payment.from_id` without `customer:`, and `Pay::Stripe::Merchant` (Connect platform) calls.
 
 Objects Pay fetches keep the API key they were fetched with, so later calls on them go to the same account. So do the objects Pay rebuilds from its database or a webhook, like `subscription.stripe_object`, the invoice on a charge's receipt and webhook events, so paging through their lists works too.
@@ -64,11 +64,12 @@ A few things to keep in mind:
 * `client_options` runs for every request, and some Pay methods make several. Cache anything slow to look up, for example in `Current`.
 * `charge.stripe_object` is only rebuilt for reading its attributes, so it doesn't call `client_options`, and requests made from it use your global configuration.
 * `client_options` only covers API requests. Pay's [SCA confirmation page](4_sca.md) uses `Pay::Stripe.public_key`, so copy its views with `bin/rails generate pay:views` and swap in the publishable key that matches the API key.
-* Each Stripe account's webhook endpoint has its own signing secret. List them all under `signing_secret` in your Rails credentials, [as a YAML list](/docs/2_configuration.md#credentials), and Pay accepts a webhook that matches any of them. An `ENV` variable holds only one secret.
 
 ### Signing secrets
 
 Webhooks use signing secrets to verify the webhook was sent by Stripe. Check out [Webhooks](/docs/stripe/5_webhooks.md#enable-stripe-webhooks) doc for detailed instructions on where/how to get these.
+
+If your app uses more than one Stripe account, each account's webhook endpoint has its own signing secret. List them all under `signing_secret` in your Rails credentials, [as a YAML list](/docs/2_configuration.md#credentials), and Pay accepts a webhook that matches any of them. An `ENV` variable holds only one secret.
 
 #### Dashboard
 
