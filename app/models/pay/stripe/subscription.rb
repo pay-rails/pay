@@ -420,11 +420,10 @@ module Pay
       end
 
       def interval_changes?(plan)
-        current = subscription_items.first.price.try(:recurring)
-        return false if current.nil?
-
-        requested = stripe_client.v1.prices.retrieve(plan, {}, stripe_options).recurring
-        requested.present? && [current.interval, current.interval_count] != [requested.interval, requested.interval_count]
+        if (current = subscription_items.first.price.try(:recurring))
+          requested = stripe_client.v1.prices.retrieve(plan, {}, stripe_options).recurring
+          requested.present? && [current.interval, current.interval_count] != [requested.interval, requested.interval_count]
+        end
       end
     end
   end
