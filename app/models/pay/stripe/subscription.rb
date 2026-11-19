@@ -310,6 +310,12 @@ module Pay
           options[:billing_cycle_anchor] = {type: options[:billing_cycle_anchor].to_s}
         end
 
+        # Flexible billing mode keeps the anchor when the interval changes (monthly to yearly bills a partial year),
+        # so start the new interval today like classic mode does
+        if !options.key?(:billing_cycle_anchor) && !on_trial? && interval_changes?(plan)
+          options[:billing_cycle_anchor] = {type: "now"}
+        end
+
         @api_record = ::Stripe::Subscription.update(
           processor_id,
           {
@@ -410,6 +416,13 @@ module Pay
 
       def expand_options
         self.class.expand_options
+      end
+
+      def interval_changes?(plan)
+        if (current = subscription_items.first.price.try(:recurring))
+          requested = ::Stripe::Price.retrieve(plan, stripe_options).recurring
+          requested.present? && [current.interval, current.interval_count] != [requested.interval, requested.interval_count]
+        end
       end
     end
   end
