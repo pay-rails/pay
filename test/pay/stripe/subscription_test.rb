@@ -546,7 +546,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe swap does not forward prorate to Stripe" do
     pay_subscription = pay_subscriptions(:stripe)
     pay_subscription.update!(object: fake_stripe_subscription(id: "sub_1").to_hash)
-    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", Not(has_key(:prorate)) & has_entry(proration_behavior: "none"), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+    expects_swap_update(Not(has_key(:prorate)) & has_entry(proration_behavior: "none"))
 
     pay_subscription.swap("price_new", prorate: false)
   end
@@ -554,7 +554,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe swap to a different interval starts the new billing cycle today" do
     pay_subscription = monthly_pay_subscription
     ::Stripe::PriceService.any_instance.expects(:retrieve).with("price_yearly", {}, {}).returns(fake_stripe_price(id: "price_yearly", interval: "year"))
-    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", has_entry(billing_cycle_anchor: {type: "now"}), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+    expects_swap_update(has_entry(billing_cycle_anchor: {type: "now"}))
 
     pay_subscription.swap("price_yearly")
   end
@@ -562,7 +562,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe swap to the same interval keeps the billing cycle" do
     pay_subscription = monthly_pay_subscription
     ::Stripe::PriceService.any_instance.expects(:retrieve).returns(fake_stripe_price(id: "price_monthly", interval: "month"))
-    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", Not(has_key(:billing_cycle_anchor)), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+    expects_swap_update(Not(has_key(:billing_cycle_anchor)))
 
     pay_subscription.swap("price_monthly")
   end
@@ -570,7 +570,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   test "stripe swap keeps an explicit billing_cycle_anchor" do
     pay_subscription = monthly_pay_subscription
     ::Stripe::PriceService.any_instance.expects(:retrieve).never
-    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", has_entry(billing_cycle_anchor: {type: "unchanged"}), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+    expects_swap_update(has_entry(billing_cycle_anchor: {type: "unchanged"}))
 
     pay_subscription.swap("price_yearly", billing_cycle_anchor: "unchanged")
   end
@@ -579,7 +579,7 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription = monthly_pay_subscription
     pay_subscription.update!(trial_ends_at: 7.days.from_now)
     ::Stripe::PriceService.any_instance.expects(:retrieve).never
-    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", Not(has_key(:billing_cycle_anchor)), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+    expects_swap_update(Not(has_key(:billing_cycle_anchor)))
 
     pay_subscription.swap("price_yearly")
   end
@@ -615,6 +615,11 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     stripe_subscription = fake_stripe_subscription(id: "sub_1").to_hash
     stripe_subscription[:items][:data][0][:price] = fake_stripe_price(id: "price_monthly", interval: "month").to_hash
     pay_subscriptions(:stripe).tap { |pay_subscription| pay_subscription.update!(object: stripe_subscription) }
+  end
+
+  # Expects swap to update sub_1 with params matching the given matcher
+  def expects_swap_update(params)
+    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", params, {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
   end
 
   def paused_stripe_subscription

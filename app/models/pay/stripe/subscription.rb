@@ -309,8 +309,8 @@ module Pay
           options[:billing_cycle_anchor] = {type: options[:billing_cycle_anchor].to_s}
         end
 
-        # Subscriptions in flexible billing mode keep their billing cycle anchor when the interval changes,
-        # so a monthly to yearly swap would only bill a partial year. Start the new interval today like classic mode does.
+        # Flexible billing mode keeps the anchor when the interval changes (monthly to yearly bills a partial year),
+        # so start the new interval today like classic mode does
         if !options.key?(:billing_cycle_anchor) && !on_trial? && interval_changes?(plan)
           options[:billing_cycle_anchor] = {type: "now"}
         end
