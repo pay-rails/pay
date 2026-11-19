@@ -309,6 +309,12 @@ module Pay
           options[:billing_cycle_anchor] = {type: options[:billing_cycle_anchor].to_s}
         end
 
+        # Subscriptions in flexible billing mode keep their billing cycle anchor when the interval changes,
+        # so a monthly to yearly swap would only bill a partial year. Start the new interval today like classic mode does.
+        if !options.key?(:billing_cycle_anchor) && !on_trial? && interval_changes?(plan)
+          options[:billing_cycle_anchor] = {type: "now"}
+        end
+
         @api_record = stripe_client.v1.subscriptions.update(
           processor_id,
           {
@@ -411,6 +417,14 @@ module Pay
 
       def expand_options
         self.class.expand_options
+      end
+
+      def interval_changes?(plan)
+        current = subscription_items.first.price.try(:recurring)
+        return false if current.nil?
+
+        requested = stripe_client.v1.prices.retrieve(plan, {}, stripe_options).recurring
+        requested.present? && [current.interval, current.interval_count] != [requested.interval, requested.interval_count]
       end
     end
   end

@@ -551,6 +551,39 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     pay_subscription.swap("price_new", prorate: false)
   end
 
+  test "stripe swap to a different interval starts the new billing cycle today" do
+    pay_subscription = monthly_pay_subscription
+    ::Stripe::PriceService.any_instance.expects(:retrieve).with("price_yearly", {}, {}).returns(fake_stripe_price(id: "price_yearly", interval: "year"))
+    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", has_entry(billing_cycle_anchor: {type: "now"}), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+
+    pay_subscription.swap("price_yearly")
+  end
+
+  test "stripe swap to the same interval keeps the billing cycle" do
+    pay_subscription = monthly_pay_subscription
+    ::Stripe::PriceService.any_instance.expects(:retrieve).returns(fake_stripe_price(id: "price_monthly", interval: "month"))
+    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", Not(has_key(:billing_cycle_anchor)), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+
+    pay_subscription.swap("price_monthly")
+  end
+
+  test "stripe swap keeps an explicit billing_cycle_anchor" do
+    pay_subscription = monthly_pay_subscription
+    ::Stripe::PriceService.any_instance.expects(:retrieve).never
+    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", has_entry(billing_cycle_anchor: {type: "unchanged"}), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+
+    pay_subscription.swap("price_yearly", billing_cycle_anchor: "unchanged")
+  end
+
+  test "stripe swap during a trial keeps the billing cycle" do
+    pay_subscription = monthly_pay_subscription
+    pay_subscription.update!(trial_ends_at: 7.days.from_now)
+    ::Stripe::PriceService.any_instance.expects(:retrieve).never
+    ::Stripe::SubscriptionService.any_instance.expects(:update).with("sub_1", Not(has_key(:billing_cycle_anchor)), {}).returns(fake_stripe_subscription(id: "sub_1", latest_invoice: fake_stripe_open_invoice(payment_intent: nil)))
+
+    pay_subscription.swap("price_yearly")
+  end
+
   test "stripe pause wraps Stripe errors in Pay::Stripe::Error" do
     ::Stripe::SubscriptionService.any_instance.stubs(:update).raises(::Stripe::InvalidRequestError.new("No such subscription", "id"))
     error = assert_raises(Pay::Stripe::Error) { pay_subscriptions(:stripe).pause }
@@ -575,6 +608,13 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
   def sync_paused_subscription(behavior:, current_period_end:)
     Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription)
     Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(pause_collection: {behavior: behavior, resumes_at: nil}, current_period_end: current_period_end))
+  end
+
+  # A Pay subscription whose stored Stripe object has a monthly price, like a real subscription item does
+  def monthly_pay_subscription
+    stripe_subscription = fake_stripe_subscription(id: "sub_1").to_hash
+    stripe_subscription[:items][:data][0][:price] = fake_stripe_price(id: "price_monthly", interval: "month").to_hash
+    pay_subscriptions(:stripe).tap { |pay_subscription| pay_subscription.update!(object: stripe_subscription) }
   end
 
   def paused_stripe_subscription

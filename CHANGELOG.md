@@ -1,5 +1,9 @@
 ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
 
+### Unreleased
+
+* Stripe `swap` starts a new billing cycle today when the new price has a different interval, like monthly to yearly. Subscriptions in Stripe's flexible billing mode (the default since API version `2025-09-30.clover`) otherwise keep their billing cycle anchor, so the first year ends on the old monthly billing date and the customer is charged for a partial year. Pass `billing_cycle_anchor: "unchanged"` to keep the anchor on flexible subscriptions. Swaps during a trial are unchanged
+
 ### 13.0.0
 
 * Drop Rails 7.0 support. Pay now requires Rails 7.1 or higher

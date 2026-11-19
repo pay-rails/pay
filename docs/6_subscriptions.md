@@ -298,6 +298,12 @@ If a user wishes to change subscription plans, you can pass in the Plan or Price
 @user.payment_processor.subscription.swap("yearly")
 ```
 
+With Stripe, swapping to a price with a different interval (like monthly to yearly) starts the new billing cycle today and credits the unused time on the old price. On subscriptions in Stripe's flexible billing mode, pass `billing_cycle_anchor: "unchanged"` to keep the current billing date instead:
+
+```ruby
+@user.payment_processor.subscription.swap("yearly", billing_cycle_anchor: "unchanged")
+```
+
 Braintree does not allow this via their API, so we cancel and create a new subscription for you (including proration discount).
 
 #### Resume a Subscription
