@@ -10,6 +10,7 @@ module Pay
     end
 
     module Webhooks
+      autoload :Adjustment, "pay/paddle_billing/webhooks/adjustment"
       autoload :Subscription, "pay/paddle_billing/webhooks/subscription"
       autoload :TransactionCompleted, "pay/paddle_billing/webhooks/transaction_completed"
     end
@@ -48,11 +49,13 @@ module Pay
         events.subscribe "paddle_billing.subscription.trialing", Pay::PaddleBilling::Webhooks::Subscription.new
         events.subscribe "paddle_billing.subscription.updated", Pay::PaddleBilling::Webhooks::Subscription.new
         events.subscribe "paddle_billing.transaction.completed", Pay::PaddleBilling::Webhooks::TransactionCompleted.new
+        events.subscribe "paddle_billing.adjustment.created", Pay::PaddleBilling::Webhooks::Adjustment.new
+        events.subscribe "paddle_billing.adjustment.updated", Pay::PaddleBilling::Webhooks::Adjustment.new
       end
     end
 
     def self.sync_transaction(transaction_id)
-      transaction = ::Paddle::Transaction.retrieve(id: transaction_id)
+      transaction = ::Paddle::Transaction.retrieve(id: transaction_id, extra: "adjustments_totals")
 
       if transaction.subscription_id.present?
         Pay::PaddleBilling::Subscription.sync(transaction.subscription_id)

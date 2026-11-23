@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Paddle Billing charges record approved refunds in `amount_refunded`. Syncing a charge reads the refund total from Paddle, and the `adjustment.created` and `adjustment.updated` webhooks re-sync it when a refund is approved. Enable both events on your Paddle notification destination
 * Braintree `refund!` adds each partial refund to `amount_refunded` instead of replacing it, so refunding $5 and then $3 records $8. Calling it without an amount refunds what's left
 * Braintree `refund!` raises `Pay::Braintree::Error` when Braintree rejects the refund, such as for a transaction that hasn't settled. It used to record the refund anyway
 
