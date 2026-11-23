@@ -20,7 +20,7 @@ module Pay
         payments = PaddleClassic.client.payments.list(subscription_id: customer.subscription.processor_id, is_paid: 1)
         raise Error, "Payment not found" unless payments.total > 0
 
-        PaddleClassic.client.payments.refund(order_id: payments.data.last[:id], amount: amount_to_refund)
+        PaddleClassic.client.payments.refund(order_id: payments.data.last[:id], amount: amount_to_refund / 100.0)
         update(amount_refunded: amount_to_refund)
       rescue ::Paddle::Classic::Error => e
         raise Pay::PaddleClassic::Error, e

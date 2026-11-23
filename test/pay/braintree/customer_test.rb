@@ -135,6 +135,11 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
     assert_equal 19_99, @pay_customer.save_transaction(transaction).amount
   end
 
+  test "braintree saves the service fee in cents" do
+    transaction = Braintree::Transaction._new(Pay.braintree_gateway, id: "abc", amount: "19.99", service_fee_amount: "1.50", currency_iso_code: "USD", payment_instrument_type: "unknown")
+    assert_equal 1_50, @pay_customer.save_transaction(transaction).application_fee_amount
+  end
+
   # $2000.00 - 2999.99 returns a Processor Declined
   # https://developers.braintreepayments.com/reference/general/testing/ruby#amount-200000-300099
   test "braintree fails charges with invalid cards" do

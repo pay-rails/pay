@@ -17,6 +17,13 @@ class Pay::PaddleClassic::ChargeTest < ActiveSupport::TestCase
     assert_equal 119, charge.amount_refunded
   end
 
+  test "paddle classic refunds in the currency's main unit" do
+    charge = create_charge(processor_id: "11018517")
+    ::Paddle::Classic::PaymentsResource.any_instance.stubs(:list).returns(stub(total: 1, data: [{id: 11018517}]))
+    ::Paddle::Classic::PaymentsResource.any_instance.expects(:refund).with(order_id: 11018517, amount: 1.19)
+    charge.refund!
+  end
+
   test "paddle classic cannot refund a transaction without payment" do
     charge = create_charge(processor_id: "does-not-exist")
     assert_raises(Pay::PaddleClassic::Error) { charge.refund! }
