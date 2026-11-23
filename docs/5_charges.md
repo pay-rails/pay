@@ -82,6 +82,8 @@ charge.refund!
 charge.refund!(5_00)
 ```
 
+Braintree only refunds transactions once they settle, usually in a nightly batch. Before then, `refund!` voids the transaction instead, which cancels the whole payment, so a partial refund of an unsettled Braintree transaction raises `Pay::Braintree::Error`.
+
 ### Paddle Billing Refunds
 
 Paddle Billing refunds need approval from Paddle, so `refund!` returns the `Paddle::Adjustment` (with a `status` of `pending_approval`) and leaves `amount_refunded` alone. Once Paddle approves the refund, the `adjustment.updated` webhook syncs the charge and records it in `amount_refunded`. Paddle rejects new refunds on a transaction while one is still pending approval.
