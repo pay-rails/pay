@@ -13,7 +13,7 @@ class Pay::PaddleClassic::CustomerTest < ActiveSupport::TestCase
 
   test "paddle classic charge amount doesn't lose a cent" do
     response = {invoice_id: "1", amount: 19.99, payment_date: "2026-11-01", receipt_url: "https://example.com"}
-    Pay::PaddleClassic.client.charges.class.any_instance.stubs(:create).returns(response)
+    ::Paddle::Classic::ChargesResource.any_instance.stubs(:create).returns(response)
     Pay::PaddleClassic::PaymentMethod.stubs(:payment_method_details_for).returns({})
     assert_equal 19_99, @pay_customer.charge(19_99, {charge_name: "Test"}).amount
   end
