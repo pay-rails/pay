@@ -45,8 +45,10 @@ module Pay
       end
 
       def charge(amount, options = {})
+        # Braintree charges in the merchant account's currency, so the currency only tells Pay how to convert the amount
+        currency = options.delete(:currency)
         args = {
-          amount: amount.to_i / 100.0,
+          amount: Pay::Currency.from_subunit(amount, currency: currency),
           customer_id: processor_id || api_record.id,
           options: {submit_for_settlement: true},
           custom_fields: options.delete(:metadata)
@@ -130,10 +132,10 @@ module Pay
 
       def save_transaction(transaction)
         attrs = card_details_for_braintree_transaction(transaction)
-        attrs[:amount] = (transaction.amount.to_d * 100).to_i
+        attrs[:amount] = Pay::Currency.to_subunit(transaction.amount, currency: transaction.currency_iso_code)
         attrs[:metadata] = transaction.custom_fields
         attrs[:currency] = transaction.currency_iso_code
-        attrs[:application_fee_amount] = (transaction.service_fee_amount.to_d * 100).to_i if transaction.service_fee_amount
+        attrs[:application_fee_amount] = Pay::Currency.to_subunit(transaction.service_fee_amount, currency: transaction.currency_iso_code) if transaction.service_fee_amount
         attrs[:created_at] = transaction.created_at
 
         # Associate charge with subscription if we can

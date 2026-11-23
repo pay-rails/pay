@@ -1,5 +1,9 @@
 ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
 
+### Unreleased
+
+* Braintree amounts use the currency's subunit instead of assuming cents, so ¥1,000 is stored as 1000 instead of 100000. Pass `currency:` to Braintree `charge` when your merchant account isn't in a two-decimal currency. Existing Braintree charges in zero-decimal currencies need updating; see the [UPGRADE guide](./UPGRADE.md#pay-140)
+
 ### 13.1.0
 
 * Deprecate Paddle Classic. Pay 14 will remove it. Paddle has a [migration path to Paddle Billing](https://developer.paddle.com/migrate/paddle-classic/), and Pay supports Paddle Billing as the `paddle_billing` processor. Apps with Paddle Classic credentials configured see a deprecation warning at boot

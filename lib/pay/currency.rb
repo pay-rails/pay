@@ -17,6 +17,22 @@ module Pay
       new(currency).format_amount(amount, **options)
     end
 
+    # Converts an amount in the currency's main unit, like "19.99" dollars or "1000" yen, to Pay's stored subunit amount
+    def self.to_subunit(amount, currency:)
+      (amount.to_d * subunit_to_unit_for(currency)).to_i
+    end
+
+    # Converts a stored subunit amount to a string in the currency's main unit for processors that take one, like 1999 cents to "19.99"
+    def self.from_subunit(amount, currency:)
+      subunit_to_unit = subunit_to_unit_for(currency)
+      ActiveSupport::NumberHelper.number_to_rounded(amount.to_d / subunit_to_unit, precision: subunit_to_unit.digits.count - 1)
+    end
+
+    # Unknown or missing currencies use 100, the subunit of most currencies
+    def self.subunit_to_unit_for(currency)
+      all.dig(currency.to_s.downcase, "subunit_to_unit") || 100
+    end
+
     def initialize(iso_code)
       @attributes = self.class.all[iso_code.to_s.downcase]
     end

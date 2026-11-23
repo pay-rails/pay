@@ -2,6 +2,36 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
+## Pay 14.0
+
+### Braintree amounts in zero-decimal currencies
+
+Pay stores amounts in the currency's smallest unit, but Braintree amounts were always multiplied by 100. A ¥1,000 Braintree charge was stored as 100000 instead of 1000. Pay now uses the currency's subunit, so charges in zero-decimal currencies like JPY, KRW and HUF are stored correctly.
+
+Refunds read the stored amount, so update existing charges before refunding any. This migration divides the amounts of Braintree charges in those currencies by 100:
+
+```ruby
+class FixBraintreeZeroDecimalAmounts < ActiveRecord::Migration[8.1]
+  def up
+    Pay::Braintree::Charge.where.not(currency: nil).find_each do |charge|
+      next unless Pay::Currency.subunit_to_unit_for(charge.currency) == 1
+
+      charge.update_columns(
+        amount: charge.amount / 100,
+        amount_refunded: charge.amount_refunded&./(100),
+        application_fee_amount: charge.application_fee_amount&./(100)
+      )
+    end
+  end
+end
+```
+
+If you charge a Braintree merchant account in a currency without two decimals, pass `currency:` so Pay converts the amount correctly:
+
+```ruby
+@user.payment_processor.charge(1000, currency: "jpy") # ¥1,000
+```
+
 ## Pay 13.0
 
 ### Rails 7.1 or newer
