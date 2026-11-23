@@ -71,8 +71,11 @@ module Pay
       #   refund!(5_00, reason: "Customer request")
       def refund!(amount_to_refund = nil, reason: I18n.t("pay.refund"))
         remaining = amount - amount_refunded.to_i
-        amount_to_refund = remaining if amount_to_refund.nil? || amount_to_refund > remaining
-        raise Pay::PaddleBilling::Error, "#{processor_id} has nothing left to refund" unless amount_to_refund.positive?
+        amount_to_refund ||= remaining
+        raise Pay::PaddleBilling::Error, "#{processor_id} has nothing left to refund" unless remaining.positive?
+        unless amount_to_refund.positive? && amount_to_refund <= remaining
+          raise Pay::PaddleBilling::Error, "#{processor_id} can refund between 1 and #{remaining}, not #{amount_to_refund}"
+        end
 
         params = {transaction_id: processor_id, action: "refund", reason: reason, type: "full"}
 

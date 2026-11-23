@@ -75,12 +75,12 @@ class Pay::PaddleBilling::ChargeTest < ActiveSupport::TestCase
     assert_equal "1400", adjustment.totals.total
   end
 
-  test "paddle billing refund of more than what's left refunds the rest" do
+  test "paddle billing refund of more than what's left raises" do
     charge = paddle_billing_charge(amount_refunded: 5_00)
-    ::Paddle::Transaction.stubs(:retrieve).returns(paddle_billing_transaction("txnitm_1"))
-    ::Paddle::Adjustment.expects(:create).with(has_entry(items: [{item_id: "txnitm_1", type: "partial", amount: "1400"}]))
+    ::Paddle::Adjustment.expects(:create).never
 
-    charge.refund!(19_00)
+    error = assert_raises(Pay::PaddleBilling::Error) { charge.refund!(19_00) }
+    assert_includes error.message, "between 1 and 1400"
   end
 
   test "paddle billing partial refund raises with several line items" do
