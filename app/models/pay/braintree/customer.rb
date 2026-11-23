@@ -132,10 +132,11 @@ module Pay
 
       def save_transaction(transaction)
         attrs = card_details_for_braintree_transaction(transaction)
-        attrs[:amount] = Pay::Currency.to_subunit(transaction.amount, currency: transaction.currency_iso_code)
+        currency = transaction.currency_iso_code
+        attrs[:amount] = Pay::Currency.to_subunit(transaction.amount, currency: currency)
         attrs[:metadata] = transaction.custom_fields
-        attrs[:currency] = transaction.currency_iso_code
-        attrs[:application_fee_amount] = Pay::Currency.to_subunit(transaction.service_fee_amount, currency: transaction.currency_iso_code) if transaction.service_fee_amount
+        attrs[:currency] = currency
+        attrs[:application_fee_amount] = Pay::Currency.to_subunit(transaction.service_fee_amount, currency: currency) if transaction.service_fee_amount
         attrs[:created_at] = transaction.created_at
 
         # Associate charge with subscription if we can

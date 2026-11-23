@@ -41,6 +41,17 @@ class Pay::CurrencyTest < ActiveSupport::TestCase
     assert_equal "1.234", Pay::Currency.from_subunit(1234, currency: "kwd")
   end
 
+  test "converts subunit amounts to main unit strings regardless of locale" do
+    available_locales = I18n.available_locales
+    I18n.available_locales += [:pay_test_comma]
+    I18n.backend.store_translations(:pay_test_comma, number: {format: {separator: ",", delimiter: "."}})
+    I18n.with_locale(:pay_test_comma) do
+      assert_equal "1999.99", Pay::Currency.from_subunit(1999_99, currency: "usd")
+    end
+  ensure
+    I18n.available_locales = available_locales
+  end
+
   test "converts missing and unknown currencies like dollars" do
     assert_equal 19_99, Pay::Currency.to_subunit("19.99", currency: nil)
     assert_equal "19.99", Pay::Currency.from_subunit(19_99, currency: "zzz")

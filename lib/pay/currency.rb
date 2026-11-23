@@ -23,9 +23,10 @@ module Pay
     end
 
     # Converts a stored subunit amount to a string in the currency's main unit for processors that take one, like 1999 cents to "19.99"
+    # The separator and delimiter are fixed so the current locale can't turn it into "19,99"
     def self.from_subunit(amount, currency:)
       subunit_to_unit = subunit_to_unit_for(currency)
-      ActiveSupport::NumberHelper.number_to_rounded(amount.to_d / subunit_to_unit, precision: subunit_to_unit.digits.count - 1)
+      ActiveSupport::NumberHelper.number_to_rounded(amount.to_d / subunit_to_unit, precision: subunit_to_unit.digits.count - 1, separator: ".", delimiter: "")
     end
 
     # Unknown or missing currencies use 100, the subunit of most currencies
