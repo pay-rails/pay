@@ -60,15 +60,19 @@ class Pay::PaddleBilling::ChargeTest < ActiveSupport::TestCase
     assert_includes error.message, "adjustment_pending_refund_request"
   end
 
-  test "paddle billing refund after a partial refund refunds the rest of the line item" do
-    charge = paddle_billing_charge(amount_refunded: 5_00)
-    ::Paddle::Transaction.stubs(:retrieve).with(id: charge.processor_id).returns(paddle_billing_transaction("txnitm_1"))
-    ::Paddle::Adjustment.expects(:create).with(
-      transaction_id: charge.processor_id, action: "refund", reason: "Refund", type: "partial",
-      items: [{item_id: "txnitm_1", type: "partial", amount: "1400"}]
-    ).returns(:adjustment)
+  test "paddle billing refund after an approved partial refund refunds the rest of the line item" do
+    charge = Pay::PaddleBilling::Charge.sync("txn_01jjffa06k6bezq0axxaadrje2")
+    assert_equal 5_00, charge.amount_refunded
 
-    assert_equal :adjustment, charge.refund!
+    adjustment = charge.refund!
+
+    assert_requested :post, "https://sandbox-api.paddle.com/adjustments",
+      body: {
+        transaction_id: "txn_01jjffa06k6bezq0axxaadrje2", action: "refund", reason: "Refund", type: "partial",
+        items: [{item_id: "txnitm_01jjffa0gxakk4teygjb7am1vh", type: "partial", amount: "1400"}]
+      }
+    assert_equal "pending_approval", adjustment.status
+    assert_equal "1400", adjustment.totals.total
   end
 
   test "paddle billing refund of more than what's left refunds the rest" do
