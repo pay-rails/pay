@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Eager loads the dummy app without processor gems installed, the way apps that only bundle the
+# processors they use load Pay in production. Pay's own bundle has every processor gem, so the test
+# suite can't catch code that needs one of them just to load.
+
+# Each processor gem, the constant it defines, and the dummy app's controller folders that use it
+PROCESSOR_GEMS = {
+  "braintree" => {constant: "Braintree", controllers: %w[braintree]},
+  "lemonsqueezy" => {constant: "LemonSqueezy", controllers: %w[lemon_squeezy]},
+  "paddle" => {constant: "Paddle", controllers: %w[paddle_billing paddle_classic]},
+  "stripe" => {constant: "Stripe", controllers: %w[stripe]},
+  "receipts" => {constant: "Receipts", controllers: []}
+}
+
+if (hidden = ENV["PAY_HIDDEN_GEMS"])
+  hidden_gems = PROCESSOR_GEMS.slice(*hidden.split(","))
+
+  ENV["RAILS_ENV"] = "test"
+  ENV["DATABASE_URL"] ||= "sqlite3::memory:"
+  require_relative "../test/dummy/config/boot"
+
+  # Like require: false in the Gemfile, so Bundler.require leaves the hidden gems unloaded
+  Bundler.definition.dependencies.each do |dependency|
+    dependency.instance_variable_set(:@autorequire, []) if hidden_gems.key?(dependency.name)
+  end
+
+  require_relative "../test/dummy/config/application"
+
+  # The dummy app's demo controllers for a processor need its gem, and an app without the gem wouldn't have them.
+  # Their folders would also make Zeitwerk define the processor's top-level namespace, like ::Stripe for app/controllers/stripe.
+  hidden_gems.values.flat_map { |gem| gem[:controllers] }.each do |folder|
+    Rails.autoloaders.main.ignore(Rails.root.join("app/controllers", folder))
+  end
+
+  Rails.application.initialize!
+  Rails.application.eager_load!
+
+  loaded = hidden_gems.values.map { |gem| gem[:constant] }.select { |constant| Object.const_defined?(constant) }
+  abort "#{loaded.join(", ")} loaded anyway, so this check didn't hide them" if loaded.any?
+else
+  processors = PROCESSOR_GEMS.keys - ["receipts"]
+  scenarios = {"no processor gems" => PROCESSOR_GEMS.keys}
+  processors.each { |processor| scenarios["only #{processor}"] = PROCESSOR_GEMS.keys - [processor] }
+
+  failures = scenarios.reject do |name, hidden_gems|
+    puts "Eager loading with #{name}"
+    system({"PAY_HIDDEN_GEMS" => hidden_gems.join(",")}, RbConfig.ruby, __FILE__)
+  end
+
+  abort "Eager loading failed with #{failures.keys.join(", ")}" if failures.any?
+end

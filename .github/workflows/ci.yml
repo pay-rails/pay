@@ -27,6 +27,24 @@ jobs:
       - name: StandardRb check
         run: bundle exec standardrb
 
+  eager_load:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: "4.0"
+
+      # Apps only bundle the processor gems they use, so Pay has to load without the others
+      - name: Eager load without processor gems
+        run: bin/check_eager_load
+
   sqlite:
     runs-on: ubuntu-latest
     strategy:
