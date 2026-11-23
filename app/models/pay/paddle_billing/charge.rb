@@ -61,14 +61,11 @@ module Pay
 
       # Requests a refund from Paddle and returns the Paddle::Adjustment
       #
-      # Paddle refunds start out pending approval, so amount_refunded is updated when the
-      # adjustment webhooks sync the charge after Paddle approves the refund.
+      # Paddle refunds start out pending approval, so amount_refunded is updated by the
+      # adjustment webhooks once Paddle approves it.
       #
-      # Refunding the full amount of a charge with no refunds uses a full adjustment.
-      # Anything else is a partial adjustment against the transaction's line item, so
-      # refunding what's left after a partial refund only refunds the remainder.
-      # Paddle needs to know which line item to refund, so partial refunds of transactions
-      # with several line items raise an error.
+      # Only refunding the whole of an unrefunded charge is a full adjustment. Anything else
+      # is a partial adjustment against the transaction's single line item.
       #
       #   refund!
       #   refund!(5_00, reason: "Customer request")
@@ -77,17 +74,19 @@ module Pay
         amount_to_refund = remaining if amount_to_refund.nil? || amount_to_refund > remaining
         raise Pay::PaddleBilling::Error, "#{processor_id} has nothing left to refund" unless amount_to_refund.positive?
 
-        if amount_to_refund == amount
-          ::Paddle::Adjustment.create(transaction_id: processor_id, action: "refund", reason: reason, type: "full")
-        else
+        params = {transaction_id: processor_id, action: "refund", reason: reason, type: "full"}
+
+        unless amount_to_refund == amount
           line_items = ::Paddle::Transaction.retrieve(id: processor_id).details.line_items
-          if line_items.size != 1
+          unless line_items.size == 1
             raise Pay::PaddleBilling::Error, "Paddle Billing partial refunds need a transaction with one line item, but #{processor_id} has #{line_items.size}"
           end
 
-          items = [{item_id: line_items.first.id, type: "partial", amount: amount_to_refund.to_s}]
-          ::Paddle::Adjustment.create(transaction_id: processor_id, action: "refund", reason: reason, type: "partial", items: items)
+          params[:type] = "partial"
+          params[:items] = [{item_id: line_items.first.id, type: "partial", amount: amount_to_refund.to_s}]
         end
+
+        ::Paddle::Adjustment.create(**params)
       rescue ::Paddle::ErrorGenerator => e
         raise Pay::PaddleBilling::Error, e
       end
