@@ -30,8 +30,10 @@ jobs:
           ruby-version: ruby
 
       - name: Update version
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          sed -i 's/".*"/"${{ inputs.version }}"/' lib/pay/version.rb
+          sed -i "s/\".*\"/\"$VERSION\"/" lib/pay/version.rb
           bundle config set --local deployment 'false'
           # Only the lockfiles need the new version, so resolve without installing anything
           bundle lock
