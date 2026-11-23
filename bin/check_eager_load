@@ -30,16 +30,15 @@ if (hidden = ENV["PAY_HIDDEN_GEMS"])
 
   # The dummy app's demo controllers for a processor need its gem, and an app without the gem wouldn't have them.
   # Their folders would also make Zeitwerk define the processor's top-level namespace, like ::Stripe for app/controllers/stripe.
-  hidden_gems.each_value do |gem|
-    gem[:controllers].each { |folder| Rails.autoloaders.main.ignore(Rails.root.join("app/controllers", folder)) }
+  hidden_gems.values.flat_map { |gem| gem[:controllers] }.each do |folder|
+    Rails.autoloaders.main.ignore(Rails.root.join("app/controllers", folder))
   end
 
   Rails.application.initialize!
   Rails.application.eager_load!
 
-  if (loaded = hidden_gems.values.map { |gem| gem[:constant] }.select { |constant| Object.const_defined?(constant) }).any?
-    abort "#{loaded.join(", ")} loaded anyway, so this check didn't hide them"
-  end
+  loaded = hidden_gems.values.map { |gem| gem[:constant] }.select { |constant| Object.const_defined?(constant) }
+  abort "#{loaded.join(", ")} loaded anyway, so this check didn't hide them" if loaded.any?
 
   exit
 end
