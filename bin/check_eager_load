@@ -39,17 +39,15 @@ if (hidden = ENV["PAY_HIDDEN_GEMS"])
 
   loaded = hidden_gems.values.map { |gem| gem[:constant] }.select { |constant| Object.const_defined?(constant) }
   abort "#{loaded.join(", ")} loaded anyway, so this check didn't hide them" if loaded.any?
+else
+  processors = PROCESSOR_GEMS.keys - ["receipts"]
+  scenarios = {"no processor gems" => PROCESSOR_GEMS.keys}
+  processors.each { |processor| scenarios["only #{processor}"] = PROCESSOR_GEMS.keys - [processor] }
 
-  exit
+  failures = scenarios.reject do |name, hidden_gems|
+    puts "Eager loading with #{name}"
+    system({"PAY_HIDDEN_GEMS" => hidden_gems.join(",")}, RbConfig.ruby, __FILE__)
+  end
+
+  abort "Eager loading failed with #{failures.keys.join(", ")}" if failures.any?
 end
-
-processors = PROCESSOR_GEMS.keys - ["receipts"]
-scenarios = {"no processor gems" => PROCESSOR_GEMS.keys}
-processors.each { |processor| scenarios["only #{processor}"] = PROCESSOR_GEMS.keys - [processor] }
-
-failures = scenarios.reject do |name, hidden_gems|
-  puts "Eager loading with #{name}"
-  system({"PAY_HIDDEN_GEMS" => hidden_gems.join(",")}, RbConfig.ruby, __FILE__)
-end
-
-abort "Eager loading failed with #{failures.keys.join(", ")}" if failures.any?
