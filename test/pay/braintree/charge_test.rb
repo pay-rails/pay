@@ -29,6 +29,13 @@ class Pay::Braintree::ChargeTest < ActiveSupport::TestCase
     assert_equal 37_00, charge.amount_refunded
   end
 
+  test "refunds zero-decimal currencies in the currency's main unit" do
+    charge = @pay_customer.charges.create!(processor_id: "abc", amount: 1000, currency: "JPY")
+    ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "1000")
+    charge.refund!
+    assert_equal 1000, charge.amount_refunded
+  end
+
   test "braintree saves currency on charge" do
     @pay_customer.update_payment_method "fake-valid-visa-nonce"
     charge = @pay_customer.charge(29_00)

@@ -140,6 +140,20 @@ class Pay::Braintree::CustomerTest < ActiveSupport::TestCase
     assert_equal 1_50, @pay_customer.save_transaction(transaction).application_fee_amount
   end
 
+  test "braintree saves zero-decimal currency amounts in the currency's subunit" do
+    transaction = Braintree::Transaction._new(Pay.braintree_gateway, id: "abc", amount: "1000", service_fee_amount: "50", currency_iso_code: "JPY", payment_instrument_type: "unknown")
+    charge = @pay_customer.save_transaction(transaction)
+    assert_equal 1000, charge.amount
+    assert_equal 50, charge.application_fee_amount
+  end
+
+  test "braintree charges zero-decimal currencies in the currency's main unit" do
+    @pay_customer.update!(processor_id: "abc")
+    transaction = Braintree::Transaction._new(Pay.braintree_gateway, id: "abc", amount: "1000", currency_iso_code: "JPY", payment_instrument_type: "unknown")
+    ::Braintree::TransactionGateway.any_instance.expects(:sale).with(has_entry(:amount, "1000")).returns(stub(success?: true, transaction: transaction))
+    assert_equal 1000, @pay_customer.charge(1000, currency: "jpy").amount
+  end
+
   # $2000.00 - 2999.99 returns a Processor Declined
   # https://developers.braintreepayments.com/reference/general/testing/ruby#amount-200000-300099
   test "braintree fails charges with invalid cards" do

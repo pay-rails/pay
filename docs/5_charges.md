@@ -19,6 +19,10 @@ You may pass optional arguments that will be directly passed on to the payment p
 @user.payment_processor.charge(15_00, currency: "cad")
 ```
 
+Amounts are in the currency's smallest unit, so zero-decimal currencies like JPY use whole yen: `charge(1000, currency: "jpy")` is ¥1,000.
+
+Braintree charges in your merchant account's currency and doesn't take a `currency` option. Pay uses it only to convert the amount, so pass it when your merchant account isn't in a two-decimal currency.
+
 On failure, a `Pay::Error` will be raised with details about the payment failure.
 
 ##### Paddle Classic Charges

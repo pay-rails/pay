@@ -20,7 +20,7 @@ module Pay
 
       def refund!(amount_to_refund = nil)
         amount_to_refund ||= amount
-        Pay.braintree_gateway.transaction.refund(processor_id, amount_to_refund / 100.0)
+        Pay.braintree_gateway.transaction.refund(processor_id, Pay::Currency.from_subunit(amount_to_refund, currency: currency))
         update(amount_refunded: amount_to_refund)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
