@@ -1,5 +1,10 @@
 ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
 
+### Unreleased
+
+* Braintree `refund!` adds each partial refund to `amount_refunded` instead of replacing it, so refunding $5 and then $3 records $8. Calling it without an amount refunds what's left
+* Braintree `refund!` raises `Pay::Braintree::Error` when Braintree rejects the refund, such as for a transaction that hasn't settled. It used to record the refund anyway
+
 ### 13.2.0
 
 * Braintree amounts use the currency's subunit instead of assuming cents, so ¥1,000 is stored as 1000 instead of 100000. Pass `currency:` to Braintree `charge` when your merchant account isn't in a two-decimal currency. Existing Braintree charges in zero-decimal currencies need updating; see the [UPGRADE guide](./UPGRADE.md#pay-132)

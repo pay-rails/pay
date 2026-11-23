@@ -19,9 +19,11 @@ module Pay
       end
 
       def refund!(amount_to_refund = nil)
-        amount_to_refund ||= amount
-        Pay.braintree_gateway.transaction.refund(processor_id, Pay::Currency.from_subunit(amount_to_refund, currency: currency))
-        update(amount_refunded: amount_to_refund)
+        amount_to_refund ||= amount - amount_refunded.to_i
+        result = Pay.braintree_gateway.transaction.refund(processor_id, Pay::Currency.from_subunit(amount_to_refund, currency: currency))
+        raise Pay::Braintree::Error, result unless result.success?
+
+        update(amount_refunded: amount_refunded.to_i + amount_to_refund)
       rescue ::Braintree::BraintreeError => e
         raise Pay::Braintree::Error, e
       end
