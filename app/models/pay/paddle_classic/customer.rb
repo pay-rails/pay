@@ -19,7 +19,7 @@ module Pay
         response = PaddleClassic.client.charges.create(subscription_id: subscription.processor_id, amount: amount.to_f / 100, charge_name: options[:charge_name])
 
         attributes = {
-          amount: (response[:amount].to_f * 100).to_i,
+          amount: (response[:amount].to_d * 100).to_i,
           paddle_receipt_url: response[:receipt_url],
           created_at: Time.zone.parse(response[:payment_date])
         }
