@@ -260,8 +260,11 @@ module Pay
 
       # Creates a meter event to bill for usage
       #
-      # create_meter_event(:api_request, value: 1)
-      # create_meter_event(:api_request, token: 7)
+      # create_meter_event(:api_request, payload: {value: 1})
+      # create_meter_event(:api_request, payload: {token: 7})
+      #
+      # Usage values go in `payload`. Other keyword options, like `identifier:` or
+      # `timestamp:`, are sent to Stripe as top-level meter event params.
       def create_meter_event(event_name, payload: {}, **options)
         stripe_client.v1.billing.meter_events.create({
           event_name: event_name,
