@@ -1,6 +1,6 @@
 ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
 
-### Unreleased
+### 13.4.1
 
 * Fix `NameError: uninitialized constant Braintree` when eager loading an app without the braintree gem
 
