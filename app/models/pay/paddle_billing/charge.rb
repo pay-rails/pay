@@ -70,7 +70,9 @@ module Pay
       #   refund!
       #   refund!(5_00, reason: "Customer request")
       def refund!(amount_to_refund = nil, reason: I18n.t("pay.refund"))
-        remaining = amount - amount_refunded.to_i
+        # Paddle's own refund total, so refunds approved since the last sync count too
+        transaction = ::Paddle::Transaction.retrieve(id: processor_id, extra: "adjustments_totals")
+        remaining = amount - transaction.adjustments_totals.breakdown.refund.to_i
         amount_to_refund ||= remaining
         raise Pay::PaddleBilling::Error, "#{processor_id} has nothing left to refund" unless remaining.positive?
         unless amount_to_refund.positive? && amount_to_refund <= remaining
@@ -80,7 +82,7 @@ module Pay
         params = {transaction_id: processor_id, action: "refund", reason: reason, type: "full"}
 
         unless amount_to_refund == amount
-          line_items = ::Paddle::Transaction.retrieve(id: processor_id).details.line_items
+          line_items = transaction.details.line_items
           unless line_items.size == 1
             raise Pay::PaddleBilling::Error, "Paddle Billing partial refunds need a transaction with one line item, but #{processor_id} has #{line_items.size}"
           end

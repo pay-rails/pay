@@ -92,7 +92,7 @@ Paddle requires a reason for every refund. It defaults to `I18n.t("pay.refund")`
 charge.refund!(5_00, reason: "Customer request")
 ```
 
-Refunding the full amount of a charge that has no refunds refunds the whole transaction. Partial refunds, including refunding what's left after a partial refund, are made against the transaction's line item, so they raise `Pay::PaddleBilling::Error` for transactions with more than one line item. Use the [Paddle API](https://developer.paddle.com/api-reference/adjustments/create-adjustment) directly to choose which items to refund. Refunding more than what's left of the charge (`amount - amount_refunded`) raises `Pay::PaddleBilling::Error`.
+Refunding the full amount of a charge that has no refunds refunds the whole transaction. Partial refunds, including refunding what's left after a partial refund, are made against the transaction's line item, so they raise `Pay::PaddleBilling::Error` for transactions with more than one line item. Use the [Paddle API](https://developer.paddle.com/api-reference/adjustments/create-adjustment) directly to choose which items to refund. `refund!` checks what's left against the refunds Paddle has approved, so it's correct even before the webhook syncs a refund. Refunding more than what's left raises `Pay::PaddleBilling::Error`.
 
 ## Payment Method
 
