@@ -1,5 +1,9 @@
 ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
 
+### Unreleased
+
+* Add `refund!` for Paddle Billing charges. Paddle approves refunds before they're recorded in `amount_refunded`, so `refund!` returns the pending `Paddle::Adjustment`. Pass `reason:` to describe the refund. Partial refunds need a transaction with one line item
+
 ### 13.3.0
 
 * Paddle Billing charges record approved refunds in `amount_refunded`. Syncing a charge reads the refund total from Paddle, and the `adjustment.created` and `adjustment.updated` webhooks re-sync it when a refund is approved. Enable both events on your Paddle notification destination
