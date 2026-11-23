@@ -1,5 +1,10 @@
 ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
 
+### Unreleased
+
+* Braintree `refund!` voids transactions that haven't settled yet, since Braintree only refunds settled transactions. A void cancels the whole payment, so a partial refund of an unsettled transaction raises `Pay::Braintree::Error`
+* Braintree `Charge#api_record` raises `Pay::Braintree::Error` when the lookup fails, instead of a `NameError`
+
 ### 13.3.0
 
 * Paddle Billing charges record approved refunds in `amount_refunded`. Syncing a charge reads the refund total from Paddle, and the `adjustment.created` and `adjustment.updated` webhooks re-sync it when a refund is approved. Enable both events on your Paddle notification destination

@@ -82,6 +82,8 @@ charge.refund!
 charge.refund!(5_00)
 ```
 
+Braintree only refunds transactions once they settle, usually in a nightly batch. Before then, `refund!` voids the transaction instead, which cancels the whole payment, so a partial refund of an unsettled Braintree transaction raises `Pay::Braintree::Error`.
+
 ## Payment Method
 
 Charges record a copy of their payment method. This allows users to update their payment methods without losing the information on previous purchases.
