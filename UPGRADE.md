@@ -2,7 +2,7 @@
 
 Follow this guide to upgrade older Pay versions. These may require database migrations and code changes.
 
-## Pay 14.0
+## Pay 13.2
 
 ### Braintree amounts in zero-decimal currencies
 

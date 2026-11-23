@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Braintree amounts use the currency's subunit instead of assuming cents, so ¥1,000 is stored as 1000 instead of 100000. Pass `currency:` to Braintree `charge` when your merchant account isn't in a two-decimal currency. Existing Braintree charges in zero-decimal currencies need updating; see the [UPGRADE guide](./UPGRADE.md#pay-140)
+* Braintree amounts use the currency's subunit instead of assuming cents, so ¥1,000 is stored as 1000 instead of 100000. Pass `currency:` to Braintree `charge` when your merchant account isn't in a two-decimal currency. Existing Braintree charges in zero-decimal currencies need updating; see the [UPGRADE guide](./UPGRADE.md#pay-132)
 
 ### 13.1.0
 
