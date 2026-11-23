@@ -1,5 +1,12 @@
 ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
 
+### Unreleased
+
+* Deprecate Paddle Classic. Pay 14 will remove it. Paddle has a [migration path to Paddle Billing](https://developer.paddle.com/migrate/paddle-classic/), and Pay supports Paddle Billing as the `paddle_billing` processor. Apps with Paddle Classic credentials configured see a deprecation warning at boot
+* Paddle Classic and Braintree amounts no longer lose a cent when converted to cents, so 19.99 is stored as 1999 instead of 1998
+* Braintree service fees are stored in cents in `application_fee_amount`. They were stored in dollars, so a $1.50 fee was saved as 1
+* Paddle Classic refunds send the amount in dollars. `refund!` sent cents, so a refund of a $1.19 charge asked Paddle for $119
+
 ### 13.0.1
 
 * Stripe `swap` starts a new billing cycle today when the new price has a different interval, like monthly to yearly. Subscriptions in Stripe's flexible billing mode (the default since API version `2025-09-30.clover`) otherwise keep their billing cycle anchor, so the first year ends on the old monthly billing date and the customer is charged for a partial year. Pass `billing_cycle_anchor: "unchanged"` to keep the anchor on flexible subscriptions. Swaps during a trial are unchanged

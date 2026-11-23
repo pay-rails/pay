@@ -36,6 +36,7 @@ module Pay
     end
 
     config.after_initialize do
+      Pay::PaddleClassic.warn_deprecated if Pay::PaddleClassic.enabled?
       ActiveSupport.run_load_hooks(:pay, Pay)
     end
 

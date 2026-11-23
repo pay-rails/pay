@@ -48,6 +48,13 @@ module Pay
       )
     end
 
+    # Paddle Classic is enabled whenever the paddle gem is loaded, which Paddle Billing apps do too, so only warn apps that configured it
+    def self.warn_deprecated
+      if vendor_id.present?
+        Pay.deprecator.warn "Paddle Classic support is deprecated and will be removed in Pay 14. Migrate to Paddle Billing: https://developer.paddle.com/migrate/paddle-classic/"
+      end
+    end
+
     def self.environment
       super || "production"
     end

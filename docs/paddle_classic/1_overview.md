@@ -1,5 +1,8 @@
 # Using Pay with Paddle Classic
 
+> [!WARNING]
+> Paddle Classic support is deprecated and will be removed in Pay 14. Follow Paddle's guide to [migrate from Paddle Classic](https://developer.paddle.com/migrate/paddle-classic/) to Paddle Billing, then use Pay's [Paddle Billing processor](../paddle_billing/1_overview.md).
+
 Paddle works differently than most of the other payment processors so it comes with some limitations and differences.
 
 * You cannot create a Customer from the API

@@ -83,7 +83,7 @@ module Pay
   end
 
   def self.deprecator
-    @deprecator ||= ActiveSupport::Deprecation.new("13.0", "Pay")
+    @deprecator ||= ActiveSupport::Deprecation.new("14.0", "Pay")
   end
 
   self.parent_mailer = "Pay::ApplicationMailer"
