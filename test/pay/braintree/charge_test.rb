@@ -9,6 +9,15 @@ class Pay::Braintree::ChargeTest < ActiveSupport::TestCase
     @pay_customer.subscriptions.delete_all
   end
 
+  test "voidable statuses match the braintree gem" do
+    statuses = [
+      ::Braintree::Transaction::Status::Authorized,
+      ::Braintree::Transaction::Status::SubmittedForSettlement,
+      ::Braintree::Transaction::Status::SettlementPending
+    ]
+    assert_equal statuses, Pay::Braintree::Charge::VOIDABLE_STATUSES
+  end
+
   test "refunding an unsettled transaction voids it" do
     @pay_customer.update_payment_method "fake-valid-visa-nonce"
     charge = @pay_customer.charge(29_00)

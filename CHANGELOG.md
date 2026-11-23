@@ -1,5 +1,9 @@
 ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
 
+### Unreleased
+
+* Fix `NameError: uninitialized constant Braintree` when eager loading an app without the braintree gem
+
 ### 13.4.0
 
 * Add `refund!` for Paddle Billing charges. Paddle approves refunds before they're recorded in `amount_refunded`, so `refund!` returns the pending `Paddle::Adjustment`. Pass `reason:` to describe the refund. Partial refunds need a transaction with one line item
