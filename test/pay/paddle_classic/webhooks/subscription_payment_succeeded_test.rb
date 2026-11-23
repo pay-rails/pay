@@ -8,22 +8,16 @@ class Pay::PaddleClassic::Webhooks::SubscriptionPaymentSucceededTest < ActiveSup
   end
 
   test "paddle charge is created" do
+    @event.sale_gross = "19.99"
     assert_difference "Pay::Charge.count" do
       Pay::PaddleClassic::Webhooks::SubscriptionPaymentSucceeded.new.call(@event)
     end
 
     charge = Pay::Charge.last
-    assert_equal (@event.sale_gross.to_f * 100).to_i, charge.amount
+    assert_equal 19_99, charge.amount
     assert_equal "card", charge.payment_method_type
     assert_equal "visa", charge.brand
     assert_equal @event.receipt_url, charge.paddle_receipt_url
-  end
-
-  test "paddle charge amount doesn't lose a cent" do
-    Pay::PaddleClassic::PaymentMethod.stubs(:payment_method_details_for).returns({})
-    @event.sale_gross = "19.99"
-    Pay::PaddleClassic::Webhooks::SubscriptionPaymentSucceeded.new.call(@event)
-    assert_equal 19_99, Pay::Charge.last.amount
   end
 
   test "paddle charge is associated with subscription" do
