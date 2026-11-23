@@ -38,16 +38,14 @@ class Pay::Braintree::ChargeTest < ActiveSupport::TestCase
   end
 
   test "refunds zero-decimal currencies in the currency's main unit" do
-    charge = @pay_customer.charges.create!(processor_id: "abc", amount: 1000, currency: "JPY")
-    charge.stubs(:api_record).returns(stub(status: "settled"))
+    charge = settled_charge(amount: 1000, currency: "JPY")
     ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "1000").returns(stub(success?: true))
     charge.refund!
     assert_equal 1000, charge.amount_refunded
   end
 
   test "partial refunds add up" do
-    charge = @pay_customer.charges.create!(processor_id: "abc", amount: 19_99, currency: "USD")
-    charge.stubs(:api_record).returns(stub(status: "settled"))
+    charge = settled_charge(amount: 19_99)
     ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "5.00").returns(stub(success?: true))
     ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "3.00").returns(stub(success?: true))
     charge.refund!(5_00)
@@ -56,8 +54,7 @@ class Pay::Braintree::ChargeTest < ActiveSupport::TestCase
   end
 
   test "refunding without an amount refunds what's left" do
-    charge = @pay_customer.charges.create!(processor_id: "abc", amount: 19_99, amount_refunded: 5_00, currency: "USD")
-    charge.stubs(:api_record).returns(stub(status: "settled"))
+    charge = settled_charge(amount: 19_99, amount_refunded: 5_00)
     ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "14.99").returns(stub(success?: true))
     charge.refund!
     assert charge.full_refund?
@@ -67,5 +64,13 @@ class Pay::Braintree::ChargeTest < ActiveSupport::TestCase
     @pay_customer.update_payment_method "fake-valid-visa-nonce"
     charge = @pay_customer.charge(29_00)
     assert_equal "USD", charge.currency
+  end
+
+  private
+
+  def settled_charge(**attributes)
+    @pay_customer.charges.create!(processor_id: "abc", currency: "USD", **attributes).tap do |charge|
+      charge.stubs(:api_record).returns(stub(status: "settled"))
+    end
   end
 end
