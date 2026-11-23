@@ -3,6 +3,9 @@
 ### Unreleased
 
 * Deprecate Paddle Classic. Pay 14 will remove it. Paddle has a [migration path to Paddle Billing](https://developer.paddle.com/migrate/paddle-classic/), and Pay supports Paddle Billing as the `paddle_billing` processor. Apps with Paddle Classic credentials configured see a deprecation warning at boot
+* Paddle Classic and Braintree amounts no longer lose a cent when converted to cents, so 19.99 is stored as 1999 instead of 1998. A Braintree transaction with no amount is still saved with an amount of 0
+* Braintree service fees are stored in cents in `application_fee_amount`. They were stored in dollars, so a $1.50 fee was saved as 1
+* Paddle Classic refunds send the amount in dollars. `refund!` sent cents, so a refund of a $1.19 charge asked Paddle for $119
 
 ### 13.0.1
 
