@@ -1,6 +1,6 @@
 ℹ️ For upgrade instructions, read the [UPGRADE guide](./UPGRADE.md)
 
-### Unreleased
+### 13.1.0
 
 * Deprecate Paddle Classic. Pay 14 will remove it. Paddle has a [migration path to Paddle Billing](https://developer.paddle.com/migrate/paddle-classic/), and Pay supports Paddle Billing as the `paddle_billing` processor. Apps with Paddle Classic credentials configured see a deprecation warning at boot
 * Paddle Classic and Braintree amounts no longer lose a cent when converted to cents, so 19.99 is stored as 1999 instead of 1998
