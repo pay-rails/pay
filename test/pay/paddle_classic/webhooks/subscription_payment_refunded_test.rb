@@ -18,4 +18,11 @@ class Pay::PaddleClassic::Webhooks::SubscriptionPaymentRefundedTest < ActiveSupp
     Pay::PaddleClassic::Webhooks::SubscriptionPaymentRefunded.new.call(@event)
     assert_nil charge.reload.amount_refunded
   end
+
+  test "refunded amount doesn't lose a cent" do
+    charge = @pay_customer.charges.create!(processor_id: @event.subscription_payment_id, amount: 19_99)
+    @event.gross_refund = "19.99"
+    Pay::PaddleClassic::Webhooks::SubscriptionPaymentRefunded.new.call(@event)
+    assert_equal 19_99, charge.reload.amount_refunded
+  end
 end
