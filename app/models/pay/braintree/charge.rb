@@ -4,7 +4,7 @@ module Pay
       extend Pay::Sync
 
       # Matches ::Braintree::Transaction::Status values. Strings so this file loads without the braintree gem.
-      VOIDABLE_STATUSES = %w[authorized submitted_for_settlement settlement_pending].freeze
+      VOIDABLE_STATUSES = Pay.make_shareable(%w[authorized submitted_for_settlement settlement_pending])
 
       def self.sync(charge_id, object: nil)
         sync_with_retries do
