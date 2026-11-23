@@ -20,4 +20,9 @@ subscription.trialing
 subscription.updated
 
 transaction.completed
+
+adjustment.created
+adjustment.updated
 ```
+
+The adjustment events record refunds on charges once Paddle approves them. Refunds that are still pending approval or were rejected don't change `amount_refunded`.

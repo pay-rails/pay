@@ -7,7 +7,7 @@ module Pay
 
       def self.sync(charge_id, object: nil)
         sync_with_retries do
-          transaction = object || ::Paddle::Transaction.retrieve(id: charge_id)
+          transaction = object || ::Paddle::Transaction.retrieve(id: charge_id, extra: "adjustments_totals")
 
           # Ignore transactions that aren't completed
           return unless transaction.status == "completed"
@@ -27,6 +27,11 @@ module Pay
             metadata: transaction.details.line_items&.first&.id,
             subscription: pay_customer.subscriptions.find_by(processor_id: transaction.subscription_id)
           }
+
+          # Paddle counts approved refunds only, so pending and rejected ones leave this alone
+          if (adjustments_totals = transaction.adjustments_totals)
+            attrs[:amount_refunded] = adjustments_totals.breakdown.refund.to_i
+          end
 
           if (details = Array.wrap(transaction.payments).first&.method_details)
             case details.type.downcase
