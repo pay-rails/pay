@@ -133,7 +133,7 @@ module Pay
         attrs[:amount] = (transaction.amount.to_d * 100).to_i
         attrs[:metadata] = transaction.custom_fields
         attrs[:currency] = transaction.currency_iso_code
-        attrs[:application_fee_amount] = transaction.service_fee_amount
+        attrs[:application_fee_amount] = (transaction.service_fee_amount.to_d * 100).to_i if transaction.service_fee_amount
         attrs[:created_at] = transaction.created_at
 
         # Associate charge with subscription if we can
