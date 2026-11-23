@@ -9,31 +9,37 @@ class Pay::Braintree::ChargeTest < ActiveSupport::TestCase
     @pay_customer.subscriptions.delete_all
   end
 
-  test "can partially refund a transaction" do
+  # Braintree only refunds settled transactions, and sandbox transactions settle in a nightly batch
+  test "refunding an unsettled transaction raises" do
     @pay_customer.update_payment_method "fake-valid-visa-nonce"
-
     charge = @pay_customer.charge(29_00)
-    assert charge.present?
 
-    charge.refund!(10_00)
-    assert_equal 10_00, charge.amount_refunded
-  end
-
-  test "can fully refund a transaction" do
-    @pay_customer.update_payment_method "fake-valid-visa-nonce"
-
-    charge = @pay_customer.charge(37_00)
-    assert charge.present?
-
-    charge.refund!
-    assert_equal 37_00, charge.amount_refunded
+    error = assert_raises(Pay::Braintree::Error) { charge.refund!(10_00) }
+    assert_match "unless it is settled", error.message
+    assert_nil charge.reload.amount_refunded
   end
 
   test "refunds zero-decimal currencies in the currency's main unit" do
     charge = @pay_customer.charges.create!(processor_id: "abc", amount: 1000, currency: "JPY")
-    ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "1000")
+    ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "1000").returns(stub(success?: true))
     charge.refund!
     assert_equal 1000, charge.amount_refunded
+  end
+
+  test "partial refunds add up" do
+    charge = @pay_customer.charges.create!(processor_id: "abc", amount: 19_99, currency: "USD")
+    ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "5.00").returns(stub(success?: true))
+    ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "3.00").returns(stub(success?: true))
+    charge.refund!(5_00)
+    charge.refund!(3_00)
+    assert_equal 8_00, charge.amount_refunded
+  end
+
+  test "refunding without an amount refunds what's left" do
+    charge = @pay_customer.charges.create!(processor_id: "abc", amount: 19_99, amount_refunded: 5_00, currency: "USD")
+    ::Braintree::TransactionGateway.any_instance.expects(:refund).with("abc", "14.99").returns(stub(success?: true))
+    charge.refund!
+    assert charge.full_refund?
   end
 
   test "braintree saves currency on charge" do
