@@ -54,9 +54,7 @@ jobs:
         run: |
           # Use this version's CHANGELOG section, with links made absolute so they work on the release page
           awk -v heading="### $VERSION" '$0 == heading {found=1; next} found && /^### / {exit} found' CHANGELOG.md \
-            | sed 's|](\./|](https://github.com/${{ github.repository }}/blob/main/|g' > release_notes.md
-          if [ -s release_notes.md ]; then
-            gh release create "v$VERSION" --verify-tag --title "v$VERSION" --notes-file release_notes.md
-          else
-            gh release create "v$VERSION" --verify-tag --title "v$VERSION" --generate-notes
-          fi
+            | sed "s|](\./|](https://github.com/$GITHUB_REPOSITORY/blob/main/|g" > release_notes.md
+          notes=(--notes-file release_notes.md)
+          [ -s release_notes.md ] || notes=(--generate-notes)
+          gh release create "v$VERSION" --verify-tag --title "v$VERSION" "${notes[@]}"
