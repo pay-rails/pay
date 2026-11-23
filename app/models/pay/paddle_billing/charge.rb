@@ -58,6 +58,46 @@ module Pay
           end
         end
       end
+
+      # Requests a refund from Paddle and returns the Paddle::Adjustment
+      #
+      # Paddle refunds start out pending approval, so amount_refunded is updated by the
+      # adjustment webhooks once Paddle approves it.
+      #
+      # Only refunding the whole of an unrefunded charge is a full adjustment. Anything else
+      # is a partial adjustment against the transaction's single line item.
+      #
+      #   refund!
+      #   refund!(5_00, reason: "Customer request")
+      def refund!(amount_to_refund = nil, reason: I18n.t("pay.refund"))
+        # Paddle's own refund total, so refunds approved since the last sync count too
+        transaction = ::Paddle::Transaction.retrieve(id: processor_id, extra: "adjustments_totals")
+        remaining = amount - transaction.adjustments_totals.breakdown.refund.to_i
+        raise Pay::PaddleBilling::Error, "#{processor_id} has nothing left to refund" unless remaining.positive?
+
+        amount_to_refund ||= remaining
+        unless amount_to_refund.positive? && amount_to_refund <= remaining
+          raise Pay::PaddleBilling::Error, "#{processor_id} can refund between 1 and #{remaining}, not #{amount_to_refund}"
+        end
+
+        params = {transaction_id: processor_id, action: "refund", reason: reason}
+
+        if amount_to_refund == amount
+          params[:type] = "full"
+        else
+          line_items = transaction.details.line_items
+          unless line_items.size == 1
+            raise Pay::PaddleBilling::Error, "Paddle Billing partial refunds need a transaction with one line item, but #{processor_id} has #{line_items.size}"
+          end
+
+          params[:type] = "partial"
+          params[:items] = [{item_id: line_items.first.id, type: "partial", amount: amount_to_refund.to_s}]
+        end
+
+        ::Paddle::Adjustment.create(**params)
+      rescue ::Paddle::ErrorGenerator => e
+        raise Pay::PaddleBilling::Error, e
+      end
     end
   end
 end
