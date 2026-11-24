@@ -28,32 +28,33 @@ stripe listen --forward-to localhost:3000/pay/webhooks/stripe
 Pay requires the following webhooks to properly sync charges and subscriptions as they happen.
 
 ```ruby
-charge.succeeded
 charge.refunded
+charge.succeeded
 charge.updated
 
 payment_intent.succeeded
 
-invoice.upcoming
 invoice.payment_action_required
 invoice.payment_failed
+invoice.upcoming
+invoice.updated
 
+customer.deleted
 customer.subscription.created
-customer.subscription.updated
 customer.subscription.deleted
 customer.subscription.trial_will_end
+customer.subscription.updated
 customer.updated
-customer.deleted
 
 payment_method.attached
-payment_method.updated
 payment_method.automatically_updated
 payment_method.detached
+payment_method.updated
 
 account.updated
 
-checkout.session.completed
 checkout.session.async_payment_succeeded
+checkout.session.completed
 ```
 
 ## Next
