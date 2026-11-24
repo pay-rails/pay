@@ -37,6 +37,7 @@ payment_intent.succeeded
 invoice.payment_action_required
 invoice.payment_failed
 invoice.upcoming
+invoice.updated
 
 customer.deleted
 customer.subscription.created
