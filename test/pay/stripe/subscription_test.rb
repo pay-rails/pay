@@ -415,6 +415,16 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
     assert_equal payment_method, pay_subscription.payment_method
   end
 
+  test "stripe subscription sync clears payment method when removed from subscription" do
+    Pay::Stripe::PaymentMethod.stubs(:sync).returns(pay_payment_methods(:stripe))
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: "pm_1000"))
+    assert_equal "pm_1000", pay_subscription.payment_method_id
+
+    pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: nil))
+    assert_nil pay_subscription.reload.payment_method_id
+    assert_nil pay_subscription.payment_method
+  end
+
   test "stripe change subscription default payment method" do
     subscription = subscribe
 

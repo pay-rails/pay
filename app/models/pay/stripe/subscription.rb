@@ -61,14 +61,14 @@ module Pay
             Time.at(subscription.items.first.current_period_end)
           end
 
-          # Sync payment method if directly attached to subscription
-          if subscription.default_payment_method
-            if subscription.default_payment_method.is_a? String
-              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method, stripe_account: stripe_account, customer: pay_customer)
-              attributes[:payment_method_id] = subscription.default_payment_method
+          # Sync payment method if directly attached to subscription, otherwise clear it
+          attributes[:payment_method_id] = if (payment_method = subscription.default_payment_method)
+            if payment_method.is_a? String
+              Pay::Stripe::PaymentMethod.sync(payment_method, stripe_account: stripe_account, customer: pay_customer)
+              payment_method
             else
-              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method.id, object: subscription.default_payment_method, stripe_account: stripe_account, customer: pay_customer)
-              attributes[:payment_method_id] = subscription.default_payment_method.id
+              Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account, customer: pay_customer)
+              payment_method.id
             end
           end
 
