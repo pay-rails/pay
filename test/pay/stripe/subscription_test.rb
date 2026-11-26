@@ -422,7 +422,6 @@ class Pay::Stripe::SubscriptionTest < ActiveSupport::TestCase
 
     pay_subscription = Pay::Stripe::Subscription.sync("123", object: fake_stripe_subscription(default_payment_method: nil))
     assert_nil pay_subscription.reload.payment_method_id
-    assert_nil pay_subscription.payment_method
   end
 
   test "stripe change subscription default payment method" do

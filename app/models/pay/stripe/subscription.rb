@@ -28,6 +28,7 @@ module Pay
             metered: false,
             pause_behavior: subscription.pause_collection&.behavior,
             pause_resumes_at: (subscription.pause_collection&.resumes_at ? Time.at(subscription.pause_collection&.resumes_at) : nil),
+            payment_method_id: nil,
             current_period_start: (subscription.items.first.current_period_start ? Time.at(subscription.items.first.current_period_start) : nil),
             current_period_end: (subscription.items.first.current_period_end ? Time.at(subscription.items.first.current_period_end) : nil)
           }
@@ -61,14 +62,14 @@ module Pay
             Time.at(subscription.items.first.current_period_end)
           end
 
-          # Sync payment method if directly attached to subscription, otherwise clear it
-          attributes[:payment_method_id] = if (payment_method = subscription.default_payment_method)
-            if payment_method.is_a? String
-              Pay::Stripe::PaymentMethod.sync(payment_method, stripe_account: stripe_account, customer: pay_customer)
-              payment_method
+          # Sync payment method if directly attached to subscription
+          if subscription.default_payment_method
+            if subscription.default_payment_method.is_a? String
+              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method, stripe_account: stripe_account, customer: pay_customer)
+              attributes[:payment_method_id] = subscription.default_payment_method
             else
-              Pay::Stripe::PaymentMethod.sync(payment_method.id, object: payment_method, stripe_account: stripe_account, customer: pay_customer)
-              payment_method.id
+              Pay::Stripe::PaymentMethod.sync(subscription.default_payment_method.id, object: subscription.default_payment_method, stripe_account: stripe_account, customer: pay_customer)
+              attributes[:payment_method_id] = subscription.default_payment_method.id
             end
           end
 
