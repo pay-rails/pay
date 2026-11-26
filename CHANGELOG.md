@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 13.4.2
+
 * Stripe subscription sync clears `payment_method_id` when the subscription no longer has a default payment method #1316
 
 ### 13.4.1
