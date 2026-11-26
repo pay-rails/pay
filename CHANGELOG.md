@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Lemon Squeezy subscriptions stay `active` until `ends_at` after they are cancelled, so `active?`, `Pay::Subscription.active` and `subscribed?` remain true for the paid period, as with Stripe and Paddle. `cancel` now stores the same status as syncing instead of Lemon Squeezy's `cancelled`
+
 ### 13.4.2
 
 * Stripe subscription sync clears `payment_method_id` when the subscription no longer has a default payment method #1316
