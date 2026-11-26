@@ -24,26 +24,24 @@ module Pay
             current_period_end: subscription.renews_at,
             ends_at: ends_at,
             pause_resumes_at: (subscription.pause&.resumes_at ? Time.parse(subscription.pause.resumes_at) : nil),
-            status: STATUSES.fetch(subscription.status, subscription.status),
+            status: status_for(subscription.status, ends_at),
             processor_plan: subscription.first_subscription_item.price_id,
             quantity: subscription.first_subscription_item.quantity,
             created_at: (subscription.created_at ? Time.parse(subscription.created_at) : nil),
             updated_at: (subscription.updated_at ? Time.parse(subscription.updated_at) : nil)
           }
 
-          case attributes[:status]
-          when "canceled"
+          case subscription.status
+          when "cancelled"
             # Remove payment methods since customer cannot be reused after cancelling
             pay_customer.payment_methods.destroy_all
-          when "trialing"
+          when "on_trial"
             attributes[:trial_ends_at] = Time.parse(subscription.trial_ends_at)
           when "active", "past_due"
             attributes[:trial_ends_at] = nil
             attributes[:pause_resumes_at] = nil
             attributes[:ends_at] = nil
           end
-
-          attributes[:status] = status_for(subscription.status, ends_at) if attributes[:status] == "canceled"
 
           # Update or create the subscription
           if (pay_subscription = find_by(customer: pay_customer, processor_id: subscription.id))
