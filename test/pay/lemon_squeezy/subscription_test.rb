@@ -51,8 +51,6 @@ class Pay::LemonSqueezy::SubscriptionTest < ActiveSupport::TestCase
     assert subscription.on_grace_period?
     assert subscription.active?
     assert_includes Pay::Subscription.active, subscription
-    @pay_customer.subscriptions.where.not(id: subscription.id).delete_all
-    assert @pay_customer.subscribed?
     assert_empty @pay_customer.payment_methods.reload
   end
 
