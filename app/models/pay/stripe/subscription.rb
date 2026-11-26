@@ -28,6 +28,7 @@ module Pay
             metered: false,
             pause_behavior: subscription.pause_collection&.behavior,
             pause_resumes_at: (subscription.pause_collection&.resumes_at ? Time.at(subscription.pause_collection&.resumes_at) : nil),
+            payment_method_id: nil,
             current_period_start: (subscription.items.first.current_period_start ? Time.at(subscription.items.first.current_period_start) : nil),
             current_period_end: (subscription.items.first.current_period_end ? Time.at(subscription.items.first.current_period_end) : nil)
           }

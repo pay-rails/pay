@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Stripe subscription sync clears `payment_method_id` when the subscription no longer has a default payment method #1316
+
 ### 13.4.1
 
 * Fix `NameError: uninitialized constant Braintree` when eager loading an app without the braintree gem
