@@ -6,9 +6,7 @@ module Pay
       # Lemon Squeezy statuses that Pay spells differently
       STATUSES = Pay.make_shareable({"on_trial" => "trialing", "cancelled" => "canceled"})
 
-      # Lemon Squeezy keeps a cancelled subscription working until ends_at, then marks it expired.
-      # Pay records that grace period as an active subscription with a future ends_at, like Stripe and Paddle,
-      # so `active?`, `Pay::Subscription.active` and `subscribed?` stay true until the paid period ends
+      # Lemon Squeezy keeps a cancelled subscription working until ends_at; store that grace period as active, like Stripe and Paddle
       def self.status_for(status, ends_at)
         status = STATUSES.fetch(status, status)
         (status == "canceled" && ends_at&.future?) ? "active" : status

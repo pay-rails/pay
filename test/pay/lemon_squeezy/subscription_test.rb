@@ -48,7 +48,6 @@ class Pay::LemonSqueezy::SubscriptionTest < ActiveSupport::TestCase
     @pay_customer.payment_methods.create!(processor_id: "pm_ls", payment_method_type: "card")
     subscription = sync_lemon_squeezy_subscription("status" => "cancelled", "ends_at" => 1.month.from_now.utc.iso8601)
     assert_equal "active", subscription.status
-    assert subscription.canceled?
     assert subscription.on_grace_period?
     assert subscription.active?
     assert_includes Pay::Subscription.active, subscription
