@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Deprecate Lemon Squeezy. Lemon Squeezy has closed new sign-ups and [stops processing payments on March 31, 2027](https://www.lemonsqueezy.com/blog/saying-goodbye-to-lemon-squeezy), and Pay 14 will remove it. Follow Lemon Squeezy's [migration guide](https://docs.lemonsqueezy.com/migration) to move to another provider. Apps with Lemon Squeezy enabled see a deprecation warning at boot
+
 ### 13.4.2
 
 * Stripe subscription sync clears `payment_method_id` when the subscription no longer has a default payment method #1316

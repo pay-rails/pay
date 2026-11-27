@@ -18,7 +18,7 @@ gem "braintree", "~> 4.35"
 # To use Paddle Billing or Paddle Classic, also include:
 gem "paddle", "~> 3.0"
 
-# To use Lemon Squeezy, also include:
+# To use Lemon Squeezy (deprecated, shuts down on March 31, 2027), also include:
 gem "lemonsqueezy", "~> 1.1"
 
 # To use Receipts gem for creating invoice and receipt PDFs, also include:

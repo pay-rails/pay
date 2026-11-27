@@ -37,6 +37,7 @@ module Pay
 
     config.after_initialize do
       Pay::PaddleClassic.warn_deprecated if Pay::PaddleClassic.enabled?
+      Pay::LemonSqueezy.warn_deprecated if Pay::LemonSqueezy.enabled?
       ActiveSupport.run_load_hooks(:pay, Pay)
     end
 
