@@ -4,6 +4,11 @@
 
 * Lemon Squeezy subscriptions stay `active` until `ends_at` after they are cancelled, so `active?`, `Pay::Subscription.active` and `subscribed?` remain true for the paid period, as with Stripe and Paddle. `cancel` now stores the same status as syncing instead of Lemon Squeezy's `cancelled`
 
+### 13.4.3
+
+* Payment confirmation page returns a 404 when Stripe isn't enabled, instead of raising `NameError: uninitialized constant Stripe` in apps without the stripe gem
+* Deprecate Lemon Squeezy. Lemon Squeezy has closed new sign-ups and [stops processing payments on March 31, 2027](https://www.lemonsqueezy.com/blog/saying-goodbye-to-lemon-squeezy), and Pay 14 will remove it. Follow Lemon Squeezy's [migration guide](https://docs.lemonsqueezy.com/migration) to move to another provider. Apps with Lemon Squeezy enabled see a deprecation warning at boot
+
 ### 13.4.2
 
 * Stripe subscription sync clears `payment_method_id` when the subscription no longer has a default payment method #1316

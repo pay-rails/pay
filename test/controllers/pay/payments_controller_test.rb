@@ -67,6 +67,14 @@ class Pay::PaymentsControllerTest < EngineIntegrationTest
     assert_equal "No such payment_intent: 'pi_missing'", flash[:alert]
   end
 
+  test "is not found when Stripe is not enabled" do
+    Pay::Stripe.stubs(:enabled?).returns(false)
+
+    get payment_path("pi_123")
+
+    assert_response :not_found
+  end
+
   private
 
   def fake_payment_intent

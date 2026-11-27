@@ -24,7 +24,7 @@ Our supported payment processors are:
 - Stripe ([SCA Compatible](https://stripe.com/docs/strong-customer-authentication) using API version `2022-11-15`)
 - Paddle (SCA Compatible & supports PayPal)
 - Braintree (supports PayPal)
-- Lemon Squeezy (supports PayPal)
+- Lemon Squeezy (deprecated, shuts down on March 31, 2027)
 - [Fake Processor](docs/fake_processor/1_overview.md) (used for generic trials without cards, free subscriptions, testing, etc)
 
 Want to add a new payment provider? Contributions are welcome.
