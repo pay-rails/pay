@@ -6,27 +6,34 @@ module Pay
       # Lemon Squeezy statuses that Pay spells differently
       STATUSES = Pay.make_shareable({"on_trial" => "trialing", "cancelled" => "canceled"})
 
+      # Lemon Squeezy keeps a cancelled subscription working until ends_at; store that grace period as active, like Stripe and Paddle
+      def self.status_for(status, ends_at)
+        status = STATUSES.fetch(status, status)
+        (status == "canceled" && ends_at&.future?) ? "active" : status
+      end
+
       def self.sync(subscription_id, object: nil, name: Pay.default_product_name)
         sync_with_retries do
           subscription = object || ::LemonSqueezy::Subscription.retrieve(id: subscription_id)
           return unless (pay_customer = find_pay_customer(subscription.customer_id))
 
+          ends_at = (subscription.ends_at ? Time.parse(subscription.ends_at) : nil)
           attributes = {
             current_period_end: subscription.renews_at,
-            ends_at: (subscription.ends_at ? Time.parse(subscription.ends_at) : nil),
+            ends_at: ends_at,
             pause_resumes_at: (subscription.pause&.resumes_at ? Time.parse(subscription.pause.resumes_at) : nil),
-            status: STATUSES.fetch(subscription.status, subscription.status),
+            status: status_for(subscription.status, ends_at),
             processor_plan: subscription.first_subscription_item.price_id,
             quantity: subscription.first_subscription_item.quantity,
             created_at: (subscription.created_at ? Time.parse(subscription.created_at) : nil),
             updated_at: (subscription.updated_at ? Time.parse(subscription.updated_at) : nil)
           }
 
-          case attributes[:status]
-          when "canceled"
+          case subscription.status
+          when "cancelled"
             # Remove payment methods since customer cannot be reused after cancelling
             pay_customer.payment_methods.destroy_all
-          when "trialing"
+          when "on_trial"
             attributes[:trial_ends_at] = Time.parse(subscription.trial_ends_at)
           when "active", "past_due"
             attributes[:trial_ends_at] = nil
@@ -61,7 +68,8 @@ module Pay
       def cancel(**options)
         return if canceled?
         response = ::LemonSqueezy::Subscription.cancel(id: processor_id)
-        update(status: response.status, ends_at: response.ends_at)
+        ends_at = (response.ends_at ? Time.parse(response.ends_at) : nil)
+        update(status: self.class.status_for(response.status, ends_at), ends_at: ends_at)
       rescue ::LemonSqueezy::Error => e
         raise Pay::LemonSqueezy::Error, e
       end

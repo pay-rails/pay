@@ -46,11 +46,44 @@ class Pay::LemonSqueezy::SubscriptionTest < ActiveSupport::TestCase
     assert subscription.active?
   end
 
-  test "lemon squeezy sync normalizes cancelled to canceled and removes the customer's payment methods" do
+  test "lemon squeezy sync normalizes an ended cancelled subscription to canceled and removes the customer's payment methods" do
     @pay_customer.payment_methods.create!(processor_id: "pm_ls", payment_method_type: "card")
-    subscription = sync_lemon_squeezy_subscription("status" => "cancelled", "ends_at" => "2030-01-24T12:43:48.000000Z")
+    subscription = sync_lemon_squeezy_subscription("status" => "cancelled", "ends_at" => "2020-01-24T12:43:48.000000Z")
     assert_equal "canceled", subscription.status
+    assert subscription.ended?
+    refute subscription.active?
     assert_empty @pay_customer.payment_methods.reload
+  end
+
+  test "lemon squeezy sync keeps a cancelled subscription active until ends_at, like Stripe and Paddle" do
+    @pay_customer.payment_methods.create!(processor_id: "pm_ls", payment_method_type: "card")
+    subscription = sync_lemon_squeezy_subscription("status" => "cancelled", "ends_at" => 1.month.from_now.utc.iso8601)
+    assert_equal "active", subscription.status
+    assert subscription.on_grace_period?
+    assert subscription.active?
+    assert_includes Pay::Subscription.active, subscription
+    assert_empty @pay_customer.payment_methods.reload
+  end
+
+  test "lemon squeezy sync marks an expired subscription as no longer active" do
+    subscription = sync_lemon_squeezy_subscription("status" => "expired", "ends_at" => "2020-01-24T12:43:48.000000Z")
+    assert_equal "expired", subscription.status
+    refute subscription.active?
+    refute_includes Pay::Subscription.active, subscription
+  end
+
+  test "lemon squeezy cancel keeps the subscription active until the end of the paid period" do
+    subscription = @pay_customer.subscription
+    ends_at = 1.month.from_now.utc.change(usec: 0)
+    cancelled = lemon_squeezy_event("subscription_created", overrides: {"data" => {"attributes" => {"status" => "cancelled", "ends_at" => ends_at.iso8601}}})
+    ::LemonSqueezy::Subscription.expects(:cancel).with(id: subscription.processor_id).returns(cancelled)
+
+    subscription.cancel
+
+    assert_equal "active", subscription.reload.status
+    assert_equal ends_at, subscription.ends_at
+    assert subscription.on_grace_period?
+    assert subscription.active?
   end
 
   test "lemon squeezy sync stores the pause end in pause_resumes_at" do
