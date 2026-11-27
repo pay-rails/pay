@@ -27,6 +27,10 @@ module Pay
       ::LemonSqueezy.config.api_key = api_key
     end
 
+    def self.warn_deprecated
+      Pay.deprecator.warn "Lemon Squeezy stops processing payments on March 31, 2027, so Lemon Squeezy support is deprecated and will be removed in Pay 14. Move to another provider before then: https://docs.lemonsqueezy.com/migration"
+    end
+
     def self.passthrough(owner:, **options)
       owner.to_sgid.to_s
     end

@@ -1,5 +1,8 @@
 # Using Pay with Lemon Squeezy
 
+> [!WARNING]
+> Lemon Squeezy has closed new sign-ups and stops processing payments on March 31, 2027. Lemon Squeezy support is deprecated and will be removed in Pay 14. Follow Lemon Squeezy's [migration guide](https://docs.lemonsqueezy.com/migration) to move to another provider before then.
+
 Lemon Squeezy works differently than most of the other payment processors so it comes with some limitations and differences.
 
 * Checkout only happens via iFrame or hosted page
