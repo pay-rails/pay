@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Payment confirmation page returns a 404 when Stripe isn't enabled, instead of raising `NameError: uninitialized constant Stripe` in apps without the stripe gem
+
 ### 13.4.2
 
 * Stripe subscription sync clears `payment_method_id` when the subscription no longer has a default payment method #1316
