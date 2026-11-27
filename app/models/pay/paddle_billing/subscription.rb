@@ -170,6 +170,8 @@ module Pay
           proration_billing_mode: options.delete(:proration_billing_mode) || "prorated_immediately"
         )
         update(processor_plan: plan, ends_at: nil, status: :active)
+      rescue ::Paddle::ErrorGenerator => e
+        raise Pay::PaddleBilling::Error, e
       end
 
       private

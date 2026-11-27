@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Paddle Billing and Lemon Squeezy `swap` raise `Pay::PaddleBilling::Error` and `Pay::LemonSqueezy::Error` instead of the raw gem errors, like their other subscription methods #1321
+
 ### 13.4.3
 
 * Payment confirmation page returns a 404 when Stripe isn't enabled, instead of raising `NameError: uninitialized constant Stripe` in apps without the stripe gem

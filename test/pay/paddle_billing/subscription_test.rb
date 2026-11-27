@@ -130,6 +130,16 @@ class Pay::PaddleBilling::SubscriptionTest < ActiveSupport::TestCase
     assert_equal "Error 400: Subscription is locked 'subscription_locked'", error.message
   end
 
+  test "paddle billing swap wraps Paddle API errors in Pay::PaddleBilling::Error" do
+    pay_subscription = pay_subscriptions(:paddle_billing)
+    ::Paddle::Subscription.expects(:update).raises(::Paddle::Errors::BadRequestError.new({"error" => {"code" => "subscription_locked", "detail" => "Subscription is locked"}}, 400))
+
+    error = assert_raises(Pay::PaddleBilling::Error) { pay_subscription.swap("pri_01hdhgfz095acjty3988zjyz03") }
+
+    assert_equal "Error 400: Subscription is locked 'subscription_locked'", error.message
+    assert_not_equal "pri_01hdhgfz095acjty3988zjyz03", pay_subscription.reload.processor_plan
+  end
+
   test "paddle billing cancel with a scheduled pause removes the pause and cancels at the end of the period" do
     pay_subscription = pay_subscriptions(:paddle_billing)
     pay_subscription.update!(pause_starts_at: 10.days.from_now)

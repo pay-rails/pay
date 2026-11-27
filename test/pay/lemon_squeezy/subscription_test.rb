@@ -21,6 +21,17 @@ class Pay::LemonSqueezy::SubscriptionTest < ActiveSupport::TestCase
     assert_equal "active", @pay_customer.subscription.status
   end
 
+  test "lemon squeezy swap wraps Lemon Squeezy API errors in Pay::LemonSqueezy::Error" do
+    subscription = @pay_customer.subscription
+    ::LemonSqueezy::Subscription.expects(:change_plan).raises(::LemonSqueezy::Error, "The variant does not belong to this product")
+
+    error = assert_raises(Pay::LemonSqueezy::Error) { subscription.swap("174873", variant_id: "225676") }
+
+    assert_equal "The variant does not belong to this product", error.message
+    assert_kind_of ::LemonSqueezy::Error, error.cause
+    assert_not_equal "225676", subscription.reload.processor_plan
+  end
+
   test "lemon squeezy on_trial" do
     subscription = @pay_customer.subscription
     subscription.update!(status: :trialing, trial_ends_at: 1.month.from_now)
