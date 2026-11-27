@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 13.4.3
+
 * Payment confirmation page returns a 404 when Stripe isn't enabled, instead of raising `NameError: uninitialized constant Stripe` in apps without the stripe gem
 * Deprecate Lemon Squeezy. Lemon Squeezy has closed new sign-ups and [stops processing payments on March 31, 2027](https://www.lemonsqueezy.com/blog/saying-goodbye-to-lemon-squeezy), and Pay 14 will remove it. Follow Lemon Squeezy's [migration guide](https://docs.lemonsqueezy.com/migration) to move to another provider. Apps with Lemon Squeezy enabled see a deprecation warning at boot
 
