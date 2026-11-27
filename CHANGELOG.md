@@ -2,7 +2,8 @@
 
 ### Unreleased
 
-* Lemon Squeezy subscriptions stay `active` until `ends_at` after they are cancelled, so `active?`, `Pay::Subscription.active` and `subscribed?` remain true for the paid period, as with Stripe and Paddle. `cancel` now stores the same status as syncing instead of Lemon Squeezy's `cancelled`
+* Paddle Billing and Lemon Squeezy `swap` raise `Pay::PaddleBilling::Error` and `Pay::LemonSqueezy::Error` instead of the raw gem errors, like their other subscription methods #1321
+* Lemon Squeezy subscriptions stay `active` until `ends_at` after they are cancelled, so `active?`, `Pay::Subscription.active` and `subscribed?` remain true for the paid period, as with Stripe and Paddle. `cancel` now stores the same status as syncing instead of Lemon Squeezy's `cancelled` #1318
 
 ### 13.4.3
 
