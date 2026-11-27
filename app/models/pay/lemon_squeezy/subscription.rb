@@ -118,6 +118,8 @@ module Pay
         ::LemonSqueezy::Subscription.change_plan id: processor_id, plan_id: plan, variant_id: options[:variant_id]
 
         update(processor_plan: options[:variant_id], ends_at: nil, status: :active)
+      rescue ::LemonSqueezy::Error => e
+        raise Pay::LemonSqueezy::Error, e
       end
     end
   end
